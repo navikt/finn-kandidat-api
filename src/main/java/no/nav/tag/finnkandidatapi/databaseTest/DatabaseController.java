@@ -1,4 +1,4 @@
-package no.nav.tag.finnkandidatapi;
+package no.nav.tag.finnkandidatapi.databaseTest;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -12,7 +12,7 @@ public class DatabaseController {
         this.repository = repository;
     }
 
-    @GetMapping(value = "/healthcheck")
+    @GetMapping(value = "/db-test")
     public String healthcheck() {
         return repository.healthcheck();
     }

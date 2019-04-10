@@ -17,7 +17,7 @@ import javax.sql.DataSource;
 @Profile({"dev, prod"})
 public class DatabaseConfig {
 
-    @Value("${spring.datasource.url}")
+    @Value("${database.url}")
     private String databaseUrl;
 
     @Value("${database.navn}")

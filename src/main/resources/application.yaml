@@ -14,15 +14,19 @@ spring.profiles: local
 ---
 spring:
   profiles: dev
-  datasource:
-    url: jdbc:postgresql://b27dbvl007.preprod.local:5432/finn-kandidat-dev
+
+database:
+  navn: finn-kandidat-dev
+  url: jdbc:postgresql://b27dbvl007.preprod.local:5432/finn-kandidat-dev
 
 vault.mount-path: postgresql/preprod-fss
 
 ---
 spring:
   profiles: prod
-  datasource:
-    url: jdbc:postgresql://a01dbfl039.adeo.no:5432/finn-kandidat-prod
+
+database:
+  navn: finn-kandidat-prod
+  url: jdbc:postgresql://a01dbfl039.adeo.no:5432/finn-kandidat-prod
 
 vault.mount-path: postgresql/prod-fss

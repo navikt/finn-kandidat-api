@@ -5,10 +5,4 @@ management.endpoints.web:
   exposure.include: info, health, metrics, prometheus
   base-path: /internal/actuator
 
-spring:
-  application:
-    name: finn-kandidat-api
-  profiles:
-    active: dev
-  main:
-    banner-mode: "off"
+spring.profiles.active: dev

@@ -13,24 +13,24 @@
     "team": "teamtag",
     "port": 8080,
     "liveness": {
-      "path": "/finn-kandidat-api/internal/healthcheck",
+      "path": "/finn-kandidat-api/internal/actuator/info",
       "initialDelay": 20
     },
     "readiness": {
-      "path": "/finn-kandidat-api/internal/healthcheck",
+      "path": "/finn-kandidat-api/internal/actuator/info",
       "initialDelay": 20
     },
     "ingresses": ["https://arbeidsgiver.nais.preprod.local/finn-kandidat-api/"],
     "env": [
       {
         "name": "SPRING_PROFILES_ACTIVE",
-        "value": "preprod"
+        "value": "dev"
       }
     ],
     "webproxy": true,
     "prometheus": {
       "enabled": true,
-      "path": "/finn-kandidat-api/internal/actuator/prometheusf"
+      "path": "/finn-kandidat-api/internal/actuator/prometheus"
     }
   }
 }

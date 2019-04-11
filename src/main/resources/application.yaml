@@ -5,4 +5,28 @@ management.endpoints.web:
   exposure.include: info, health, metrics, prometheus
   base-path: /internal/actuator
 
-spring.profiles.active: dev
+spring.profiles.active: local
+
+---
+spring.profiles: local
+# local config here
+
+---
+spring:
+  profiles: dev
+
+database:
+  navn: finn-kandidat-dev
+  url: jdbc:postgresql://b27dbvl007.preprod.local:5432/finn-kandidat-dev
+
+vault.mount-path: postgresql/preprod-fss
+
+---
+spring:
+  profiles: prod
+
+database:
+  navn: finn-kandidat-prod
+  url: jdbc:postgresql://a01dbfl039.adeo.no:5432/finn-kandidat-prod
+
+vault.mount-path: postgresql/prod-fss

@@ -16,10 +16,4 @@ REQUEST_DATA="{ \"ref\": \"$CIRCLE_BRANCH\", \"required_contexts\": [], \"descri
 REQUEST_URL="https://api.github.com/repos/$GITHUB_REPO/deployments"
 REQUEST_USER="$GITHUB_USERNAME:$GITHUB_ACCESS_TOKEN"
 
-echo "· Repo: $GITHUB_REPO"
-echo "· Header: $REQUEST_HEADER"
-echo "· Data: $REQUEST_DATA"
-echo "· Url: $REQUEST_URL"
-echo "· User: $REQUEST_USER"
-
 curl --verbose --fail --data "$REQUEST_DATA" --header "$REQUEST_HEADER" --user "$REQUEST_USER" $REQUEST_URL

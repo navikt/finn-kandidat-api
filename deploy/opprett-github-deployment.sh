@@ -11,5 +11,15 @@ fi
 ENVIRONMENT=$1
 NAISFIL=$2
 GITHUB_REPO=$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
+REQUEST_HEADER="Accept: application/vnd.github.ant-man-preview+json"
+REQUEST_DATA="{ \"ref\": \"$CIRCLE_BRANCH\", \"required_contexts\": [], \"description\": \"Automated deployment request from our pretty pipeline\", \"environment\": \"$ENVIRONMENT\", \"payload\": { \"version\": [1, 0, 0], \"team\": \"teamtag\", \"kubernetes\": {\"resources\": [ $(cat $NAISFIL)] } } }"
+REQUEST_URL="https://api.github.com/repos/$GITHUB_REPO/deployments"
+REQUEST_USER="$GITHUB_USERNAME:$GITHUB_ACCESS_TOKEN"
 
-curl -d "{ \"ref\": \"$CIRCLE_BRANCH\", \"required_contexts\": [], \"description\": \"Automated deployment request from our pretty pipeline\", \"environment\": \"$ENVIRONMENT\", \"payload\": { \"version\": [1, 0, 0], \"team\": \"teamtag\", \"kubernetes\": {\"resources\": [ $(cat $NAISFIL)] } } }" -u $GITHUB_USERNAME:$GITHUB_ACCESS_TOKEN -X POST https://api.github.com/repos/$GITHUB_REPO/deployments
+echo "· Repo: $GITHUB_REPO"
+echo "· Header: $REQUEST_HEADER"
+echo "· Data: $REQUEST_DATA"
+echo "· Url: $REQUEST_URL"
+echo "· User: $REQUEST_USER"
+
+curl --verbose --fail --data "$REQUEST_DATA" --header "$REQUEST_HEADER" --user "$REQUEST_USER" $REQUEST_URL

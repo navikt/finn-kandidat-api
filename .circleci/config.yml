@@ -46,7 +46,7 @@ jobs:
         steps:
             - deploy:
                   miljo: 'prod-fss'
-                  nais-json: 'nais-dev-fss.json'
+                  nais-json: 'nais-prod-fss.json'
 
 commands:
     deploy:

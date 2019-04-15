@@ -70,15 +70,15 @@
 		</dependency>
 		<!-- /database -->
 
-        <dependency>
+		<dependency>
 			<groupId>com.nimbusds</groupId>
-            <artifactId>oauth2-oidc-sdk</artifactId>
-            <version>5.56</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-        </dependency>
+			<artifactId>oauth2-oidc-sdk</artifactId>
+			<version>5.56</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+		</dependency>
 
         <dependency>
 			<groupId>org.springframework.boot</groupId>

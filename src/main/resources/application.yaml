@@ -10,7 +10,6 @@ spring.profiles.active: local
 ---
 spring.profiles: local
 
-# TODO: Fjern selvbetjening
 no.nav.security.oidc:
   issuers: isso
   issuer.isso:

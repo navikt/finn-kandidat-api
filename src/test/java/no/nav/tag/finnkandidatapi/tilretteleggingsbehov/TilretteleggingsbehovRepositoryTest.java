@@ -25,6 +25,7 @@ public class TilretteleggingsbehovRepositoryTest {
     @Test
     public void skal_lagre_og_hente_ut() {
         Tilretteleggingsbehov behovTilLagring = etTilretteleggingsbehov();
+
         Tilretteleggingsbehov lagretBehov = repository.save(behovTilLagring);
         Tilretteleggingsbehov uthentetBehov = repository.findById(lagretBehov.getId()).get();
 
@@ -33,5 +34,6 @@ public class TilretteleggingsbehovRepositoryTest {
         assertThat(uthentetBehov.getOpprettetAvIdent()).isEqualTo(behovTilLagring.getOpprettetAvIdent());
         assertThat(uthentetBehov.getBrukerFnr()).isEqualTo(behovTilLagring.getBrukerFnr());
         assertThat(uthentetBehov.getArbeidstid()).isEqualTo(behovTilLagring.getArbeidstid());
+        assertThat(uthentetBehov.getFysisk()).containsExactlyInAnyOrderElementsOf(behovTilLagring.getFysisk());
     }
 }

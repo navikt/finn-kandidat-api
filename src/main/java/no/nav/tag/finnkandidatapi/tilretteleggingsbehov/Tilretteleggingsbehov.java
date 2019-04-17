@@ -5,6 +5,7 @@ import lombok.Data;
 import org.springframework.data.annotation.Id;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 @Data
 @Builder
@@ -16,4 +17,5 @@ public class Tilretteleggingsbehov {
     private String opprettetAvIdent;
     private String brukerFnr;
     private Arbeidstid arbeidstid;
+    private ArrayList<Fysisk> fysisk;
 }

@@ -18,4 +18,6 @@ public class Tilretteleggingsbehov {
     private String brukerFnr;
     private Arbeidstid arbeidstid;
     private ArrayList<Fysisk> fysisk;
+    private ArrayList<Arbeidsmiljo> arbeidsmiljo;
+    private ArrayList<Grunnleggende> grunnleggende;
 }

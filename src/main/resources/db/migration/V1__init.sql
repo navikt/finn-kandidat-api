@@ -4,9 +4,8 @@ CREATE TABLE tilretteleggingsbehov (
     opprettet_av_ident VARCHAR(7) NOT NULL,
     bruker_fnr VARCHAR(11),
     arbeidstid VARCHAR(255),
-    fysisk VARCHAR(1000)
---     TODO:
---     arbeidsmiljo VARCHAR(255),
---     grunnleggende VARCHAR(255)
+    fysisk VARCHAR(1000),
+    arbeidsmiljo VARCHAR(1000),
+    grunnleggende VARCHAR(1000)
 );
 

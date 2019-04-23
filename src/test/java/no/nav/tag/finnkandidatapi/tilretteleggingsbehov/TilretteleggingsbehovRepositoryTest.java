@@ -1,6 +1,5 @@
 package no.nav.tag.finnkandidatapi.tilretteleggingsbehov;
 
-import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,17 +16,12 @@ public class TilretteleggingsbehovRepositoryTest {
     @Autowired
     private TilretteleggingsbehovRepository repository;
 
-    @After
-    public void tearDown() {
-        repository.deleteAll();
-    }
-
     @Test
-    public void skal_lagre_og_hente_ut() {
+    public void skal_kunne_lagre_og_hente_tilretteleggingsbehov() {
         Tilretteleggingsbehov behovTilLagring = etTilretteleggingsbehov();
 
-        Tilretteleggingsbehov lagretBehov = repository.save(behovTilLagring);
-        Tilretteleggingsbehov uthentetBehov = repository.findById(lagretBehov.getId()).get();
+        Integer lagretId = repository.lagreTilretteleggingsbehov(behovTilLagring);
+        Tilretteleggingsbehov uthentetBehov = repository.hentTilretteleggingsbehov(lagretId);
 
         assertThat(uthentetBehov.getId()).isGreaterThan(0);
         assertThat(uthentetBehov.getOpprettet()).isEqualToIgnoringNanos(behovTilLagring.getOpprettet());
@@ -35,5 +29,7 @@ public class TilretteleggingsbehovRepositoryTest {
         assertThat(uthentetBehov.getBrukerFnr()).isEqualTo(behovTilLagring.getBrukerFnr());
         assertThat(uthentetBehov.getArbeidstid()).isEqualTo(behovTilLagring.getArbeidstid());
         assertThat(uthentetBehov.getFysisk()).containsExactlyInAnyOrderElementsOf(behovTilLagring.getFysisk());
+        assertThat(uthentetBehov.getArbeidsmiljo()).containsExactlyInAnyOrderElementsOf(behovTilLagring.getArbeidsmiljo());
+        assertThat(uthentetBehov.getGrunnleggende()).containsExactlyInAnyOrderElementsOf(behovTilLagring.getGrunnleggende());
     }
 }

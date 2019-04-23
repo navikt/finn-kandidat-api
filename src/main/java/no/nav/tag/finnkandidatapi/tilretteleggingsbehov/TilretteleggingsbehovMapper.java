@@ -1,16 +1,17 @@
 package no.nav.tag.finnkandidatapi.tilretteleggingsbehov;
 
-import lombok.SneakyThrows;
+import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class TilretteleggingsbehovMapper {
+public class TilretteleggingsbehovMapper implements RowMapper<Tilretteleggingsbehov> {
 
-    @SneakyThrows
-    public static Tilretteleggingsbehov map(ResultSet rs, int rowNum) {
+    @Override
+    public Tilretteleggingsbehov mapRow(ResultSet rs, int i) throws SQLException {
         return Tilretteleggingsbehov.builder()
                 .id(rs.getInt("id"))
                 .opprettet(rs.getTimestamp("opprettet").toLocalDateTime())

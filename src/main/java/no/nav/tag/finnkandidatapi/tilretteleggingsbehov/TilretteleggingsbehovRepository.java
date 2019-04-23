@@ -31,7 +31,7 @@ public class TilretteleggingsbehovRepository {
     Tilretteleggingsbehov hentTilretteleggingsbehov(Integer id) {
         return jdbcTemplate.queryForObject(
                 "SELECT * FROM tilretteleggingsbehov WHERE id = ?", new Object[] { id },
-                TilretteleggingsbehovMapper::map
+                new TilretteleggingsbehovMapper()
         );
     }
 

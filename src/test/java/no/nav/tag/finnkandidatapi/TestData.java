@@ -3,7 +3,6 @@ package no.nav.tag.finnkandidatapi;
 import no.nav.tag.finnkandidatapi.tilretteleggingsbehov.Tilretteleggingsbehov;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 import static no.nav.tag.finnkandidatapi.tilretteleggingsbehov.Arbeidsmiljo.FADDER;
@@ -21,9 +20,9 @@ public class TestData {
                 .opprettetAvIdent("X123456")
                 .brukerFnr("12345678901")
                 .arbeidstid(KAN_IKKE_JOBBE)
-                .fysisk(new ArrayList<>(Arrays.asList(ARBEIDSSTILLING, ERGONOMI)))
-                .arbeidsmiljo(new ArrayList<>(Arrays.asList(FADDER, TILRETTELAGT_ARBEIDSOPPGAVER)))
-                .grunnleggende(new ArrayList<>(Arrays.asList(SNAKKE_NORSK, SKRIVE_NORSK, LESE_NORSK)))
+                .fysisk(Arrays.asList(ARBEIDSSTILLING, ERGONOMI))
+                .arbeidsmiljo(Arrays.asList(FADDER, TILRETTELAGT_ARBEIDSOPPGAVER))
+                .grunnleggende(Arrays.asList(SNAKKE_NORSK, SKRIVE_NORSK, LESE_NORSK))
                 .build();
     }
 }

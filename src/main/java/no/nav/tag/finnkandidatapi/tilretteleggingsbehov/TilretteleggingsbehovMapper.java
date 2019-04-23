@@ -4,7 +4,7 @@ import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -24,39 +24,39 @@ public class TilretteleggingsbehovMapper implements RowMapper<Tilretteleggingsbe
                 .build();
     }
 
-    private static ArrayList<Fysisk> tilFysisk(String string) {
+    private static List<Fysisk> tilFysisk(String string) {
         return Stream.of(string.split(","))
                 .map(Fysisk::valueOf)
-                .collect(Collectors.toCollection(ArrayList::new));
+                .collect(Collectors.toList());
     }
 
-    static String fraFysisk(ArrayList<Fysisk> list) {
+    static String fraFysisk(List<Fysisk> list) {
         String[] stringlist = list.stream()
                 .map(Enum::name)
                 .toArray(String[]::new);
         return String.join(",", stringlist);
     }
 
-    private static ArrayList<Arbeidsmiljo> tilArbeidsmiljo(String string) {
+    private static List<Arbeidsmiljo> tilArbeidsmiljo(String string) {
         return Stream.of(string.split(","))
                 .map(Arbeidsmiljo::valueOf)
-                .collect(Collectors.toCollection(ArrayList::new));
+                .collect(Collectors.toList());
     }
 
-    static String fraArbeidsmiljo(ArrayList<Arbeidsmiljo> list) {
+    static String fraArbeidsmiljo(List<Arbeidsmiljo> list) {
         String[] stringlist = list.stream()
                 .map(Enum::name)
                 .toArray(String[]::new);
         return String.join(",", stringlist);
     }
 
-    private static ArrayList<Grunnleggende> tilGrunnleggende(String string) {
+    private static List<Grunnleggende> tilGrunnleggende(String string) {
         return Stream.of(string.split(","))
                 .map(Grunnleggende::valueOf)
-                .collect(Collectors.toCollection(ArrayList::new));
+                .collect(Collectors.toList());
     }
 
-    static String fraGrunnleggende(ArrayList<Grunnleggende> list) {
+    static String fraGrunnleggende(List<Grunnleggende> list) {
         String[] stringlist = list.stream()
                 .map(Enum::name)
                 .toArray(String[]::new);

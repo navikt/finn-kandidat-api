@@ -2,22 +2,19 @@ package no.nav.tag.finnkandidatapi.tilretteleggingsbehov;
 
 import lombok.Builder;
 import lombok.Data;
-import org.springframework.data.annotation.Id;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Builder
 public class Tilretteleggingsbehov {
-
-    @Id
     private Integer id;
     private LocalDateTime opprettet;
     private String opprettetAvIdent;
     private String brukerFnr;
     private Arbeidstid arbeidstid;
-    private ArrayList<Fysisk> fysisk;
-    private ArrayList<Arbeidsmiljo> arbeidsmiljo;
-    private ArrayList<Grunnleggende> grunnleggende;
+    private List<Fysisk> fysisk;
+    private List<Arbeidsmiljo> arbeidsmiljo;
+    private List<Grunnleggende> grunnleggende;
 }

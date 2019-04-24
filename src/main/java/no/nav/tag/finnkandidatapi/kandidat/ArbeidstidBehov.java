@@ -1,6 +1,6 @@
-package no.nav.tag.finnkandidatapi.tilretteleggingsbehov;
+package no.nav.tag.finnkandidatapi.kandidat;
 
-public enum Arbeidstid {
+public enum ArbeidstidBehov {
     KAN_IKKE_JOBBE,
     HELTID,
     IKKE_HELE_DAGER,

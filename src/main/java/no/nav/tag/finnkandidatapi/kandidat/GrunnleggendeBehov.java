@@ -1,6 +1,6 @@
-package no.nav.tag.finnkandidatapi.tilretteleggingsbehov;
+package no.nav.tag.finnkandidatapi.kandidat;
 
-public enum Grunnleggende {
+public enum GrunnleggendeBehov {
     SNAKKE_NORSK,
     SKRIVE_NORSK,
     LESE_NORSK,

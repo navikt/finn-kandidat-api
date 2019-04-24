@@ -1,11 +1,10 @@
-CREATE TABLE tilretteleggingsbehov (
+CREATE TABLE kandidat (
     id SERIAL PRIMARY KEY,
-    opprettet TIMESTAMP(6) DEFAULT current_timestamp,
-    opprettet_av_ident VARCHAR(7),
-    bruker_fnr VARCHAR(11),
-    arbeidstid VARCHAR(255),
-    fysisk VARCHAR(1000),
-    arbeidsmiljo VARCHAR(1000),
-    grunnleggende VARCHAR(1000)
+    fnr VARCHAR(11),
+    registrert_av VARCHAR(7),
+    registreringstidspunkt TIMESTAMP(6) DEFAULT current_timestamp,
+    arbeidstid_behov VARCHAR(255),
+    fysiske_behov VARCHAR(1000),
+    arbeidsmiljo_behov VARCHAR(1000),
+    grunnleggende_behov VARCHAR(1000)
 );
-

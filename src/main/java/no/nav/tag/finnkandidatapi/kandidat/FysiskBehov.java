@@ -1,6 +1,6 @@
-package no.nav.tag.finnkandidatapi.tilretteleggingsbehov;
+package no.nav.tag.finnkandidatapi.kandidat;
 
-public enum Fysisk {
+public enum FysiskBehov {
     ARBEIDSSTILLING,
     ERGONOMI,
     HORSEL,

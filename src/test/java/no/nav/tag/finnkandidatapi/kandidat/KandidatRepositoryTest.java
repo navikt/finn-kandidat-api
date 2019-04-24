@@ -27,8 +27,8 @@ public class KandidatRepositoryTest {
     }
 
     @Test
-    public void skal_kunne_lagre_og_hente_ut_med_null_og_tomme_lister() {
-        Kandidat behovTilLagring = enKandidatMedNullOgTommeLister();
+    public void skal_kunne_lagre_og_hente_ut_med_null_og_tomme_set() {
+        Kandidat behovTilLagring = enKandidatMedNullOgTommeSet();
 
         Integer lagretId = repository.lagreKandidat(behovTilLagring);
         Kandidat uthentetBehov = repository.hentKandidat(lagretId);

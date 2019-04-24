@@ -45,9 +45,9 @@ public class KandidatRepository {
         parameters.put(REGISTRERT_AV, kandidat.getSistEndretAv());
         parameters.put(REGISTRERINGSTIDSPUNKT, kandidat.getSistEndret());
         parameters.put(ARBEIDSTID_BEHOV, kandidat.getArbeidstidBehov() == null ? null : kandidat.getArbeidstidBehov().name());
-        parameters.put(FYSISKE_BEHOV, listeTilString(kandidat.getFysiskeBehov()));
-        parameters.put(ARBEIDSMILJO_BEHOV, listeTilString(kandidat.getArbeidsmiljoBehov()));
-        parameters.put(GRUNNLEGGENDE_BEHOV, listeTilString(kandidat.getGrunnleggendeBehov()));
+        parameters.put(FYSISKE_BEHOV, enumSetTilString(kandidat.getFysiskeBehov()));
+        parameters.put(ARBEIDSMILJO_BEHOV, enumSetTilString(kandidat.getArbeidsmiljoBehov()));
+        parameters.put(GRUNNLEGGENDE_BEHOV, enumSetTilString(kandidat.getGrunnleggendeBehov()));
         return parameters;
     }
 

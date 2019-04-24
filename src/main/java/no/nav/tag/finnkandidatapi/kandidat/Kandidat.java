@@ -4,7 +4,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Set;
 
 @Data
 @Builder
@@ -14,7 +14,7 @@ public class Kandidat {
     private String sistEndretAv;
     private LocalDateTime sistEndret;
     private ArbeidstidBehov arbeidstidBehov;
-    private List<FysiskBehov> fysiskeBehov;
-    private List<ArbeidsmiljoBehov> arbeidsmiljoBehov;
-    private List<GrunnleggendeBehov> grunnleggendeBehov;
+    private Set<FysiskBehov> fysiskeBehov;
+    private Set<ArbeidsmiljoBehov> arbeidsmiljoBehov;
+    private Set<GrunnleggendeBehov> grunnleggendeBehov;
 }

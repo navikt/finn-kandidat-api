@@ -3,8 +3,8 @@ package no.nav.tag.finnkandidatapi;
 import no.nav.tag.finnkandidatapi.kandidat.Kandidat;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.Set;
 
 import static no.nav.tag.finnkandidatapi.kandidat.ArbeidsmiljoBehov.FADDER;
 import static no.nav.tag.finnkandidatapi.kandidat.ArbeidsmiljoBehov.TILRETTELAGT_ARBEIDSOPPGAVER;
@@ -21,17 +21,17 @@ public class TestData {
                 .sistEndretAv("X123456")
                 .fnr("12345678901")
                 .arbeidstidBehov(KAN_IKKE_JOBBE)
-                .fysiskeBehov(Arrays.asList(ARBEIDSSTILLING, ERGONOMI))
-                .arbeidsmiljoBehov(Arrays.asList(FADDER, TILRETTELAGT_ARBEIDSOPPGAVER))
-                .grunnleggendeBehov(Arrays.asList(SNAKKE_NORSK, SKRIVE_NORSK, LESE_NORSK))
+                .fysiskeBehov(Set.of(ARBEIDSSTILLING, ERGONOMI))
+                .arbeidsmiljoBehov(Set.of(FADDER, TILRETTELAGT_ARBEIDSOPPGAVER))
+                .grunnleggendeBehov(Set.of(SNAKKE_NORSK, SKRIVE_NORSK, LESE_NORSK))
                 .build();
     }
 
-    public static Kandidat enKandidatMedNullOgTommeLister() {
+    public static Kandidat enKandidatMedNullOgTommeSet() {
         return Kandidat.builder()
-                .fysiskeBehov(Collections.emptyList())
-                .arbeidsmiljoBehov(Collections.emptyList())
-                .grunnleggendeBehov(Collections.emptyList())
+                .fysiskeBehov(Collections.emptySet())
+                .arbeidsmiljoBehov(Collections.emptySet())
+                .grunnleggendeBehov(Collections.emptySet())
                 .build();
     }
 

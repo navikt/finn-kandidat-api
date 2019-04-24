@@ -2,11 +2,13 @@ package no.nav.tag.finnkandidatapi.tilgangskontroll;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.function.Supplier;
 
 @Slf4j
+@Service
 public class TilgangskontrollService {
     private final Supplier<String> oidcTokenSupplier;
     private final RestTemplate restTemplate;

@@ -7,14 +7,14 @@ import org.springframework.stereotype.Component;
 import java.util.function.Supplier;
 
 @Component
-public class OidcTokenSupplier implements Supplier<String> {
+public class OidcUserTokenSupplier implements Supplier<String> {
 
     private final static String ISSUER_ISSO = "isso";
 
     private final OIDCRequestContextHolder contextHolder;
 
     @Autowired
-    public OidcTokenSupplier(OIDCRequestContextHolder contextHolder) {
+    public OidcUserTokenSupplier(OIDCRequestContextHolder contextHolder) {
         this.contextHolder = contextHolder;
     }
 

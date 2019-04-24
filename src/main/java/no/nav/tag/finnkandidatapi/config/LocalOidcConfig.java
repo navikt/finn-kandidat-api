@@ -1,4 +1,4 @@
-package no.nav.tag.finnkandidatapi;
+package no.nav.tag.finnkandidatapi.config;
 
 import no.nav.security.oidc.test.support.spring.TokenGeneratorConfiguration;
 import org.springframework.context.annotation.Configuration;

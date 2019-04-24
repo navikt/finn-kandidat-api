@@ -7,6 +7,5 @@ public enum GrunnleggendeBehov {
     REGNING_OG_TALLFORSTAELSE,
     DIGITALE_FERDIGHETER,
     ANDRE_UTFORDRINGER,
-    VET_IKKE,
-    IKKE_SVART
+    VET_IKKE
 }

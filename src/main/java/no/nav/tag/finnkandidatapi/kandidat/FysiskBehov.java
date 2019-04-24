@@ -6,6 +6,5 @@ public enum FysiskBehov {
     HORSEL,
     SYN,
     ANNET,
-    VET_IKKE,
-    IKKE_SVART
+    VET_IKKE
 }

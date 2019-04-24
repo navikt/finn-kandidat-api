@@ -6,6 +6,5 @@ public enum ArbeidstidBehov {
     IKKE_HELE_DAGER,
     BORTE_FASTE_DAGER_ELLER_TIDER,
     FLEKSIBEL,
-    VET_IKKE,
-    IKKE_SVART
+    VET_IKKE
 }

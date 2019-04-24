@@ -15,6 +15,6 @@ public class Kandidat {
     private LocalDateTime sistEndret;
     private ArbeidstidBehov arbeidstidBehov;
     private Set<FysiskBehov> fysiskeBehov;
-    private Set<ArbeidsmiljoBehov> arbeidsmiljoBehov;
+    private Set<ArbeidsmiljøBehov> arbeidsmiljøBehov;
     private Set<GrunnleggendeBehov> grunnleggendeBehov;
 }

@@ -27,7 +27,7 @@ public class KandidatMapper implements RowMapper<Kandidat> {
                 .sistEndret(sistEndret)
                 .arbeidstidBehov(arbeidstidBehov)
                 .fysiskeBehov(stringTilEnumSet(rs.getString(FYSISKE_BEHOV), FysiskBehov.class))
-                .arbeidsmiljoBehov(stringTilEnumSet(rs.getString(ARBEIDSMILJO_BEHOV), ArbeidsmiljoBehov.class))
+                .arbeidsmiljøBehov(stringTilEnumSet(rs.getString(ARBEIDSMILJØ_BEHOV), ArbeidsmiljøBehov.class))
                 .grunnleggendeBehov(stringTilEnumSet(rs.getString(GRUNNLEGGENDE_BEHOV), GrunnleggendeBehov.class))
                 .build();
     }

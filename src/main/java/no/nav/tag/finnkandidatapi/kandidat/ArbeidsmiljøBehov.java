@@ -1,6 +1,6 @@
 package no.nav.tag.finnkandidatapi.kandidat;
 
-public enum ArbeidsmiljoBehov {
+public enum ArbeidsmiljøBehov {
     TILRETTELAGT_OPPLARING,
     TILRETTELAGTE_ARBEIDSOPPGAVER,
     FADDER,

@@ -6,8 +6,8 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Set;
 
-import static no.nav.tag.finnkandidatapi.kandidat.ArbeidsmiljoBehov.FADDER;
-import static no.nav.tag.finnkandidatapi.kandidat.ArbeidsmiljoBehov.TILRETTELAGTE_ARBEIDSOPPGAVER;
+import static no.nav.tag.finnkandidatapi.kandidat.ArbeidsmiljøBehov.FADDER;
+import static no.nav.tag.finnkandidatapi.kandidat.ArbeidsmiljøBehov.TILRETTELAGTE_ARBEIDSOPPGAVER;
 import static no.nav.tag.finnkandidatapi.kandidat.ArbeidstidBehov.KAN_IKKE_JOBBE;
 import static no.nav.tag.finnkandidatapi.kandidat.FysiskBehov.ARBEIDSSTILLING;
 import static no.nav.tag.finnkandidatapi.kandidat.FysiskBehov.ERGONOMI;
@@ -22,7 +22,7 @@ public class TestData {
                 .fnr("12345678901")
                 .arbeidstidBehov(KAN_IKKE_JOBBE)
                 .fysiskeBehov(Set.of(ARBEIDSSTILLING, ERGONOMI))
-                .arbeidsmiljoBehov(Set.of(FADDER, TILRETTELAGTE_ARBEIDSOPPGAVER))
+                .arbeidsmiljøBehov(Set.of(FADDER, TILRETTELAGTE_ARBEIDSOPPGAVER))
                 .grunnleggendeBehov(Set.of(SNAKKE_NORSK, SKRIVE_NORSK, LESE_NORSK))
                 .build();
     }
@@ -30,7 +30,7 @@ public class TestData {
     public static Kandidat enKandidatMedNullOgTommeSet() {
         return Kandidat.builder()
                 .fysiskeBehov(Collections.emptySet())
-                .arbeidsmiljoBehov(Collections.emptySet())
+                .arbeidsmiljøBehov(Collections.emptySet())
                 .grunnleggendeBehov(Collections.emptySet())
                 .build();
     }

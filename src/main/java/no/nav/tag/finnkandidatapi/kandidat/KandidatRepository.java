@@ -20,7 +20,7 @@ public class KandidatRepository {
     static final String REGISTRERINGSTIDSPUNKT = "registreringstidspunkt";
     static final String ARBEIDSTID_BEHOV = "arbeidstid_behov";
     static final String FYSISKE_BEHOV = "fysiske_behov";
-    static final String ARBEIDSMILJO_BEHOV = "arbeidsmiljo_behov";
+    static final String ARBEIDSMILJØ_BEHOV = "arbeidsmiljø_behov";
     static final String GRUNNLEGGENDE_BEHOV = "grunnleggende_behov";
 
     private JdbcTemplate jdbcTemplate;
@@ -46,7 +46,7 @@ public class KandidatRepository {
         parameters.put(REGISTRERINGSTIDSPUNKT, kandidat.getSistEndret());
         parameters.put(ARBEIDSTID_BEHOV, kandidat.getArbeidstidBehov() == null ? null : kandidat.getArbeidstidBehov().name());
         parameters.put(FYSISKE_BEHOV, enumSetTilString(kandidat.getFysiskeBehov()));
-        parameters.put(ARBEIDSMILJO_BEHOV, enumSetTilString(kandidat.getArbeidsmiljoBehov()));
+        parameters.put(ARBEIDSMILJØ_BEHOV, enumSetTilString(kandidat.getArbeidsmiljøBehov()));
         parameters.put(GRUNNLEGGENDE_BEHOV, enumSetTilString(kandidat.getGrunnleggendeBehov()));
         return parameters;
     }

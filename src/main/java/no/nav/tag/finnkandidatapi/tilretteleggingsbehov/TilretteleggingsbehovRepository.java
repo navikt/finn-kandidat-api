@@ -22,9 +22,9 @@ public class TilretteleggingsbehovRepository {
                 tilretteleggingsbehov.getOpprettetAvIdent(),
                 tilretteleggingsbehov.getBrukerFnr(),
                 tilretteleggingsbehov.getArbeidstid().name(),
-                fraFysisk(tilretteleggingsbehov.getFysisk()),
-                fraArbeidsmiljo(tilretteleggingsbehov.getArbeidsmiljo()),
-                fraGrunnleggende(tilretteleggingsbehov.getGrunnleggende())
+                listeTilString(tilretteleggingsbehov.getFysisk()),
+                listeTilString(tilretteleggingsbehov.getArbeidsmiljo()),
+                listeTilString(tilretteleggingsbehov.getGrunnleggende())
         );
     }
 

@@ -18,45 +18,19 @@ public class TilretteleggingsbehovMapper implements RowMapper<Tilretteleggingsbe
                 .opprettetAvIdent(rs.getString("opprettet_av_ident"))
                 .brukerFnr(rs.getString("bruker_fnr"))
                 .arbeidstid(Arbeidstid.valueOf(rs.getString("arbeidstid")))
-                .fysisk(tilFysisk(rs.getString("fysisk")))
-                .arbeidsmiljo(tilArbeidsmiljo(rs.getString("arbeidsmiljo")))
-                .grunnleggende(tilGrunnleggende(rs.getString("grunnleggende")))
+                .fysisk(stringTilListe(rs.getString("fysisk"), Fysisk.class))
+                .arbeidsmiljo(stringTilListe(rs.getString("arbeidsmiljo"), Arbeidsmiljo.class))
+                .grunnleggende(stringTilListe(rs.getString("grunnleggende"), Grunnleggende.class))
                 .build();
     }
 
-    private static List<Fysisk> tilFysisk(String string) {
+    private static <E extends Enum<E>> List<E> stringTilListe(String string, Class<E> klasse) {
         return Stream.of(string.split(","))
-                .map(Fysisk::valueOf)
+                .map(name -> E.valueOf(klasse, name))
                 .collect(Collectors.toList());
     }
 
-    static String fraFysisk(List<Fysisk> list) {
-        String[] stringlist = list.stream()
-                .map(Enum::name)
-                .toArray(String[]::new);
-        return String.join(",", stringlist);
-    }
-
-    private static List<Arbeidsmiljo> tilArbeidsmiljo(String string) {
-        return Stream.of(string.split(","))
-                .map(Arbeidsmiljo::valueOf)
-                .collect(Collectors.toList());
-    }
-
-    static String fraArbeidsmiljo(List<Arbeidsmiljo> list) {
-        String[] stringlist = list.stream()
-                .map(Enum::name)
-                .toArray(String[]::new);
-        return String.join(",", stringlist);
-    }
-
-    private static List<Grunnleggende> tilGrunnleggende(String string) {
-        return Stream.of(string.split(","))
-                .map(Grunnleggende::valueOf)
-                .collect(Collectors.toList());
-    }
-
-    static String fraGrunnleggende(List<Grunnleggende> list) {
+    static <E extends Enum<E>> String listeTilString(List<E> list) {
         String[] stringlist = list.stream()
                 .map(Enum::name)
                 .toArray(String[]::new);

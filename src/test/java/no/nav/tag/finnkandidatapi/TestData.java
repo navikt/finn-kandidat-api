@@ -4,6 +4,7 @@ import no.nav.tag.finnkandidatapi.tilretteleggingsbehov.Tilretteleggingsbehov;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Collections;
 
 import static no.nav.tag.finnkandidatapi.tilretteleggingsbehov.Arbeidsmiljo.FADDER;
 import static no.nav.tag.finnkandidatapi.tilretteleggingsbehov.Arbeidsmiljo.TILRETTELAGT_ARBEIDSOPPGAVER;
@@ -24,5 +25,17 @@ public class TestData {
                 .arbeidsmiljo(Arrays.asList(FADDER, TILRETTELAGT_ARBEIDSOPPGAVER))
                 .grunnleggende(Arrays.asList(SNAKKE_NORSK, SKRIVE_NORSK, LESE_NORSK))
                 .build();
+    }
+
+    public static Tilretteleggingsbehov etTilretteleggingsbehovMedNullOgTommeLister() {
+        return Tilretteleggingsbehov.builder()
+                .fysisk(Collections.emptyList())
+                .arbeidsmiljo(Collections.emptyList())
+                .grunnleggende(Collections.emptyList())
+                .build();
+    }
+
+    public static Tilretteleggingsbehov etTilretteleggingsbehovMedNull() {
+        return Tilretteleggingsbehov.builder().build();
     }
 }

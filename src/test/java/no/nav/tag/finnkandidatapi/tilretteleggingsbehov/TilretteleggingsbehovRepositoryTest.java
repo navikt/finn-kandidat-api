@@ -7,6 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static no.nav.tag.finnkandidatapi.TestData.etTilretteleggingsbehov;
+import static no.nav.tag.finnkandidatapi.TestData.etTilretteleggingsbehovMedNullOgTommeLister;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
@@ -23,13 +24,21 @@ public class TilretteleggingsbehovRepositoryTest {
         Integer lagretId = repository.lagreTilretteleggingsbehov(behovTilLagring);
         Tilretteleggingsbehov uthentetBehov = repository.hentTilretteleggingsbehov(lagretId);
 
-        assertThat(uthentetBehov.getId()).isGreaterThan(0);
-        assertThat(uthentetBehov.getOpprettet()).isEqualToIgnoringNanos(behovTilLagring.getOpprettet());
-        assertThat(uthentetBehov.getOpprettetAvIdent()).isEqualTo(behovTilLagring.getOpprettetAvIdent());
-        assertThat(uthentetBehov.getBrukerFnr()).isEqualTo(behovTilLagring.getBrukerFnr());
-        assertThat(uthentetBehov.getArbeidstid()).isEqualTo(behovTilLagring.getArbeidstid());
-        assertThat(uthentetBehov.getFysisk()).containsExactlyInAnyOrderElementsOf(behovTilLagring.getFysisk());
-        assertThat(uthentetBehov.getArbeidsmiljo()).containsExactlyInAnyOrderElementsOf(behovTilLagring.getArbeidsmiljo());
-        assertThat(uthentetBehov.getGrunnleggende()).containsExactlyInAnyOrderElementsOf(behovTilLagring.getGrunnleggende());
+        assertThat(uthentetBehov).isEqualToIgnoringGivenFields(behovTilLagring, "id");
+    }
+
+    @Test
+    public void skal_kunne_lagre_og_hente_ut_med_null_og_tomme_lister() {
+        Tilretteleggingsbehov behovTilLagring = etTilretteleggingsbehovMedNullOgTommeLister();
+
+        Integer lagretId = repository.lagreTilretteleggingsbehov(behovTilLagring);
+        Tilretteleggingsbehov uthentetBehov = repository.hentTilretteleggingsbehov(lagretId);
+
+        assertThat(uthentetBehov).isEqualToIgnoringGivenFields(behovTilLagring, "id");
+    }
+
+    @Test
+    public void skal_kunne_lagre_og_hente_ut_med_null() {
+
     }
 }

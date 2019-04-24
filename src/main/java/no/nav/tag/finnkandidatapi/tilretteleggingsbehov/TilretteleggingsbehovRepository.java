@@ -21,7 +21,7 @@ public class TilretteleggingsbehovRepository {
                 tilretteleggingsbehov.getOpprettet(),
                 tilretteleggingsbehov.getOpprettetAvIdent(),
                 tilretteleggingsbehov.getBrukerFnr(),
-                tilretteleggingsbehov.getArbeidstid().name(),
+                tilretteleggingsbehov.getArbeidstid() == null ? null : tilretteleggingsbehov.getArbeidstid().name(),
                 fraFysisk(tilretteleggingsbehov.getFysisk()),
                 fraArbeidsmiljo(tilretteleggingsbehov.getArbeidsmiljo()),
                 fraGrunnleggende(tilretteleggingsbehov.getGrunnleggende())

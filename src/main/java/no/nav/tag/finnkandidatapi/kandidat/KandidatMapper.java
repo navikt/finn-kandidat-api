@@ -26,63 +26,23 @@ public class KandidatMapper implements RowMapper<Kandidat> {
                 .sistEndretAv(rs.getString(REGISTRERT_AV))
                 .sistEndret(sistEndret)
                 .arbeidstidBehov(arbeidstidBehov)
-                .fysiskeBehov(tilFysisk(rs.getString(FYSISKE_BEHOV)))
-                .arbeidsmiljoBehov(tilArbeidsmiljo(rs.getString(ARBEIDSMILJO_BEHOV)))
-                .grunnleggendeBehov(tilGrunnleggende(rs.getString(GRUNNLEGGENDE_BEHOV)))
+                .fysiskeBehov(stringTilListe(rs.getString(FYSISKE_BEHOV), FysiskBehov.class))
+                .arbeidsmiljoBehov(stringTilListe(rs.getString(ARBEIDSMILJO_BEHOV), ArbeidsmiljoBehov.class))
+                .grunnleggendeBehov(stringTilListe(rs.getString(GRUNNLEGGENDE_BEHOV), GrunnleggendeBehov.class))
                 .build();
     }
 
-    private static List<FysiskBehov> tilFysisk(String string) {
+    private static <E extends Enum<E>> List<E> stringTilListe(String string, Class<E> klasse) {
         if (string == null) {
             return new ArrayList<>();
         }
         return Stream.of(string.split(","))
                 .filter(s -> !s.isEmpty())
-                .map(FysiskBehov::valueOf)
+                .map(name -> E.valueOf(klasse, name))
                 .collect(Collectors.toList());
     }
 
-    static String fraFysisk(List<FysiskBehov> list) {
-        if (list == null) {
-            return null;
-        }
-        String[] stringlist = list.stream()
-                .map(Enum::name)
-                .toArray(String[]::new);
-        return String.join(",", stringlist);
-    }
-
-    private static List<ArbeidsmiljoBehov> tilArbeidsmiljo(String string) {
-        if (string == null) {
-            return new ArrayList<>();
-        }
-        return Stream.of(string.split(","))
-                .filter(s -> !s.isEmpty())
-                .map(ArbeidsmiljoBehov::valueOf)
-                .collect(Collectors.toList());
-    }
-
-    static String fraArbeidsmiljo(List<ArbeidsmiljoBehov> list) {
-        if (list == null) {
-            return null;
-        }
-        String[] stringlist = list.stream()
-                .map(Enum::name)
-                .toArray(String[]::new);
-        return String.join(",", stringlist);
-    }
-
-    private static List<GrunnleggendeBehov> tilGrunnleggende(String string) {
-        if (string == null) {
-            return new ArrayList<>();
-        }
-        return Stream.of(string.split(","))
-                .filter(s -> !s.isEmpty())
-                .map(GrunnleggendeBehov::valueOf)
-                .collect(Collectors.toList());
-    }
-
-    static String fraGrunnleggende(List<GrunnleggendeBehov> list) {
+    static <E extends Enum<E>> String listeTilString(List<E> list) {
         if (list == null) {
             return null;
         }

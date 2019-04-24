@@ -35,15 +35,20 @@ public class KandidatRepository {
     }
 
     Integer lagreKandidat(Kandidat kandidat) {
+        Map<String, Object> parameters = lagInsertParameter(kandidat);
+        return jdbcInsert.executeAndReturnKey(parameters).intValue();
+    }
+
+    private Map<String, Object> lagInsertParameter(Kandidat kandidat) {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put(FNR, kandidat.getFnr());
         parameters.put(REGISTRERT_AV, kandidat.getSistEndretAv());
         parameters.put(REGISTRERINGSTIDSPUNKT, kandidat.getSistEndret());
         parameters.put(ARBEIDSTID_BEHOV, kandidat.getArbeidstidBehov() == null ? null : kandidat.getArbeidstidBehov().name());
-        parameters.put(FYSISKE_BEHOV, fraFysisk(kandidat.getFysiskeBehov()));
-        parameters.put(ARBEIDSMILJO_BEHOV, fraArbeidsmiljo(kandidat.getArbeidsmiljoBehov()));
-        parameters.put(GRUNNLEGGENDE_BEHOV, fraGrunnleggende(kandidat.getGrunnleggendeBehov()));
-        return jdbcInsert.executeAndReturnKey(parameters).intValue();
+        parameters.put(FYSISKE_BEHOV, listeTilString(kandidat.getFysiskeBehov()));
+        parameters.put(ARBEIDSMILJO_BEHOV, listeTilString(kandidat.getArbeidsmiljoBehov()));
+        parameters.put(GRUNNLEGGENDE_BEHOV, listeTilString(kandidat.getGrunnleggendeBehov()));
+        return parameters;
     }
 
     Kandidat hentKandidat(Integer id) {

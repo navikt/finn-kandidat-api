@@ -43,13 +43,7 @@ public class KandidatRepositoryTest {
         Integer lagretId = repository.lagreKandidat(behovTilLagring);
         Kandidat uthentetBehov = repository.hentKandidat(lagretId);
 
-        assertThat(uthentetBehov.getSistEndret()).isNull();
-        assertThat(uthentetBehov.getSistEndretAv()).isNull();
-        assertThat(uthentetBehov.getFnr()).isNull();
-        assertThat(uthentetBehov.getArbeidstidBehov()).isNull();
-        assertThat(uthentetBehov.getFysiskeBehov()).isEmpty();
-        assertThat(uthentetBehov.getArbeidsmiljoBehov()).isEmpty();
-        assertThat(uthentetBehov.getGrunnleggendeBehov()).isEmpty();
+        assertThat(uthentetBehov).isEqualToIgnoringGivenFields(enKandidatMedNullOgTommeSet(), "id");
     }
 
     @Test

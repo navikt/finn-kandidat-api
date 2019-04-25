@@ -1,43 +1,45 @@
 package no.nav.tag.finnkandidatapi.tilgangskontroll;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.function.Supplier;
 
 @Slf4j
 @Service
 public class TilgangskontrollService {
-    private final Supplier<String> oidcTokenSupplier;
+    private final Supplier<String> oidcUserTokenSupplier;
     private final RestTemplate restTemplate;
+    private final Supplier<String> oidcSystemUserTokenSupplier;
+    @Value("veilarbabac.url") private String veilarbabacUrl;
 
-    public TilgangskontrollService(Supplier<String> oidcTokenSupplier, RestTemplate restTemplate) {
-        this.oidcTokenSupplier = oidcTokenSupplier;
+    public TilgangskontrollService(
+            Supplier<String> oidcUserTokenSupplier,
+            RestTemplate restTemplate,
+            Supplier<String> oidcSystemUserTokenSupplier) {
+        this.oidcUserTokenSupplier = oidcUserTokenSupplier;
         this.restTemplate = restTemplate;
+        this.oidcSystemUserTokenSupplier = oidcSystemUserTokenSupplier;
     }
 
-    public boolean harTilgang() {
-
-        String VEILARBABAC_PATH = "https://veilarbabac-q1.nais.preprod.local";
-
-        String fnr = "12345678910";
-
-        String path = VEILARBABAC_PATH
-                + "/person"
-                + "?fnr=" + fnr
-                + "&action=update";
-
-        // Header: AUTHORIZATION. Bearer-token med systembruker
-        // Header: subject, oidc-token til innlogget bruker.
+    public boolean harTilgang(String fnr) {
+        String uriString = UriComponentsBuilder.fromHttpUrl(veilarbabacUrl)
+                .path("person")
+                .queryParam("fnr", fnr)
+                .queryParam("action", "update")
+                .toUriString();
 
         HttpHeaders headers = new HttpHeaders();
-        headers.set("subject", oidcTokenSupplier.get());
+        headers.set("subject", oidcUserTokenSupplier.get());
+        headers.set("AUTHORIZATION", oidcSystemUserTokenSupplier.get());
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         ResponseEntity<String> jsonResponse = restTemplate.exchange(
-                path,
+                uriString,
                 HttpMethod.GET,
                 new HttpEntity<>(headers),
                 String.class

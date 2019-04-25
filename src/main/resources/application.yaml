@@ -17,7 +17,12 @@ no.nav.security.oidc:
       accepted_audience: aud-isso
 
 sts:
-  url: http://localhost:8081
+  url: http://localhost:8081/sts
+
+STS_BRUKERNAVN: na
+STS_PASSORD: na
+
+veilarbabac.url: http://localhost:8081/sts
 
 ---
 spring:
@@ -38,6 +43,8 @@ no.nav.security.oidc:
 sts:
   url: https://security-token-service.nais.preprod.local/rest/v1
 
+veilarbabac.url: https://veilarbabac.nais.preprod.local
+
 ---
 spring:
   profiles: prod
@@ -56,3 +63,5 @@ no.nav.security.oidc:
 
 sts:
   url: https://security-token-service.nais.adeo.no/rest/v1
+
+veilarbabac.url: https://veilarbabac.nais.adeo.no

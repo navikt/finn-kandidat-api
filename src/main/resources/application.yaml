@@ -43,7 +43,7 @@ no.nav.security.oidc:
 sts:
   url: https://security-token-service.nais.preprod.local/rest/v1
 
-veilarbabac.url: https://veilarbabac.nais.preprod.local
+veilarbabac.url: https://veilarbabac-q1.nais.preprod.local
 
 ---
 spring:

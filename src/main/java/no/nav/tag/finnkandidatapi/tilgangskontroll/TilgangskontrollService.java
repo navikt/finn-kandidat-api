@@ -15,7 +15,7 @@ public class TilgangskontrollService {
     private final Supplier<String> oidcUserTokenSupplier;
     private final RestTemplate restTemplate;
     private final Supplier<String> oidcSystemUserTokenSupplier;
-    @Value("veilarbabac.url") private String veilarbabacUrl;
+    @Value("${veilarbabac.url}") private String veilarbabacUrl;
 
     public TilgangskontrollService(
             Supplier<String> oidcUserTokenSupplier,

@@ -1,6 +1,7 @@
 package no.nav.tag.finnkandidatapi;
 
 import no.nav.tag.finnkandidatapi.kandidat.Kandidat;
+import no.nav.tag.finnkandidatapi.kandidat.Veileder;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -18,13 +19,21 @@ public class TestData {
     public static Kandidat enKandidat() {
         return Kandidat.builder()
                 .sistEndret(LocalDateTime.now())
-                .sistEndretAv("X123456")
+                .sistEndretAv(enNavIdent())
                 .fnr("12345678901")
                 .arbeidstidBehov(KAN_IKKE_JOBBE)
                 .fysiskeBehov(Set.of(ARBEIDSSTILLING, ERGONOMI))
                 .arbeidsmiljøBehov(Set.of(FADDER, TILRETTELAGTE_ARBEIDSOPPGAVER))
                 .grunnleggendeBehov(Set.of(SNAKKE_NORSK, SKRIVE_NORSK, LESE_NORSK))
                 .build();
+    }
+
+    public static Veileder enVeileder() {
+        return new Veileder("X123456");
+    }
+
+    public static String enNavIdent() {
+        return "Y123456";
     }
 
     public static Kandidat enKandidatMedNullOgTommeSet() {

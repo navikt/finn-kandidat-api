@@ -47,6 +47,19 @@ public class KandidatRepositoryTest {
     }
 
     @Test
+    public void hentNyesteKandidat__skal_returnere_siste_registrerte_kandidat() {
+        Kandidat kandidat1 = enKandidat();
+        Kandidat kandidat2 = enKandidat();
+
+        repository.lagreKandidat(kandidat1);
+        repository.lagreKandidat(kandidat2);
+
+        Kandidat sisteKandidat = repository.hentNyesteKandidat(kandidat1.getFnr());
+
+        assertThat(sisteKandidat).isEqualToIgnoringGivenFields(kandidat2, "id");
+    }
+
+    @Test
     public void skal_kunne_lagre_og_hente_ut_flere_ganger() {
         Kandidat behovTilLagring1 = enKandidat();
         Integer lagretId1 = repository.lagreKandidat(behovTilLagring1);

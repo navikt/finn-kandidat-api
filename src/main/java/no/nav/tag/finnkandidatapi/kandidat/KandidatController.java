@@ -25,8 +25,10 @@ public class KandidatController {
     }
 
     @GetMapping
-    public ResponseEntity<Kandidat> hentKandidat() {
-        return ResponseEntity.ok().build();
+    public ResponseEntity<Kandidat> hentKandidat(String fnr) {
+        // TODO: Hva skjer om man prover a hente ut en kandidat som ikke eksisterer?
+        Kandidat kandidat = kandidatRepository.hentNyesteKandidat(fnr);
+        return ResponseEntity.ok(kandidat);
     }
 
     @PostMapping
@@ -35,7 +37,6 @@ public class KandidatController {
         kandidatService.oppdaterKandidat(kandidat, veileder);
 
         Integer id = kandidatRepository.lagreKandidat(kandidat);
-        // TODO: Bruk fnr
         Kandidat lagretKandidat = kandidatRepository.hentKandidat(id);
 
         return ResponseEntity

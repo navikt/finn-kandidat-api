@@ -1,5 +1,6 @@
 package no.nav.tag.finnkandidatapi.kandidat;
 
+import no.nav.security.oidc.context.OIDCRequestContextHolder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -54,8 +55,20 @@ public class KandidatControllerTest {
         verify(service).oppdaterKandidat(kandidat, veileder);
     }
 
+    @Test
+    public void hentKandidat__skal_returnere_ok_med_kandidat() {
+        værInnloggetSom(enVeileder());
+        Kandidat kandidat = enKandidat();
+
+        when(repository.hentNyesteKandidat(kandidat.getFnr())).thenReturn(kandidat);
+
+        ResponseEntity<Kandidat> respons = controller.hentKandidat(kandidat.getFnr());
+
+        assertThat(respons.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(respons.getBody()).isEqualTo(kandidat);
+    }
+
     private void værInnloggetSom(Veileder veileder) {
         when(tokenUtils.hentInnloggetVeileder()).thenReturn(veileder);
     }
-
 }

@@ -1,14 +1,12 @@
 package no.nav.tag.finnkandidatapi.kandidat;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static no.nav.tag.finnkandidatapi.kandidat.KandidatMapper.*;
 
@@ -36,23 +34,33 @@ public class KandidatRepository {
                 .usingGeneratedKeyColumns(ID);
     }
 
+    public Optional<Kandidat> hentNyesteKandidat(String fnr) {
+        try {
+            Kandidat kandidat = jdbcTemplate.queryForObject(
+                    "SELECT * FROM kandidat WHERE fnr = ? ORDER BY registreringstidspunkt DESC LIMIT 1", new Object[]{ fnr },
+                    new KandidatMapper()
+            );
+            return Optional.of(kandidat);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    public Optional<Kandidat> hentKandidat(Integer id) {
+        try {
+            Kandidat kandidat = jdbcTemplate.queryForObject(
+                    "SELECT * FROM kandidat WHERE id = ?", new Object[]{id},
+                    new KandidatMapper()
+            );
+            return Optional.of(kandidat);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
     public Integer lagreKandidat(Kandidat kandidat) {
         Map<String, Object> parameters = lagInsertParameter(kandidat);
         return jdbcInsert.executeAndReturnKey(parameters).intValue();
-    }
-
-    public Kandidat hentKandidat(Integer id) {
-        return jdbcTemplate.queryForObject(
-                "SELECT * FROM kandidat WHERE id = ?", new Object[] { id },
-                new KandidatMapper()
-        );
-    }
-
-    public Kandidat hentNyesteKandidat(String fnr) {
-        return jdbcTemplate.queryForObject(
-                "SELECT * FROM kandidat WHERE fnr = ? ORDER BY registreringstidspunkt DESC LIMIT 1", new Object[]{ fnr },
-                new KandidatMapper()
-        );
     }
 
     private Map<String, Object> lagInsertParameter(Kandidat kandidat) {

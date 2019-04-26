@@ -21,7 +21,7 @@ public class KandidatRepositoryTest {
         Kandidat behovTilLagring = enKandidat();
 
         Integer lagretId = repository.lagreKandidat(behovTilLagring);
-        Kandidat uthentetBehov = repository.hentKandidat(lagretId);
+        Kandidat uthentetBehov = repository.hentKandidat(lagretId).get();
 
         assertThat(uthentetBehov).isEqualToIgnoringGivenFields(behovTilLagring, "id");
     }
@@ -31,7 +31,7 @@ public class KandidatRepositoryTest {
         Kandidat behovTilLagring = enKandidatMedNullOgTommeSet();
 
         Integer lagretId = repository.lagreKandidat(behovTilLagring);
-        Kandidat uthentetBehov = repository.hentKandidat(lagretId);
+        Kandidat uthentetBehov = repository.hentKandidat(lagretId).get();
 
         assertThat(uthentetBehov).isEqualToIgnoringGivenFields(behovTilLagring, "id");
     }
@@ -41,7 +41,7 @@ public class KandidatRepositoryTest {
         Kandidat behovTilLagring = enKandidatMedBareNull();
 
         Integer lagretId = repository.lagreKandidat(behovTilLagring);
-        Kandidat uthentetBehov = repository.hentKandidat(lagretId);
+        Kandidat uthentetBehov = repository.hentKandidat(lagretId).get();
 
         assertThat(uthentetBehov).isEqualToIgnoringGivenFields(enKandidatMedNullOgTommeSet(), "id");
     }
@@ -53,10 +53,21 @@ public class KandidatRepositoryTest {
 
         repository.lagreKandidat(kandidat1);
         repository.lagreKandidat(kandidat2);
-
-        Kandidat sisteKandidat = repository.hentNyesteKandidat(kandidat1.getFnr());
+        Kandidat sisteKandidat = repository.hentNyesteKandidat(kandidat1.getFnr()).get();
 
         assertThat(sisteKandidat).isEqualToIgnoringGivenFields(kandidat2, "id");
+    }
+
+    @Test
+    public void hentNyesteKandidat__skal_håndtere_henting_av_ikke_eksisterende_kandidat() {
+        boolean kandidatEksisterer = repository.hentKandidat(100).isPresent();
+        assertThat(kandidatEksisterer).isFalse();
+    }
+
+    @Test
+    public void hentKandidat__skal_håndtere_henting_av_ikke_eksisterende_kandidat() {
+        boolean kandidatEksisterer = repository.hentNyesteKandidat("finnes ikke").isPresent();
+        assertThat(kandidatEksisterer).isFalse();
     }
 
     @Test
@@ -67,8 +78,8 @@ public class KandidatRepositoryTest {
         Kandidat behovTilLagring2 = enKandidat();
         Integer lagretId2 = repository.lagreKandidat(behovTilLagring2);
 
-        Kandidat uthentetBehov1 = repository.hentKandidat(lagretId1);
-        Kandidat uthentetBehov2 = repository.hentKandidat(lagretId2);
+        Kandidat uthentetBehov1 = repository.hentKandidat(lagretId1).get();
+        Kandidat uthentetBehov2 = repository.hentKandidat(lagretId2).get();
 
         assertThat(uthentetBehov1.getId()).isEqualTo(1);
         assertThat(uthentetBehov1).isEqualToIgnoringGivenFields(behovTilLagring1, "id");

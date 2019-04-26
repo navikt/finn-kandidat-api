@@ -26,8 +26,7 @@ public class KandidatController {
 
     @GetMapping
     public ResponseEntity<Kandidat> hentKandidat(String fnr) {
-        // TODO: Hva skjer om man prover a hente ut en kandidat som ikke eksisterer?
-        Kandidat kandidat = kandidatRepository.hentNyesteKandidat(fnr);
+        Kandidat kandidat = kandidatRepository.hentNyesteKandidat(fnr).orElseThrow(NotFoundException::new);
         return ResponseEntity.ok(kandidat);
     }
 
@@ -37,7 +36,7 @@ public class KandidatController {
         kandidatService.oppdaterKandidat(kandidat, veileder);
 
         Integer id = kandidatRepository.lagreKandidat(kandidat);
-        Kandidat lagretKandidat = kandidatRepository.hentKandidat(id);
+        Kandidat lagretKandidat = kandidatRepository.hentKandidat(id).orElseThrow(NotFoundException::new);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)

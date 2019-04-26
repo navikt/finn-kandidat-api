@@ -9,6 +9,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.util.Optional;
+
 import static no.nav.tag.finnkandidatapi.TestData.enKandidat;
 import static no.nav.tag.finnkandidatapi.TestData.enVeileder;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,7 +37,7 @@ public class KandidatControllerTest {
         Kandidat kandidat = enKandidat();
 
         when(repository.lagreKandidat(any(Kandidat.class))).thenReturn(1);
-        when(repository.hentKandidat(1)).thenReturn(kandidat);
+        when(repository.hentKandidat(1)).thenReturn(Optional.of(kandidat));
 
         ResponseEntity<Kandidat> respons = controller.lagreKandidat(kandidat);
         Kandidat hentetKandidat = respons.getBody();
@@ -50,6 +52,9 @@ public class KandidatControllerTest {
         Veileder veileder = enVeileder();
         værInnloggetSom(veileder);
 
+        when(repository.lagreKandidat(any(Kandidat.class))).thenReturn(1);
+        when(repository.hentKandidat(1)).thenReturn(Optional.of(kandidat));
+
         controller.lagreKandidat(kandidat);
 
         verify(service).oppdaterKandidat(kandidat, veileder);
@@ -60,12 +65,18 @@ public class KandidatControllerTest {
         værInnloggetSom(enVeileder());
         Kandidat kandidat = enKandidat();
 
-        when(repository.hentNyesteKandidat(kandidat.getFnr())).thenReturn(kandidat);
+        when(repository.hentNyesteKandidat(kandidat.getFnr())).thenReturn(Optional.of(kandidat));
 
         ResponseEntity<Kandidat> respons = controller.hentKandidat(kandidat.getFnr());
 
         assertThat(respons.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(respons.getBody()).isEqualTo(kandidat);
+    }
+
+    @Test(expected = NotFoundException.class)
+    public void hentKandidat__skal_returnere_not_found_hvis_kandidat_ikke_finnes() {
+        when(repository.hentNyesteKandidat("blabla")).thenReturn(Optional.empty());
+        controller.hentKandidat("blabla");
     }
 
     private void værInnloggetSom(Veileder veileder) {

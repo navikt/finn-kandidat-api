@@ -28,7 +28,7 @@ public class TilgangskontrollService {
 
     public boolean harTilgang(String fnr) {
         String uriString = UriComponentsBuilder.fromHttpUrl(veilarbabacUrl)
-                .path("person")
+                .path("/person")
                 .queryParam("fnr", fnr)
                 .queryParam("action", "update")
                 .toUriString();

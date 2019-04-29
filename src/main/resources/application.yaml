@@ -5,7 +5,7 @@ management.endpoints.web:
   exposure.include: info, health, metrics, prometheus
   base-path: /internal/actuator
 
-spring.profiles.active: local
+spring.profiles.active: local, mock
 
 ---
 spring.profiles: local
@@ -16,13 +16,15 @@ no.nav.security.oidc:
       discoveryurl: http://metadata-isso
       accepted_audience: aud-isso
 
-sts:
-  url: http://localhost:8081/sts
+mock:
+  port: 8081
+  baseUrl: http://localhost:${mock.port}
+
+sts.url: ${mock.baseUrl}/sts
+veilarbabac.url: ${mock.baseUrl}/veilarbabac
 
 STS_BRUKERNAVN: na
 STS_PASSORD: na
-
-veilarbabac.url: http://localhost:8081/sts
 
 ---
 spring:

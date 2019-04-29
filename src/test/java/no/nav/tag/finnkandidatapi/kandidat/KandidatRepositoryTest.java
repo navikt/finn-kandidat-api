@@ -6,7 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.Set;
+
 import static no.nav.tag.finnkandidatapi.TestData.*;
+import static no.nav.tag.finnkandidatapi.kandidat.ArbeidsmiljøBehov.ANNET;
+import static no.nav.tag.finnkandidatapi.kandidat.ArbeidsmiljøBehov.FADDER;
+import static no.nav.tag.finnkandidatapi.kandidat.FysiskBehov.ARBEIDSSTILLING;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
@@ -49,7 +54,9 @@ public class KandidatRepositoryTest {
     @Test
     public void hentNyesteKandidat__skal_returnere_siste_registrerte_kandidat() {
         Kandidat kandidat1 = enKandidat();
+        kandidat1.setFysiskeBehov(Set.of(ARBEIDSSTILLING));
         Kandidat kandidat2 = enKandidat();
+        kandidat2.setArbeidsmiljøBehov(Set.of(FADDER, ANNET));
 
         repository.lagreKandidat(kandidat1);
         repository.lagreKandidat(kandidat2);

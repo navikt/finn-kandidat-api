@@ -1,6 +1,5 @@
 package no.nav.tag.finnkandidatapi.kandidat;
 
-import no.nav.security.oidc.context.OIDCRequestContextHolder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -23,9 +22,6 @@ public class KandidatControllerTest {
     private KandidatController controller;
 
     @Mock
-    private KandidatRepository repository;
-
-    @Mock
     private KandidatService service;
 
     @Mock
@@ -33,11 +29,11 @@ public class KandidatControllerTest {
 
     @Test
     public void lagreKandidat__skal_returnere_created_med_opprettet_kandidat() {
-        værInnloggetSom(enVeileder());
+        Veileder veileder = enVeileder();
+        værInnloggetSom(veileder);
         Kandidat kandidat = enKandidat();
 
-        when(repository.lagreKandidat(any(Kandidat.class))).thenReturn(1);
-        when(repository.hentKandidat(1)).thenReturn(Optional.of(kandidat));
+        when(service.lagreKandidat(kandidat, veileder)).thenReturn(Optional.of(kandidat));
 
         ResponseEntity<Kandidat> respons = controller.lagreKandidat(kandidat);
         Kandidat hentetKandidat = respons.getBody();
@@ -52,12 +48,18 @@ public class KandidatControllerTest {
         Veileder veileder = enVeileder();
         værInnloggetSom(veileder);
 
-        when(repository.lagreKandidat(any(Kandidat.class))).thenReturn(1);
-        when(repository.hentKandidat(1)).thenReturn(Optional.of(kandidat));
+        when(service.lagreKandidat(kandidat, veileder)).thenReturn(Optional.of(kandidat));
 
         controller.lagreKandidat(kandidat);
 
-        verify(service).oppdaterKandidat(kandidat, veileder);
+        verify(service).lagreKandidat(kandidat, veileder);
+    }
+
+    @Test(expected = NotFoundException.class)
+    public void hentKandidat__skal_kaste_NotFoundException_hvis_kandidat_ikke_fins() {
+        String fnr = enKandidat().getFnr();
+        when(service.hentNyesteKandidat(fnr)).thenReturn(Optional.empty());
+        controller.hentKandidat(fnr);
     }
 
     @Test
@@ -65,7 +67,7 @@ public class KandidatControllerTest {
         værInnloggetSom(enVeileder());
         Kandidat kandidat = enKandidat();
 
-        when(repository.hentNyesteKandidat(kandidat.getFnr())).thenReturn(Optional.of(kandidat));
+        when(service.hentNyesteKandidat(kandidat.getFnr())).thenReturn(Optional.of(kandidat));
 
         ResponseEntity<Kandidat> respons = controller.hentKandidat(kandidat.getFnr());
 
@@ -73,10 +75,14 @@ public class KandidatControllerTest {
         assertThat(respons.getBody()).isEqualTo(kandidat);
     }
 
-    @Test(expected = NotFoundException.class)
-    public void hentKandidat__skal_returnere_not_found_hvis_kandidat_ikke_finnes() {
-        when(repository.hentNyesteKandidat("blabla")).thenReturn(Optional.empty());
-        controller.hentKandidat("blabla");
+    @Test(expected = FinnKandidatException.class)
+    public void lagreKandidat__skal_kaste_FinnKandidatException_hvis_kandidat_ikke_fins() {
+        Kandidat kandidat = enKandidat();
+        Veileder veileder = enVeileder();
+        værInnloggetSom(veileder);
+
+        when(service.lagreKandidat(kandidat, veileder)).thenReturn(Optional.empty());
+        controller.lagreKandidat(kandidat);
     }
 
     private void værInnloggetSom(Veileder veileder) {

@@ -14,24 +14,21 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class KandidatController {
 
-    private final KandidatRepository kandidatRepository;
     private final KandidatService kandidatService;
     private final TokenUtils tokenUtils;
 
     @GetMapping
+    // TODO: ha med query parameter
     public ResponseEntity<Kandidat> hentKandidat(String fnr) {
-        Kandidat kandidat = kandidatRepository.hentNyesteKandidat(fnr).orElseThrow(NotFoundException::new);
+        Kandidat kandidat = kandidatService.hentNyesteKandidat(fnr).orElseThrow(NotFoundException::new);
         return ResponseEntity.ok(kandidat);
     }
 
     @PostMapping
+    // TODO: ha med query parameter
     public ResponseEntity<Kandidat> lagreKandidat(Kandidat kandidat) {
         Veileder veileder = tokenUtils.hentInnloggetVeileder();
-        kandidatService.oppdaterKandidat(kandidat, veileder);
-
-        Integer id = kandidatRepository.lagreKandidat(kandidat);
-        Kandidat lagretKandidat = kandidatRepository.hentKandidat(id).orElseThrow(NotFoundException::new);
-
+        Kandidat lagretKandidat = kandidatService.lagreKandidat(kandidat, veileder).orElseThrow(FinnKandidatException::new);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(lagretKandidat);

@@ -1,15 +1,29 @@
 package no.nav.tag.finnkandidatapi.kandidat;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class KandidatService {
 
-    public void oppdaterKandidat(Kandidat kandidat, Veileder innloggetVeileder) {
+    private final KandidatRepository kandidatRepository;
+
+    public Optional<Kandidat> hentNyesteKandidat(String fnr) {
+        return kandidatRepository.hentNyesteKandidat(fnr);
+    }
+
+    public Optional<Kandidat> lagreKandidat(Kandidat kandidat, Veileder innloggetVeileder) {
+        this.oppdaterSistEndretFelter(kandidat, innloggetVeileder);
+        Integer id = kandidatRepository.lagreKandidat(kandidat);
+        return kandidatRepository.hentKandidat(id);
+    }
+
+    private void oppdaterSistEndretFelter(Kandidat kandidat, Veileder innloggetVeileder) {
         kandidat.setSistEndretAv(innloggetVeileder.getNavIdent());
         kandidat.setSistEndret(LocalDateTime.now());
     }
-
 }

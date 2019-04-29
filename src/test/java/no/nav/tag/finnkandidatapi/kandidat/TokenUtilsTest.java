@@ -35,7 +35,7 @@ public class TokenUtilsTest {
 
     @Test(expected = TilgangskontrollException.class)
     public void hentInnloggetVeileder__skal_kaste_exception_hvis_ikke_inlogget() {
-        vaerUinnlogget();
+        værUinnlogget();
         tilgangskontroll.hentInnloggetVeileder();
     }
 
@@ -49,7 +49,7 @@ public class TokenUtilsTest {
         when(contextHolder.getOIDCValidationContext()).thenReturn(context);
     }
 
-    private void vaerUinnlogget() {
+    private void værUinnlogget() {
         OIDCValidationContext context = new OIDCValidationContext();
         when(contextHolder.getOIDCValidationContext()).thenReturn(context);
     }

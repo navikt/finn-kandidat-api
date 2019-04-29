@@ -1,8 +1,8 @@
 package no.nav.tag.finnkandidatapi.kandidat;
 
 
+import lombok.RequiredArgsConstructor;
 import no.nav.security.oidc.api.Protected;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,18 +11,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Protected
 @RestController("/kandidater")
+@RequiredArgsConstructor
 public class KandidatController {
 
     private final KandidatRepository kandidatRepository;
     private final KandidatService kandidatService;
     private final TokenUtils tokenUtils;
-
-    @Autowired
-    public KandidatController(KandidatRepository kandidatRepository, KandidatService kandidatService, TokenUtils tokenUtils) {
-        this.kandidatRepository = kandidatRepository;
-        this.kandidatService = kandidatService;
-        this.tokenUtils = tokenUtils;
-    }
 
     @GetMapping
     public ResponseEntity<Kandidat> hentKandidat(String fnr) {

@@ -67,13 +67,13 @@ public class KandidatRepositoryTest {
 
     @Test
     public void hentNyesteKandidat__skal_håndtere_henting_av_ikke_eksisterende_kandidat() {
-        boolean kandidatEksisterer = repository.hentKandidat(100).isPresent();
+        boolean kandidatEksisterer = repository.hentNyesteKandidat("finnes ikke").isPresent();
         assertThat(kandidatEksisterer).isFalse();
     }
 
     @Test
     public void hentKandidat__skal_håndtere_henting_av_ikke_eksisterende_kandidat() {
-        boolean kandidatEksisterer = repository.hentNyesteKandidat("finnes ikke").isPresent();
+        boolean kandidatEksisterer = repository.hentKandidat(100).isPresent();
         assertThat(kandidatEksisterer).isFalse();
     }
 

@@ -43,8 +43,7 @@ public class KandidatServiceTest {
 
         List<Kandidat> hentedeKandidater = kandidatService.hentKandidater();
 
-        assertThat(hentedeKandidater.get(0)).isEqualTo(kandidat1);
-        assertThat(hentedeKandidater.get(1)).isEqualTo(kandidat2);
+        assertThat(hentedeKandidater).containsExactly(kandidat1, kandidat2);
     }
 
     @Test

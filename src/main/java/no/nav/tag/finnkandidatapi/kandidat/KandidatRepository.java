@@ -58,6 +58,20 @@ public class KandidatRepository {
         }
     }
 
+    public List<Kandidat> hentKandidater() {
+        String query =
+                "SELECT k.* " +
+                "FROM kandidat k " +
+                        "INNER JOIN " +
+                        "(SELECT fnr, MAX(registreringstidspunkt) AS sisteRegistrert " +
+                        "FROM kandidat " +
+                        "GROUP BY fnr) gruppertKandidat " +
+                        "ON k.fnr = gruppertKandidat.fnr " +
+                        "AND k.registreringstidspunkt = gruppertKandidat.sisteRegistrert " +
+                "ORDER BY k.registreringstidspunkt";
+        return jdbcTemplate.query(query, new KandidatMapper());
+    }
+
     public Integer lagreKandidat(Kandidat kandidat) {
         Map<String, Object> parameters = lagInsertParameter(kandidat);
         return jdbcInsert.executeAndReturnKey(parameters).intValue();

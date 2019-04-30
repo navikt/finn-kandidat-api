@@ -1,6 +1,5 @@
 package no.nav.tag.finnkandidatapi.tilgangskontroll.veilarbabac;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.finnkandidatapi.tilgangskontroll.TokenUtils;
 import no.nav.tag.finnkandidatapi.tilgangskontroll.sts.STSClient;
@@ -12,12 +11,23 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class VeilarbabacClient {
     private final TokenUtils tokenUtils;
     private final RestTemplate restTemplate;
     private final STSClient stsClient;
-    @Value("${veilarbabac.url}") private String veilarbabacUrl;
+    private final String veilarbabacUrl;
+
+    public VeilarbabacClient(
+            TokenUtils tokenUtils,
+            RestTemplate restTemplate,
+            STSClient stsClient,
+            @Value("${veilarbabac.url}") String veilarbabacUrl
+    ) {
+        this.tokenUtils = tokenUtils;
+        this.restTemplate = restTemplate;
+        this.stsClient = stsClient;
+        this.veilarbabacUrl = veilarbabacUrl;
+    }
 
     public boolean harSkrivetilgangTilKandidat(String fnr) {
         String uriString = UriComponentsBuilder.fromHttpUrl(veilarbabacUrl)
@@ -28,7 +38,7 @@ public class VeilarbabacClient {
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("subject", tokenUtils.hentInnloggetOidcToken());
-        headers.set("AUTHORIZATION", hentOidcTokenTilSystembruker());
+        headers.set("AUTHORIZATION", "Bearer " + hentOidcTokenTilSystembruker());
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         ResponseEntity<String> jsonResponse = restTemplate.exchange(

@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -14,6 +15,10 @@ public class KandidatService {
 
     public Optional<Kandidat> hentNyesteKandidat(String fnr) {
         return kandidatRepository.hentNyesteKandidat(fnr);
+    }
+
+    public List<Kandidat> hentKandidater() {
+        return kandidatRepository.hentKandidater();
     }
 
     public Optional<Kandidat> lagreKandidat(Kandidat kandidat, Veileder innloggetVeileder) {

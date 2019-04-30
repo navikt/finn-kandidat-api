@@ -1,9 +1,9 @@
 package no.nav.tag.finnkandidatapi.kandidat;
 
-import no.nav.tag.finnkandidatapi.tilgangskontroll.TokenUtils;
+import no.nav.tag.finnkandidatapi.tilgangskontroll.TilgangskontrollService;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
@@ -19,14 +19,29 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class KandidatControllerTest {
 
-    @InjectMocks
     private KandidatController controller;
 
     @Mock
     private KandidatService service;
 
     @Mock
-    private TokenUtils tokenUtils;
+    private TilgangskontrollService tilgangskontroll;
+
+    @Before
+    public void setUp() {
+        controller = new KandidatController(service, tilgangskontroll);
+    }
+
+    @Test
+    public void lagreKandidat__skal_sjekke_skrivetilgang() {
+        Kandidat kandidat = enKandidat();
+
+        try {
+            controller.lagreKandidat(kandidat);
+        } catch (Exception ignored) {}
+
+        verify(tilgangskontroll, times(1)).sjekkSkrivetilgangTilKandidat(kandidat.getFnr());
+    }
 
     @Test
     public void lagreKandidat__skal_returnere_created_med_opprettet_kandidat() {
@@ -76,6 +91,17 @@ public class KandidatControllerTest {
         assertThat(respons.getBody()).isEqualTo(kandidat);
     }
 
+    @Test
+    public void hentKandidat__skal_sjekke_lesetilgang() {
+        String fnr = "12345678910";
+
+        try {
+            controller.hentKandidat(fnr);
+        } catch (Exception ignored) {}
+
+        verify(tilgangskontroll, times(1)).sjekkLesetilgangTilKandidat(fnr);
+    }
+
     @Test(expected = FinnKandidatException.class)
     public void lagreKandidat__skal_kaste_FinnKandidatException_hvis_kandidat_ikke_fins() {
         Kandidat kandidat = enKandidat();
@@ -87,6 +113,6 @@ public class KandidatControllerTest {
     }
 
     private void værInnloggetSom(Veileder veileder) {
-        when(tokenUtils.hentInnloggetVeileder()).thenReturn(veileder);
+        when(tilgangskontroll.hentInnloggetVeileder()).thenReturn(veileder);
     }
 }

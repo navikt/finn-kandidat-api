@@ -2,6 +2,7 @@ package no.nav.tag.finnkandidatapi.tilgangskontroll;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.tag.finnkandidatapi.kandidat.Kandidat;
 import no.nav.tag.finnkandidatapi.kandidat.Veileder;
 import no.nav.tag.finnkandidatapi.tilgangskontroll.veilarbabac.VeilarbabacClient;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,6 +22,21 @@ public class TilgangskontrollService {
 
     public boolean harSkrivetilgangTilKandidat(String fnr) {
         return veilarbabacClient.harSkrivetilgangTilKandidat(fnr);
+    }
+
+    public void sjekkLesetilgangTilKandidat(String fnr) {
+        // TODO Implementeres i TAG-500
+    }
+
+    public void sjekkSkrivetilgangTilKandidat(String fnr) {
+        if (!veilarbabacClient.harSkrivetilgangTilKandidat(fnr)) {
+            log.error(
+                    "Veileder {} har ikke skrivetilgang til kandidat {}",
+                    tokenUtils.hentInnloggetVeileder().getNavIdent(),
+                    fnr
+            );
+            throw new TilgangskontrollException();
+        }
     }
 
     public Veileder hentInnloggetVeileder() {

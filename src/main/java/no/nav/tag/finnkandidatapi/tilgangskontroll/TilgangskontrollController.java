@@ -20,6 +20,7 @@ public class TilgangskontrollController {
     public boolean harTilgang(
             @PathVariable("fnr") String fnr
     ) {
+        // TODO TAG-363: Bare en testcontroller. Skal fjernes
         return tilgangskontrollService.harSkrivetilgangTilKandidat(fnr);
     }
 

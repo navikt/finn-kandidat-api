@@ -19,12 +19,16 @@ public class KandidatController {
 
     @GetMapping("/{fnr}")
     public ResponseEntity<Kandidat> hentKandidat(@PathVariable("fnr") String fnr) {
+        tilgangskontroll.sjekkLesetilgangTilKandidat(fnr);
+
         Kandidat kandidat = kandidatService.hentNyesteKandidat(fnr).orElseThrow(NotFoundException::new);
         return ResponseEntity.ok(kandidat);
     }
 
     @PostMapping
     public ResponseEntity<Kandidat> lagreKandidat(@RequestBody Kandidat kandidat) {
+        tilgangskontroll.sjekkSkrivetilgangTilKandidat(kandidat.getFnr());
+
         Veileder veileder = tilgangskontroll.hentInnloggetVeileder();
         Kandidat lagretKandidat = kandidatService.lagreKandidat(kandidat, veileder).orElseThrow(FinnKandidatException::new);
         return ResponseEntity

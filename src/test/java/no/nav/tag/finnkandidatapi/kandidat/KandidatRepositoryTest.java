@@ -132,6 +132,12 @@ public class KandidatRepositoryTest {
     }
 
     @Test
+    public void hentKandidater__skal_returnere_tom_liste_hvis_ingen_kandidater() {
+        List<Kandidat> kandidater = repository.hentKandidater();
+        assertThat(kandidater).isEmpty();
+    }
+
+    @Test
     public void skal_kunne_lagre_og_hente_ut_flere_ganger() {
         Kandidat behovTilLagring1 = enKandidat();
         Integer lagretId1 = repository.lagreKandidat(behovTilLagring1);

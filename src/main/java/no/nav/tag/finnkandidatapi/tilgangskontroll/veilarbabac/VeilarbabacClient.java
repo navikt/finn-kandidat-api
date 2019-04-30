@@ -1,6 +1,7 @@
 package no.nav.tag.finnkandidatapi.tilgangskontroll.veilarbabac;
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.tag.finnkandidatapi.kandidat.FinnKandidatException;
 import no.nav.tag.finnkandidatapi.tilgangskontroll.TokenUtils;
 import no.nav.tag.finnkandidatapi.tilgangskontroll.sts.STSClient;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,6 +18,10 @@ public class VeilarbabacClient {
     private final STSClient stsClient;
     private final String veilarbabacUrl;
 
+
+    public static final String PERMIT_RESPONSE = "permit";
+    public static final String DENY_RESPONSE = "deny";
+
     public VeilarbabacClient(
             TokenUtils tokenUtils,
             RestTemplate restTemplate,
@@ -30,6 +35,20 @@ public class VeilarbabacClient {
     }
 
     public boolean harSkrivetilgangTilKandidat(String fnr) {
+        String response = hentTilgangFraVeilarbAbac(fnr);
+
+        if (PERMIT_RESPONSE.equals(response)) {
+            return true;
+        }
+
+        if (DENY_RESPONSE.equals(response)) {
+            return false;
+        }
+
+        throw new FinnKandidatException("Ukjent respons fra veilarbabac: " + response);
+    }
+
+    private String hentTilgangFraVeilarbAbac(String fnr) {
         String uriString = UriComponentsBuilder.fromHttpUrl(veilarbabacUrl)
                 .path("/person")
                 .queryParam("fnr", fnr)
@@ -41,14 +60,12 @@ public class VeilarbabacClient {
         headers.set("AUTHORIZATION", "Bearer " + hentOidcTokenTilSystembruker());
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        ResponseEntity<String> jsonResponse = restTemplate.exchange(
+        return restTemplate.exchange(
                 uriString,
                 HttpMethod.GET,
                 new HttpEntity<>(headers),
                 String.class
-        );
-
-        return "permit".equals(jsonResponse.getBody());
+        ).getBody();
     }
 
     private String hentOidcTokenTilSystembruker() {

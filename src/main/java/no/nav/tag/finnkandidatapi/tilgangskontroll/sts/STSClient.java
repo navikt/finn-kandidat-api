@@ -26,20 +26,19 @@ public class STSClient {
     public STStoken getToken() {
         try {
             ResponseEntity<STStoken> response = buildUriAndExecuteRequest();
-            if(response.getStatusCode() != HttpStatus.OK){
+            if (response.getStatusCode() != HttpStatus.OK) {
                 String message = "Kall mot STS feiler med HTTP-" + response.getStatusCode();
                 log.error(message);
                 throw new RuntimeException(message);
             }
             return response.getBody();
-        }
-        catch(HttpClientErrorException e){
+        } catch(HttpClientErrorException e) {
             log.error("Feil ved oppslag i STS", e);
             throw new RuntimeException(e);
         }
     }
 
-    private ResponseEntity<STStoken> buildUriAndExecuteRequest(){
+    private ResponseEntity<STStoken> buildUriAndExecuteRequest() {
 
         String uriString = UriComponentsBuilder.fromHttpUrl(stsUrl + "/sts/token")
                 .queryParam("grant_type","client_credentials")

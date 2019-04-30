@@ -28,6 +28,21 @@ public class TestData {
                 .build();
     }
 
+    public static Kandidat enKandidat(String fnr) {
+        return kandidatBuilder().fnr(fnr).build();
+    }
+
+    public static Kandidat.KandidatBuilder kandidatBuilder() {
+        return Kandidat.builder()
+                .sistEndret(LocalDateTime.now())
+                .sistEndretAv(enNavIdent())
+                .fnr("12345678901")
+                .arbeidstidBehov(KAN_IKKE_JOBBE)
+                .fysiskeBehov(Set.of(ARBEIDSSTILLING, ERGONOMI))
+                .arbeidsmiljøBehov(Set.of(FADDER, TILRETTELAGTE_ARBEIDSOPPGAVER))
+                .grunnleggendeBehov(Set.of(SNAKKE_NORSK, SKRIVE_NORSK, LESE_NORSK));
+    }
+
     public static Veileder enVeileder() {
         return new Veileder("X123456");
     }

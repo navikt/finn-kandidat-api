@@ -87,12 +87,9 @@ public class KandidatRepositoryTest {
 
     @Test
     public void hentKandidater__skal_returnere_lagrede_kandidater() {
-        Kandidat kandidat1 = enKandidat();
-        kandidat1.setFnr("01234567890");
-        Kandidat kandidat2 = enKandidat();
-        kandidat2.setFnr("12345678901");
-        Kandidat kandidat3 = enKandidat();
-        kandidat3.setFnr("23456789012");
+        Kandidat kandidat1 = enKandidat("01234567890");
+        Kandidat kandidat2 = enKandidat("12345678901");
+        Kandidat kandidat3 = enKandidat("23456789012");
         repository.lagreKandidat(kandidat1);
         repository.lagreKandidat(kandidat2);
         repository.lagreKandidat(kandidat3);
@@ -132,13 +129,15 @@ public class KandidatRepositoryTest {
 
     @Test
     public void hentKandidater__skal_returnere_kandidater_sortert_på_sist_endret_tidspunkt() {
-        Kandidat kandidat1 = enKandidat();
-        kandidat1.setSistEndret(LocalDateTime.now().plusMinutes(1));
-        kandidat1.setFnr("1234567890");
+        Kandidat kandidat1 = kandidatBuilder()
+                .fnr("1234567890")
+                .sistEndret(LocalDateTime.now().plusMinutes(1))
+                .build();
 
-        Kandidat kandidat2 = enKandidat();
-        kandidat2.setSistEndret(LocalDateTime.now());
-        kandidat2.setFnr("2345678901");
+        Kandidat kandidat2 = kandidatBuilder()
+                .fnr("2345678901")
+                .sistEndret(LocalDateTime.now())
+                .build();
 
         repository.lagreKandidat(kandidat1);
         repository.lagreKandidat(kandidat2);

@@ -28,6 +28,10 @@ public class TestData {
                 .build();
     }
 
+    public static Kandidat enKandidat(String fnr) {
+        return kandidatBuilder().fnr(fnr).build();
+    }
+
     public static Kandidat.KandidatBuilder kandidatBuilder() {
         return Kandidat.builder()
                 .sistEndret(LocalDateTime.now())

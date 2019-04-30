@@ -37,10 +37,8 @@ public class KandidatServiceTest {
 
     @Test
     public void hentKandidater__skal_returnere_kandidater() {
-        Kandidat kandidat1 = enKandidat();
-        kandidat1.setFnr("1234567890");
-        Kandidat kandidat2 = enKandidat();
-        kandidat2.setFnr("2345678901");
+        Kandidat kandidat1 = enKandidat("1234567890");
+        Kandidat kandidat2 = enKandidat("2345678901");
         when(repository.hentKandidater()).thenReturn(List.of(kandidat1, kandidat2));
 
         List<Kandidat> hentedeKandidater = kandidatService.hentKandidater();

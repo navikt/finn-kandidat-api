@@ -80,10 +80,8 @@ public class KandidatControllerTest {
     public void hentKandidater__skal_returnere_ok_med_kandidater() {
         værInnloggetSom(enVeileder());
 
-        Kandidat kandidat1 = enKandidat();
-        kandidat1.setFnr("1234567890");
-        Kandidat kandidat2 = enKandidat();
-        kandidat2.setFnr("2345678901");
+        Kandidat kandidat1 = enKandidat("1234567890");
+        Kandidat kandidat2 = enKandidat("2345678901");
 
         when(service.hentKandidater()).thenReturn(List.of(kandidat1, kandidat2));
 

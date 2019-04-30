@@ -36,7 +36,7 @@ public class KandidatServiceTest {
     }
 
     @Test
-    public void hentKandidater_skal_returnere_kandidater() {
+    public void hentKandidater__skal_returnere_kandidater() {
         Kandidat kandidat1 = enKandidat();
         kandidat1.setFnr("1234567890");
         Kandidat kandidat2 = enKandidat();

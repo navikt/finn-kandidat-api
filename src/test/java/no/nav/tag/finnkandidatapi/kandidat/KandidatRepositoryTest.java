@@ -1,5 +1,6 @@
 package no.nav.tag.finnkandidatapi.kandidat;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,11 @@ public class KandidatRepositoryTest {
 
     @Autowired
     private KandidatRepository repository;
+
+    @Before
+    public void setUp() {
+        repository.slettAlleKandidater();
+    }
 
     @Test
     public void skal_kunne_lagre_og_hente_kandidat() {
@@ -113,7 +119,7 @@ public class KandidatRepositoryTest {
     }
 
     @Test
-    public void hentKandidater_skal_returnere_kandidater_sortert_på_sist_endret_tidspunkt() {
+    public void hentKandidater__skal_returnere_kandidater_sortert_på_sist_endret_tidspunkt() {
         Kandidat kandidat1 = enKandidat();
         kandidat1.setSistEndret(LocalDateTime.now().plusMinutes(1));
         kandidat1.setFnr("1234567890");

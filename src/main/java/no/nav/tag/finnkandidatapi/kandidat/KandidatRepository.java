@@ -72,6 +72,10 @@ public class KandidatRepository {
         return jdbcTemplate.query(query, new KandidatMapper());
     }
 
+    public void slettAlleKandidater() {
+        jdbcTemplate.execute("DELETE FROM kandidat");
+    }
+
     public Integer lagreKandidat(Kandidat kandidat) {
         Map<String, Object> parameters = lagInsertParameter(kandidat);
         return jdbcInsert.executeAndReturnKey(parameters).intValue();

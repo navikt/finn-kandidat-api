@@ -12,6 +12,7 @@
     "image": "navikt/finn-kandidat-api:latest",
     "team": "teamtag",
     "port": 8080,
+    "vault": { "enabled": true },
     "liveness": {
       "path": "/finn-kandidat-api/internal/actuator/info",
       "initialDelay": 20

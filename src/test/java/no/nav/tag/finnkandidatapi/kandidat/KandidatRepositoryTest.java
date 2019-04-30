@@ -106,10 +106,22 @@ public class KandidatRepositoryTest {
     }
 
     @Test
-    public void hentKandidater__skal_returnere_en_kandidat_etter_lagret_flere_kandidater_med_samme_fnr() {
-        repository.lagreKandidat(enKandidat());
-        repository.lagreKandidat(enKandidat());
-        Kandidat sisteKandidat = enKandidat();
+    public void hentKandidater__skal_returnere_siste_kandidat_etter_lagret_flere_kandidater_med_samme_fnr() {
+        Kandidat kandidat = kandidatBuilder()
+                .fnr("01234567890")
+                .sistEndret(LocalDateTime.now())
+                .build();
+        Kandidat nyereKandidat = kandidatBuilder()
+                .fnr("01234567890")
+                .sistEndret(LocalDateTime.now().plusMinutes(1))
+                .build();
+        Kandidat sisteKandidat = kandidatBuilder()
+                .fnr("01234567890")
+                .sistEndret(LocalDateTime.now().plusMinutes(2))
+                .build();
+
+        repository.lagreKandidat(kandidat);
+        repository.lagreKandidat(nyereKandidat);
         repository.lagreKandidat(sisteKandidat);
 
         List<Kandidat> kandidater = repository.hentKandidater();

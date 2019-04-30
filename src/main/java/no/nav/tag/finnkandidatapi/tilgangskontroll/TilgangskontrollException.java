@@ -1,4 +1,4 @@
-package no.nav.tag.finnkandidatapi.kandidat;
+package no.nav.tag.finnkandidatapi.tilgangskontroll;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;

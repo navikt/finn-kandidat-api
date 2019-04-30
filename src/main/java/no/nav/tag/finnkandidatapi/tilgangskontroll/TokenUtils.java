@@ -1,8 +1,9 @@
-package no.nav.tag.finnkandidatapi.kandidat;
+package no.nav.tag.finnkandidatapi.tilgangskontroll;
 
 import com.nimbusds.jwt.JWTClaimsSet;
 import no.nav.security.oidc.context.OIDCClaims;
 import no.nav.security.oidc.context.OIDCRequestContextHolder;
+import no.nav.tag.finnkandidatapi.kandidat.Veileder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -17,6 +18,10 @@ public class TokenUtils {
     @Autowired
     public TokenUtils(OIDCRequestContextHolder contextHolder) {
         this.contextHolder = contextHolder;
+    }
+
+    public String hentInnloggetOidcToken() {
+        return contextHolder.getOIDCValidationContext().getToken(ISSUER_ISSO).getIdToken();
     }
 
     public Veileder hentInnloggetVeileder() {

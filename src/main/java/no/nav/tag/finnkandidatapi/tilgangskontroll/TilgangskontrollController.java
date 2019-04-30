@@ -2,7 +2,6 @@ package no.nav.tag.finnkandidatapi.tilgangskontroll;
 
 import lombok.RequiredArgsConstructor;
 import no.nav.security.oidc.api.Protected;
-import no.nav.tag.finnkandidatapi.kandidat.TokenUtils;
 import no.nav.tag.finnkandidatapi.kandidat.Veileder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,7 +20,7 @@ public class TilgangskontrollController {
     public boolean harTilgang(
             @PathVariable("fnr") String fnr
     ) {
-        return tilgangskontrollService.harTilgang(fnr);
+        return tilgangskontrollService.harSkrivetilgangTilKandidat(fnr);
     }
 
     @GetMapping("/innlogget-bruker")

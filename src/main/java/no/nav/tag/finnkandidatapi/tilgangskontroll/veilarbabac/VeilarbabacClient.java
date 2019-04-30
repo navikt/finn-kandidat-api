@@ -48,11 +48,7 @@ public class VeilarbabacClient {
                 String.class
         );
 
-        // TODO ikke hardkod returverdien
-
-        log.info("veilarbabac-response: " + jsonResponse.getBody());
-
-        return true;
+        return "permit".equals(jsonResponse.getBody());
     }
 
     private String hentOidcTokenTilSystembruker() {

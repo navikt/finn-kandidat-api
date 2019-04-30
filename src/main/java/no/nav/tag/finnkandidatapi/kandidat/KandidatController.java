@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Protected
 @RestController
 @RequestMapping("/kandidater")
@@ -23,6 +25,12 @@ public class KandidatController {
 
         Kandidat kandidat = kandidatService.hentNyesteKandidat(fnr).orElseThrow(NotFoundException::new);
         return ResponseEntity.ok(kandidat);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Kandidat>> hentKandidater() {
+        List<Kandidat> kandidater = kandidatService.hentKandidater();
+        return ResponseEntity.ok(kandidater);
     }
 
     @PostMapping

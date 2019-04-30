@@ -9,6 +9,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.util.List;
 import java.util.Optional;
 
 import static no.nav.tag.finnkandidatapi.TestData.enKandidat;
@@ -92,14 +93,19 @@ public class KandidatControllerTest {
     }
 
     @Test
-    public void hentKandidat__skal_sjekke_lesetilgang() {
-        String fnr = "12345678910";
+    public void hentKandidater__skal_returnere_ok_med_kandidater() {
+        værInnloggetSom(enVeileder());
 
-        try {
-            controller.hentKandidat(fnr);
-        } catch (Exception ignored) {}
+        Kandidat kandidat1 = enKandidat("1234567890");
+        Kandidat kandidat2 = enKandidat("2345678901");
 
-        verify(tilgangskontroll, times(1)).sjekkLesetilgangTilKandidat(fnr);
+        when(service.hentKandidater()).thenReturn(List.of(kandidat1, kandidat2));
+
+        ResponseEntity<List<Kandidat>> respons = controller.hentKandidater();
+
+        assertThat(respons.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(respons.getBody().get(0)).isEqualToIgnoringGivenFields(kandidat1, "id");
+        assertThat(respons.getBody().get(1)).isEqualToIgnoringGivenFields(kandidat2, "id");
     }
 
     @Test(expected = FinnKandidatException.class)
@@ -110,6 +116,17 @@ public class KandidatControllerTest {
 
         when(service.lagreKandidat(kandidat, veileder)).thenReturn(Optional.empty());
         controller.lagreKandidat(kandidat);
+    }
+
+    @Test
+    public void hentKandidat__skal_sjekke_lesetilgang() {
+        String fnr = "12345678910";
+
+        try {
+            controller.hentKandidat(fnr);
+        } catch (Exception ignored) {}
+
+        verify(tilgangskontroll, times(1)).sjekkLesetilgangTilKandidat(fnr);
     }
 
     private void værInnloggetSom(Veileder veileder) {

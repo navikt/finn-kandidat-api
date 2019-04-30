@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import static no.nav.tag.finnkandidatapi.TestData.enKandidat;
@@ -32,6 +33,17 @@ public class KandidatServiceTest {
         Kandidat hentetKandidat = kandidatService.hentNyesteKandidat(kandidat.getFnr()).get();
 
         assertThat(hentetKandidat).isEqualTo(kandidat);
+    }
+
+    @Test
+    public void hentKandidater__skal_returnere_kandidater() {
+        Kandidat kandidat1 = enKandidat("1234567890");
+        Kandidat kandidat2 = enKandidat("2345678901");
+        when(repository.hentKandidater()).thenReturn(List.of(kandidat1, kandidat2));
+
+        List<Kandidat> hentedeKandidater = kandidatService.hentKandidater();
+
+        assertThat(hentedeKandidater).containsExactly(kandidat1, kandidat2);
     }
 
     @Test

@@ -2,7 +2,6 @@ package no.nav.tag.finnkandidatapi.tilgangskontroll.sts;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
@@ -14,11 +13,14 @@ import org.springframework.web.util.UriComponentsBuilder;
 public class STSClient {
 
     private final RestTemplate stsBasicAuthRestTemplate;
+    private final String stsUrl;
 
-    @Value("${sts.url}") private String stsUrl;
-
-    public STSClient(RestTemplate stsBasicAuthRestTemplate) {
+    public STSClient(
+            RestTemplate stsBasicAuthRestTemplate,
+            @Value("${sts.url}") String stsUrl
+    ) {
         this.stsBasicAuthRestTemplate = stsBasicAuthRestTemplate;
+        this.stsUrl = stsUrl;
     }
 
     public STStoken getToken() {

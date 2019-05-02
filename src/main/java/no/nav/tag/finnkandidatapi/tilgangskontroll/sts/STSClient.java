@@ -1,6 +1,7 @@
 package no.nav.tag.finnkandidatapi.tilgangskontroll.sts;
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.tag.finnkandidatapi.kandidat.FinnKandidatException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
@@ -23,23 +24,16 @@ public class STSClient {
         this.stsUrl = stsUrl;
     }
 
-    public STSToken getToken() {
+    public STSToken hentSTSToken() {
         try {
-            ResponseEntity<STSToken> response = buildUriAndExecuteRequest();
-            if (response.getStatusCode() != HttpStatus.OK) {
-                String message = "Kall mot STS feiler med HTTP-" + response.getStatusCode();
-                log.error(message);
-                throw new RuntimeException(message);
-            }
-            return response.getBody();
+            return hentToken();
         } catch(HttpClientErrorException e) {
             log.error("Feil ved oppslag i STS", e);
-            throw new RuntimeException(e);
+            throw e;
         }
     }
 
-    private ResponseEntity<STSToken> buildUriAndExecuteRequest() {
-
+    private STSToken hentToken() {
         String uriString = UriComponentsBuilder.fromHttpUrl(stsUrl + "/sts/token")
                 .queryParam("grant_type","client_credentials")
                 .queryParam("scope","openid")
@@ -50,7 +44,7 @@ public class STSClient {
                 HttpMethod.GET,
                 getRequestEntity(),
                 STSToken.class
-        );
+        ).getBody();
     }
 
     private HttpEntity<String> getRequestEntity() {

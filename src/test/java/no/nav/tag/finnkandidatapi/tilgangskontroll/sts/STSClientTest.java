@@ -28,7 +28,7 @@ public class STSClientTest {
     public void getToken__skal_gjøre_kall_med_riktige_parametre() {
         STSClient stsClient = new STSClient(restTemplate, "https://test.no");
 
-        stsClient.getToken();
+        stsClient.hentSTSToken();
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);

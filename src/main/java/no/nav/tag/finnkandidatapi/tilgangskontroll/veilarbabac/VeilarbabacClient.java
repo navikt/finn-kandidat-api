@@ -7,6 +7,7 @@ import no.nav.tag.finnkandidatapi.tilgangskontroll.sts.STSClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -35,7 +36,14 @@ public class VeilarbabacClient {
     }
 
     public boolean harSkrivetilgangTilKandidat(String fnr) {
-        String response = hentTilgangFraVeilarbAbac(fnr);
+        String response;
+
+        try {
+            response = hentTilgangFraVeilarbAbac(fnr);
+        } catch(HttpClientErrorException e) {
+            log.error("Feil ved kall til veilarbabac", e);
+            throw e;
+        }
 
         if (PERMIT_RESPONSE.equals(response)) {
             return true;
@@ -69,6 +77,6 @@ public class VeilarbabacClient {
     }
 
     private String hentOidcTokenTilSystembruker() {
-        return stsClient.getToken().getAccess_token();
+        return stsClient.hentSTSToken().getAccessToken();
     }
 }

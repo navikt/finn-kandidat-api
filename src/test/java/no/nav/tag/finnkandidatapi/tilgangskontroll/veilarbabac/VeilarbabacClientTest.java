@@ -37,7 +37,7 @@ public class VeilarbabacClientTest {
     @Before
     public void setUp() {
         mockReturverdiFraVeilarbabac("permit");
-        when(stsClient.getToken()).thenReturn(etStsToken());
+        when(stsClient.hentSTSToken()).thenReturn(etStsToken());
         veilarbabacClient = new VeilarbabacClient(
                 tokenUtils,
                 restTemplate,
@@ -70,7 +70,7 @@ public class VeilarbabacClientTest {
         String oidcToken = "sdgsfdhgsdfd";
         String fnr = "12345678910";
 
-        when(stsClient.getToken()).thenReturn(stsToken);
+        when(stsClient.hentSTSToken()).thenReturn(stsToken);
 
         when(tokenUtils.hentInnloggetOidcToken()).thenReturn(oidcToken);
 
@@ -78,7 +78,7 @@ public class VeilarbabacClientTest {
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("subject", oidcToken);
-        headers.set("AUTHORIZATION", "Bearer " + stsToken.getAccess_token());
+        headers.set("AUTHORIZATION", "Bearer " + stsToken.getAccessToken());
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         verify(restTemplate).exchange(

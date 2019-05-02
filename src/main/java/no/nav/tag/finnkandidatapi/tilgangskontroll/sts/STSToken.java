@@ -1,5 +1,6 @@
 package no.nav.tag.finnkandidatapi.tilgangskontroll.sts;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,7 +9,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class STSToken {
-    String access_token;
-    String token_type;
-    int expires_in;
+
+    @JsonProperty("access_token")
+    String accessToken;
+
+    @JsonProperty("token_type")
+    String tokenType;
+
+    @JsonProperty("expires_in")
+    int expiresIn;
 }

@@ -23,9 +23,9 @@ public class STSClient {
         this.stsUrl = stsUrl;
     }
 
-    public STStoken getToken() {
+    public STSToken getToken() {
         try {
-            ResponseEntity<STStoken> response = buildUriAndExecuteRequest();
+            ResponseEntity<STSToken> response = buildUriAndExecuteRequest();
             if (response.getStatusCode() != HttpStatus.OK) {
                 String message = "Kall mot STS feiler med HTTP-" + response.getStatusCode();
                 log.error(message);
@@ -38,7 +38,7 @@ public class STSClient {
         }
     }
 
-    private ResponseEntity<STStoken> buildUriAndExecuteRequest() {
+    private ResponseEntity<STSToken> buildUriAndExecuteRequest() {
 
         String uriString = UriComponentsBuilder.fromHttpUrl(stsUrl + "/sts/token")
                 .queryParam("grant_type","client_credentials")
@@ -49,7 +49,7 @@ public class STSClient {
                 uriString,
                 HttpMethod.GET,
                 getRequestEntity(),
-                STStoken.class
+                STSToken.class
         );
     }
 

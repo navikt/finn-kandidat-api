@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class STStoken {
+public class STSToken {
     String access_token;
     String token_type;
     int expires_in;

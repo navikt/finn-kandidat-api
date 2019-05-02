@@ -3,7 +3,7 @@ package no.nav.tag.finnkandidatapi.tilgangskontroll.veilarbabac;
 import no.nav.tag.finnkandidatapi.kandidat.FinnKandidatException;
 import no.nav.tag.finnkandidatapi.tilgangskontroll.TokenUtils;
 import no.nav.tag.finnkandidatapi.tilgangskontroll.sts.STSClient;
-import no.nav.tag.finnkandidatapi.tilgangskontroll.sts.STStoken;
+import no.nav.tag.finnkandidatapi.tilgangskontroll.sts.STSToken;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -66,7 +66,7 @@ public class VeilarbabacClientTest {
 
     @Test
     public void harSkrivetilgangTilKandidat__skal_gjøre_kall_med_riktige_parametre() {
-        STStoken stsToken = etStsToken();
+        STSToken stsToken = etStsToken();
         String oidcToken = "sdgsfdhgsdfd";
         String fnr = "12345678910";
 

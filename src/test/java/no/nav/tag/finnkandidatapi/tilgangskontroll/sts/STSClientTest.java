@@ -20,7 +20,7 @@ public class STSClientTest {
 
     @Before
     public void setUp() {
-        when(restTemplate.exchange(anyString(), any(), any(), eq(STStoken.class)))
+        when(restTemplate.exchange(anyString(), any(), any(), eq(STSToken.class)))
                 .thenReturn(ResponseEntity.ok().build());
     }
 
@@ -38,7 +38,7 @@ public class STSClientTest {
                 eq("https://test.no/sts/token?grant_type=client_credentials&scope=openid"),
                 eq(HttpMethod.GET),
                 eq(entity),
-                eq(STStoken.class)
+                eq(STSToken.class)
 
         );
     }

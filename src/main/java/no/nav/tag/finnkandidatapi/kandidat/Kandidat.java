@@ -2,7 +2,6 @@ package no.nav.tag.finnkandidatapi.kandidat;
 
 import lombok.Builder;
 import lombok.Data;
-import org.springframework.data.domain.AbstractAggregateRoot;
 
 import java.time.LocalDateTime;
 import java.util.Set;

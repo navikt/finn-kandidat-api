@@ -1,10 +1,12 @@
 package no.nav.tag.finnkandidatapi.kandidat;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -19,7 +21,6 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class KandidatControllerTest {
 
-    @InjectMocks
     private KandidatController controller;
 
     @Mock
@@ -27,6 +28,14 @@ public class KandidatControllerTest {
 
     @Mock
     private TokenUtils tokenUtils;
+
+    @Mock
+    private ApplicationEventPublisher applicationEventPublisher;
+
+    @Before
+    public void setUp() {
+        controller = new KandidatController(applicationEventPublisher, service, tokenUtils);
+    }
 
     @Test
     public void lagreKandidat__skal_returnere_created_med_opprettet_kandidat() {

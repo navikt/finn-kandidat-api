@@ -3,6 +3,7 @@ package no.nav.tag.finnkandidatapi.kandidat;
 
 import lombok.RequiredArgsConstructor;
 import no.nav.security.oidc.api.Protected;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,7 +15,7 @@ import java.util.List;
 @RequestMapping("/kandidater")
 @RequiredArgsConstructor
 public class KandidatController {
-
+    private final ApplicationEventPublisher applicationEventPublisher;
     private final KandidatService kandidatService;
     private final TokenUtils tokenUtils;
 
@@ -34,6 +35,8 @@ public class KandidatController {
     public ResponseEntity<Kandidat> lagreKandidat(@RequestBody Kandidat kandidat) {
         Veileder veileder = tokenUtils.hentInnloggetVeileder();
         Kandidat lagretKandidat = kandidatService.lagreKandidat(kandidat, veileder).orElseThrow(FinnKandidatException::new);
+        applicationEventPublisher.publishEvent(lagretKandidat);
+
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(lagretKandidat);

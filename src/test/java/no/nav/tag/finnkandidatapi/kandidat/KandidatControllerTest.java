@@ -36,7 +36,7 @@ public class KandidatControllerTest {
     public void setUp() {
         controller = new KandidatController(applicationEventPublisher, service, tokenUtils);
     }
-    
+
     @Test
     public void lagreKandidat__skal_returnere_created_med_opprettet_kandidat() {
         Veileder veileder = enVeileder();

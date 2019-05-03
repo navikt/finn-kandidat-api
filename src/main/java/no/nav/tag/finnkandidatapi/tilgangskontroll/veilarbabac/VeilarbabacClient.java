@@ -65,7 +65,7 @@ public class VeilarbabacClient {
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("subject", tokenUtils.hentInnloggetOidcToken());
-        headers.set("AUTHORIZATION", "Bearer " + hentOidcTokenTilSystembruker());
+        headers.setBearerAuth(hentOidcTokenTilSystembruker());
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         return restTemplate.exchange(

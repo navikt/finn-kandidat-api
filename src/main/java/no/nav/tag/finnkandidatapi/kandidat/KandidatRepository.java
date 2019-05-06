@@ -49,7 +49,7 @@ public class KandidatRepository {
     public Optional<Kandidat> hentKandidat(Integer id) {
         try {
             Kandidat kandidat = jdbcTemplate.queryForObject(
-                    "SELECT * FROM kandidat WHERE id = ?", new Object[]{id},
+                    "SELECT * FROM kandidat WHERE id = ?", new Object[]{id, },
                     new KandidatMapper()
             );
             return Optional.of(kandidat);
@@ -94,6 +94,6 @@ public class KandidatRepository {
     }
 
     public void slettKandidat(String fnr) {
-        jdbcTemplate.execute("DELETE FROM kandidat WHERE fnr = " + fnr);
+        jdbcTemplate.update("DELETE FROM kandidat WHERE fnr = ?", new Object[]{fnr});
     }
 }

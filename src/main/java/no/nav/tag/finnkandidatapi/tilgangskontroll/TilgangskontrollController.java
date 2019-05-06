@@ -1,6 +1,7 @@
 package no.nav.tag.finnkandidatapi.tilgangskontroll;
 
 import no.nav.security.oidc.api.Protected;
+import no.nav.security.oidc.api.Unprotected;
 import no.nav.tag.finnkandidatapi.kandidat.Veileder;
 import no.nav.tag.finnkandidatapi.tilgangskontroll.abac.AbacClient;
 import no.nav.tag.finnkandidatapi.tilgangskontroll.abac.response.XacmlResponse;
@@ -9,7 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
-@Protected
+@Unprotected
 @RestController
 public class TilgangskontrollController {
 

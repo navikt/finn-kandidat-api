@@ -70,7 +70,7 @@ public class AbacClient {
 
         String response = stsBasicAuthRestTemplate.exchange(
                 uriString,
-                HttpMethod.GET,
+                HttpMethod.POST,
                 entity,
                 String.class
         ).getBody();

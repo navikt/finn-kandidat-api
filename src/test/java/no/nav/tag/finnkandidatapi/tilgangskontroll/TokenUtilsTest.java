@@ -1,9 +1,10 @@
-package no.nav.tag.finnkandidatapi.kandidat;
+package no.nav.tag.finnkandidatapi.tilgangskontroll;
 
 import no.nav.security.oidc.context.OIDCClaims;
 import no.nav.security.oidc.context.OIDCRequestContextHolder;
 import no.nav.security.oidc.context.OIDCValidationContext;
 import no.nav.security.oidc.context.TokenContext;
+import no.nav.tag.finnkandidatapi.kandidat.Veileder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -21,7 +22,7 @@ import static org.mockito.Mockito.when;
 public class TokenUtilsTest {
 
     @InjectMocks
-    private TokenUtils tilgangskontroll;
+    private TokenUtils tokenUtils;
 
     @Mock
     private OIDCRequestContextHolder contextHolder;
@@ -30,13 +31,13 @@ public class TokenUtilsTest {
     public void hentInnloggetVeileder__skal_returnere_riktig_veileder() {
         Veileder veileder = enVeileder();
         værInnloggetSom(veileder);
-        assertThat(tilgangskontroll.hentInnloggetVeileder()).isEqualTo(veileder);
+        assertThat(tokenUtils.hentInnloggetVeileder()).isEqualTo(veileder);
     }
 
     @Test(expected = TilgangskontrollException.class)
     public void hentInnloggetVeileder__skal_kaste_exception_hvis_ikke_inlogget() {
         værUinnlogget();
-        tilgangskontroll.hentInnloggetVeileder();
+        tokenUtils.hentInnloggetVeileder();
     }
 
     private void værInnloggetSom(Veileder veileder) {

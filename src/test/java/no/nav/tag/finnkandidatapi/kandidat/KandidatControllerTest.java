@@ -1,9 +1,9 @@
 package no.nav.tag.finnkandidatapi.kandidat;
 
+import no.nav.tag.finnkandidatapi.tilgangskontroll.TilgangskontrollService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.context.ApplicationEventPublisher;
@@ -24,17 +24,30 @@ public class KandidatControllerTest {
     private KandidatController controller;
 
     @Mock
+    private ApplicationEventPublisher applicationEventPublisher;
+
+    @Mock
     private KandidatService service;
 
     @Mock
-    private TokenUtils tokenUtils;
+    private TilgangskontrollService tilgangskontroll;
 
-    @Mock
-    private ApplicationEventPublisher applicationEventPublisher;
+
 
     @Before
     public void setUp() {
-        controller = new KandidatController(applicationEventPublisher, service, tokenUtils);
+        controller = new KandidatController(applicationEventPublisher, service, tilgangskontroll);
+    }
+
+    @Test
+    public void lagreKandidat__skal_sjekke_skrivetilgang() {
+        Kandidat kandidat = enKandidat();
+
+        try {
+            controller.lagreKandidat(kandidat);
+        } catch (Exception ignored) {}
+
+        verify(tilgangskontroll, times(1)).sjekkSkrivetilgangTilKandidat(kandidat.getFnr());
     }
 
     @Test
@@ -111,7 +124,18 @@ public class KandidatControllerTest {
         controller.lagreKandidat(kandidat);
     }
 
+    @Test
+    public void hentKandidat__skal_sjekke_lesetilgang() {
+        String fnr = "12345678910";
+
+        try {
+            controller.hentKandidat(fnr);
+        } catch (Exception ignored) {}
+
+        verify(tilgangskontroll, times(1)).sjekkLesetilgangTilKandidat(fnr);
+    }
+
     private void værInnloggetSom(Veileder veileder) {
-        when(tokenUtils.hentInnloggetVeileder()).thenReturn(veileder);
+        when(tilgangskontroll.hentInnloggetVeileder()).thenReturn(veileder);
     }
 }

@@ -9,7 +9,7 @@
     }
   },
   "spec": {
-    "image": "navikt/finn-kandidat-api:latest",
+    "image": "navikt/finn-kandidat-api:TAG-363-tilgangskontroll_50",
     "team": "teamtag",
     "port": 8080,
     "vault": { "enabled": true },

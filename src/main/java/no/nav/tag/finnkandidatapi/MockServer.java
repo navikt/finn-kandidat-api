@@ -37,7 +37,7 @@ public class MockServer {
 
         mockKall(stsUrl + "/sts/token", new STSToken("blabla", "", 30000));
         mockKall(veilarbabacUrl + "/person", "allow");
-        mockKall(abacUrl, lesFilSomString("abac.json"));
+        mockPostKall(abacUrl, lesFilSomString("abac.json"));
 
         server.start();
     }
@@ -47,9 +47,19 @@ public class MockServer {
         mockKall(url, objectMapper.writeValueAsString(body));
     }
 
-    @SneakyThrows
+    private void mockPostKall(String url, String body) {
+        String path = getPath(url);
+        server.stubFor(
+                WireMock.post(WireMock.urlPathEqualTo(path)).willReturn(WireMock.aResponse()
+                        .withHeader("Content-Type", "application/json")
+                        .withStatus(HttpStatus.OK.value())
+                        .withBody(body)
+                )
+        );
+    }
+
     private void mockKall(String url, String body) {
-        String path = new URL(url).getPath();
+        String path = getPath(url);
         server.stubFor(
                 WireMock.get(WireMock.urlPathEqualTo(path)).willReturn(WireMock.aResponse()
                         .withHeader("Content-Type", "application/json")
@@ -57,6 +67,11 @@ public class MockServer {
                         .withBody(body)
                 )
         );
+    }
+
+    @SneakyThrows
+    private String getPath(String url) {
+        return new URL(url).getPath();
     }
 
     @SneakyThrows

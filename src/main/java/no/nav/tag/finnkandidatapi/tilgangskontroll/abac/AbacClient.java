@@ -68,16 +68,14 @@ public class AbacClient {
 
         log.info("abac-request: " + entity);
 
-        String response = stsBasicAuthRestTemplate.exchange(
+        String res = stsBasicAuthRestTemplate.exchange(
                 uriString,
                 HttpMethod.POST,
                 entity,
                 String.class
         ).getBody();
 
-        log.info("abac-response: " + response);
-
-        return objectMapper.readValue(response, XacmlResponse.class);
+        return objectMapper.readValue(res, XacmlResponse.class);
     }
 
     private XacmlRequest getPingRequest() {

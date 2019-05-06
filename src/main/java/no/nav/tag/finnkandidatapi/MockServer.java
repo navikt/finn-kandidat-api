@@ -3,6 +3,7 @@ package no.nav.tag.finnkandidatapi;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
+import io.micrometer.core.instrument.util.IOUtils;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.finnkandidatapi.tilgangskontroll.sts.STSToken;
@@ -13,6 +14,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import java.net.URL;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 @Profile("mock")
 @Component
@@ -25,7 +28,8 @@ public class MockServer {
     MockServer(
             @Value("${mock.port}") Integer port,
             @Value("${sts.url}") String stsUrl,
-            @Value("${veilarbabac.url}") String veilarbabacUrl
+            @Value("${veilarbabac.url}") String veilarbabacUrl,
+            @Value("${abac.url}") String abacUrl
     ) {
         log.info("Starter mockserver");
 
@@ -33,6 +37,7 @@ public class MockServer {
 
         mockKall(stsUrl + "/sts/token", new STSToken("blabla", "", 30000));
         mockKall(veilarbabacUrl + "/person", "allow");
+        mockKall(abacUrl, lesFilSomString("abac.json"));
 
         server.start();
     }
@@ -52,5 +57,10 @@ public class MockServer {
                         .withBody(body)
                 )
         );
+    }
+
+    @SneakyThrows
+    private String lesFilSomString(String filnavn) {
+        return IOUtils.toString(this.getClass().getClassLoader().getResourceAsStream("mock/" + filnavn), UTF_8);
     }
 }

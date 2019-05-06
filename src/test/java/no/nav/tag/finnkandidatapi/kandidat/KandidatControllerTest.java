@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -23,14 +24,19 @@ public class KandidatControllerTest {
     private KandidatController controller;
 
     @Mock
+    private ApplicationEventPublisher applicationEventPublisher;
+
+    @Mock
     private KandidatService service;
 
     @Mock
     private TilgangskontrollService tilgangskontroll;
 
+
+
     @Before
     public void setUp() {
-        controller = new KandidatController(service, tilgangskontroll);
+        controller = new KandidatController(applicationEventPublisher, service, tilgangskontroll);
     }
 
     @Test

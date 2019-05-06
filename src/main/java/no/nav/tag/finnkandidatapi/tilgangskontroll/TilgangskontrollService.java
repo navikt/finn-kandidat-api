@@ -21,7 +21,6 @@ public class TilgangskontrollService {
     private final TokenUtils tokenUtils;
 
     public boolean harSkrivetilgangTilKandidat(String fnr) {
-        if (true) return true;
         return veilarbabacClient.harSkrivetilgangTilKandidat(fnr);
     }
 
@@ -30,7 +29,6 @@ public class TilgangskontrollService {
     }
 
     public void sjekkSkrivetilgangTilKandidat(String fnr) {
-        if (true) return;
         if (!veilarbabacClient.harSkrivetilgangTilKandidat(fnr)) {
             log.error(
                     "Veileder {} har ikke skrivetilgang til kandidat {}",

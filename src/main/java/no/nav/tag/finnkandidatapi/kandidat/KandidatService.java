@@ -31,4 +31,8 @@ public class KandidatService {
         kandidat.setSistEndretAv(innloggetVeileder.getNavIdent());
         kandidat.setSistEndret(LocalDateTime.now());
     }
+
+    public void slettKandidat(String fnr) {
+        kandidatRepository.slettKandidat(fnr);
+    }
 }

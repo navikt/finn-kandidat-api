@@ -51,5 +51,14 @@ public class KandidatController {
     public ResponseEntity hentSkrivetilgang(@PathVariable("fnr") String fnr) {
         tilgangskontroll.sjekkSkrivetilgangTilKandidat(fnr);
         return ResponseEntity.ok().build();
+
+    @DeleteMapping("/{fnr}")
+    public ResponseEntity<String> slettKandidat(@PathVariable("fnr") String fnr) {
+        try {
+            kandidatService.slettKandidat(fnr);
+            return ResponseEntity.ok("OK");
+        } catch (Exception e) {
+            throw new NotFoundException();
+        }
     }
 }

@@ -92,4 +92,8 @@ public class KandidatRepository {
         parameters.put(GRUNNLEGGENDE_BEHOV, enumSetTilString(kandidat.getGrunnleggendeBehov()));
         return parameters;
     }
+
+    public void slettKandidat(String fnr) {
+        jdbcTemplate.execute("DELETE FROM kandidat WHERE fnr = " + fnr);
+    }
 }

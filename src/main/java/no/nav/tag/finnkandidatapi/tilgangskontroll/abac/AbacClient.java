@@ -2,6 +2,7 @@ package no.nav.tag.finnkandidatapi.tilgangskontroll.abac;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.finnkandidatapi.tilgangskontroll.abac.request.Request;
 import no.nav.tag.finnkandidatapi.tilgangskontroll.abac.request.XacmlRequest;
 import no.nav.tag.finnkandidatapi.tilgangskontroll.abac.response.XacmlResponse;
@@ -17,6 +18,7 @@ import static no.nav.tag.finnkandidatapi.tilgangskontroll.abac.NavAttributter.EN
 import static no.nav.tag.finnkandidatapi.tilgangskontroll.abac.NavAttributter.RESOURCE_FELLES_DOMENE;
 import static no.nav.tag.finnkandidatapi.tilgangskontroll.abac.StandardAttributter.ACTION_ID;
 
+@Slf4j
 @Component
 public class AbacClient {
     private static final ObjectMapper objectMapper = new ObjectMapper();
@@ -62,12 +64,20 @@ public class AbacClient {
         headers.setBasicAuth(brukernavn, passord);
         headers.set("Content-Type", "application/xacml+json");
 
-        return stsBasicAuthRestTemplate.exchange(
+        HttpEntity<String> entity = new HttpEntity<>(objectMapper.writeValueAsString(xacmlRequest), headers);
+
+        log.info("abac-request: " + entity);
+
+        XacmlResponse response = stsBasicAuthRestTemplate.exchange(
                 uriString,
                 HttpMethod.GET,
-                new HttpEntity<>(objectMapper.writeValueAsString(xacmlRequest), headers),
+                entity,
                 XacmlResponse.class
         ).getBody();
+
+        log.info("abac-response: " + response);
+
+        return response;
     }
 
     private XacmlRequest getPingRequest() {

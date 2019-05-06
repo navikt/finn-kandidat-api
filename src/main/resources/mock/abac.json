@@ -1,5 +1,22 @@
 {
   "Response" : {
-    "Decision" : "Permit"
+    "Decision" : "Permit",
+    "Status" : {
+      "StatusCode" : {
+        "Value" : "urn:oasis:names:tc:xacml:1.0:status:ok",
+        "StatusCode" : {
+          "Value" : "urn:oasis:names:tc:xacml:1.0:status:ok"
+        }
+      }
+    },
+    "AssociatedAdvice" : {
+      "Id" : "no.nav.abac.advices.ping.response",
+      "AttributeAssignment" : {
+        "AttributeId" : "no.nav.abac.attributter.adviceorobligation.fritekst",
+        "Value" : "ping response",
+        "Category" : "urn:oasis:names:tc:xacml:1.0:subject-category:access-subject",
+        "DataType" : "http://www.w3.org/2001/XMLSchema#string"
+      }
+    }
   }
 }

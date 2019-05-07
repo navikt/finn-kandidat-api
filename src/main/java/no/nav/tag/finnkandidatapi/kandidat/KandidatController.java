@@ -49,11 +49,7 @@ public class KandidatController {
 
     @GetMapping("/{fnr}/skrivetilgang")
     public ResponseEntity hentSkrivetilgang(@PathVariable("fnr") String fnr) {
-        boolean harSkrivetilgang = tilgangskontroll.harSkrivetilgangTilKandidat(fnr);
-        if (harSkrivetilgang) {
-            return ResponseEntity.ok().build();
-        } else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
+        tilgangskontroll.sjekkSkrivetilgangTilKandidat(fnr);
+        return ResponseEntity.ok().build();
     }
 }

@@ -138,21 +138,11 @@ public class KandidatControllerTest {
     @Test
     public void hentSkrivetilgang__skal_returnere_ok_hvis_veileder_har_skrivetilgang() {
         værInnloggetSom(enVeileder());
-        when(tilgangskontroll.harSkrivetilgangTilKandidat(anyString())).thenReturn(true);
 
         ResponseEntity respons = controller.hentSkrivetilgang(anyString());
+        verify(tilgangskontroll, times(1)).sjekkSkrivetilgangTilKandidat(anyString());
 
         assertThat(respons.getStatusCode()).isEqualTo(HttpStatus.OK);
-    }
-
-    @Test
-    public void hentSkrivetilgang__skal_returnere_forbidden_hvis_veileder_ikke_har_skrivetilgang() {
-        værInnloggetSom(enVeileder());
-        when(tilgangskontroll.harSkrivetilgangTilKandidat(anyString())).thenReturn(false);
-
-        ResponseEntity respons = controller.hentSkrivetilgang(anyString());
-
-        assertThat(respons.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
     }
 
     private void værInnloggetSom(Veileder veileder) {

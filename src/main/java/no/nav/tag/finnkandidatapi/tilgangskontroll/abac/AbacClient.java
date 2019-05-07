@@ -77,6 +77,7 @@ public class AbacClient {
                         .action(actionAttribute)
                         .resource(resource)
                         .environment(environment)
+                        .accessSubject(accessSubject)
                         .build()
         );
 

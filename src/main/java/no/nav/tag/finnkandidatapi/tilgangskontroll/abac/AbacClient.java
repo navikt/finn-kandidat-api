@@ -56,6 +56,33 @@ public class AbacClient {
 
     }
 
+    public XacmlResponse sjekkTilgang(String navIdent, String fnr, String action) {
+        // action: read, update, ping
+
+        Attributes accessSubject = new Attributes()
+                .addAttribute(StandardAttributter.SUBJECT_ID, navIdent)
+                .addAttribute(NavAttributter.SUBJECT_FELLES_SUBJECTTYPE, "InternBruker");
+
+        Attributes actionAttribute = new Attributes();
+        actionAttribute.addAttribute(ACTION_ID, action);
+
+        Attributes resource = new Attributes();
+        resource.addAttribute(RESOURCE_FELLES_DOMENE, "srvfinn-kandidat-api");
+
+        Attributes environment = new Attributes();
+        environment.addAttribute(ENVIRONMENT_FELLES_PEP_ID, appName);
+
+        XacmlRequest request = new XacmlRequest().withRequest(
+                Request.builder()
+                        .action(actionAttribute)
+                        .resource(resource)
+                        .environment(environment)
+                        .build()
+        );
+
+        return doRequest(request);
+    }
+
     @SneakyThrows
     private XacmlResponse doRequest(XacmlRequest xacmlRequest) {
         String uriString = UriComponentsBuilder.fromHttpUrl(abacUrl)

@@ -159,10 +159,10 @@ public class KandidatControllerTest {
     @Test(expected = NotFoundException.class)
     public void slettKandidat__skal_kaste_NotFoundException_hvis_kandidat_ikke_finnes() {
         værInnloggetSom(enVeileder());
-        String ugyldigFnr = "12345678901";
+        String uregistrertFnr = "12345678901";
 
-        when(service.slettKandidat(ugyldigFnr)).thenReturn(0);
-        controller.slettKandidat(ugyldigFnr);
+        when(service.slettKandidat(uregistrertFnr)).thenReturn(0);
+        controller.slettKandidat(uregistrertFnr);
     }
 
 >>>>>>> Legg til tester for sletting av kandidater

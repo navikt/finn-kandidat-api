@@ -49,7 +49,7 @@ public class KandidatRepository {
     public Optional<Kandidat> hentKandidat(Integer id) {
         try {
             Kandidat kandidat = jdbcTemplate.queryForObject(
-                    "SELECT * FROM kandidat WHERE id = ?", new Object[]{id, },
+                    "SELECT * FROM kandidat WHERE id = ?", new Object[]{id},
                     new KandidatMapper()
             );
             return Optional.of(kandidat);

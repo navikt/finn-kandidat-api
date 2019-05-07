@@ -46,4 +46,14 @@ public class KandidatController {
                 .status(HttpStatus.CREATED)
                 .body(lagretKandidat);
     }
+
+    @GetMapping("/{fnr}/skrivetilgang")
+    public ResponseEntity hentSkrivetilgang(@PathVariable("fnr") String fnr) {
+        boolean harSkrivetilgang = tilgangskontroll.harSkrivetilgangTilKandidat(fnr);
+        if (harSkrivetilgang) {
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+    }
 }

@@ -10,7 +10,6 @@ import no.nav.tag.finnkandidatapi.tilgangskontroll.abac.Attribute;
 
 import java.util.List;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
 @Data
 public class Advice {
 

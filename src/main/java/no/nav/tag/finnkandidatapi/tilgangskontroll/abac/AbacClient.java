@@ -1,5 +1,6 @@
 package no.nav.tag.finnkandidatapi.tilgangskontroll.abac;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +22,8 @@ import static no.nav.tag.finnkandidatapi.tilgangskontroll.abac.StandardAttributt
 @Slf4j
 @Component
 public class AbacClient {
-    private static final ObjectMapper objectMapper = new ObjectMapper();
+    private static final ObjectMapper objectMapper = new ObjectMapper()
+            .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 
     private final RestTemplate stsBasicAuthRestTemplate;
     private final String abacUrl;

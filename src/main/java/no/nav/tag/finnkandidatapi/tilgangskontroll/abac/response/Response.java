@@ -8,9 +8,7 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotNull;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
 @Data
-@AllArgsConstructor
 public class Response {
 
     @JsonProperty("Decision")

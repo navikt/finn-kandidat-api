@@ -55,12 +55,14 @@ public class KandidatController {
 
     @DeleteMapping("/{fnr}")
     public ResponseEntity<String> slettKandidat(@PathVariable("fnr") String fnr) {
+        tilgangskontroll.sjekkSkrivetilgangTilKandidat(fnr);
+
         Integer antallSlettedeRader = kandidatService.slettKandidat(fnr);
 
         if (antallSlettedeRader == 0) {
             throw new NotFoundException();
         }
 
-        return ResponseEntity.ok("OK");
+        return ResponseEntity.ok().build();
     }
 }

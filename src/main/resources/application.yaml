@@ -7,12 +7,12 @@ management.endpoints.web:
 
 spring.profiles.active: local, mock
 
+---
+spring.profiles: local
+
 spring.h2.console:
   enabled: true
   path: /h2
-
----
-spring.profiles: local
 
 no.nav.security.oidc:
   issuers: isso

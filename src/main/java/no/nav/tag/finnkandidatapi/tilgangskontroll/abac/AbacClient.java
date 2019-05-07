@@ -77,6 +77,8 @@ public class AbacClient {
                 String.class
         ).getBody();
 
+        log.info("abac-response: " + res);
+
         return objectMapper.readValue(res, XacmlResponse.class);
     }
 

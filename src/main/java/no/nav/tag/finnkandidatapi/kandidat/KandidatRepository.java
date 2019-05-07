@@ -93,7 +93,7 @@ public class KandidatRepository {
         return parameters;
     }
 
-    public void slettKandidat(String fnr) {
-        jdbcTemplate.update("DELETE FROM kandidat WHERE fnr = ?", new Object[]{fnr});
+    public Integer slettKandidat(String fnr) {
+        return jdbcTemplate.update("DELETE FROM kandidat WHERE fnr = ?", new Object[]{fnr});
     }
 }

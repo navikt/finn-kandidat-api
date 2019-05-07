@@ -135,16 +135,37 @@ public class KandidatControllerTest {
         verify(tilgangskontroll, times(1)).sjekkLesetilgangTilKandidat(fnr);
     }
 
+<<<<<<< HEAD
     @Test
     public void hentSkrivetilgang__skal_returnere_ok_hvis_veileder_har_skrivetilgang() {
         værInnloggetSom(enVeileder());
 
         ResponseEntity respons = controller.hentSkrivetilgang(anyString());
         verify(tilgangskontroll, times(1)).sjekkSkrivetilgangTilKandidat(anyString());
+=======
+    public void slettKandidat__skal_returnere_ok() {
+        værInnloggetSom(enVeileder());
+        Kandidat kandidat = enKandidat();
+
+        when(service.slettKandidat(kandidat.getFnr())).thenReturn(1);
+        ResponseEntity<String> respons = controller.slettKandidat(kandidat.getFnr());
+>>>>>>> Legg til tester for sletting av kandidater
 
         assertThat(respons.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
+<<<<<<< HEAD
+=======
+    @Test(expected = NotFoundException.class)
+    public void slettKandidat__skal_kaste_NotFoundException_hvis_kandidat_ikke_finnes() {
+        værInnloggetSom(enVeileder());
+        String ugyldigFnr = "12345678901";
+
+        when(service.slettKandidat(ugyldigFnr)).thenReturn(0);
+        controller.slettKandidat(ugyldigFnr);
+    }
+
+>>>>>>> Legg til tester for sletting av kandidater
     private void værInnloggetSom(Veileder veileder) {
         when(tilgangskontroll.hentInnloggetVeileder()).thenReturn(veileder);
     }

@@ -32,7 +32,7 @@ public class KandidatService {
         kandidat.setSistEndret(LocalDateTime.now());
     }
 
-    public void slettKandidat(String fnr) {
-        kandidatRepository.slettKandidat(fnr);
+    public Integer slettKandidat(String fnr) {
+        return kandidatRepository.slettKandidat(fnr);
     }
 }

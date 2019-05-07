@@ -59,4 +59,13 @@ public class KandidatServiceTest {
         assertThat(kandidat.getSistEndretAv()).isEqualTo(veileder.getNavIdent());
         assertThat(kandidat.getSistEndret()).isEqualToIgnoringSeconds(LocalDateTime.now());
     }
+
+    @Test
+    public void slettKandidat__skal_returnere_antall_slettede_kandidater() {
+        String fnr = enKandidat("12345678901").getFnr();
+
+        when(repository.slettKandidat(fnr)).thenReturn(1);
+
+        assertThat(kandidatService.slettKandidat(fnr)).isEqualTo(1);
+    }
 }

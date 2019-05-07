@@ -2,7 +2,6 @@ package no.nav.tag.finnkandidatapi;
 
 import no.nav.tag.finnkandidatapi.kandidat.Kandidat;
 import no.nav.tag.finnkandidatapi.kandidat.Veileder;
-import no.nav.tag.finnkandidatapi.tilgangskontroll.sts.STSToken;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -16,10 +15,6 @@ import static no.nav.tag.finnkandidatapi.kandidat.FysiskBehov.ERGONOMI;
 import static no.nav.tag.finnkandidatapi.kandidat.GrunnleggendeBehov.*;
 
 public class TestData {
-
-    public static STSToken etStsToken() {
-        return new STSToken("asdfasdgdf", "type", 5000);
-    }
 
     public static Kandidat enKandidat() {
         return Kandidat.builder()

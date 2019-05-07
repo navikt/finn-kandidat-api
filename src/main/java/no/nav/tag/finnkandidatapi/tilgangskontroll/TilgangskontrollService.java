@@ -11,11 +11,6 @@ import org.springframework.stereotype.Service;
 public class TilgangskontrollService {
     private final TokenUtils tokenUtils;
 
-    public boolean harSkrivetilgangTilKandidat(String fnr) {
-        // TODO Implementeres i TAG-363
-        return true;
-    }
-
     public void sjekkSkrivetilgangTilKandidat(String fnr) {
         // TODO Implementeres i TAG-363
         return;

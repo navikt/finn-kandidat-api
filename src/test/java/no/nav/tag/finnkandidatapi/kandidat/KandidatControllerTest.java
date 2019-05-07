@@ -135,6 +135,16 @@ public class KandidatControllerTest {
         verify(tilgangskontroll, times(1)).sjekkLesetilgangTilKandidat(fnr);
     }
 
+    @Test
+    public void hentSkrivetilgang__skal_returnere_ok_hvis_veileder_har_skrivetilgang() {
+        værInnloggetSom(enVeileder());
+
+        ResponseEntity respons = controller.hentSkrivetilgang(anyString());
+        verify(tilgangskontroll, times(1)).sjekkSkrivetilgangTilKandidat(anyString());
+
+        assertThat(respons.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
     private void værInnloggetSom(Veileder veileder) {
         when(tilgangskontroll.hentInnloggetVeileder()).thenReturn(veileder);
     }

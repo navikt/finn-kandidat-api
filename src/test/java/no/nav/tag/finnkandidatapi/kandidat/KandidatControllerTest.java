@@ -135,6 +135,45 @@ public class KandidatControllerTest {
         verify(tilgangskontroll, times(1)).sjekkLesetilgangTilKandidat(fnr);
     }
 
+    @Test
+    public void hentSkrivetilgang__skal_returnere_ok_hvis_veileder_har_skrivetilgang() {
+        værInnloggetSom(enVeileder());
+
+        ResponseEntity respons = controller.hentSkrivetilgang(anyString());
+        verify(tilgangskontroll, times(1)).sjekkSkrivetilgangTilKandidat(anyString());
+    }
+
+    @Test
+    public void slettKandidat__skal_sjekke_skrivetilgang() {
+        String fnr = "12345678901";
+
+        try {
+            controller.slettKandidat(fnr);
+        } catch (Exception ignored) {}
+
+        verify(tilgangskontroll, times(1)).sjekkSkrivetilgangTilKandidat(fnr);
+    }
+
+    @Test
+    public void slettKandidat__skal_returnere_ok() {
+        værInnloggetSom(enVeileder());
+        Kandidat kandidat = enKandidat();
+
+        when(service.slettKandidat(kandidat.getFnr())).thenReturn(1);
+        ResponseEntity<String> respons = controller.slettKandidat(kandidat.getFnr());
+
+        assertThat(respons.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test(expected = NotFoundException.class)
+    public void slettKandidat__skal_kaste_NotFoundException_hvis_kandidat_ikke_finnes() {
+        værInnloggetSom(enVeileder());
+        String uregistrertFnr = "12345678901";
+
+        when(service.slettKandidat(uregistrertFnr)).thenReturn(0);
+        controller.slettKandidat(uregistrertFnr);
+    }
+
     private void værInnloggetSom(Veileder veileder) {
         when(tilgangskontroll.hentInnloggetVeileder()).thenReturn(veileder);
     }

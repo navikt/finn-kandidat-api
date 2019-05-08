@@ -173,4 +173,29 @@ public class KandidatRepositoryTest {
         assertThat(uthentetBehov2.getId()).isEqualTo(2);
         assertThat(uthentetBehov2).isEqualToIgnoringGivenFields(behovTilLagring2, "id");
     }
+
+    @Test
+    public void slettKandidat__skal_returnere_0_hvis_fnr_ikke_finnes() {
+        String uregistrertFnr = "12345678901";
+
+        Integer antallSlettedeKandidater = repository.slettKandidat(uregistrertFnr);
+        assertThat(antallSlettedeKandidater).isEqualTo(0);
+    }
+
+    @Test
+    public void slettKandidat__skal_returnere_antall_slettede_kandidater() {
+        Kandidat kandidatMedEnRegistrering = enKandidat();
+        Kandidat kandidatMedToRegistreringer = enKandidat("01019143210");
+        Kandidat kandidatMedToRegistreringer2 = enKandidat("01019143210");
+
+        repository.lagreKandidat(kandidatMedEnRegistrering);
+        repository.lagreKandidat(kandidatMedToRegistreringer);
+        repository.lagreKandidat(kandidatMedToRegistreringer2);
+
+        Integer antallSlettedeKandidater2 = repository.slettKandidat(kandidatMedToRegistreringer.getFnr());
+        Integer antallSlettedeKandidater1 = repository.slettKandidat(kandidatMedEnRegistrering.getFnr());
+
+        assertThat(antallSlettedeKandidater1).isEqualTo(1);
+        assertThat(antallSlettedeKandidater2).isEqualTo(2);
+    }
 }

@@ -27,7 +27,7 @@ public class TilgangskontrollService {
 
     public boolean harSkrivetilgangTilKandidat(String fnr) {
         if (true) return true;
-        return veilarbabacClient.harSkrivetilgangTilKandidat(fnr);
+        return false;
     }
 
     public void sjekkLesetilgangTilKandidat(String fnr) {

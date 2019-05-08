@@ -15,8 +15,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import static no.nav.tag.finnkandidatapi.tilgangskontroll.abac.NavAttributter.ENVIRONMENT_FELLES_PEP_ID;
-import static no.nav.tag.finnkandidatapi.tilgangskontroll.abac.NavAttributter.RESOURCE_FELLES_DOMENE;
+import static no.nav.tag.finnkandidatapi.tilgangskontroll.abac.NavAttributter.*;
 import static no.nav.tag.finnkandidatapi.tilgangskontroll.abac.StandardAttributter.ACTION_ID;
 
 @Slf4j
@@ -66,8 +65,9 @@ public class AbacClient {
         Attributes actionAttribute = new Attributes();
         actionAttribute.addAttribute(ACTION_ID, action);
 
-        Attributes resource = new Attributes();
-        resource.addAttribute(RESOURCE_FELLES_DOMENE, "srvfinn-kandidat-api");
+        Attributes resources = new Attributes();
+        resources.addAttribute(RESOURCE_FELLES_DOMENE, "veilarb");
+        resources.addAttribute(RESOURCE_FELLES_PERSON_FNR, fnr);
 
         Attributes environment = new Attributes();
         environment.addAttribute(ENVIRONMENT_FELLES_PEP_ID, appName);
@@ -75,7 +75,7 @@ public class AbacClient {
         XacmlRequest request = new XacmlRequest().withRequest(
                 Request.builder()
                         .action(actionAttribute)
-                        .resource(resource)
+                        .resource(resources)
                         .environment(environment)
                         .accessSubject(accessSubject)
                         .build()
@@ -118,7 +118,7 @@ public class AbacClient {
         resource.addAttribute(RESOURCE_FELLES_DOMENE, "srvfinn-kandidat-api");
 
         Attributes environment = new Attributes();
-        environment.addAttribute(ENVIRONMENT_FELLES_PEP_ID, appName);
+        environment.addAttribute(ENVIRONMENT_FELLES_PEP_ID, brukernavn);
 
         return new XacmlRequest().withRequest(
                 Request.builder()

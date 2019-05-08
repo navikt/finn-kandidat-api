@@ -5,6 +5,7 @@ import no.nav.security.oidc.context.OIDCRequestContextHolder;
 import no.nav.security.oidc.context.OIDCValidationContext;
 import no.nav.security.oidc.context.TokenContext;
 import no.nav.tag.finnkandidatapi.kandidat.Veileder;
+import no.nav.tag.finnkandidatapi.tilgangskontroll.abac.AbacAction;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -48,6 +49,12 @@ public class TokenUtilsTest {
         context.addValidatedToken(TokenUtils.ISSUER_ISSO, tokenContext, oidcClaims);
 
         when(contextHolder.getOIDCValidationContext()).thenReturn(context);
+    }
+
+
+    @Test
+    public void test() {
+        AbacAction.valueOf("READ");
     }
 
     private void værUinnlogget() {

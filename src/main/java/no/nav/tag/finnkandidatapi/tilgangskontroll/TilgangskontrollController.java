@@ -34,6 +34,6 @@ public class TilgangskontrollController {
             @PathVariable("action") String action
     ) {
         // TODO TAG-363: Bare en testcontroller. Skal fjernes
-        return abacClient.sjekkTilgang(new Veileder(navIdent), fnr, AbacAction.valueOf(action));
+        return abacClient.sjekkTilgang(new Veileder(navIdent), fnr, AbacAction.valueOf(action.toUpperCase()));
     }
 }

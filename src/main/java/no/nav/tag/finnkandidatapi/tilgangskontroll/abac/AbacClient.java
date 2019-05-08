@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.tag.finnkandidatapi.kandidat.Veileder;
 import no.nav.tag.finnkandidatapi.tilgangskontroll.abac.request.Request;
 import no.nav.tag.finnkandidatapi.tilgangskontroll.abac.request.XacmlRequest;
 import no.nav.tag.finnkandidatapi.tilgangskontroll.abac.response.XacmlResponse;
@@ -55,19 +56,19 @@ public class AbacClient {
 
     }
 
-    public XacmlResponse sjekkTilgang(String navIdent, String fnr, String action) {
+    public XacmlResponse sjekkTilgang(Veileder veileder, String fnr, AbacAction action) {
         // action: read, update, ping
 
         Attributes accessSubject = new Attributes()
-                .addAttribute(StandardAttributter.SUBJECT_ID, navIdent)
+                .addAttribute(StandardAttributter.SUBJECT_ID, veileder.getNavIdent())
                 .addAttribute(NavAttributter.SUBJECT_FELLES_SUBJECTTYPE, "InternBruker");
 
         Attributes actionAttribute = new Attributes();
-        actionAttribute.addAttribute(ACTION_ID, action);
+        actionAttribute.addAttribute(ACTION_ID, action.getAbacKode());
 
         Attributes resources = new Attributes();
         resources.addAttribute(RESOURCE_FELLES_DOMENE, "veilarb");
-        resources.addAttribute(RESOURCE_FELLES_PERSON_FNR, fnr);
+        resources.addAttribute(RESOURCE_VEILARB_PERSON, fnr);
 
         Attributes environment = new Attributes();
         environment.addAttribute(ENVIRONMENT_FELLES_PEP_ID, appName);

@@ -68,7 +68,8 @@ public class AbacClient {
 
         Attributes resources = new Attributes();
         resources.addAttribute(RESOURCE_FELLES_DOMENE, "veilarb");
-        resources.addAttribute(RESOURCE_VEILARB_PERSON, fnr);
+        resources.addAttribute(RESOURCE_FELLES_PERSON_FNR, fnr);
+        resources.addAttribute(RESOURCE_FELLES_RESOURCE_TYPE, RESOURCE_VEILARB_PERSON);
 
         Attributes environment = new Attributes();
         environment.addAttribute(ENVIRONMENT_FELLES_PEP_ID, appName);

@@ -2,6 +2,8 @@ package no.nav.tag.finnkandidatapi.tilgangskontroll.veilarbabac;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.finnkandidatapi.kandidat.FinnKandidatException;
+import no.nav.tag.finnkandidatapi.kandidat.Veileder;
+import no.nav.tag.finnkandidatapi.tilgangskontroll.TilgangskontrollAction;
 import no.nav.tag.finnkandidatapi.tilgangskontroll.TokenUtils;
 import no.nav.tag.finnkandidatapi.tilgangskontroll.sts.STSClient;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,11 +37,11 @@ public class VeilarbabacClient {
         this.veilarbabacUrl = veilarbabacUrl;
     }
 
-    public boolean harSkrivetilgangTilKandidat(String fnr) {
+    public boolean sjekkTilgang(Veileder veileder, String fnr, TilgangskontrollAction action) {
         String response;
 
         try {
-            response = hentTilgangFraVeilarbAbac(fnr);
+            response = hentTilgang(veileder, fnr, action);
         } catch(HttpClientErrorException e) {
             log.error("Feil ved kall til veilarbabac", e);
             throw e;
@@ -54,6 +56,27 @@ public class VeilarbabacClient {
         }
 
         throw new FinnKandidatException("Ukjent respons fra veilarbabac: " + response);
+    }
+
+    private String hentTilgang(Veileder veileder, String fnr, TilgangskontrollAction action) {
+        String uriString = UriComponentsBuilder.fromHttpUrl(veilarbabacUrl)
+                .path("/person")
+                .queryParam("fnr", fnr)
+                .queryParam("action", action.toString())
+                .toUriString();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("subject", veileder.getNavIdent());
+        headers.set("subjectType", "InternBruker");
+        headers.setBearerAuth(hentOidcTokenTilSystembruker());
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        return restTemplate.exchange(
+                uriString,
+                HttpMethod.GET,
+                new HttpEntity<>(headers),
+                String.class
+        ).getBody();
     }
 
     private String hentTilgangFraVeilarbAbac(String fnr) {

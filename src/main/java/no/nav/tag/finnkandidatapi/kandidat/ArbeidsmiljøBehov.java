@@ -4,6 +4,5 @@ public enum ArbeidsmiljøBehov {
     TILRETTELAGT_OPPLÆRING,
     TILRETTELAGTE_ARBEIDSOPPGAVER,
     FADDER,
-    ANNET,
-    VET_IKKE
+    ANNET
 }

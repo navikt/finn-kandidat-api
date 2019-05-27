@@ -5,6 +5,7 @@ import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.tag.finnkandidatapi.tilgangskontroll.sts.STSToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
@@ -24,16 +25,22 @@ public class MockServer {
     MockServer(
             @Value("${mock.port}") Integer port,
             @Value("${sts.url}") String stsUrl,
-            @Value("${veilarbabac.url}") String veilarbabacUrl,
-            @Value("${abac.url}") String abacUrl
+            @Value("${veilarbabac.url}") String veilarbabacUrl
     ) {
         log.info("Starter mockserver");
 
         this.server =  new WireMockServer(port);
 
         mockKall(veilarbabacUrl + "/person", "allow");
+        mockKall(stsUrl + "/sts/token", new STSToken("fdg", "asfsdg", 325));
 
         server.start();
+    }
+
+    @SneakyThrows
+    private void mockKall(String url, Object body) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        mockKall(url, objectMapper.writeValueAsString(body));
     }
 
     private void mockKall(String url, String body) {

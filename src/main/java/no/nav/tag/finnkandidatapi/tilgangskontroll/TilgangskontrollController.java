@@ -27,7 +27,7 @@ public class TilgangskontrollController {
         return veilarbabacClient.sjekkTilgang(
                 new Veileder(navIdent),
                 fnr,
-                TilgangskontrollAction.valueOf(action.toUpperCase())
+                TilgangskontrollAction.valueOf(action.toLowerCase())
         );
     }
 }

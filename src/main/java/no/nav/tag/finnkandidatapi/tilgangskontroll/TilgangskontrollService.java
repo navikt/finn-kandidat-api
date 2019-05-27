@@ -16,11 +16,6 @@ public class TilgangskontrollService {
         this.veilarbabacClient = veilarbabacClient;
     }
 
-    public boolean harSkrivetilgangTilKandidat(String fnr) {
-        if (true) return true;
-        return false;
-    }
-
     public void sjekkLesetilgangTilKandidat(String fnr) {
         sjekkTilgang(fnr, TilgangskontrollAction.read);
     }

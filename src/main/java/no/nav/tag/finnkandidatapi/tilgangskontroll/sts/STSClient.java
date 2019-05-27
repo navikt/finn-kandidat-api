@@ -1,7 +1,6 @@
 package no.nav.tag.finnkandidatapi.tilgangskontroll.sts;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.tag.finnkandidatapi.kandidat.FinnKandidatException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;

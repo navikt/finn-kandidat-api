@@ -3,7 +3,6 @@ package no.nav.tag.finnkandidatapi.tilgangskontroll.veilarbabac;
 import no.nav.tag.finnkandidatapi.kandidat.FinnKandidatException;
 import no.nav.tag.finnkandidatapi.kandidat.Veileder;
 import no.nav.tag.finnkandidatapi.tilgangskontroll.TilgangskontrollAction;
-import no.nav.tag.finnkandidatapi.tilgangskontroll.TokenUtils;
 import no.nav.tag.finnkandidatapi.tilgangskontroll.sts.STSClient;
 import no.nav.tag.finnkandidatapi.tilgangskontroll.sts.STSToken;
 import org.junit.Before;

@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.finnkandidatapi.kandidat.FinnKandidatException;
 import no.nav.tag.finnkandidatapi.kandidat.Veileder;
 import no.nav.tag.finnkandidatapi.tilgangskontroll.TilgangskontrollAction;
-import no.nav.tag.finnkandidatapi.tilgangskontroll.TokenUtils;
 import no.nav.tag.finnkandidatapi.tilgangskontroll.sts.STSClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;

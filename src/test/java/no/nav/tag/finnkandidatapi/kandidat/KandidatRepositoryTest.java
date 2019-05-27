@@ -14,7 +14,7 @@ import java.util.Set;
 
 import static no.nav.tag.finnkandidatapi.TestData.*;
 import static no.nav.tag.finnkandidatapi.kandidat.ArbeidsmiljøBehov.ANNET;
-import static no.nav.tag.finnkandidatapi.kandidat.ArbeidsmiljøBehov.FADDER;
+import static no.nav.tag.finnkandidatapi.kandidat.ArbeidsmiljøBehov.MENTOR;
 import static no.nav.tag.finnkandidatapi.kandidat.FysiskBehov.ARBEIDSSTILLING;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -66,7 +66,7 @@ public class KandidatRepositoryTest {
         Kandidat kandidat1 = enKandidat();
         kandidat1.setFysiskeBehov(Set.of(ARBEIDSSTILLING));
         Kandidat kandidat2 = enKandidat();
-        kandidat2.setArbeidsmiljøBehov(Set.of(FADDER, ANNET));
+        kandidat2.setArbeidsmiljøBehov(Set.of(MENTOR, ANNET));
 
         repository.lagreKandidat(kandidat1);
         repository.lagreKandidat(kandidat2);

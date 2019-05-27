@@ -16,7 +16,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 @Slf4j
 @Service
 public class VeilarbabacClient {
-    private final TokenUtils tokenUtils;
     private final RestTemplate restTemplate;
     private final STSClient stsClient;
     private final String veilarbabacUrl;
@@ -26,12 +25,10 @@ public class VeilarbabacClient {
     public static final String DENY_RESPONSE = "deny";
 
     public VeilarbabacClient(
-            TokenUtils tokenUtils,
             RestTemplate restTemplate,
             STSClient stsClient,
             @Value("${veilarbabac.url}") String veilarbabacUrl
     ) {
-        this.tokenUtils = tokenUtils;
         this.restTemplate = restTemplate;
         this.stsClient = stsClient;
         this.veilarbabacUrl = veilarbabacUrl;
@@ -68,26 +65,6 @@ public class VeilarbabacClient {
         HttpHeaders headers = new HttpHeaders();
         headers.set("subject", veileder.getNavIdent());
         headers.set("subjectType", "InternBruker");
-        headers.setBearerAuth(hentOidcTokenTilSystembruker());
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        return restTemplate.exchange(
-                uriString,
-                HttpMethod.GET,
-                new HttpEntity<>(headers),
-                String.class
-        ).getBody();
-    }
-
-    private String hentTilgangFraVeilarbAbac(String fnr) {
-        String uriString = UriComponentsBuilder.fromHttpUrl(veilarbabacUrl)
-                .path("/person")
-                .queryParam("fnr", fnr)
-                .queryParam("action", "update")
-                .toUriString();
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("subject", tokenUtils.hentInnloggetOidcToken());
         headers.setBearerAuth(hentOidcTokenTilSystembruker());
         headers.setContentType(MediaType.APPLICATION_JSON);
 

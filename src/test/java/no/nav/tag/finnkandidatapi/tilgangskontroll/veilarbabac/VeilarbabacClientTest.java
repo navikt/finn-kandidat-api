@@ -1,12 +1,12 @@
 package no.nav.tag.finnkandidatapi.tilgangskontroll.veilarbabac;
 
 import no.nav.tag.finnkandidatapi.kandidat.FinnKandidatException;
+import no.nav.tag.finnkandidatapi.kandidat.Veileder;
 import no.nav.tag.finnkandidatapi.tilgangskontroll.TilgangskontrollAction;
 import no.nav.tag.finnkandidatapi.tilgangskontroll.TokenUtils;
 import no.nav.tag.finnkandidatapi.tilgangskontroll.sts.STSClient;
 import no.nav.tag.finnkandidatapi.tilgangskontroll.sts.STSToken;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -27,9 +27,6 @@ import static org.mockito.Mockito.when;
 public class VeilarbabacClientTest {
 
     @Mock
-    private TokenUtils tokenUtils;
-
-    @Mock
     private RestTemplate restTemplate;
 
     @Mock
@@ -42,7 +39,6 @@ public class VeilarbabacClientTest {
         mockReturverdiFraVeilarbabac("permit");
         when(stsClient.hentSTSToken()).thenReturn(etStsToken());
         veilarbabacClient = new VeilarbabacClient(
-                tokenUtils,
                 restTemplate,
                 stsClient,
                 "https://test.no"
@@ -67,21 +63,20 @@ public class VeilarbabacClientTest {
         veilarbabacClient.sjekkTilgang(enVeileder(), "12345678910", TilgangskontrollAction.update);
     }
 
-    @Ignore // TODO Oppdater denne testen
     @Test
     public void harSkrivetilgangTilKandidat__skal_gjøre_kall_med_riktige_parametre() {
         STSToken stsToken = etStsToken();
-        String oidcToken = "sdgsfdhgsdfd";
         String fnr = "12345678910";
 
-        when(stsClient.hentSTSToken()).thenReturn(stsToken);
+        Veileder veileder = enVeileder();
 
-        when(tokenUtils.hentInnloggetOidcToken()).thenReturn(oidcToken);
+        when(stsClient.hentSTSToken()).thenReturn(stsToken);
 
         veilarbabacClient.sjekkTilgang(enVeileder(), fnr, TilgangskontrollAction.update);
 
         HttpHeaders headers = new HttpHeaders();
-        headers.set("subject", oidcToken);
+        headers.set("subject", veileder.getNavIdent());
+        headers.set("subjectType", "InternBruker");
         headers.set("AUTHORIZATION", "Bearer " + stsToken.getAccessToken());
         headers.setContentType(MediaType.APPLICATION_JSON);
 

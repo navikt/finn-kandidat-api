@@ -106,6 +106,7 @@ public class KandidatControllerTest {
         Kandidat kandidat2 = enKandidat("2345678901");
 
         when(service.hentKandidater()).thenReturn(List.of(kandidat1, kandidat2));
+        when(tilgangskontroll.harLesetilgangTilKandidat(anyString())).thenReturn(true);
 
         ResponseEntity<List<Kandidat>> respons = controller.hentKandidater();
 

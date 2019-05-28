@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Protected
 @RestController
@@ -30,7 +31,9 @@ public class KandidatController {
 
     @GetMapping
     public ResponseEntity<List<Kandidat>> hentKandidater() {
-        List<Kandidat> kandidater = kandidatService.hentKandidater();
+        List<Kandidat> kandidater = kandidatService.hentKandidater().stream()
+                .filter(kandidat -> tilgangskontroll.harLesetilgangTilKandidat(kandidat.getFnr()))
+                .collect(Collectors.toList());
         return ResponseEntity.ok(kandidater);
     }
 

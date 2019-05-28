@@ -9,8 +9,11 @@ import org.springframework.web.client.RestTemplate;
 @Configuration
 public class STSConfiguration {
 
-    @Value("${STS_BRUKERNAVN}") private String brukernavn;
-    @Value("${STS_PASSORD}") private String passord;
+    @Value("${STS_BRUKERNAVN}")
+    private String brukernavn;
+
+    @Value("${STS_PASSORD}")
+    private String passord;
 
     @Bean
     public RestTemplate stsBasicAuthRestTemplate() {

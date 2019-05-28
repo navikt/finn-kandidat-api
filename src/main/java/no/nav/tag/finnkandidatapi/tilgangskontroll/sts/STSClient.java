@@ -1,9 +1,11 @@
 package no.nav.tag.finnkandidatapi.tilgangskontroll.sts;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.tag.finnkandidatapi.kandidat.FinnKandidatException;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
@@ -25,26 +27,22 @@ public class STSClient {
     }
 
     public STSToken hentSTSToken() {
-        try {
-            return hentToken();
-        } catch(HttpClientErrorException e) {
-            log.error("Feil ved oppslag i STS", e);
-            throw e;
-        }
-    }
-
-    private STSToken hentToken() {
         String uriString = UriComponentsBuilder.fromHttpUrl(stsUrl + "/sts/token")
                 .queryParam("grant_type","client_credentials")
                 .queryParam("scope","openid")
                 .toUriString();
 
-        return stsBasicAuthRestTemplate.exchange(
-                uriString,
-                HttpMethod.GET,
-                getRequestEntity(),
-                STSToken.class
-        ).getBody();
+        try {
+            return stsBasicAuthRestTemplate.exchange(
+                    uriString,
+                    HttpMethod.GET,
+                    getRequestEntity(),
+                    STSToken.class
+            ).getBody();
+        } catch(HttpClientErrorException e) {
+            log.error("Feil ved oppslag i STS", e);
+            throw e;
+        }
     }
 
     private HttpEntity<String> getRequestEntity() {

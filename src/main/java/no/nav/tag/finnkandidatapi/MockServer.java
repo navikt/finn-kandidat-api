@@ -19,7 +19,6 @@ import java.net.URL;
 @Slf4j
 public class MockServer {
     private final WireMockServer server;
-    private static ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
     MockServer(

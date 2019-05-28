@@ -114,6 +114,23 @@ public class KandidatControllerTest {
         assertThat(respons.getBody().get(1)).isEqualToIgnoringGivenFields(kandidat2, "id");
     }
 
+    @Test
+    public void hentKandidater__skal_bare_returnere_kandidater_man_har_lesetilgang_til() {
+        værInnloggetSom(enVeileder());
+
+        Kandidat kandidatManHarTilgangTil = enKandidat("11111111111");
+        Kandidat kandidatManIkkeHarTilgangTil = enKandidat("22222222222");
+
+        when(service.hentKandidater()).thenReturn(List.of(kandidatManHarTilgangTil, kandidatManIkkeHarTilgangTil));
+        when(tilgangskontroll.harLesetilgangTilKandidat("11111111111")).thenReturn(true);
+        when(tilgangskontroll.harLesetilgangTilKandidat("22222222222")).thenReturn(false);
+
+        ResponseEntity<List<Kandidat>> respons = controller.hentKandidater();
+
+        assertThat(respons.getBody().get(0)).isEqualToIgnoringGivenFields(kandidatManHarTilgangTil, "id");
+        assertThat(respons.getBody().size()).isEqualTo(1);
+    }
+
     @Test(expected = FinnKandidatException.class)
     public void lagreKandidat__skal_kaste_FinnKandidatException_hvis_kandidat_ikke_fins() {
         Kandidat kandidat = enKandidat();
@@ -139,7 +156,7 @@ public class KandidatControllerTest {
     public void hentSkrivetilgang__skal_returnere_ok_hvis_veileder_har_skrivetilgang() {
         værInnloggetSom(enVeileder());
 
-        ResponseEntity respons = controller.hentSkrivetilgang(anyString());
+        controller.hentSkrivetilgang(anyString());
         verify(tilgangskontroll, times(1)).sjekkSkrivetilgangTilKandidat(anyString());
     }
 

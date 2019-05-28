@@ -34,20 +34,11 @@ public class VeilarbabacClient {
     }
 
     public boolean sjekkTilgang(Veileder veileder, String fnr, TilgangskontrollAction action) {
-        String response;
-
-        try {
-            response = hentTilgang(veileder, fnr, action);
-        } catch(HttpClientErrorException e) {
-            log.error("Feil ved kall til veilarbabac", e);
-            throw e;
-        }
+        String response = hentTilgang(veileder, fnr, action);
 
         if (PERMIT_RESPONSE.equals(response)) {
             return true;
-        }
-
-        if (DENY_RESPONSE.equals(response)) {
+        } else if (DENY_RESPONSE.equals(response)) {
             return false;
         }
 

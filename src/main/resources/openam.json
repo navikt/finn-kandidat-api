@@ -1,0 +1,50 @@
+{
+  "response_types_supported": [
+    "code token id_token",
+    "code",
+    "code id_token",
+    "id_token",
+    "code token",
+    "token",
+    "token id_token"
+  ],
+  "claims_parameter_supported": false,
+  "end_session_endpoint": "https://isso-q.adeo.no:443/isso/oauth2/connect/endSession",
+  "version": "3.0",
+  "check_session_iframe": "https://isso-q.adeo.no:443/isso/oauth2/connect/checkSession",
+  "scopes_supported": [
+    "openid"
+  ],
+  "issuer": "https://isso-q.adeo.no:443/isso/oauth2",
+  "id_token_encryption_enc_values_supported": [
+    "A128CBC-HS256",
+    "A256CBC-HS512"
+  ],
+  "acr_values_supported": [],
+  "authorization_endpoint": "https://isso-q.adeo.no:443/isso/oauth2/authorize",
+  "userinfo_endpoint": "https://isso-q.adeo.no:443/isso/oauth2/userinfo",
+  "claims_supported": [],
+  "id_token_encryption_alg_values_supported": [
+    "RSA1_5"
+  ],
+  "jwks_uri": "https://isso-q.adeo.no:443/isso/oauth2/connect/jwk_uri",
+  "subject_types_supported": [
+    "public"
+  ],
+  "id_token_signing_alg_values_supported": [
+    "ES384",
+    "HS256",
+    "HS512",
+    "ES256",
+    "RS256",
+    "HS384",
+    "ES512"
+  ],
+  "registration_endpoint": "https://isso-q.adeo.no:443/isso/oauth2/connect/register",
+  "token_endpoint_auth_methods_supported": [
+    "client_secret_post",
+    "private_key_jwt",
+    "client_secret_basic"
+  ],
+  "token_endpoint": "https://isso-q.adeo.no:443/isso/oauth2/access_token"
+}

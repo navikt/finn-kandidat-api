@@ -28,21 +28,17 @@ public class STSClient {
 
     public STSToken hentSTSToken() {
         String uriString = UriComponentsBuilder.fromHttpUrl(stsUrl + "/sts/token")
-                .queryParam("grant_type","client_credentials")
-                .queryParam("scope","openid")
+                .queryParam("grant_type", "client_credentials")
+                .queryParam("scope", "openid")
                 .toUriString();
 
-        try {
-            return stsBasicAuthRestTemplate.exchange(
-                    uriString,
-                    HttpMethod.GET,
-                    getRequestEntity(),
-                    STSToken.class
-            ).getBody();
-        } catch(HttpClientErrorException e) {
-            log.error("Feil ved oppslag i STS", e);
-            throw e;
-        }
+        return stsBasicAuthRestTemplate.exchange(
+                uriString,
+                HttpMethod.GET,
+                getRequestEntity(),
+                STSToken.class
+        ).getBody();
+
     }
 
     private HttpEntity<String> getRequestEntity() {

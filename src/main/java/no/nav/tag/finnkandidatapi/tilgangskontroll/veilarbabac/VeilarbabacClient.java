@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.finnkandidatapi.kandidat.FinnKandidatException;
 import no.nav.tag.finnkandidatapi.kandidat.Veileder;
 import no.nav.tag.finnkandidatapi.tilgangskontroll.TilgangskontrollAction;
-import no.nav.tag.finnkandidatapi.tilgangskontroll.TokenUtils;
 import no.nav.tag.finnkandidatapi.tilgangskontroll.sts.STSClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -35,20 +34,11 @@ public class VeilarbabacClient {
     }
 
     public boolean sjekkTilgang(Veileder veileder, String fnr, TilgangskontrollAction action) {
-        String response;
-
-        try {
-            response = hentTilgang(veileder, fnr, action);
-        } catch(HttpClientErrorException e) {
-            log.error("Feil ved kall til veilarbabac", e);
-            throw e;
-        }
+        String response = hentTilgang(veileder, fnr, action);
 
         if (PERMIT_RESPONSE.equals(response)) {
             return true;
-        }
-
-        if (DENY_RESPONSE.equals(response)) {
+        } else if (DENY_RESPONSE.equals(response)) {
             return false;
         }
 

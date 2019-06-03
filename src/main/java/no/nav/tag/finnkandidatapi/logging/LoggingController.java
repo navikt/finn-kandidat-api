@@ -13,6 +13,6 @@ public class LoggingController {
 
     @PostMapping
     public void logging(@RequestBody LoggEvent loggEvent) {
-        log.info(loggEvent.getEventnavn(), loggEvent.getFelter());
+        log.info("Eventnavn: {}, felter: {}", loggEvent.getEventnavn(), loggEvent.getFelter());
     }
 }

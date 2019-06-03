@@ -9,7 +9,7 @@
     }
   },
   "spec": {
-    "image": "navikt/finn-kandidat-api:test_94",
+    "image": "navikt/finn-kandidat-api:test_95",
     "team": "teamtag",
     "port": 8080,
     "vault": { "enabled": true },
@@ -29,10 +29,10 @@
       },
       {
         "name": "NO_PROXY",
-        "value": ".adeo.no"
+        "value": "*"
       }
     ],
-    "webproxy": false,
+    "webproxy": true,
     "prometheus": {
       "enabled": true,
       "path": "/finn-kandidat-api/internal/actuator/prometheus"

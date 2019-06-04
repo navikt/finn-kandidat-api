@@ -33,7 +33,7 @@ public class KandidatServiceTest {
     private ApplicationEventPublisher eventPublisher;
 
     @Test
-    public void hentKandidat_skal_returnere_kandidat() {
+    public void hentNyesteKandidat__skal_returnere_kandidat() {
         Kandidat kandidat = enKandidat();
         when(repository.hentNyesteKandidat(kandidat.getFnr())).thenReturn(Optional.of(kandidat));
 

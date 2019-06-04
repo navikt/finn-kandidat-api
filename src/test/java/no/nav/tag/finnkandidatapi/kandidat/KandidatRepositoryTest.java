@@ -76,6 +76,16 @@ public class KandidatRepositoryTest {
     }
 
     @Test
+    public void hentNyesteKandidat__skal_ikke_returnere_kandidater_markert_som_slettet() {
+        Kandidat kandidat = enKandidat();
+
+        repository.lagreKandidat(kandidat);
+        repository.markerKandidatSomSlettet(kandidat.getFnr());
+
+        assertThat(repository.hentNyesteKandidat(kandidat.getFnr())).isEmpty();
+    }
+
+    @Test
     public void hentNyesteKandidat__skal_håndtere_henting_av_ikke_eksisterende_kandidat() {
         boolean kandidatEksisterer = repository.hentNyesteKandidat("finnes ikke").isPresent();
         assertThat(kandidatEksisterer).isFalse();
@@ -157,6 +167,20 @@ public class KandidatRepositoryTest {
     }
 
     @Test
+    public void hentKandidater__skal_ikke_returnere_kandidater_markert_som_slettet() {
+        Kandidat kandidat1 = enKandidat("12345678910");
+        Kandidat kandidat2 = enKandidat("10987654321");
+
+        repository.lagreKandidat(kandidat1);
+        repository.lagreKandidat(kandidat2);
+        repository.markerKandidatSomSlettet(kandidat1.getFnr());
+
+        List<Kandidat> kandidater = repository.hentKandidater();
+
+        assertThat(kandidater.size()).isEqualTo(1);
+    }
+
+    @Test
     public void skal_kunne_lagre_og_hente_ut_flere_ganger() {
         Kandidat behovTilLagring1 = enKandidat();
         Integer lagretId1 = repository.lagreKandidat(behovTilLagring1);
@@ -167,10 +191,10 @@ public class KandidatRepositoryTest {
         Kandidat uthentetBehov1 = repository.hentKandidat(lagretId1).get();
         Kandidat uthentetBehov2 = repository.hentKandidat(lagretId2).get();
 
-        assertThat(uthentetBehov1.getId()).isEqualTo(1);
+        assertThat(uthentetBehov1.getId()).isEqualTo(lagretId1);
         assertThat(uthentetBehov1).isEqualToIgnoringGivenFields(behovTilLagring1, "id");
 
-        assertThat(uthentetBehov2.getId()).isEqualTo(2);
+        assertThat(uthentetBehov2.getId()).isEqualTo(lagretId2);
         assertThat(uthentetBehov2).isEqualToIgnoringGivenFields(behovTilLagring2, "id");
     }
 

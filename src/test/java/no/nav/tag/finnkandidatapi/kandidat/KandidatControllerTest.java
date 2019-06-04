@@ -1,6 +1,5 @@
 package no.nav.tag.finnkandidatapi.kandidat;
 
-import com.sun.mail.iap.Response;
 import no.nav.tag.finnkandidatapi.tilgangskontroll.TilgangskontrollService;
 import org.junit.Before;
 import org.junit.Test;

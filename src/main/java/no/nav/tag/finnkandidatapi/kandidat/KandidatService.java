@@ -51,4 +51,8 @@ public class KandidatService {
     public Integer slettKandidat(String fnr) {
         return kandidatRepository.slettKandidat(fnr);
     }
+
+    public Integer markerKandidatSomSlettet(String fnr) {
+        return kandidatRepository.markerKandidatSomSlettet(fnr);
+    }
 }

@@ -1,5 +1,6 @@
 package no.nav.tag.finnkandidatapi.kandidat;
 
+import com.sun.mail.iap.Response;
 import no.nav.tag.finnkandidatapi.tilgangskontroll.TilgangskontrollService;
 import org.junit.Before;
 import org.junit.Test;
@@ -233,6 +234,26 @@ public class KandidatControllerTest {
 
         when(service.slettKandidat(uregistrertFnr)).thenReturn(0);
         controller.slettKandidat(uregistrertFnr);
+    }
+
+    @Test
+    public void markerKandidatSomSlettet__skal_returnere_ok() {
+        værInnloggetSom(enVeileder());
+        Kandidat kandidat = enKandidat();
+
+        when(service.markerKandidatSomSlettet(kandidat.getFnr())).thenReturn(1);
+        ResponseEntity<String> respons = controller.markerKandidatSomSlettet(kandidat.getFnr());
+
+        assertThat(respons.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test(expected = NotFoundException.class)
+    public void markerKandidatSomSlettet__skal_kaste_NotFoundException_hvis_kandidat_ikke_finnes() {
+        værInnloggetSom(enVeileder());
+        String uregistrertFnr = "12345678901";
+
+        when(service.markerKandidatSomSlettet(uregistrertFnr)).thenReturn(0);
+        controller.markerKandidatSomSlettet(uregistrertFnr);
     }
 
     private void værInnloggetSom(Veileder veileder) {

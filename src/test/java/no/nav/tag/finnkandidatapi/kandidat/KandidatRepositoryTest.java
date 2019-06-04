@@ -198,4 +198,27 @@ public class KandidatRepositoryTest {
         assertThat(antallSlettedeKandidater1).isEqualTo(1);
         assertThat(antallSlettedeKandidater2).isEqualTo(2);
     }
+
+    @Test
+    public void markerKandidatSomSlettet__skal_returnere_0_hvis_fnr_ikke_finnes() {
+        String uregistrertFnr = "12345678901";
+
+        Integer antallKandidaterMarkertSomSlettet = repository.markerKandidatSomSlettet(uregistrertFnr);
+        assertThat(antallKandidaterMarkertSomSlettet).isEqualTo(0);
+    }
+
+    @Test
+    public void markerKandidatSomSlettet__skal_returnere_antall_oppføringer_markert_som_slettet() {
+        Kandidat kandidatMedToRegistreringer = enKandidat("01019143210");
+        Kandidat kandidatMedToRegistreringer2 = enKandidat("01019143210");
+        Kandidat enTredjeKandidat = enKandidat();
+
+        repository.lagreKandidat(kandidatMedToRegistreringer);
+        repository.lagreKandidat(kandidatMedToRegistreringer2);
+        repository.lagreKandidat(enTredjeKandidat);
+
+        Integer antallMarkertSomSlettet = repository.markerKandidatSomSlettet(kandidatMedToRegistreringer.getFnr());
+
+        assertThat(antallMarkertSomSlettet).isEqualTo(2);
+    }
 }

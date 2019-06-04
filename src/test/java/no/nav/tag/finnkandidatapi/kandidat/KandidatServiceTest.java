@@ -111,4 +111,12 @@ public class KandidatServiceTest {
 
         assertThat(kandidatService.slettKandidat(fnr)).isEqualTo(1);
     }
+
+    @Test
+    public void markerKandidatSomSlettet__skal_returnere_antall_kandidater_markert_som_slettet() {
+        String fnr = enKandidat("12345678901").getFnr();
+
+        when(repository.markerKandidatSomSlettet(fnr)).thenReturn(1);
+        assertThat(kandidatService.markerKandidatSomSlettet(fnr)).isEqualTo(1);
+    }
 }

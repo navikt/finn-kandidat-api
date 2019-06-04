@@ -6,7 +6,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -24,41 +23,36 @@ public class KandidatControllerTest {
     private KandidatController controller;
 
     @Mock
-    private ApplicationEventPublisher applicationEventPublisher;
-
-    @Mock
     private KandidatService service;
 
     @Mock
     private TilgangskontrollService tilgangskontroll;
 
-
-
     @Before
     public void setUp() {
-        controller = new KandidatController(applicationEventPublisher, service, tilgangskontroll);
+        controller = new KandidatController(service, tilgangskontroll);
     }
 
     @Test
-    public void lagreKandidat__skal_sjekke_skrivetilgang() {
+    public void opprettKandidat__skal_sjekke_skrivetilgang() {
         Kandidat kandidat = enKandidat();
 
         try {
-            controller.lagreKandidat(kandidat);
+            controller.opprettKandidat(kandidat);
         } catch (Exception ignored) {}
 
         verify(tilgangskontroll, times(1)).sjekkSkrivetilgangTilKandidat(kandidat.getFnr());
     }
 
     @Test
-    public void lagreKandidat__skal_returnere_created_med_opprettet_kandidat() {
+    public void opprettKandidat__skal_returnere_created_med_opprettet_kandidat() {
         Veileder veileder = enVeileder();
         værInnloggetSom(veileder);
         Kandidat kandidat = enKandidat();
 
-        when(service.lagreKandidat(kandidat, veileder)).thenReturn(Optional.of(kandidat));
+        when(service.opprettKandidat(kandidat, veileder)).thenReturn(Optional.of(kandidat));
 
-        ResponseEntity<Kandidat> respons = controller.lagreKandidat(kandidat);
+        ResponseEntity<Kandidat> respons = controller.opprettKandidat(kandidat);
         Kandidat hentetKandidat = respons.getBody();
 
         assertThat(respons.getStatusCode()).isEqualTo(HttpStatus.CREATED);
@@ -66,36 +60,75 @@ public class KandidatControllerTest {
     }
 
     @Test
-    public void lagreKandidat__skal_kalle_kandidat_service_med_riktige_parameter() {
+    public void opprettKandidat__skal_kalle_kandidat_service_med_riktige_parameter() {
         Kandidat kandidat = enKandidat();
         Veileder veileder = enVeileder();
         værInnloggetSom(veileder);
 
-        when(service.lagreKandidat(kandidat, veileder)).thenReturn(Optional.of(kandidat));
+        when(service.opprettKandidat(kandidat, veileder)).thenReturn(Optional.of(kandidat));
 
-        controller.lagreKandidat(kandidat);
+        controller.opprettKandidat(kandidat);
 
-        verify(service).lagreKandidat(kandidat, veileder);
+        verify(service).opprettKandidat(kandidat, veileder);
     }
 
-    @Test(expected = NotFoundException.class)
-    public void hentKandidat__skal_kaste_NotFoundException_hvis_kandidat_ikke_fins() {
-        String fnr = enKandidat().getFnr();
-        when(service.hentNyesteKandidat(fnr)).thenReturn(Optional.empty());
-        controller.hentKandidat(fnr);
+    @Test(expected = FinnKandidatException.class)
+    public void opprettKandidat__skal_kaste_FinnKandidatException_hvis_kandidat_ikke_fins() {
+        Kandidat kandidat = enKandidat();
+        Veileder veileder = enVeileder();
+        værInnloggetSom(veileder);
+
+        when(service.opprettKandidat(kandidat, veileder)).thenReturn(Optional.empty());
+        controller.opprettKandidat(kandidat);
     }
 
     @Test
-    public void hentKandidat__skal_returnere_ok_med_kandidat() {
-        værInnloggetSom(enVeileder());
+    public void endreKandidat__skal_sjekke_skrivetilgang() {
         Kandidat kandidat = enKandidat();
 
-        when(service.hentNyesteKandidat(kandidat.getFnr())).thenReturn(Optional.of(kandidat));
+        try {
+            controller.endreKandidat(kandidat);
+        } catch (Exception ignored) {}
 
-        ResponseEntity<Kandidat> respons = controller.hentKandidat(kandidat.getFnr());
+        verify(tilgangskontroll, times(1)).sjekkSkrivetilgangTilKandidat(kandidat.getFnr());
+    }
+
+    @Test
+    public void endreKandidat__skal_returnere_ok_med_opprettet_kandidat() {
+        Veileder veileder = enVeileder();
+        værInnloggetSom(veileder);
+        Kandidat kandidat = enKandidat();
+
+        when(service.endreKandidat(kandidat, veileder)).thenReturn(Optional.of(kandidat));
+
+        ResponseEntity<Kandidat> respons = controller.endreKandidat(kandidat);
+        Kandidat hentetKandidat = respons.getBody();
 
         assertThat(respons.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(respons.getBody()).isEqualTo(kandidat);
+        assertThat(hentetKandidat).isEqualTo(kandidat);
+    }
+
+    @Test
+    public void endreKandidat__skal_kalle_kandidat_service_med_riktige_parameter() {
+        Kandidat kandidat = enKandidat();
+        Veileder veileder = enVeileder();
+        værInnloggetSom(veileder);
+
+        when(service.endreKandidat(kandidat, veileder)).thenReturn(Optional.of(kandidat));
+
+        controller.endreKandidat(kandidat);
+
+        verify(service).endreKandidat(kandidat, veileder);
+    }
+
+    @Test(expected = FinnKandidatException.class)
+    public void endreKandidat__skal_kaste_FinnKandidatException_hvis_kandidat_ikke_fins() {
+        Kandidat kandidat = enKandidat();
+        Veileder veileder = enVeileder();
+        værInnloggetSom(veileder);
+
+        when(service.endreKandidat(kandidat, veileder)).thenReturn(Optional.empty());
+        controller.endreKandidat(kandidat);
     }
 
     @Test
@@ -132,14 +165,24 @@ public class KandidatControllerTest {
         assertThat(respons.getBody().size()).isEqualTo(1);
     }
 
-    @Test(expected = FinnKandidatException.class)
-    public void lagreKandidat__skal_kaste_FinnKandidatException_hvis_kandidat_ikke_fins() {
-        Kandidat kandidat = enKandidat();
-        Veileder veileder = enVeileder();
-        værInnloggetSom(veileder);
+    @Test(expected = NotFoundException.class)
+    public void hentKandidat__skal_kaste_NotFoundException_hvis_kandidat_ikke_fins() {
+        String fnr = enKandidat().getFnr();
+        when(service.hentNyesteKandidat(fnr)).thenReturn(Optional.empty());
+        controller.hentKandidat(fnr);
+    }
 
-        when(service.lagreKandidat(kandidat, veileder)).thenReturn(Optional.empty());
-        controller.lagreKandidat(kandidat);
+    @Test
+    public void hentKandidat__skal_returnere_ok_med_kandidat() {
+        værInnloggetSom(enVeileder());
+        Kandidat kandidat = enKandidat();
+
+        when(service.hentNyesteKandidat(kandidat.getFnr())).thenReturn(Optional.of(kandidat));
+
+        ResponseEntity<Kandidat> respons = controller.hentKandidat(kandidat.getFnr());
+
+        assertThat(respons.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(respons.getBody()).isEqualTo(kandidat);
     }
 
     @Test

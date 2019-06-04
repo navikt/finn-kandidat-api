@@ -48,11 +48,7 @@ public class KandidatService {
         kandidat.setSistEndret(LocalDateTime.now());
     }
 
-    public Integer slettKandidat(String fnr) {
+    Integer slettKandidat(String fnr) {
         return kandidatRepository.slettKandidat(fnr);
-    }
-
-    public Integer markerKandidatSomSlettet(String fnr) {
-        return kandidatRepository.markerKandidatSomSlettet(fnr);
     }
 }

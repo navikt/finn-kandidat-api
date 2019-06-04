@@ -97,10 +97,6 @@ public class KandidatRepository {
     }
 
     public Integer slettKandidat(String fnr) {
-        return jdbcTemplate.update("DELETE FROM kandidat WHERE fnr = ?", new Object[]{fnr});
-    }
-
-    public Integer markerKandidatSomSlettet(String fnr) {
         return jdbcTemplate.update("UPDATE kandidat SET slettet = true WHERE fnr = ?", new Object[]{fnr});
     }
 }

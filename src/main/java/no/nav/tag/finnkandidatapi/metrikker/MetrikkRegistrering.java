@@ -19,7 +19,7 @@ public class MetrikkRegistrering {
     @EventListener
     public void kandidatOpprettet(KandidatOpprettet event) {
         log.info("event=kandidat.opprettet, id={}", event.getKandidat().getId());
-//        counter("kandidat.opprettet").increment();
+        counter("kandidat.opprettet").increment();
     }
 
     private Counter counter(String navn) {

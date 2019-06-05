@@ -22,6 +22,7 @@ public class KandidatRepository {
     static final String FYSISKE_BEHOV = "fysiske_behov";
     static final String ARBEIDSMILJØ_BEHOV = "arbeidsmiljø_behov";
     static final String GRUNNLEGGENDE_BEHOV = "grunnleggende_behov";
+    static final String SLETTET = "slettet";
 
     private JdbcTemplate jdbcTemplate;
     private SimpleJdbcInsert jdbcInsert;
@@ -37,7 +38,7 @@ public class KandidatRepository {
     public Optional<Kandidat> hentNyesteKandidat(String fnr) {
         try {
             Kandidat kandidat = jdbcTemplate.queryForObject(
-                    "SELECT * FROM kandidat WHERE fnr = ? ORDER BY registreringstidspunkt DESC LIMIT 1", new Object[]{ fnr },
+                    "SELECT * FROM kandidat WHERE (fnr = ? AND slettet = false) ORDER BY registreringstidspunkt DESC LIMIT 1", new Object[]{ fnr },
                     new KandidatMapper()
             );
             return Optional.of(kandidat);
@@ -68,6 +69,7 @@ public class KandidatRepository {
                         "GROUP BY fnr) gruppertKandidat " +
                         "ON k.fnr = gruppertKandidat.fnr " +
                         "AND k.registreringstidspunkt = gruppertKandidat.sisteRegistrert " +
+                "WHERE slettet = false " +
                 "ORDER BY k.registreringstidspunkt";
         return jdbcTemplate.query(query, new KandidatMapper());
     }
@@ -90,10 +92,11 @@ public class KandidatRepository {
         parameters.put(FYSISKE_BEHOV, enumSetTilString(kandidat.getFysiskeBehov()));
         parameters.put(ARBEIDSMILJØ_BEHOV, enumSetTilString(kandidat.getArbeidsmiljøBehov()));
         parameters.put(GRUNNLEGGENDE_BEHOV, enumSetTilString(kandidat.getGrunnleggendeBehov()));
+        parameters.put(SLETTET, false);
         return parameters;
     }
 
     public Integer slettKandidat(String fnr) {
-        return jdbcTemplate.update("DELETE FROM kandidat WHERE fnr = ?", new Object[]{fnr});
+        return jdbcTemplate.update("UPDATE kandidat SET slettet = true WHERE fnr = ?", new Object[]{fnr});
     }
 }

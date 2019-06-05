@@ -7,6 +7,8 @@ management.endpoints.web:
 
 spring.profiles.active: local, mock
 
+javax.net.debug: all
+
 ---
 spring.profiles: local
 

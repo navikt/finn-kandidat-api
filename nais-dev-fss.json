@@ -2,14 +2,14 @@
   "apiVersion": "nais.io/v1alpha1",
   "kind": "Application",
   "metadata": {
-    "name": "finn-kandidat-api",
+    "name": "finn-kandidat-api-test",
     "namespace": "default",
     "labels": {
       "team": "teamtag"
     }
   },
   "spec": {
-    "image": "navikt/finn-kandidat-api:test_95",
+    "image": "navikt/finn-kandidat-api:test_99",
     "team": "teamtag",
     "port": 8080,
     "vault": { "enabled": true },

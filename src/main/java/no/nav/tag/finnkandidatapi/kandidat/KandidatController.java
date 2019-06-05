@@ -2,9 +2,9 @@ package no.nav.tag.finnkandidatapi.kandidat;
 
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import no.nav.security.oidc.api.Protected;
 import no.nav.tag.finnkandidatapi.tilgangskontroll.TilgangskontrollService;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,12 +12,13 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Protected
 @RestController
 @RequestMapping("/kandidater")
 @RequiredArgsConstructor
 public class KandidatController {
-    private final ApplicationEventPublisher applicationEventPublisher;
+
     private final KandidatService kandidatService;
     private final TilgangskontrollService tilgangskontroll;
 
@@ -38,16 +39,23 @@ public class KandidatController {
     }
 
     @PostMapping
-    public ResponseEntity<Kandidat> lagreKandidat(@RequestBody Kandidat kandidat) {
+    public ResponseEntity<Kandidat> opprettKandidat(@RequestBody Kandidat kandidat) {
         tilgangskontroll.sjekkSkrivetilgangTilKandidat(kandidat.getFnr());
-
         Veileder veileder = tilgangskontroll.hentInnloggetVeileder();
-        Kandidat lagretKandidat = kandidatService.lagreKandidat(kandidat, veileder).orElseThrow(FinnKandidatException::new);
-        applicationEventPublisher.publishEvent(lagretKandidat);
-
+        Kandidat opprettetKandidat = kandidatService.opprettKandidat(kandidat, veileder).orElseThrow(FinnKandidatException::new);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(lagretKandidat);
+                .body(opprettetKandidat);
+    }
+
+    @PutMapping
+    public ResponseEntity<Kandidat> endreKandidat(@RequestBody Kandidat kandidat) {
+        tilgangskontroll.sjekkSkrivetilgangTilKandidat(kandidat.getFnr());
+        Veileder veileder = tilgangskontroll.hentInnloggetVeileder();
+        Kandidat endretKandidat = kandidatService.endreKandidat(kandidat, veileder).orElseThrow(FinnKandidatException::new);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(endretKandidat);
     }
 
     @GetMapping("/{fnr}/skrivetilgang")

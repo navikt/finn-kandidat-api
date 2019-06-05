@@ -6,5 +6,6 @@ CREATE TABLE kandidat (
     arbeidstid_behov VARCHAR(255),
     fysiske_behov VARCHAR(1000),
     arbeidsmiljø_behov VARCHAR(1000),
-    grunnleggende_behov VARCHAR(1000)
+    grunnleggende_behov VARCHAR(1000),
+    slettet BOOLEAN
 );

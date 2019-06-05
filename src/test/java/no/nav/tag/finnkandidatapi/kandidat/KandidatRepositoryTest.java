@@ -76,7 +76,7 @@ public class KandidatRepositoryTest {
     }
 
     @Test
-    public void hentNyesteKandidat__skal_ikke_returnere_kandidater_markert_som_slettet() {
+    public void hentNyesteKandidat__skal_ikke_returnere_slettede_kandidater() {
         Kandidat kandidat = enKandidat();
 
         repository.lagreKandidat(kandidat);

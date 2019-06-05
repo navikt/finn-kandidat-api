@@ -110,7 +110,9 @@ public class OIDCResourceRetriever extends DefaultResourceRetriever {
 
     private HttpURLConnection openConnection(URL url) throws IOException, URISyntaxException {
         Proxy proxy = getProxy();
+        logger.debug("proxy is {}", proxy);
         URL urlToOpen = isUsePlainTextForHttps() ? urlWithPlainTextForHttps(url) : url;
+        logger.debug("urlToOpen is {}", urlToOpen);
         if (proxy == null) {
             return (HttpURLConnection) urlToOpen.openConnection();
         } else {

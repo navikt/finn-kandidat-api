@@ -49,6 +49,7 @@ no.nav.security.oidc:
       discoveryurl: https://isso-q.adeo.no/isso/oauth2/.well-known/openid-configuration
       accepted_audience: veilarblogin-q1
       cookieName: ID_token
+      proxyurl: null
 
 sts.url: https://security-token-service.nais.preprod.local/rest/v1
 veilarbabac.url: https://veilarbabac-q1.nais.preprod.local

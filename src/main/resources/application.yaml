@@ -44,12 +44,11 @@ database:
 vault.mount-path: postgresql/preprod-fss
 
 no.nav.security.oidc:
-  issuers: isso-openam
+  issuers: isso, isso-openam
   issuer.isso-openam:
       discoveryurl: https://isso-q.adeo.no/isso/oauth2/.well-known/openid-configuration
       accepted_audience: veilarblogin-q1
       cookieName: ID_token
-
   issuer.isso:
       discoveryurl: https://login.microsoftonline.com/NAVQ.onmicrosoft.com/.well-known/openid-configuration
       accepted_audience: 38e07d31-659d-4595-939a-f18dce3446c5

@@ -9,7 +9,7 @@
     }
   },
   "spec": {
-    "image": "navikt/finn-kandidat-api:test_101",
+    "image": "navikt/finn-kandidat-api:test_103",
     "team": "teamtag",
     "port": 8080,
     "vault": { "enabled": true },
@@ -26,10 +26,6 @@
       {
         "name": "SPRING_PROFILES_ACTIVE",
         "value": "dev"
-      },
-      {
-        "name": "NO_PROXY",
-        "value": "*"
       }
     ],
     "webproxy": true,

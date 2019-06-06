@@ -21,6 +21,17 @@ public class TokenUtils {
         this.contextHolder = contextHolder;
     }
 
+    // TODO fjern
+    public String hentIssuer() {
+        if (erInnloggetNavAnsattMedOpenAMToken()) {
+            return "OpenAM";
+        } else if (erInnloggetNavAnsattMedAzureADToken()) {
+            return "AzureAD";
+        } else {
+            return "ingen";
+        }
+    }
+
     public Veileder hentInnloggetVeileder() {
         if (erInnloggetNavAnsattMedOpenAMToken()) {
             String ident = contextHolder.getOIDCValidationContext().getClaims(ISSUER_ISSO_OPENAM).getSubject();

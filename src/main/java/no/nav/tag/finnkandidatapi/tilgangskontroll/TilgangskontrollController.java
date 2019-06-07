@@ -2,6 +2,7 @@ package no.nav.tag.finnkandidatapi.tilgangskontroll;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.security.oidc.api.Protected;
+import no.nav.tag.finnkandidatapi.kandidat.Veileder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,7 +20,7 @@ public class TilgangskontrollController {
     }
 
     @GetMapping("/innloggetBruker")
-    public String innloggetBruker() {
-        return tokenUtils.hentIssuer();
+    public Veileder innloggetBruker() {
+        return tokenUtils.hentInnloggetVeileder();
     }
 }

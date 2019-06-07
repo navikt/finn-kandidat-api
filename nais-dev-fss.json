@@ -28,7 +28,7 @@
         "value": "dev"
       }
     ],
-    "webproxy": true,
+    "webproxy": false,
     "prometheus": {
       "enabled": true,
       "path": "/finn-kandidat-api/internal/actuator/prometheus"

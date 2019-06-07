@@ -67,6 +67,7 @@ public class TokenUtils {
 
     private boolean erInnloggetNavAnsattMedOpenAMToken() {
         log.info("Sjekker om man har OpenAM-token");
+        log.info("Issuers: " + contextHolder.getOIDCValidationContext().getIssuers());
         OIDCClaims claims = contextHolder.getOIDCValidationContext().getClaims(ISSUER_ISSO_OPENAM);
         log.info("claims: " + claims);
         if (claims == null) {

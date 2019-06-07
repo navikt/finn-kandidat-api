@@ -36,16 +36,6 @@ public class TokenUtils {
         }
     }
 
-    private Optional<String> hentClaim(String issuer, String claim) {
-        Optional<JWTClaimsSet> claimSet = hentClaimSet(issuer);
-        return claimSet.map(jwtClaimsSet -> String.valueOf(jwtClaimsSet.getClaim(claim)));
-    }
-
-    private Optional<JWTClaimsSet> hentClaimSet(String issuer) {
-        return Optional.ofNullable(contextHolder.getOIDCValidationContext().getClaims(issuer))
-                .map(OIDCClaims::getClaimSet);
-    }
-
     private boolean erInnloggetNavAnsattMedAzureADToken() {
         Optional<String> navIdent = hentClaimSet(ISSUER_ISSO)
                 .map(jwtClaimsSet -> (String) jwtClaimsSet.getClaims().get("NAVident"))
@@ -59,6 +49,16 @@ public class TokenUtils {
             return false;
         }
         return erNAVIdent(claims.getSubject());
+    }
+
+    private Optional<String> hentClaim(String issuer, String claim) {
+        Optional<JWTClaimsSet> claimSet = hentClaimSet(issuer);
+        return claimSet.map(jwtClaimsSet -> String.valueOf(jwtClaimsSet.getClaim(claim)));
+    }
+
+    private Optional<JWTClaimsSet> hentClaimSet(String issuer) {
+        return Optional.ofNullable(contextHolder.getOIDCValidationContext().getClaims(issuer))
+                .map(OIDCClaims::getClaimSet);
     }
 
     private boolean erNAVIdent(String str) {

@@ -9,7 +9,7 @@
     }
   },
   "spec": {
-    "image": "navikt/finn-kandidat-api:test_109",
+    "image": "navikt/finn-kandidat-api:test_110",
     "team": "teamtag",
     "port": 8080,
     "vault": { "enabled": true },

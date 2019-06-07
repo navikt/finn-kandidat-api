@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
-@Slf4j
 @Component
 public class TokenUtils {
     public final static String ISSUER_ISSO = "isso";
@@ -21,17 +20,6 @@ public class TokenUtils {
     @Autowired
     public TokenUtils(OIDCRequestContextHolder contextHolder) {
         this.contextHolder = contextHolder;
-    }
-
-    // TODO fjern
-    public String hentIssuer() {
-        if (erInnloggetNavAnsattMedOpenAMToken()) {
-            return "OpenAM";
-        } else if (erInnloggetNavAnsattMedAzureADToken()) {
-            return "AzureAD";
-        } else {
-            return "ingen";
-        }
     }
 
     public Veileder hentInnloggetVeileder() {
@@ -66,14 +54,10 @@ public class TokenUtils {
     }
 
     private boolean erInnloggetNavAnsattMedOpenAMToken() {
-        log.info("Sjekker om man har OpenAM-token");
-        log.info("Issuers: " + contextHolder.getOIDCValidationContext().getIssuers());
         OIDCClaims claims = contextHolder.getOIDCValidationContext().getClaims(ISSUER_ISSO_OPENAM);
-        log.info("claims: " + claims);
         if (claims == null) {
             return false;
         }
-        log.info("subject: " + claims.getSubject());
         return erNAVIdent(claims.getSubject());
     }
 

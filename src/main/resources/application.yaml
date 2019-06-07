@@ -7,8 +7,6 @@ management.endpoints.web:
 
 spring.profiles.active: local, mock
 
-javax.net.debug: all
-
 ---
 spring.profiles: local
 
@@ -69,10 +67,15 @@ database:
 vault.mount-path: postgresql/prod-fss
 
 no.nav.security.oidc:
-  issuers: isso
+  issuers: isso, isso-openam
+    issuer.isso-openam:
+      discoveryurl: https://isso-q.adeo.no/isso/oauth2/.well-known/openid-configuration
+      accepted_audience: veilarblogin-p
+      cookieName: ID_token
   issuer.isso:
       discoveryurl: https://login.microsoftonline.com/navno.onmicrosoft.com/.well-known/openid-configuration
       accepted_audience: 9b4e07a3-4f4c-4bab-b866-87f62dff480d
+      proxyurl: http://webproxy.nais:8088
 
 sts.url: https://security-token-service.nais.adeo.no/rest/v1
 veilarbabac.url: https://veilarbabac.nais.adeo.no

@@ -18,8 +18,8 @@ public class TilgangskontrollController {
         this.tokenUtils = tokenUtils;
     }
 
-    @GetMapping("/info")
+    @GetMapping("/innloggetBruker")
     public String innloggetBruker() {
-        return "ident: " + tokenUtils.hentInnloggetVeileder().getNavIdent() + ", issuer: " + tokenUtils.hentIssuer();
+        return tokenUtils.hentIssuer();
     }
 }

@@ -31,9 +31,37 @@ abac.url: ${mock.baseUrl}/abac
 SERVICEBRUKER_BRUKERNAVN: na
 SERVICEBRUKER_PASSORD: na
 
+spring:
+  kafka:
+    consumer:
+      group-id: finn-kandidat
+---
+
+spring:
+  profiles: kafka-test
+  kafka:
+    bootstrap-servers: ${spring.embedded.kafka.brokers}
+
 ---
 spring:
   profiles: dev
+  kafka:
+    bootstrap-servers: b27apvl00045.preprod.local:8443, b27apvl00046.preprod.local:8443, b27apvl00047.preprod.local:8443
+    client-id: finn-kandidat-api-dev
+    properties:
+      security.protocol: SASL_SSL
+      sasl:
+        mechanism: PLAIN
+        jaas.config: org.apache.kafka.common.security.plain.PlainLoginModule required username="${SERVICEBRUKER_BRUKERNAVN}" password="${SERVICEBRUKER_PASSORD}";
+      ssl.truststore:
+        location: ${javax.net.ssl.trustStore}
+        password: ${javax.net.ssl.trustStorePassword}
+    consumer:
+      group-id: finn-kandidat-api-dev
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
+
 
 database:
   navn: finn-kandidat-dev
@@ -51,9 +79,25 @@ sts.url: https://security-token-service.nais.preprod.local/rest/v1
 veilarbabac.url: https://veilarbabac-q1.nais.preprod.local
 abac.url: https://wasapp-q1.adeo.no/asm-pdp/authorize
 
+
 ---
 spring:
   profiles: prod
+  kafka:
+    bootstrap-servers: a01apvl00145.adeo.no:8443, a01apvl00146.adeo.no:8443, a01apvl00147.adeo.no:8443, a01apvl00148.adeo.no:8443, a01apvl00149.adeo.no:8443, a01apvl00150.adeo.no:8443
+    client-id: finn-kandidat-api-prod
+    properties:
+      security.protocol: SASL_SSL
+      sasl:
+        mechanism: PLAIN
+        jaas.config: org.apache.kafka.common.security.plain.PlainLoginModule required username="${SERVICEBRUKER_NAVN}" password="${SERVICEBRUKER_PASSORD}";
+      ssl.truststore:
+        location: ${javax.net.ssl.trustStore}
+        password: ${javax.net.ssl.trustStorePassword}
+    consumer:
+      group-id: finn-kandidat-api-prod
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
 
 database:
   navn: finn-kandidat-prod

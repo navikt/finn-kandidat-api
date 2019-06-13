@@ -1,6 +1,7 @@
 package no.nav.tag.finnkandidatapi.kandidat;
 
 import lombok.RequiredArgsConstructor;
+import no.nav.tag.finnkandidatapi.kafka.OppfølgingAvsluttetMelding;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatEndret;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatOpprettet;
 import org.springframework.context.ApplicationEventPublisher;
@@ -50,5 +51,15 @@ public class KandidatService {
 
     Integer slettKandidat(String fnr) {
         return kandidatRepository.slettKandidat(fnr);
+    }
+
+    public void behandleOppfølgingAvsluttet(OppfølgingAvsluttetMelding oppfølgingAvsluttetMelding) {
+        String fnr = this.aktørIdTilFnr(oppfølgingAvsluttetMelding.getAktørId());
+        this.slettKandidat(fnr);
+    }
+
+    // TODO: Flytt til riktig sted og implementer
+    private String aktørIdTilFnr(String aktørId) {
+        return "00000000000";
     }
 }

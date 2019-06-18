@@ -68,7 +68,7 @@ public class OppfølgingAvsluttetConsumerTest {
     }
 
     @Test
-    public void besvarelseMottatt__skal_sende_kontaktskjema_på_kafka_topic_med_riktige_felter() {
+    public void skal_slette_kandidat_ved_mottatt_oppfølging_avsluttet_kafka_melding() {
         Kandidat kandidatSomSkalSlettes = enKandidat();
         String fnr = "01065500791";
         kandidatSomSkalSlettes.setFnr(fnr);

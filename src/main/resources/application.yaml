@@ -27,8 +27,7 @@ mock:
 sts.url: ${mock.baseUrl}/sts
 veilarbabac.url: ${mock.baseUrl}/veilarbabac
 abac.url: ${mock.baseUrl}/abac
-# TODO: Fiks til mock eller noe?
-aktørregister.url: blarl.com
+aktørregister.url: ${mock.baseUrl}/aktoerregister
 
 SERVICEBRUKER_BRUKERNAVN: na
 SERVICEBRUKER_PASSORD: na

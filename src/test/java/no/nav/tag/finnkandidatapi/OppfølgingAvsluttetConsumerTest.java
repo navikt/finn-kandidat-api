@@ -4,9 +4,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import no.nav.tag.finnkandidatapi.aktørregister.AktørRegisterClient;
+import no.nav.tag.finnkandidatapi.kafka.OppfølgingAvsluttetConsumer;
 import no.nav.tag.finnkandidatapi.kafka.OppfølgingAvsluttetMelding;
 import no.nav.tag.finnkandidatapi.kandidat.Kandidat;
 import no.nav.tag.finnkandidatapi.kandidat.KandidatRepository;
+import no.nav.tag.finnkandidatapi.kandidat.KandidatService;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -38,10 +41,9 @@ import static org.assertj.core.api.Assertions.fail;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@ActiveProfiles({"kafka-test", "local"})
+@ActiveProfiles({"kafka-test", "local", "mock"})
 @DirtiesContext
 public class OppfølgingAvsluttetConsumerTest {
-
 
     @ClassRule
     public static EmbeddedKafkaRule embeddedKafka = new EmbeddedKafkaRule(1, true, 1, OPPFØLGING_AVSLUTTET_TOPIC);
@@ -68,17 +70,18 @@ public class OppfølgingAvsluttetConsumerTest {
     @Test
     public void besvarelseMottatt__skal_sende_kontaktskjema_på_kafka_topic_med_riktige_felter() {
         Kandidat kandidatSomSkalSlettes = enKandidat();
-        String fnr = "00000000000";
+        String fnr = "01065500791";
         kandidatSomSkalSlettes.setFnr(fnr);
         repository.lagreKandidat(kandidatSomSkalSlettes);
 
         try {
-            String melding = lagOppfølgingAvsluttetMelding(fnr);
+            String aktørId = "1856024171652";
+            String melding = lagOppfølgingAvsluttetMelding(aktørId);
             producer.send(new ProducerRecord<>(OPPFØLGING_AVSLUTTET_TOPIC, "123", melding));
 
             Thread.sleep(1000);
 
-            Optional<Kandidat> tomKandidat = repository.hentNyesteKandidat("00000000000");
+            Optional<Kandidat> tomKandidat = repository.hentNyesteKandidat("01065500791");
             assertThat(tomKandidat).isEmpty();
 
         } catch (JsonProcessingException | InterruptedException e) {
@@ -86,9 +89,9 @@ public class OppfølgingAvsluttetConsumerTest {
         }
     }
 
-    private String lagOppfølgingAvsluttetMelding(String fnr) throws JsonProcessingException {
+    private String lagOppfølgingAvsluttetMelding(String aktørId) throws JsonProcessingException {
         OppfølgingAvsluttetMelding oppfølgingAvsluttetMelding = OppfølgingAvsluttetMelding.builder()
-                .aktorId(fnr)
+                .aktorId(aktørId)
                 .sluttdato(LocalDateTime.now()).build();
         ObjectMapper objectMapper = new ObjectMapper()
                 .registerModule(new JavaTimeModule())

@@ -6,6 +6,7 @@ import no.nav.tag.finnkandidatapi.tilgangskontroll.sts.STSClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -13,16 +14,14 @@ import java.util.Map;
 import java.util.UUID;
 
 @Slf4j
+@Component
 public class AktørRegisterClient {
 
     private final RestTemplate restTemplate;
-
-    @Value("${aktørregister.url}")
     private final String aktørRegisterUrl;
-
     private final STSClient stsClient;
 
-    public AktørRegisterClient(String aktørRegisterUrl, STSClient stsClient) {
+    public AktørRegisterClient(@Value("${aktørregister.url}") String aktørRegisterUrl, STSClient stsClient) {
         this.restTemplate = new RestTemplate();
         this.aktørRegisterUrl = aktørRegisterUrl;
         this.stsClient = stsClient;
@@ -38,7 +37,7 @@ public class AktørRegisterClient {
                 uri,
                 HttpMethod.GET,
                 httpHeadere(aktørId),
-                new ParameterizedTypeReference<>() {}
+                new ParameterizedTypeReference<Map<String, IdentinfoForAktør>>() {}
         );
 
         validerRespons(aktørId, respons);

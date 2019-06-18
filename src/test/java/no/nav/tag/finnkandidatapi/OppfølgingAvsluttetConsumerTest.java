@@ -76,7 +76,7 @@ public class OppfølgingAvsluttetConsumerTest {
             String melding = lagOppfølgingAvsluttetMelding(fnr);
             producer.send(new ProducerRecord<>(OPPFØLGING_AVSLUTTET_TOPIC, "123", melding));
 
-            Thread.sleep(100);
+            Thread.sleep(1000);
 
             Optional<Kandidat> tomKandidat = repository.hentNyesteKandidat("00000000000");
             assertThat(tomKandidat).isEmpty();

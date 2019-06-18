@@ -1,6 +1,8 @@
 package no.nav.tag.finnkandidatapi.kandidat;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import no.nav.tag.finnkandidatapi.aktørregister.AktørRegisterClient;
 import no.nav.tag.finnkandidatapi.kafka.OppfølgingAvsluttetMelding;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatEndret;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatOpprettet;
@@ -11,12 +13,14 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class KandidatService {
 
     private final KandidatRepository kandidatRepository;
     private final ApplicationEventPublisher eventPublisher;
+    private final AktørRegisterClient aktørRegisterClient;
 
     public Optional<Kandidat> hentNyesteKandidat(String fnr) {
         return kandidatRepository.hentNyesteKandidat(fnr);
@@ -49,17 +53,14 @@ public class KandidatService {
         kandidat.setSistEndret(LocalDateTime.now());
     }
 
-    Integer slettKandidat(String fnr) {
-        return kandidatRepository.slettKandidat(fnr);
-    }
-
     public void behandleOppfølgingAvsluttet(OppfølgingAvsluttetMelding oppfølgingAvsluttetMelding) {
-        String fnr = this.aktørIdTilFnr(oppfølgingAvsluttetMelding.getAktørId());
-        this.slettKandidat(fnr);
+        log.info("Oppfølging avsluttet for aktørId {}", oppfølgingAvsluttetMelding.getAktorId());
+        String fnr = aktørRegisterClient.tilFnr(oppfølgingAvsluttetMelding.getAktorId());
+        Integer slettedeRader = slettKandidat(fnr);
+        log.info("Slettet {} rader", slettedeRader);
     }
 
-    // TODO: Flytt til riktig sted og implementer
-    private String aktørIdTilFnr(String aktørId) {
-        return "00000000000";
+    public Integer slettKandidat(String fnr) {
+        return kandidatRepository.slettKandidat(fnr);
     }
 }

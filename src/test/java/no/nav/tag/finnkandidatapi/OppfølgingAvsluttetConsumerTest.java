@@ -88,8 +88,8 @@ public class OppfølgingAvsluttetConsumerTest {
 
     private String lagOppfølgingAvsluttetMelding(String fnr) throws JsonProcessingException {
         OppfølgingAvsluttetMelding oppfølgingAvsluttetMelding = OppfølgingAvsluttetMelding.builder()
-                .aktørId(fnr)
-                .oppfølgingAvsluttet(LocalDateTime.now()).build();
+                .aktorId(fnr)
+                .sluttdato(LocalDateTime.now()).build();
         ObjectMapper objectMapper = new ObjectMapper()
                 .registerModule(new JavaTimeModule())
                 .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);

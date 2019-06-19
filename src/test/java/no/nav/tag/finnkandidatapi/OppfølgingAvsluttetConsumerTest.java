@@ -27,6 +27,7 @@ import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.listener.KafkaMessageListenerContainer;
+import org.springframework.kafka.listener.MessageListener;
 import org.springframework.kafka.test.rule.EmbeddedKafkaRule;
 import org.springframework.kafka.test.utils.ContainerTestUtils;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
@@ -73,6 +74,9 @@ public class OppfølgingAvsluttetConsumerTest {
 
         ContainerProperties containerProperties = new ContainerProperties(OPPFØLGING_AVSLUTTET_TOPIC);
         container = new KafkaMessageListenerContainer<>(cf, containerProperties);
+        container.setupMessageListener((MessageListener<String, String>) record -> {
+            System.out.println("KafkaMessage: " + record.toString());
+        });
         container.start();
         ContainerTestUtils.waitForAssignment(container, embeddedKafka.getEmbeddedKafka().getPartitionsPerTopic());
     }

@@ -39,7 +39,12 @@ public class MockServer {
 
         mockKall(veilarbabacUrl + "/person", PERMIT_RESPONSE);
         mockKall(stsUrl + "/sts/token", new STSToken("fdg", "asfsdg", 325));
+        mockAktørregister(aktørregisterUrl);
 
+        server.start();
+    }
+
+    private void mockAktørregister(@Value("${aktørregister.url}") String aktørregisterUrl) {
         mockKall(aktørregisterUrl + "?identgruppe=NorskIdent&gjeldende=true", "{\n" +
                 " \"1856024171652\": {\n" +
                 "   \"identer\": [\n" +
@@ -52,8 +57,6 @@ public class MockServer {
                 "   \"feilmelding\": null\n" +
                 " }\n" +
                 "}");
-
-        server.start();
     }
 
     @SneakyThrows

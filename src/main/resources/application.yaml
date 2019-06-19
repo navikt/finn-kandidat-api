@@ -36,12 +36,16 @@ spring:
   kafka:
     consumer:
       group-id: finn-kandidat
+
 ---
 
 spring:
   profiles: kafka-test
   kafka:
     bootstrap-servers: ${spring.embedded.kafka.brokers}
+
+oppfolging-avsluttet.topics:
+  - test-topic
 
 ---
 spring:
@@ -62,7 +66,10 @@ spring:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
 
-
+oppfolging-avsluttet.topics:
+  - aapen-fo-endringPaaAvsluttOppfolging-v1-q0
+  - aapen-fo-endringPaaAvsluttOppfolging-v1-q1
+  - aapen-fo-endringPaaAvsluttOppfolging-v1-q6
 
 database:
   navn: finn-kandidat-dev
@@ -99,6 +106,9 @@ spring:
       group-id: finn-kandidat-api-prod
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
+oppfolging-avsluttet.topics:
+  - aapen-fo-endringPaaAvsluttOppfolging-v1-p
 
 database:
   navn: finn-kandidat-prod

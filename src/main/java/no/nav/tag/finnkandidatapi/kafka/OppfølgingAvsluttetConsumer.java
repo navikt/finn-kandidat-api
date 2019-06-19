@@ -18,16 +18,15 @@ import static no.nav.tag.finnkandidatapi.kafka.OppfølgingAvsluttetUtils.deseria
 @Profile({"kafka-test", "dev", "prod"})
 public class OppfølgingAvsluttetConsumer {
 
-    // TODO: Bruk rett topicnavn
-    public static final String OPPFØLGING_AVSLUTTET_TOPIC = "blbla";
-
     private KandidatService kandidatService;
+    private ConsumerProps consumerProps;
 
-    public OppfølgingAvsluttetConsumer(KandidatService kandidatService) {
+    public OppfølgingAvsluttetConsumer(KandidatService kandidatService, ConsumerProps consumerProps) {
         this.kandidatService = kandidatService;
+        this.consumerProps = consumerProps;
     }
 
-    @KafkaListener(topics = OPPFØLGING_AVSLUTTET_TOPIC)
+    @KafkaListener(topics = "#{consumerProps.getTopics()}")
     public void konsumerMelding(ConsumerRecord<String, String> melding) {
         try {
             OppfølgingAvsluttetMelding oppfølgingAvsluttetMelding = deserialiserMelding(melding.value());

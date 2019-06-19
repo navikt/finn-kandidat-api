@@ -39,7 +39,6 @@ import java.time.LocalDateTime;
 import java.util.Map;
 
 import static no.nav.tag.finnkandidatapi.TestData.enKandidat;
-import static no.nav.tag.finnkandidatapi.kafka.OppfølgingAvsluttetConsumer.OPPFØLGING_AVSLUTTET_TOPIC;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
@@ -47,6 +46,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ActiveProfiles({"kafka-test", "local", "mock"})
 @DirtiesContext
 public class OppfølgingAvsluttetConsumerTest {
+
+    private static final String OPPFØLGING_AVSLUTTET_TOPIC = "test-topic";
 
     @ClassRule
     public static EmbeddedKafkaRule embeddedKafka = new EmbeddedKafkaRule(1, true, OPPFØLGING_AVSLUTTET_TOPIC);

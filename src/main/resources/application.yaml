@@ -27,7 +27,7 @@ mock:
 sts.url: ${mock.baseUrl}/sts
 veilarbabac.url: ${mock.baseUrl}/veilarbabac
 abac.url: ${mock.baseUrl}/abac
-aktørregister.url: ${mock.baseUrl}/aktoerregister
+aktørregister.url: ${mock.baseUrl}/aktoerregister/api/v1
 
 SERVICEBRUKER_BRUKERNAVN: na
 SERVICEBRUKER_PASSORD: na
@@ -86,7 +86,7 @@ no.nav.security.oidc:
 sts.url: https://security-token-service.nais.preprod.local/rest/v1
 veilarbabac.url: https://veilarbabac-q1.nais.preprod.local
 abac.url: https://wasapp-q1.adeo.no/asm-pdp/authorize
-aktørregister.url: https://app-q0.adeo.no/aktoerregister
+aktørregister.url: https://app-q0.adeo.no/aktoerregister/api/v1
 
 ---
 spring:
@@ -125,4 +125,4 @@ no.nav.security.oidc:
 sts.url: https://security-token-service.nais.adeo.no/rest/v1
 veilarbabac.url: https://veilarbabac.nais.adeo.no
 abac.url: https://wasapp.adeo.no/asm-pdp/authorize
-aktørregister.url: https://app.adeo.no/aktoerregister
+aktørregister.url: https://app.adeo.no/aktoerregister/api/v1

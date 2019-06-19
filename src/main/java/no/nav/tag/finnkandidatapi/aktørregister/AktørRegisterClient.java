@@ -29,6 +29,7 @@ public class AktørRegisterClient {
 
     public String tilFnr(String aktørId) {
         String uri = UriComponentsBuilder.fromHttpUrl(aktørRegisterUrl)
+                .path("/identer")
                 .queryParam("identgruppe", "NorskIdent")
                 .queryParam("gjeldende", true)
                 .toUriString();

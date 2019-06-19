@@ -45,7 +45,7 @@ public class MockServer {
     }
 
     private void mockAktørregister(@Value("${aktørregister.url}") String aktørregisterUrl) {
-        mockKall(aktørregisterUrl + "?identgruppe=NorskIdent&gjeldende=true", "{\n" +
+        mockKall(aktørregisterUrl + "/identer" + "?identgruppe=NorskIdent&gjeldende=true", "{\n" +
                 " \"1856024171652\": {\n" +
                 "   \"identer\": [\n" +
                 "     {\n" +

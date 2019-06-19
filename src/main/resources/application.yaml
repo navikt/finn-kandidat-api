@@ -68,8 +68,8 @@ spring:
 
 oppfolging-avsluttet.topics:
   - aapen-fo-endringPaaAvsluttOppfolging-v1-q0
-  - aapen-fo-endringPaaAvsluttOppfolging-v1-q1
-  - aapen-fo-endringPaaAvsluttOppfolging-v1-q6
+#  - aapen-fo-endringPaaAvsluttOppfolging-v1-q1
+#  - aapen-fo-endringPaaAvsluttOppfolging-v1-q6
 
 database:
   navn: finn-kandidat-dev

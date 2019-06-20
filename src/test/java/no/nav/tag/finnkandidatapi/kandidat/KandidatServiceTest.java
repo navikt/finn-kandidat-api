@@ -1,10 +1,12 @@
 package no.nav.tag.finnkandidatapi.kandidat;
 
+import no.nav.tag.finnkandidatapi.aktørregister.AktørRegisterClient;
+import no.nav.tag.finnkandidatapi.kafka.OppfølgingAvsluttetMelding;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatEndret;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatOpprettet;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.context.ApplicationEventPublisher;
@@ -23,7 +25,6 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class KandidatServiceTest {
 
-    @InjectMocks
     private KandidatService kandidatService;
 
     @Mock
@@ -31,6 +32,14 @@ public class KandidatServiceTest {
 
     @Mock
     private ApplicationEventPublisher eventPublisher;
+
+    @Mock
+    private AktørRegisterClient aktørRegisterClient;
+
+    @Before
+    public void setUp() {
+        kandidatService = new KandidatService(repository, eventPublisher, aktørRegisterClient);
+    }
 
     @Test
     public void hentNyesteKandidat__skal_returnere_kandidat() {
@@ -109,5 +118,17 @@ public class KandidatServiceTest {
 
         when(repository.slettKandidat(fnr)).thenReturn(1);
         assertThat(kandidatService.slettKandidat(fnr)).isEqualTo(1);
+    }
+
+    @Test
+    public void behandleOppfølgingAvsluttet__skal_slette_kandidat() {
+        String aktørId = "1856024171652";
+        String fnr = "01065500791";
+        when(aktørRegisterClient.tilFnr(aktørId)).thenReturn(fnr);
+        when(repository.slettKandidat(aktørId)).thenReturn(1);
+
+        kandidatService.behandleOppfølgingAvsluttet(new OppfølgingAvsluttetMelding(aktørId, LocalDateTime.now()));
+
+        verify(repository).slettKandidat(fnr);
     }
 }

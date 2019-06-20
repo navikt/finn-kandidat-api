@@ -1,5 +1,6 @@
 package no.nav.tag.finnkandidatapi.kafka;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.finnkandidatapi.kandidat.KandidatService;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -15,16 +16,12 @@ import static no.nav.tag.finnkandidatapi.kafka.OppfølgingAvsluttetUtils.deseria
 @Slf4j
 @Component
 @EnableKafka
+@AllArgsConstructor
 @Profile({"kafka-test", "dev", "prod"})
 public class OppfølgingAvsluttetConsumer {
 
     private KandidatService kandidatService;
     private ConsumerProps consumerProps;
-
-    public OppfølgingAvsluttetConsumer(KandidatService kandidatService, ConsumerProps consumerProps) {
-        this.kandidatService = kandidatService;
-        this.consumerProps = consumerProps;
-    }
 
     @KafkaListener(topics = "#{consumerProps.getTopics()}")
     public void konsumerMelding(ConsumerRecord<String, String> melding) {

@@ -5,8 +5,6 @@ import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.tag.finnkandidatapi.aktørregister.Identinfo;
-import no.nav.tag.finnkandidatapi.aktørregister.IdentinfoForAktør;
 import no.nav.tag.finnkandidatapi.tilgangskontroll.sts.STSToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,9 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import java.net.URL;
-import java.util.ArrayList;
 
-import static java.util.Arrays.asList;
 import static no.nav.tag.finnkandidatapi.tilgangskontroll.veilarbabac.VeilarbabacClient.PERMIT_RESPONSE;
 
 @Profile("mock")

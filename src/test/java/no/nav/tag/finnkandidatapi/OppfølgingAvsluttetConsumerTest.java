@@ -99,7 +99,6 @@ public class OppfølgingAvsluttetConsumerTest {
     }
 
     private void sendOppFølgingAvsluttetMelding() throws JsonProcessingException {
-        // TODO: Kall mock fra testen for å kunne sette fnr og aktørid selv
         String aktørId = "1856024171652";
         String melding = lagOppfølgingAvsluttetMelding(aktørId);
         producer.send(new ProducerRecord<>(OPPFØLGING_AVSLUTTET_TOPIC, "123", melding));

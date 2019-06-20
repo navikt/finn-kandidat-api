@@ -41,9 +41,8 @@ public class AktørRegisterClient {
                 new ParameterizedTypeReference<Map<String, IdentinfoForAktør>>() {}
         );
 
-        validerRespons(aktørId, respons);
-
         IdentinfoForAktør identinfoForAktør = respons.getBody().get(aktørId);
+        validerRespons(aktørId, identinfoForAktør);
         return hentGjeldendeFnr(identinfoForAktør);
     }
 
@@ -60,12 +59,7 @@ public class AktørRegisterClient {
         return new HttpEntity<>(headers);
     }
 
-    private void validerRespons(String aktørId, ResponseEntity<Map<String, IdentinfoForAktør>> respons) {
-        if (!respons.getStatusCode().equals(HttpStatus.OK)) {
-            throw new FinnKandidatException("Feil fra aktørregister, HTTP-status: " + respons.getStatusCodeValue());
-        }
-
-        IdentinfoForAktør identinfoForAktør = respons.getBody().get(aktørId);
+    private void validerRespons(String aktørId, IdentinfoForAktør identinfoForAktør) {
         if (identinfoForAktør == null) {
             throw new FinnKandidatException("Fant ingen identinfo for aktørId: " + aktørId);
         }

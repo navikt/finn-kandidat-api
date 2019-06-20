@@ -76,4 +76,5 @@ public class KandidatController {
 
         return ResponseEntity.ok().build();
     }
+
 }

@@ -1,6 +1,7 @@
 package no.nav.tag.finnkandidatapi.tilgangskontroll;
 
 import com.nimbusds.jwt.JWTClaimsSet;
+import lombok.extern.slf4j.Slf4j;
 import no.nav.security.oidc.context.OIDCClaims;
 import no.nav.security.oidc.context.OIDCRequestContextHolder;
 import no.nav.tag.finnkandidatapi.kandidat.Veileder;
@@ -12,6 +13,7 @@ import java.util.Optional;
 @Component
 public class TokenUtils {
     public final static String ISSUER_ISSO = "isso";
+    public final static String ISSUER_ISSO_OPENAM = "isso-openam";
 
     private final OIDCRequestContextHolder contextHolder;
 
@@ -20,18 +22,33 @@ public class TokenUtils {
         this.contextHolder = contextHolder;
     }
 
-    public String hentInnloggetOidcToken() {
-        return contextHolder.getOIDCValidationContext().getToken(ISSUER_ISSO).getIdToken();
-    }
-
     public Veileder hentInnloggetVeileder() {
-        if (erInnloggetNavAnsatt()) {
+        if (erInnloggetNavAnsattMedOpenAMToken()) {
+            String ident = contextHolder.getOIDCValidationContext().getClaims(ISSUER_ISSO_OPENAM).getSubject();
+            return new Veileder(ident);
+
+        } else if (erInnloggetNavAnsattMedAzureADToken()) {
             String navIdent = hentClaim(ISSUER_ISSO, "NAVident")
                     .orElseThrow(() -> new TilgangskontrollException("Innlogget bruker er ikke veileder."));
             return new Veileder(navIdent);
         } else {
             throw new TilgangskontrollException("Bruker er ikke innlogget.");
         }
+    }
+
+    private boolean erInnloggetNavAnsattMedAzureADToken() {
+        Optional<String> navIdent = hentClaimSet(ISSUER_ISSO)
+                .map(jwtClaimsSet -> (String) jwtClaimsSet.getClaims().get("NAVident"))
+                .filter(this::erNAVIdent);
+        return navIdent.isPresent();
+    }
+
+    private boolean erInnloggetNavAnsattMedOpenAMToken() {
+        OIDCClaims claims = contextHolder.getOIDCValidationContext().getClaims(ISSUER_ISSO_OPENAM);
+        if (claims == null) {
+            return false;
+        }
+        return erNAVIdent(claims.getSubject());
     }
 
     private Optional<String> hentClaim(String issuer, String claim) {
@@ -44,9 +61,8 @@ public class TokenUtils {
                 .map(OIDCClaims::getClaimSet);
     }
 
-    private boolean erInnloggetNavAnsatt() {
-        return hentClaimSet(ISSUER_ISSO)
-                .map(jwtClaimsSet -> (String) jwtClaimsSet.getClaims().get("NAVident"))
-                .isPresent();
+    private boolean erNAVIdent(String str) {
+        return (str != null) && str.matches("^[A-Z][0-9]{6}");
     }
+
 }

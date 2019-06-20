@@ -11,6 +11,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import static no.nav.security.oidc.test.support.JwtTokenGenerator.createSignedJWT;
@@ -28,9 +29,16 @@ public class TokenUtilsTest {
     private OIDCRequestContextHolder contextHolder;
 
     @Test
-    public void hentInnloggetVeileder__skal_returnere_riktig_veileder() {
+    public void hentInnloggetVeileder__skal_returnere_riktig_veileder_med_azureAD_token() {
         Veileder veileder = enVeileder();
-        værInnloggetSom(veileder);
+        værInnloggetMedAzureAD(veileder);
+        assertThat(tokenUtils.hentInnloggetVeileder()).isEqualTo(veileder);
+    }
+
+    @Test
+    public void hentInnloggetVeileder__skal_returnere_riktig_veileder_med_openAM_token() {
+        Veileder veileder = enVeileder();
+        værInnloggetMedOpenAM(veileder);
         assertThat(tokenUtils.hentInnloggetVeileder()).isEqualTo(veileder);
     }
 
@@ -40,7 +48,16 @@ public class TokenUtilsTest {
         tokenUtils.hentInnloggetVeileder();
     }
 
-    private void værInnloggetSom(Veileder veileder) {
+    private void værInnloggetMedOpenAM(Veileder veileder) {
+        OIDCValidationContext context = new OIDCValidationContext();
+        TokenContext tokenContext = new TokenContext(TokenUtils.ISSUER_ISSO_OPENAM, "");
+        OIDCClaims oidcClaims = new OIDCClaims(createSignedJWT(veileder.getNavIdent(), 0, new HashMap<>(), TokenUtils.ISSUER_ISSO_OPENAM, "aud-isso-openam"));
+        context.addValidatedToken(TokenUtils.ISSUER_ISSO_OPENAM, tokenContext, oidcClaims);
+
+        when(contextHolder.getOIDCValidationContext()).thenReturn(context);
+    }
+
+    private void værInnloggetMedAzureAD(Veileder veileder) {
         Map<String, Object> claims = Map.of("NAVident", veileder.getNavIdent());
         OIDCValidationContext context = new OIDCValidationContext();
         TokenContext tokenContext = new TokenContext(TokenUtils.ISSUER_ISSO, "");

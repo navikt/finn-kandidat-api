@@ -125,7 +125,6 @@ public class KandidatServiceTest {
         String aktørId = "1856024171652";
         String fnr = "01065500791";
         when(aktørRegisterClient.tilFnr(aktørId)).thenReturn(fnr);
-        when(repository.slettKandidat(aktørId)).thenReturn(1);
 
         kandidatService.behandleOppfølgingAvsluttet(new OppfølgingAvsluttetMelding(aktørId, LocalDateTime.now()));
 

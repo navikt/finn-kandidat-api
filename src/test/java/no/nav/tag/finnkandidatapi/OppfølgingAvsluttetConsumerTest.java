@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.finnkandidatapi.kafka.OppfølgingAvsluttetMelding;
 import no.nav.tag.finnkandidatapi.kandidat.Kandidat;
 import no.nav.tag.finnkandidatapi.kandidat.KandidatRepository;
@@ -45,6 +46,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 @ActiveProfiles({"kafka-test", "local", "mock"})
 @DirtiesContext
+@Slf4j
 public class OppfølgingAvsluttetConsumerTest {
 
     private static final String OPPFØLGING_AVSLUTTET_TOPIC = "test-topic";
@@ -76,7 +78,7 @@ public class OppfølgingAvsluttetConsumerTest {
         ContainerProperties containerProperties = new ContainerProperties(OPPFØLGING_AVSLUTTET_TOPIC);
         container = new KafkaMessageListenerContainer<>(cf, containerProperties);
         container.setupMessageListener((MessageListener<String, String>) record -> {
-            System.out.println("KafkaMessage: " + record.toString());
+            log.info("KafkaMessage: {}", record);
         });
         container.start();
         ContainerTestUtils.waitForAssignment(container, embeddedKafka.getEmbeddedKafka().getPartitionsPerTopic());

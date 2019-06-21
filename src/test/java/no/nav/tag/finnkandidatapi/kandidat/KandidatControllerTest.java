@@ -220,7 +220,7 @@ public class KandidatControllerTest {
         værInnloggetSom(veileder);
         Kandidat kandidat = enKandidat();
 
-        when(service.slettKandidat(kandidat.getFnr(), veileder)).thenReturn(1);
+        when(service.slettKandidat(kandidat.getFnr(), veileder)).thenReturn(Optional.of(1));
         ResponseEntity<String> respons = controller.slettKandidat(kandidat.getFnr());
 
         assertThat(respons.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -232,7 +232,8 @@ public class KandidatControllerTest {
         værInnloggetSom(veileder);
         String uregistrertFnr = "12345678901";
 
-        when(service.slettKandidat(uregistrertFnr, veileder)).thenReturn(0);
+        when(service.hentNyesteKandidat(uregistrertFnr)).thenReturn(Optional.empty());
+
         controller.slettKandidat(uregistrertFnr);
     }
 

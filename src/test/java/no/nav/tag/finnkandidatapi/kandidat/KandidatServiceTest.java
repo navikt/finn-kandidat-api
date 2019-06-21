@@ -101,13 +101,4 @@ public class KandidatServiceTest {
 
         verify(eventPublisher).publishEvent(new KandidatEndret(kandidat));
     }
-
-    @Test
-    public void slettKandidat__skal_returnere_antall_slettede_kandidater() {
-        Kandidat kandidat = enKandidat("12345678901");
-        SlettKandidat slettKandidat = enKandidatSletting(kandidat);
-
-        when(repository.slettKandidat(slettKandidat)).thenReturn(1);
-        assertThat(kandidatService.slettKandidat(slettKandidat.getFnr(), new Veileder(slettKandidat.getSlettetAv()))).isEqualTo(1);
-    }
 }

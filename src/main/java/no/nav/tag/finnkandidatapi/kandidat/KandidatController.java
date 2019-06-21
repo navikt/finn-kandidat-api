@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -68,11 +69,11 @@ public class KandidatController {
     public ResponseEntity slettKandidat(@PathVariable("fnr") String fnr) {
         tilgangskontroll.sjekkSkrivetilgangTilKandidat(fnr);
 
-        if (kandidatService.hentNyesteKandidat(fnr).isEmpty()) {
+        Optional<Integer> id = kandidatService.slettKandidat(fnr, tilgangskontroll.hentInnloggetVeileder());
+
+        if (id.isEmpty()) {
             throw new NotFoundException();
         }
-
-        kandidatService.slettKandidat(fnr, tilgangskontroll.hentInnloggetVeileder());
 
         return ResponseEntity.ok().build();
     }

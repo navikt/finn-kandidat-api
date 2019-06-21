@@ -48,13 +48,13 @@ public class KandidatService {
         kandidat.setSistEndret(LocalDateTime.now());
     }
 
-    Integer slettKandidat(String fnr, Veileder innloggetVeileder) {
+    Optional<Integer> slettKandidat(String fnr, Veileder innloggetVeileder) {
         SlettKandidat slettKandidat = new SlettKandidat(
                 fnr,
                 innloggetVeileder.getNavIdent(),
                 LocalDateTime.now()
         );
-        Integer id = kandidatRepository.slettKandidat(slettKandidat);
+        Optional<Integer> id = kandidatRepository.slettKandidat(slettKandidat);
         eventPublisher.publishEvent(slettKandidat);
         return id;
     }

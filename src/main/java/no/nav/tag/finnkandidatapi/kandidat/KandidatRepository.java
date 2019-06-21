@@ -96,12 +96,18 @@ public class KandidatRepository {
         return parameters;
     }
 
-    public Integer slettKandidat(SlettKandidat slettKandidat) {
+    public Optional<Integer> slettKandidat(SlettKandidat slettKandidat) {
+        Optional<Kandidat> kandidat = hentNyesteKandidat(slettKandidat.getFnr());
+        if (kandidat.isEmpty()) {
+            return Optional.empty();
+        }
+
         Map<String, Object> parameters = new HashMap<>();
         parameters.put(FNR, slettKandidat.getFnr());
         parameters.put(REGISTRERT_AV, slettKandidat.getSlettetAv());
         parameters.put(REGISTRERINGSTIDSPUNKT, slettKandidat.getSlettetTidspunkt());
+        parameters.put(SLETTET, true);
 
-        return jdbcInsert.executeAndReturnKey(parameters).intValue();
+        return Optional.of(jdbcInsert.executeAndReturnKey(parameters).intValue());
     }
 }

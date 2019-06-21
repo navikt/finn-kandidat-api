@@ -10,6 +10,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import static no.nav.tag.finnkandidatapi.TestData.*;
@@ -199,25 +200,10 @@ public class KandidatRepositoryTest {
     }
 
     @Test
-    public void slettKandidat__skal_returnere_0_hvis_fnr_ikke_finnes() {
+    public void slettKandidat__skal_returnere_empty_hvis_fnr_ikke_finnes() {
         String uregistrertFnr = "12345678901";
 
-        Integer antallSlettedeKandidater = repository.slettKandidat(enKandidatSletting(uregistrertFnr));
-        assertThat(antallSlettedeKandidater).isEqualTo(0);
-    }
-
-    @Test
-    public void slettKandidat__skal_returnere_antall_slettede_kandidater() {
-        Kandidat kandidatMedToRegistreringer = enKandidat("01019143210");
-        Kandidat kandidatMedToRegistreringer2 = enKandidat("01019143210");
-        Kandidat enTredjeKandidat = enKandidat();
-
-        repository.lagreKandidat(kandidatMedToRegistreringer);
-        repository.lagreKandidat(kandidatMedToRegistreringer2);
-        repository.lagreKandidat(enTredjeKandidat);
-
-        Integer antallMarkertSomSlettet = repository.slettKandidat(enKandidatSletting(kandidatMedToRegistreringer));
-
-        assertThat(antallMarkertSomSlettet).isEqualTo(2);
+        Optional<Integer> antallSlettedeKandidater = repository.slettKandidat(enKandidatSletting(uregistrertFnr));
+        assertThat(antallSlettedeKandidater).isEmpty();
     }
 }

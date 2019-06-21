@@ -80,7 +80,7 @@ public class KandidatRepositoryTest {
         Kandidat kandidat = enKandidat();
 
         repository.lagreKandidat(kandidat);
-        repository.slettKandidat(kandidat.getFnr());
+        repository.slettKandidat(enKandidatSletting(kandidat));
 
         assertThat(repository.hentNyesteKandidat(kandidat.getFnr())).isEmpty();
     }
@@ -173,7 +173,7 @@ public class KandidatRepositoryTest {
 
         repository.lagreKandidat(kandidat1);
         repository.lagreKandidat(kandidat2);
-        repository.slettKandidat(kandidat1.getFnr());
+        repository.slettKandidat(enKandidatSletting(kandidat1));
 
         List<Kandidat> kandidater = repository.hentKandidater();
 
@@ -202,7 +202,7 @@ public class KandidatRepositoryTest {
     public void slettKandidat__skal_returnere_0_hvis_fnr_ikke_finnes() {
         String uregistrertFnr = "12345678901";
 
-        Integer antallSlettedeKandidater = repository.slettKandidat(uregistrertFnr);
+        Integer antallSlettedeKandidater = repository.slettKandidat(enKandidatSletting(uregistrertFnr));
         assertThat(antallSlettedeKandidater).isEqualTo(0);
     }
 
@@ -216,7 +216,7 @@ public class KandidatRepositoryTest {
         repository.lagreKandidat(kandidatMedToRegistreringer2);
         repository.lagreKandidat(enTredjeKandidat);
 
-        Integer antallMarkertSomSlettet = repository.slettKandidat(kandidatMedToRegistreringer.getFnr());
+        Integer antallMarkertSomSlettet = repository.slettKandidat(enKandidatSletting(kandidatMedToRegistreringer));
 
         assertThat(antallMarkertSomSlettet).isEqualTo(2);
     }

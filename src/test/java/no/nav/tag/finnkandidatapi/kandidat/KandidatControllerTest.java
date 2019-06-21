@@ -12,8 +12,7 @@ import org.springframework.http.ResponseEntity;
 import java.util.List;
 import java.util.Optional;
 
-import static no.nav.tag.finnkandidatapi.TestData.enKandidat;
-import static no.nav.tag.finnkandidatapi.TestData.enVeileder;
+import static no.nav.tag.finnkandidatapi.TestData.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
@@ -217,10 +216,11 @@ public class KandidatControllerTest {
 
     @Test
     public void slettKandidat__skal_returnere_ok() {
-        værInnloggetSom(enVeileder());
+        Veileder veileder = enVeileder();
+        værInnloggetSom(veileder);
         Kandidat kandidat = enKandidat();
 
-        when(service.slettKandidat(kandidat.getFnr())).thenReturn(1);
+        when(service.slettKandidat(kandidat.getFnr(), veileder)).thenReturn(1);
         ResponseEntity<String> respons = controller.slettKandidat(kandidat.getFnr());
 
         assertThat(respons.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -228,10 +228,11 @@ public class KandidatControllerTest {
 
     @Test(expected = NotFoundException.class)
     public void slettKandidat__skal_kaste_NotFoundException_hvis_kandidat_ikke_finnes() {
-        værInnloggetSom(enVeileder());
+        Veileder veileder = enVeileder();
+        værInnloggetSom(veileder);
         String uregistrertFnr = "12345678901";
 
-        when(service.slettKandidat(uregistrertFnr)).thenReturn(0);
+        when(service.slettKandidat(uregistrertFnr, veileder)).thenReturn(0);
         controller.slettKandidat(uregistrertFnr);
     }
 

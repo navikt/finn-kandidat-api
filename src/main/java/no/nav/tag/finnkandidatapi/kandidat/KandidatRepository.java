@@ -38,10 +38,10 @@ public class KandidatRepository {
     public Optional<Kandidat> hentNyesteKandidat(String fnr) {
         try {
             Kandidat kandidat = jdbcTemplate.queryForObject(
-                    "SELECT * FROM kandidat WHERE (fnr = ? AND slettet = false) ORDER BY registreringstidspunkt DESC LIMIT 1", new Object[]{ fnr },
+                    "SELECT * FROM kandidat WHERE (fnr = ?) ORDER BY registreringstidspunkt DESC LIMIT 1", new Object[]{ fnr },
                     new KandidatMapper()
             );
-            return Optional.of(kandidat);
+            return Optional.ofNullable(kandidat);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
@@ -96,7 +96,12 @@ public class KandidatRepository {
         return parameters;
     }
 
-    public Integer slettKandidat(String fnr) {
-        return jdbcTemplate.update("UPDATE kandidat SET slettet = true WHERE fnr = ?", new Object[]{fnr});
+    public Integer slettKandidat(SlettKandidat slettKandidat) {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put(FNR, slettKandidat.getFnr());
+        parameters.put(REGISTRERT_AV, slettKandidat.getSlettetAv());
+        parameters.put(REGISTRERINGSTIDSPUNKT, slettKandidat.getSlettetTidspunkt());
+
+        return jdbcInsert.executeAndReturnKey(parameters).intValue();
     }
 }

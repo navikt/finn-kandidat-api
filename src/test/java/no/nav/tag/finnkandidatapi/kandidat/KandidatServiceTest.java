@@ -13,8 +13,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import static no.nav.tag.finnkandidatapi.TestData.enKandidat;
-import static no.nav.tag.finnkandidatapi.TestData.enVeileder;
+import static no.nav.tag.finnkandidatapi.TestData.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -105,9 +104,10 @@ public class KandidatServiceTest {
 
     @Test
     public void slettKandidat__skal_returnere_antall_slettede_kandidater() {
-        String fnr = enKandidat("12345678901").getFnr();
+        Kandidat kandidat = enKandidat("12345678901");
+        SlettKandidat slettKandidat = enKandidatSletting(kandidat);
 
-        when(repository.slettKandidat(fnr)).thenReturn(1);
-        assertThat(kandidatService.slettKandidat(fnr)).isEqualTo(1);
+        when(repository.slettKandidat(slettKandidat)).thenReturn(1);
+        assertThat(kandidatService.slettKandidat(slettKandidat.getFnr(), new Veileder(slettKandidat.getSlettetAv()))).isEqualTo(1);
     }
 }

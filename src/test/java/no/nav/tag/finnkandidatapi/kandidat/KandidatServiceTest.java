@@ -103,7 +103,7 @@ public class KandidatServiceTest {
         kandidatService.endreKandidat(kandidat, veileder);
 
         assertThat(kandidat.getSistEndretAv()).isEqualTo(veileder.getNavIdent());
-        assertThat(kandidat.getSistEndret()).isEqualToIgnoringSeconds(datetime);
+        assertThat(kandidat.getSistEndret()).isEqualTo(datetime);
     }
 
     @Test

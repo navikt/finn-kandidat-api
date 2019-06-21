@@ -3,6 +3,7 @@ package no.nav.tag.finnkandidatapi.aktørregister;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.finnkandidatapi.kandidat.FinnKandidatException;
 import no.nav.tag.finnkandidatapi.tilgangskontroll.sts.STSClient;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
@@ -21,8 +22,8 @@ public class AktørRegisterClient {
     private final String aktørRegisterUrl;
     private final STSClient stsClient;
 
-    public AktørRegisterClient(@Value("${aktørregister.url}") String aktørRegisterUrl, STSClient stsClient) {
-        this.restTemplate = new RestTemplate();
+    public AktørRegisterClient(RestTemplate restTemplate, @Value("${aktørregister.url}") String aktørRegisterUrl, STSClient stsClient) {
+        this.restTemplate = restTemplate;
         this.aktørRegisterUrl = aktørRegisterUrl;
         this.stsClient = stsClient;
     }
@@ -68,7 +69,7 @@ public class AktørRegisterClient {
             throw new FinnKandidatException("Feil fra aktørregister for aktørId " + aktørId + ", feilmelding: " + identinfoForAktør.getFeilmelding());
         }
 
-        if (identinfoForAktør.getIdenter().size() > 1) {
+        if (identinfoForAktør.getIdenter().size() != 1) {
             throw new FinnKandidatException("Forventet 1 fnr for aktørId" + aktørId + ", fant " + identinfoForAktør.getIdenter().size());
         }
     }

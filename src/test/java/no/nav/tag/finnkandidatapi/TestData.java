@@ -2,7 +2,7 @@ package no.nav.tag.finnkandidatapi;
 
 import no.nav.tag.finnkandidatapi.kandidat.Kandidat;
 import no.nav.tag.finnkandidatapi.kandidat.Veileder;
-import no.nav.tag.finnkandidatapi.tilgangskontroll.sts.STSToken;
+import no.nav.tag.finnkandidatapi.sts.STSToken;
 
 import java.time.LocalDateTime;
 import java.util.Collections;

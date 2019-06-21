@@ -2,8 +2,7 @@ package no.nav.tag.finnkandidatapi.aktørregister;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.finnkandidatapi.kandidat.FinnKandidatException;
-import no.nav.tag.finnkandidatapi.tilgangskontroll.sts.STSClient;
-import org.springframework.beans.factory.annotation.Autowired;
+import no.nav.tag.finnkandidatapi.sts.STSClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;

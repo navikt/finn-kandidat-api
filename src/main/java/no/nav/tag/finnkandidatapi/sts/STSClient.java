@@ -1,4 +1,4 @@
-package no.nav.tag.finnkandidatapi.tilgangskontroll.sts;
+package no.nav.tag.finnkandidatapi.sts;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

@@ -1,4 +1,4 @@
-package no.nav.tag.finnkandidatapi.tilgangskontroll.sts;
+package no.nav.tag.finnkandidatapi.sts;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;

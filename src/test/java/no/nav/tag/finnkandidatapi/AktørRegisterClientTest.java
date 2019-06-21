@@ -4,7 +4,7 @@ import no.nav.tag.finnkandidatapi.aktørregister.AktørRegisterClient;
 import no.nav.tag.finnkandidatapi.aktørregister.Identinfo;
 import no.nav.tag.finnkandidatapi.aktørregister.IdentinfoForAktør;
 import no.nav.tag.finnkandidatapi.kandidat.FinnKandidatException;
-import no.nav.tag.finnkandidatapi.tilgangskontroll.sts.STSClient;
+import no.nav.tag.finnkandidatapi.sts.STSClient;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

@@ -203,7 +203,17 @@ public class KandidatRepositoryTest {
     public void slettKandidat__skal_returnere_empty_hvis_fnr_ikke_finnes() {
         String uregistrertFnr = "12345678901";
 
-        Optional<Integer> antallSlettedeKandidater = repository.slettKandidat(enKandidatSletting(uregistrertFnr));
-        assertThat(antallSlettedeKandidater).isEmpty();
+        Optional<Integer> id = repository.slettKandidat(enKandidatSletting(uregistrertFnr));
+        assertThat(id).isEmpty();
+    }
+
+    @Test
+    public void slettKandidat__skal_returnere_empty_hvis_kandidat_allerede_er_slettet() {
+        Kandidat kandidat = enKandidat();
+        repository.lagreKandidat(kandidat);
+        repository.slettKandidat(enKandidatSletting(kandidat.getFnr()));
+
+        Optional<Integer> id = repository.slettKandidat(enKandidatSletting(kandidat.getFnr()));
+        assertThat(id).isEmpty();
     }
 }

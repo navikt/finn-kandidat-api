@@ -3,6 +3,7 @@ package no.nav.tag.finnkandidatapi.kandidat;
 import no.nav.tag.finnkandidatapi.DateProvider;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatEndret;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatOpprettet;
+import no.nav.tag.finnkandidatapi.metrikker.KandidatSlettet;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -129,14 +130,17 @@ public class KandidatServiceTest {
     }
 
     @Test
-    public void slettKandidat_skal_publisere_SlettKandidat_event() {
+    public void slettKandidat_skal_publisere_KandidatSlettet_event() {
         String fnr = "12345678910";
         Veileder veileder = enVeileder();
         LocalDateTime datetime = LocalDateTime.now();
+        SlettKandidat slettKandidat = new SlettKandidat(fnr, veileder.getNavIdent(), datetime);
+
         when(dateProvider.now()).thenReturn(datetime);
+        when(repository.slettKandidat(slettKandidat)).thenReturn(Optional.of(4));
 
         kandidatService.slettKandidat(fnr, veileder);
 
-        verify(eventPublisher).publishEvent(new SlettKandidat(fnr, veileder.getNavIdent(), datetime));
+        verify(eventPublisher).publishEvent(new KandidatSlettet(slettKandidat, 4));
     }
 }

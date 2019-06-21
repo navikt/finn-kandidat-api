@@ -3,6 +3,7 @@ package no.nav.tag.finnkandidatapi.metrikker;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.tag.finnkandidatapi.kandidat.SlettKandidat;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
@@ -30,5 +31,10 @@ public class MetrikkRegistrering {
     @EventListener
     public void kandidatEndret(KandidatEndret event) {
         log.info("event=kandidat.endret, id={}", event.getKandidat().getId());
+    }
+
+    @EventListener
+    public void kandidatSlettet(KandidatSlettet event) {
+        log.info("event=kandidat.slettet, id={}", event.getId());
     }
 }

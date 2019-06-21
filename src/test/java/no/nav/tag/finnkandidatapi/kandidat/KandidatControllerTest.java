@@ -232,8 +232,6 @@ public class KandidatControllerTest {
         værInnloggetSom(veileder);
         String uregistrertFnr = "12345678901";
 
-        when(service.hentNyesteKandidat(uregistrertFnr)).thenReturn(Optional.empty());
-
         controller.slettKandidat(uregistrertFnr);
     }
 

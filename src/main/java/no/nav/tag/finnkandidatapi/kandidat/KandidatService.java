@@ -3,6 +3,7 @@ package no.nav.tag.finnkandidatapi.kandidat;
 import no.nav.tag.finnkandidatapi.DateProvider;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatEndret;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatOpprettet;
+import no.nav.tag.finnkandidatapi.metrikker.KandidatSlettet;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
@@ -60,8 +61,10 @@ public class KandidatService {
                 innloggetVeileder.getNavIdent(),
                 dateProvider.now()
         );
-        Optional<Integer> id = kandidatRepository.slettKandidat(slettKandidat);
-        eventPublisher.publishEvent(slettKandidat);
-        return id;
+
+        Optional<Integer> optionalId = kandidatRepository.slettKandidat(slettKandidat);
+        optionalId.ifPresent(id -> eventPublisher.publishEvent(new KandidatSlettet(slettKandidat, id)));
+
+        return optionalId;
     }
 }

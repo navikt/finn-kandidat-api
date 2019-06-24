@@ -54,10 +54,12 @@ public class KandidatService {
     }
 
     public void behandleOppfølgingAvsluttet(OppfølgingAvsluttetMelding oppfølgingAvsluttetMelding) {
-        log.info("Oppfølging avsluttet for aktørId {}", oppfølgingAvsluttetMelding.getAktorId());
+        log.debug("Oppfølging avsluttet for aktørId {}", oppfølgingAvsluttetMelding.getAktorId());
         String fnr = aktørRegisterClient.tilFnr(oppfølgingAvsluttetMelding.getAktorId());
         Integer slettedeRader = slettKandidat(fnr);
-        log.info("Slettet {} rader", slettedeRader);
+        if (slettedeRader > 0) {
+            log.info("Slettet {} rader", slettedeRader);
+        }
     }
 
     public Integer slettKandidat(String fnr) {

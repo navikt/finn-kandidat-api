@@ -12,6 +12,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.context.ApplicationEventPublisher;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -126,7 +127,7 @@ public class KandidatServiceTest {
         String fnr = "01065500791";
         when(aktørRegisterClient.tilFnr(aktørId)).thenReturn(fnr);
 
-        kandidatService.behandleOppfølgingAvsluttet(new OppfølgingAvsluttetMelding(aktørId, LocalDateTime.now()));
+        kandidatService.behandleOppfølgingAvsluttet(new OppfølgingAvsluttetMelding(aktørId, new Date()));
 
         verify(repository).slettKandidat(fnr);
     }

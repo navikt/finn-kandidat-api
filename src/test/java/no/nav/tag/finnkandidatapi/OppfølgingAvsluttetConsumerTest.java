@@ -35,6 +35,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.Map;
 
 import static no.nav.tag.finnkandidatapi.TestData.enKandidat;
@@ -124,10 +125,8 @@ public class OppfølgingAvsluttetConsumerTest {
     private String lagOppfølgingAvsluttetMelding(String aktørId) throws JsonProcessingException {
         OppfølgingAvsluttetMelding oppfølgingAvsluttetMelding = OppfølgingAvsluttetMelding.builder()
                 .aktorId(aktørId)
-                .sluttdato(LocalDateTime.now()).build();
-        ObjectMapper objectMapper = new ObjectMapper()
-                .registerModule(new JavaTimeModule())
-                .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+                .sluttdato(new Date()).build();
+        ObjectMapper objectMapper = new ObjectMapper();
         return objectMapper.writeValueAsString(oppfølgingAvsluttetMelding);
     }
 

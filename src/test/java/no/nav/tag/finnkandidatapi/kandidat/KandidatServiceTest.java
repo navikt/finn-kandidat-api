@@ -19,6 +19,7 @@ import static no.nav.tag.finnkandidatapi.TestData.enKandidat;
 import static no.nav.tag.finnkandidatapi.TestData.enVeileder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -140,5 +141,15 @@ public class KandidatServiceTest {
         kandidatService.slettKandidat(fnr, veileder);
 
         verify(eventPublisher).publishEvent(new KandidatSlettet(4, fnr, veileder, datetime));
+    }
+
+    @Test
+    public void slettKandidat_skal_returnere_id() {
+        String fnr = "12345678910";
+        Veileder veileder = enVeileder();
+
+        when(repository.slettKandidat(eq(fnr), eq(veileder), any())).thenReturn(Optional.of(4));
+
+        assertThat(kandidatService.slettKandidat(fnr, veileder).get()).isEqualTo(4);
     }
 }

@@ -8,5 +8,5 @@ import org.springframework.stereotype.Component;
 @Component
 @ConfigurationProperties(prefix = "oppfolging-avsluttet")
 public class ConsumerProps {
-    private String[] topics;
+    private String topic;
 }

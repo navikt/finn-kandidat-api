@@ -1,10 +1,12 @@
 package no.nav.tag.finnkandidatapi.kandidat;
 
+import no.nav.tag.finnkandidatapi.DateProvider;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatEndret;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatOpprettet;
+import no.nav.tag.finnkandidatapi.metrikker.KandidatSlettet;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.context.ApplicationEventPublisher;
@@ -17,13 +19,13 @@ import static no.nav.tag.finnkandidatapi.TestData.enKandidat;
 import static no.nav.tag.finnkandidatapi.TestData.enVeileder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class KandidatServiceTest {
 
-    @InjectMocks
     private KandidatService kandidatService;
 
     @Mock
@@ -31,6 +33,14 @@ public class KandidatServiceTest {
 
     @Mock
     private ApplicationEventPublisher eventPublisher;
+
+    @Mock
+    private DateProvider dateProvider;
+
+    @Before
+    public void setUp() {
+        kandidatService = new KandidatService(repository, eventPublisher, dateProvider);
+    }
 
     @Test
     public void hentNyesteKandidat__skal_returnere_kandidat() {
@@ -57,14 +67,16 @@ public class KandidatServiceTest {
     public void opprettKandidat__skal_endre_sistEndretAv_og_sistEndret_med_innlogget_veileder() {
         Kandidat kandidat = enKandidat();
         Veileder veileder = enVeileder();
+        LocalDateTime datetime = LocalDateTime.now();
 
+        when(dateProvider.now()).thenReturn(datetime);
         when(repository.lagreKandidat(any(Kandidat.class))).thenReturn(1);
         when(repository.hentKandidat(1)).thenReturn(Optional.of(kandidat));
 
         kandidatService.opprettKandidat(kandidat, veileder);
 
         assertThat(kandidat.getSistEndretAv()).isEqualTo(veileder.getNavIdent());
-        assertThat(kandidat.getSistEndret()).isEqualToIgnoringSeconds(LocalDateTime.now());
+        assertThat(kandidat.getSistEndret()).isEqualTo(datetime);
     }
 
     @Test
@@ -82,14 +94,16 @@ public class KandidatServiceTest {
     public void endreKandidat__skal_endre_sistEndretAv_og_sistEndret_med_innlogget_veileder() {
         Kandidat kandidat = enKandidat();
         Veileder veileder = enVeileder();
+        LocalDateTime datetime = LocalDateTime.now();
 
+        when(dateProvider.now()).thenReturn(datetime);
         when(repository.lagreKandidat(any(Kandidat.class))).thenReturn(1);
         when(repository.hentKandidat(1)).thenReturn(Optional.of(kandidat));
 
         kandidatService.endreKandidat(kandidat, veileder);
 
         assertThat(kandidat.getSistEndretAv()).isEqualTo(veileder.getNavIdent());
-        assertThat(kandidat.getSistEndret()).isEqualToIgnoringSeconds(LocalDateTime.now());
+        assertThat(kandidat.getSistEndret()).isEqualTo(datetime);
     }
 
     @Test
@@ -104,10 +118,38 @@ public class KandidatServiceTest {
     }
 
     @Test
-    public void slettKandidat__skal_returnere_antall_slettede_kandidater() {
-        String fnr = enKandidat("12345678901").getFnr();
+    public void slettKandidat_skal_slette_kandidat_med_riktig_fnr_veilder_og_tidspunkt() {
+        String fnr = "12345678910";
+        Veileder veileder = enVeileder();
+        LocalDateTime datetime = LocalDateTime.now();
+        when(dateProvider.now()).thenReturn(datetime);
 
-        when(repository.slettKandidat(fnr)).thenReturn(1);
-        assertThat(kandidatService.slettKandidat(fnr)).isEqualTo(1);
+        kandidatService.slettKandidat(fnr, veileder);
+
+        verify(repository).slettKandidat(fnr, veileder, datetime);
+    }
+
+    @Test
+    public void slettKandidat_skal_publisere_KandidatSlettet_event() {
+        String fnr = "12345678910";
+        Veileder veileder = enVeileder();
+        LocalDateTime datetime = LocalDateTime.now();
+
+        when(dateProvider.now()).thenReturn(datetime);
+        when(repository.slettKandidat(fnr, veileder, datetime)).thenReturn(Optional.of(4));
+
+        kandidatService.slettKandidat(fnr, veileder);
+
+        verify(eventPublisher).publishEvent(new KandidatSlettet(4, fnr, veileder, datetime));
+    }
+
+    @Test
+    public void slettKandidat_skal_returnere_id() {
+        String fnr = "12345678910";
+        Veileder veileder = enVeileder();
+
+        when(repository.slettKandidat(eq(fnr), eq(veileder), any())).thenReturn(Optional.of(4));
+
+        assertThat(kandidatService.slettKandidat(fnr, veileder).get()).isEqualTo(4);
     }
 }

@@ -16,6 +16,9 @@ public class KandidatMapper implements RowMapper<Kandidat> {
 
     @Override
     public Kandidat mapRow(ResultSet rs, int i) throws SQLException {
+        if (rs.getBoolean(SLETTET)) {
+            return null;
+        }
 
         LocalDateTime sistEndret = rs.getTimestamp(REGISTRERINGSTIDSPUNKT) == null ? null : rs.getTimestamp(REGISTRERINGSTIDSPUNKT).toLocalDateTime();
         ArbeidstidBehov arbeidstidBehov = rs.getString(ARBEIDSTID_BEHOV) == null ? null : ArbeidstidBehov.valueOf(rs.getString(ARBEIDSTID_BEHOV));

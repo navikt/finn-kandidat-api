@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -65,12 +66,12 @@ public class KandidatController {
     }
 
     @DeleteMapping("/{fnr}")
-    public ResponseEntity<String> slettKandidat(@PathVariable("fnr") String fnr) {
+    public ResponseEntity slettKandidat(@PathVariable("fnr") String fnr) {
         tilgangskontroll.sjekkSkrivetilgangTilKandidat(fnr);
 
-        Integer antallSlettedeRader = kandidatService.slettKandidat(fnr);
+        Optional<Integer> id = kandidatService.slettKandidat(fnr, tilgangskontroll.hentInnloggetVeileder());
 
-        if (antallSlettedeRader == 0) {
+        if (id.isEmpty()) {
             throw new NotFoundException();
         }
 

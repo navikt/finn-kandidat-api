@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 import static no.nav.tag.finnkandidatapi.kandidat.KandidatMapper.*;
@@ -38,10 +39,10 @@ public class KandidatRepository {
     public Optional<Kandidat> hentNyesteKandidat(String fnr) {
         try {
             Kandidat kandidat = jdbcTemplate.queryForObject(
-                    "SELECT * FROM kandidat WHERE (fnr = ? AND slettet = false) ORDER BY registreringstidspunkt DESC LIMIT 1", new Object[]{ fnr },
+                    "SELECT * FROM kandidat WHERE (fnr = ?) ORDER BY registreringstidspunkt DESC LIMIT 1", new Object[]{ fnr },
                     new KandidatMapper()
             );
-            return Optional.of(kandidat);
+            return Optional.ofNullable(kandidat);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
@@ -96,7 +97,22 @@ public class KandidatRepository {
         return parameters;
     }
 
-    public Integer slettKandidat(String fnr) {
-        return jdbcTemplate.update("UPDATE kandidat SET slettet = true WHERE fnr = ?", new Object[]{fnr});
+    public Optional<Integer> slettKandidat(
+            String fnr,
+            Veileder slettetAv,
+            LocalDateTime slettetTidspunkt
+    ) {
+        Optional<Kandidat> kandidat = hentNyesteKandidat(fnr);
+        if (kandidat.isEmpty()) {
+            return Optional.empty();
+        }
+
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put(FNR, fnr);
+        parameters.put(REGISTRERT_AV, slettetAv.getNavIdent());
+        parameters.put(REGISTRERINGSTIDSPUNKT, slettetTidspunkt);
+        parameters.put(SLETTET, true);
+
+        return Optional.of(jdbcInsert.executeAndReturnKey(parameters).intValue());
     }
 }

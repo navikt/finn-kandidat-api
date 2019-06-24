@@ -1,8 +1,9 @@
 package no.nav.tag.finnkandidatapi.kandidat;
 
-import lombok.RequiredArgsConstructor;
+import no.nav.tag.finnkandidatapi.DateProvider;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatEndret;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatOpprettet;
+import no.nav.tag.finnkandidatapi.metrikker.KandidatSlettet;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
@@ -11,11 +12,17 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
 public class KandidatService {
 
     private final KandidatRepository kandidatRepository;
     private final ApplicationEventPublisher eventPublisher;
+    private final DateProvider dateProvider;
+
+    public KandidatService(KandidatRepository kandidatRepository, ApplicationEventPublisher eventPublisher, DateProvider dateProvider) {
+        this.kandidatRepository = kandidatRepository;
+        this.eventPublisher = eventPublisher;
+        this.dateProvider = dateProvider;
+    }
 
     public Optional<Kandidat> hentNyesteKandidat(String fnr) {
         return kandidatRepository.hentNyesteKandidat(fnr);
@@ -45,10 +52,17 @@ public class KandidatService {
 
     private void oppdaterSistEndretFelter(Kandidat kandidat, Veileder innloggetVeileder) {
         kandidat.setSistEndretAv(innloggetVeileder.getNavIdent());
-        kandidat.setSistEndret(LocalDateTime.now());
+        kandidat.setSistEndret(dateProvider.now());
     }
 
-    Integer slettKandidat(String fnr) {
-        return kandidatRepository.slettKandidat(fnr);
+    Optional<Integer> slettKandidat(String fnr, Veileder innloggetVeileder) {
+        LocalDateTime slettetTidspunkt = dateProvider.now();
+        Optional<Integer> optionalId = kandidatRepository.slettKandidat(fnr, innloggetVeileder, slettetTidspunkt);
+
+        optionalId.ifPresent(id -> eventPublisher.publishEvent(
+                new KandidatSlettet(id, fnr, innloggetVeileder, slettetTidspunkt))
+        );
+
+        return optionalId;
     }
 }

@@ -26,9 +26,7 @@ import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.ProducerFactory;
-import org.springframework.kafka.listener.ContainerProperties;
-import org.springframework.kafka.listener.KafkaMessageListenerContainer;
-import org.springframework.kafka.listener.MessageListener;
+import org.springframework.kafka.listener.*;
 import org.springframework.kafka.test.rule.EmbeddedKafkaRule;
 import org.springframework.kafka.test.utils.ContainerTestUtils;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
@@ -99,6 +97,23 @@ public class OppfølgingAvsluttetConsumerTest {
         }
         assertThat(kandidatErslettet).isTrue();
     }
+
+//    TODO: Test for å sjekke at man konsumerer melding på ny hvis den feiler
+//    @Test
+//    @SneakyThrows
+//    public void skal_konsumere_melding_igjen_hvis_feil_ved_deserialisering() {
+//        // Produser melding med feil format
+//        String melding = "JSON som ikke kan deserialiseres";
+//        producer.send(new ProducerRecord<>(OPPFØLGING_AVSLUTTET_TOPIC, "666", melding));
+//        sendOppFølgingAvsluttetMelding();
+//
+//          Prøv å konsumere meldingen
+//          RuntimeException skal kastes
+//          Send ny melding (kanskje med riktig format på melding)
+//          Prøv å konsumere igjen
+//          Konsume metoden skal kjøres to ganger
+//          Sjekk om casen over skjer hvis man tar bort SeekToCurrentErrorHandler
+//    }
 
     private void sendOppFølgingAvsluttetMelding() throws JsonProcessingException {
         String aktørId = "1856024171652";

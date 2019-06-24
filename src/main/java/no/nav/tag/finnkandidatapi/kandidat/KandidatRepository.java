@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 import static no.nav.tag.finnkandidatapi.kandidat.KandidatMapper.*;
@@ -96,16 +97,20 @@ public class KandidatRepository {
         return parameters;
     }
 
-    public Optional<Integer> slettKandidat(SlettKandidat slettKandidat) {
-        Optional<Kandidat> kandidat = hentNyesteKandidat(slettKandidat.getFnr());
+    public Optional<Integer> slettKandidat(
+            String fnr,
+            Veileder slettetAv,
+            LocalDateTime slettetTidspunkt
+    ) {
+        Optional<Kandidat> kandidat = hentNyesteKandidat(fnr);
         if (kandidat.isEmpty()) {
             return Optional.empty();
         }
 
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put(FNR, slettKandidat.getFnr());
-        parameters.put(REGISTRERT_AV, slettKandidat.getSlettetAv());
-        parameters.put(REGISTRERINGSTIDSPUNKT, slettKandidat.getSlettetTidspunkt());
+        parameters.put(FNR, fnr);
+        parameters.put(REGISTRERT_AV, slettetAv.getNavIdent());
+        parameters.put(REGISTRERINGSTIDSPUNKT, slettetTidspunkt);
         parameters.put(SLETTET, true);
 
         return Optional.of(jdbcInsert.executeAndReturnKey(parameters).intValue());

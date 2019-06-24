@@ -56,14 +56,12 @@ public class KandidatService {
     }
 
     Optional<Integer> slettKandidat(String fnr, Veileder innloggetVeileder) {
-        SlettKandidat slettKandidat = new SlettKandidat(
-                fnr,
-                innloggetVeileder.getNavIdent(),
-                dateProvider.now()
-        );
+        LocalDateTime slettetTidspunkt = dateProvider.now();
+        Optional<Integer> optionalId = kandidatRepository.slettKandidat(fnr, innloggetVeileder, slettetTidspunkt);
 
-        Optional<Integer> optionalId = kandidatRepository.slettKandidat(slettKandidat);
-        optionalId.ifPresent(id -> eventPublisher.publishEvent(new KandidatSlettet(slettKandidat, id)));
+        optionalId.ifPresent(id -> eventPublisher.publishEvent(
+                new KandidatSlettet(id, fnr, innloggetVeileder, slettetTidspunkt))
+        );
 
         return optionalId;
     }

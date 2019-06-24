@@ -8,11 +8,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import static java.time.LocalDateTime.now;
 import static no.nav.tag.finnkandidatapi.TestData.*;
 import static no.nav.tag.finnkandidatapi.kandidat.ArbeidsmiljøBehov.ANNET;
 import static no.nav.tag.finnkandidatapi.kandidat.ArbeidsmiljøBehov.MENTOR;
@@ -81,7 +81,7 @@ public class KandidatRepositoryTest {
         Kandidat kandidat = enKandidat();
 
         repository.lagreKandidat(kandidat);
-        repository.slettKandidat(enKandidatSletting(kandidat));
+        repository.slettKandidat(kandidat.getFnr(), enVeileder(), now());
 
         assertThat(repository.hentNyesteKandidat(kandidat.getFnr())).isEmpty();
     }
@@ -119,15 +119,15 @@ public class KandidatRepositoryTest {
     public void hentKandidater__skal_returnere_siste_kandidat_etter_lagret_flere_kandidater_med_samme_fnr() {
         Kandidat kandidat = kandidatBuilder()
                 .fnr("01234567890")
-                .sistEndret(LocalDateTime.now())
+                .sistEndret(now())
                 .build();
         Kandidat nyereKandidat = kandidatBuilder()
                 .fnr("01234567890")
-                .sistEndret(LocalDateTime.now().plusMinutes(1))
+                .sistEndret(now().plusMinutes(1))
                 .build();
         Kandidat sisteKandidat = kandidatBuilder()
                 .fnr("01234567890")
-                .sistEndret(LocalDateTime.now().plusMinutes(2))
+                .sistEndret(now().plusMinutes(2))
                 .build();
 
         repository.lagreKandidat(kandidat);
@@ -144,12 +144,12 @@ public class KandidatRepositoryTest {
     public void hentKandidater__skal_returnere_kandidater_sortert_på_sist_endret_tidspunkt() {
         Kandidat kandidat1 = kandidatBuilder()
                 .fnr("1234567890")
-                .sistEndret(LocalDateTime.now().plusMinutes(1))
+                .sistEndret(now().plusMinutes(1))
                 .build();
 
         Kandidat kandidat2 = kandidatBuilder()
                 .fnr("2345678901")
-                .sistEndret(LocalDateTime.now())
+                .sistEndret(now())
                 .build();
 
         repository.lagreKandidat(kandidat1);
@@ -174,7 +174,7 @@ public class KandidatRepositoryTest {
 
         repository.lagreKandidat(kandidat1);
         repository.lagreKandidat(kandidat2);
-        repository.slettKandidat(enKandidatSletting(kandidat1));
+        repository.slettKandidat(kandidat1.getFnr(), enVeileder(), now());
 
         List<Kandidat> kandidater = repository.hentKandidater();
 
@@ -203,7 +203,7 @@ public class KandidatRepositoryTest {
     public void slettKandidat__skal_returnere_empty_hvis_fnr_ikke_finnes() {
         String uregistrertFnr = "12345678901";
 
-        Optional<Integer> id = repository.slettKandidat(enKandidatSletting(uregistrertFnr));
+        Optional<Integer> id = repository.slettKandidat(uregistrertFnr, enVeileder(), now());
         assertThat(id).isEmpty();
     }
 
@@ -211,9 +211,9 @@ public class KandidatRepositoryTest {
     public void slettKandidat__skal_returnere_empty_hvis_kandidat_allerede_er_slettet() {
         Kandidat kandidat = enKandidat();
         repository.lagreKandidat(kandidat);
-        repository.slettKandidat(enKandidatSletting(kandidat.getFnr()));
+        repository.slettKandidat(kandidat.getFnr(), enVeileder(), now());
 
-        Optional<Integer> id = repository.slettKandidat(enKandidatSletting(kandidat.getFnr()));
+        Optional<Integer> id = repository.slettKandidat(kandidat.getFnr(), enVeileder(), now());
         assertThat(id).isEmpty();
     }
 }

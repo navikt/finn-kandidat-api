@@ -7,7 +7,6 @@ import no.nav.tag.finnkandidatapi.metrikker.KandidatSlettet;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.context.ApplicationEventPublisher;
@@ -16,10 +15,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import static no.nav.tag.finnkandidatapi.TestData.*;
+import static no.nav.tag.finnkandidatapi.TestData.enKandidat;
+import static no.nav.tag.finnkandidatapi.TestData.enVeileder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -126,7 +125,7 @@ public class KandidatServiceTest {
 
         kandidatService.slettKandidat(fnr, veileder);
 
-        verify(repository).slettKandidat(new SlettKandidat(fnr, veileder.getNavIdent(), datetime));
+        verify(repository).slettKandidat(fnr, veileder, datetime);
     }
 
     @Test
@@ -134,13 +133,12 @@ public class KandidatServiceTest {
         String fnr = "12345678910";
         Veileder veileder = enVeileder();
         LocalDateTime datetime = LocalDateTime.now();
-        SlettKandidat slettKandidat = new SlettKandidat(fnr, veileder.getNavIdent(), datetime);
 
         when(dateProvider.now()).thenReturn(datetime);
-        when(repository.slettKandidat(slettKandidat)).thenReturn(Optional.of(4));
+        when(repository.slettKandidat(fnr, veileder, datetime)).thenReturn(Optional.of(4));
 
         kandidatService.slettKandidat(fnr, veileder);
 
-        verify(eventPublisher).publishEvent(new KandidatSlettet(slettKandidat, 4));
+        verify(eventPublisher).publishEvent(new KandidatSlettet(4, fnr, veileder, datetime));
     }
 }

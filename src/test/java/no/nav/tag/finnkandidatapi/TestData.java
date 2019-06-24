@@ -1,7 +1,6 @@
 package no.nav.tag.finnkandidatapi;
 
 import no.nav.tag.finnkandidatapi.kandidat.Kandidat;
-import no.nav.tag.finnkandidatapi.kandidat.SlettKandidat;
 import no.nav.tag.finnkandidatapi.kandidat.Veileder;
 import no.nav.tag.finnkandidatapi.tilgangskontroll.sts.STSToken;
 
@@ -67,13 +66,5 @@ public class TestData {
 
     public static STSToken etStsToken() {
         return new STSToken("-", "-", 100);
-    }
-
-    public static SlettKandidat enKandidatSletting(Kandidat kandidat) {
-        return enKandidatSletting(kandidat.getFnr());
-    }
-
-    public static SlettKandidat enKandidatSletting(String fnr) {
-        return new SlettKandidat(fnr, "X123456", LocalDateTime.now());
     }
 }

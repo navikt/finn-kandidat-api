@@ -25,6 +25,7 @@ public class KandidatController {
 
     @GetMapping("/{fnr}")
     public ResponseEntity<Kandidat> hentKandidat(@PathVariable("fnr") String fnr) {
+        loggBrukAvEndepunkt("hentKandidat");
         tilgangskontroll.sjekkLesetilgangTilKandidat(fnr);
 
         Kandidat kandidat = kandidatService.hentNyesteKandidat(fnr).orElseThrow(NotFoundException::new);
@@ -33,6 +34,7 @@ public class KandidatController {
 
     @GetMapping
     public ResponseEntity<List<Kandidat>> hentKandidater() {
+        loggBrukAvEndepunkt("hentKandidater");
         List<Kandidat> kandidater = kandidatService.hentKandidater().stream()
                 .filter(kandidat -> tilgangskontroll.harLesetilgangTilKandidat(kandidat.getFnr()))
                 .collect(Collectors.toList());
@@ -41,6 +43,7 @@ public class KandidatController {
 
     @PostMapping
     public ResponseEntity<Kandidat> opprettKandidat(@RequestBody Kandidat kandidat) {
+        loggBrukAvEndepunkt("opprettKandidat");
         tilgangskontroll.sjekkSkrivetilgangTilKandidat(kandidat.getFnr());
         Veileder veileder = tilgangskontroll.hentInnloggetVeileder();
         Kandidat opprettetKandidat = kandidatService.opprettKandidat(kandidat, veileder).orElseThrow(FinnKandidatException::new);
@@ -51,6 +54,7 @@ public class KandidatController {
 
     @PutMapping
     public ResponseEntity<Kandidat> endreKandidat(@RequestBody Kandidat kandidat) {
+        loggBrukAvEndepunkt("endreKandidat");
         tilgangskontroll.sjekkSkrivetilgangTilKandidat(kandidat.getFnr());
         Veileder veileder = tilgangskontroll.hentInnloggetVeileder();
         Kandidat endretKandidat = kandidatService.endreKandidat(kandidat, veileder).orElseThrow(FinnKandidatException::new);
@@ -61,12 +65,14 @@ public class KandidatController {
 
     @GetMapping("/{fnr}/skrivetilgang")
     public ResponseEntity hentSkrivetilgang(@PathVariable("fnr") String fnr) {
+        loggBrukAvEndepunkt("hentSkrivetilgang");
         tilgangskontroll.sjekkSkrivetilgangTilKandidat(fnr);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{fnr}")
     public ResponseEntity slettKandidat(@PathVariable("fnr") String fnr) {
+        loggBrukAvEndepunkt("slettKandidat");
         tilgangskontroll.sjekkSkrivetilgangTilKandidat(fnr);
 
         Optional<Integer> id = kandidatService.slettKandidat(fnr, tilgangskontroll.hentInnloggetVeileder());
@@ -76,6 +82,14 @@ public class KandidatController {
         }
 
         return ResponseEntity.ok().build();
+    }
+
+    private void loggBrukAvEndepunkt(String endepunkt) {
+        log.info(
+                "Bruker med ident {} kaller endepunktet {}.",
+                tilgangskontroll.hentInnloggetVeileder().getNavIdent(),
+                endepunkt
+        );
     }
 
 }

@@ -1,14 +1,19 @@
 package no.nav.tag.finnkandidatapi.kandidat;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.security.oidc.api.Protected;
+import no.nav.tag.finnkandidatapi.kafka.OppfølgingAvsluttetMelding;
 import no.nav.tag.finnkandidatapi.tilgangskontroll.TilgangskontrollService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,9 +26,27 @@ public class KandidatController {
 
     private final KandidatService kandidatService;
     private final TilgangskontrollService tilgangskontroll;
+    // TODO: Fjern kafka ting
+    private final KafkaTemplate<String, String> kafkaTemplate;
 
     @GetMapping("/{fnr}")
     public ResponseEntity<Kandidat> hentKandidat(@PathVariable("fnr") String fnr) {
+
+        // TODO: Fjern kafka ting
+        if (fnr.equals("123")) {
+            kafkaTemplate.send("en-kafka-topic", fnr, "jayso");
+        } else {
+            try {
+                OppfølgingAvsluttetMelding oppfølgingAvsluttetMelding = OppfølgingAvsluttetMelding.builder()
+                        .aktorId(fnr)
+                        .sluttdato(new Date()).build();
+                String melding = new ObjectMapper().writeValueAsString(oppfølgingAvsluttetMelding);
+                kafkaTemplate.send("en-kafka-topic", fnr, melding);
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
+        }
+
         tilgangskontroll.sjekkLesetilgangTilKandidat(fnr);
 
         Kandidat kandidat = kandidatService.hentNyesteKandidat(fnr).orElseThrow(NotFoundException::new);

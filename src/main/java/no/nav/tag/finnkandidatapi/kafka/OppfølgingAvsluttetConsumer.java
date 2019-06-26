@@ -4,8 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.finnkandidatapi.kandidat.KandidatService;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.springframework.context.annotation.Profile;
-import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
@@ -15,15 +13,13 @@ import static no.nav.tag.finnkandidatapi.kafka.OppfølgingAvsluttetUtils.deseria
 
 @Slf4j
 @Component
-@EnableKafka
 @AllArgsConstructor
-@Profile({"kafka-test", "dev", "prod"})
 public class OppfølgingAvsluttetConsumer {
 
     private KandidatService kandidatService;
     private ConsumerProps consumerProps;
 
-    @KafkaListener(topics = "#{consumerProps.getTopic()}")
+    @KafkaListener(topics = "#{consumerProps.getTopic()}", groupId = "finn-kandidat")
     public void konsumerMelding(ConsumerRecord<String, String> melding) {
         try {
             log.info(
@@ -40,7 +36,7 @@ public class OppfølgingAvsluttetConsumer {
             //  Ha overvåkning på dette i Kibana board
             //  Skriv test for om dette feiler
             //  Sjekk om default er at melding blir konsumert igjen hvis noe feiler
-            log.error("Kunne ikke deserialisere OppfølgingAvsluttetMelding", e);
+//            log.error("Kunne ikke deserialisere OppfølgingAvsluttetMelding", e);
             throw new RuntimeException("Kunne ikke deserialisere OppfølgingAvsluttetMelding", e);
         }
     }

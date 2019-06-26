@@ -1,0 +1,1 @@
+ALTER TABLE kandidat ADD COLUMN slettet BOOLEAN;

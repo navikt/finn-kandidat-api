@@ -34,6 +34,7 @@ public class KandidatControllerTest {
 
     @Test
     public void opprettKandidat__skal_sjekke_skrivetilgang() {
+        værInnloggetSom(enVeileder());
         Kandidat kandidat = enKandidat();
 
         try {
@@ -83,6 +84,7 @@ public class KandidatControllerTest {
 
     @Test
     public void endreKandidat__skal_sjekke_skrivetilgang() {
+        værInnloggetSom(enVeileder());
         Kandidat kandidat = enKandidat();
 
         try {
@@ -166,6 +168,7 @@ public class KandidatControllerTest {
 
     @Test(expected = NotFoundException.class)
     public void hentKandidat__skal_kaste_NotFoundException_hvis_kandidat_ikke_fins() {
+        værInnloggetSom(enVeileder());
         String fnr = enKandidat().getFnr();
         when(service.hentNyesteKandidat(fnr)).thenReturn(Optional.empty());
         controller.hentKandidat(fnr);
@@ -186,6 +189,7 @@ public class KandidatControllerTest {
 
     @Test
     public void hentKandidat__skal_sjekke_lesetilgang() {
+        værInnloggetSom(enVeileder());
         String fnr = "12345678910";
 
         try {
@@ -198,13 +202,15 @@ public class KandidatControllerTest {
     @Test
     public void hentSkrivetilgang__skal_returnere_ok_hvis_veileder_har_skrivetilgang() {
         værInnloggetSom(enVeileder());
+        String fnr = "12345678910";
 
-        controller.hentSkrivetilgang(anyString());
-        verify(tilgangskontroll, times(1)).sjekkSkrivetilgangTilKandidat(anyString());
+        controller.hentSkrivetilgang(fnr);
+        verify(tilgangskontroll, times(1)).sjekkSkrivetilgangTilKandidat(fnr);
     }
 
     @Test
     public void slettKandidat__skal_sjekke_skrivetilgang() {
+        værInnloggetSom(enVeileder());
         String fnr = "12345678901";
 
         try {

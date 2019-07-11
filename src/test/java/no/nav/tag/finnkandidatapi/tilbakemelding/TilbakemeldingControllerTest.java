@@ -1,5 +1,8 @@
 package no.nav.tag.finnkandidatapi.tilbakemelding;
 
+import no.nav.tag.finnkandidatapi.kandidat.Veileder;
+import no.nav.tag.finnkandidatapi.tilgangskontroll.TilgangskontrollException;
+import no.nav.tag.finnkandidatapi.tilgangskontroll.TilgangskontrollService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,11 +25,17 @@ public class TilbakemeldingControllerTest {
     @Mock
     private TilbakemeldingRepository repository;
 
+    @Mock
+    private TilgangskontrollService tilgangskontrollService;
+
+    @Mock
+    private TilbakemeldingConfig tilbakemeldingConfig;
+
     private TilbakemeldingController tilbakemeldingController;
 
     @Before
     public void setUp() {
-        tilbakemeldingController = new TilbakemeldingController(repository);
+        tilbakemeldingController = new TilbakemeldingController(repository, tilgangskontrollService, tilbakemeldingConfig);
     }
 
     @Test
@@ -44,6 +53,9 @@ public class TilbakemeldingControllerTest {
 
     @Test
     public void hentAlleTilbakemeldinger__skal_gi_alle_tilbakemeldinger() {
+        giLesetilgangTil("X12345");
+        værInnloggetSom("X12345");
+
         List<Tilbakemelding> alleTilbakemeldinger = Arrays.asList(
                 enTilbakemelding(),
                 enTilbakemelding()
@@ -51,5 +63,20 @@ public class TilbakemeldingControllerTest {
         when(repository.hentAlleTilbakemeldinger()).thenReturn(alleTilbakemeldinger);
 
         assertThat(tilbakemeldingController.hentAlleTilbakemeldinger()).isEqualTo(alleTilbakemeldinger);
+    }
+
+    @Test(expected = TilgangskontrollException.class)
+    public void hentAlleTilbakemeldinger__skal_returnere_403_hvis_bruker_ikke_har_tilgang() {
+        giLesetilgangTil("Z99999");
+        værInnloggetSom("X12345");
+        tilbakemeldingController.hentAlleTilbakemeldinger();
+    }
+
+    private void giLesetilgangTil(String ... identer) {
+        when(tilbakemeldingConfig.getNavIdenterSomHarLesetilgangTilTilbakemeldinger()).thenReturn(Arrays.asList(identer));
+    }
+
+    private void værInnloggetSom(String navIdent) {
+        when(tilgangskontrollService.hentInnloggetVeileder()).thenReturn(new Veileder(navIdent));
     }
 }

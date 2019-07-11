@@ -7,9 +7,13 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 
+import java.util.Arrays;
+import java.util.List;
+
 import static no.nav.tag.finnkandidatapi.TestData.enTilbakemelding;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -36,5 +40,16 @@ public class TilbakemeldingControllerTest {
     public void giTilbakemelding__skal_returnere_201_created() {
         Tilbakemelding tilbakemelding = enTilbakemelding();
         assertThat(tilbakemeldingController.giTilbakemelding(tilbakemelding).getStatusCode()).isEqualTo(HttpStatus.CREATED);
+    }
+
+    @Test
+    public void hentAlleTilbakemeldinger__skal_gi_alle_tilbakemeldinger() {
+        List<Tilbakemelding> alleTilbakemeldinger = Arrays.asList(
+                enTilbakemelding(),
+                enTilbakemelding()
+        );
+        when(repository.hentAlleTilbakemeldinger()).thenReturn(alleTilbakemeldinger);
+
+        assertThat(tilbakemeldingController.hentAlleTilbakemeldinger()).isEqualTo(alleTilbakemeldinger);
     }
 }

@@ -19,7 +19,7 @@ no.nav.security.oidc:
     discoveryurl: http://metadata-isso
     accepted_audience: aud-isso
 
-tilgangskontroll.tilbakemeldinger: X12345,Y23456,Z34567
+tilgangskontroll.tilbakemeldinger: X12345,Y23456,Z34567,X123456
 
 mock:
   port: 8081
@@ -29,8 +29,8 @@ sts.url: ${mock.baseUrl}/sts
 veilarbabac.url: ${mock.baseUrl}/veilarbabac
 abac.url: ${mock.baseUrl}/abac
 
-STS_BRUKERNAVN: na
-STS_PASSORD: na
+SERVICEBRUKER_BRUKERNAVN: na
+SERVICEBRUKER_PASSORD: na
 
 ---
 spring:
@@ -52,6 +52,8 @@ no.nav.security.oidc:
     discoveryurl: https://login.microsoftonline.com/NAVQ.onmicrosoft.com/.well-known/openid-configuration
     accepted_audience: 38e07d31-659d-4595-939a-f18dce3446c5
     proxyurl: http://webproxy.nais:8088
+
+tilgangskontroll.tilbakemeldinger: ${TILGANGSKONTROLL_TILBAKEMELDINGER}
 
 sts.url: https://security-token-service.nais.preprod.local/rest/v1
 veilarbabac.url: https://veilarbabac-q1.nais.preprod.local
@@ -77,6 +79,8 @@ no.nav.security.oidc:
     discoveryurl: https://login.microsoftonline.com/navno.onmicrosoft.com/.well-known/openid-configuration
     accepted_audience: 9b4e07a3-4f4c-4bab-b866-87f62dff480d
     proxyurl: http://webproxy.nais:8088
+
+tilgangskontroll.tilbakemeldinger: ${TILGANGSKONTROLL_TILBAKEMELDINGER}
 
 sts.url: https://security-token-service.nais.adeo.no/rest/v1
 veilarbabac.url: https://veilarbabac.nais.adeo.no

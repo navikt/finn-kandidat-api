@@ -5,10 +5,7 @@ import no.nav.tag.finnkandidatapi.tilgangskontroll.TilgangskontrollException;
 import no.nav.tag.finnkandidatapi.tilgangskontroll.TilgangskontrollService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -31,7 +28,7 @@ public class TilbakemeldingController {
     }
 
     @PostMapping
-    public ResponseEntity giTilbakemelding(Tilbakemelding tilbakemelding) {
+    public ResponseEntity giTilbakemelding(@RequestBody Tilbakemelding tilbakemelding) {
         repository.lagreTilbakemelding(tilbakemelding);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }

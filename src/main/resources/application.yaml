@@ -19,6 +19,8 @@ no.nav.security.oidc:
     discoveryurl: http://metadata-isso
     accepted_audience: aud-isso
 
+tilgangskontroll.tilbakemeldinger: X12345,Y23456,Z34567
+
 mock:
   port: 8081
   baseUrl: http://localhost:${mock.port}

@@ -121,14 +121,14 @@ public class TokenGeneratorController {
     @Unprotected
     @GetMapping("/metadata-isso")
     public String metadataIsso() throws IOException {
-        return IOUtils.readInputStreamToString(getClass().getResourceAsStream("/metadata-isso.json"),
+        return IOUtils.readInputStreamToString(getClass().getResourceAsStream("/local-login/metadata-isso.json"),
                 Charset.defaultCharset());
     }
 
     @Unprotected
     @GetMapping("/metadata-selvbetjening")
     public String metadataSelvbetjening() throws IOException {
-        return IOUtils.readInputStreamToString(getClass().getResourceAsStream("/metadata-selvbetjening.json"),
+        return IOUtils.readInputStreamToString(getClass().getResourceAsStream("/local-login/metadata-selvbetjening.json"),
                 Charset.defaultCharset());
     }
 

@@ -100,6 +100,18 @@
 			<artifactId>logstash-logback-encoder</artifactId>
 			<version>5.3</version>
 		</dependency>
+
+		<!-- login-support -->
+		<dependency>
+			<groupId>no.nav.security</groupId>
+			<artifactId>oidc-support</artifactId>
+			<version>0.2.18</version>
+		</dependency>
+		<dependency>
+			<groupId>no.nav.security</groupId>
+			<artifactId>oidc-spring-support</artifactId>
+			<version>0.2.18</version>
+		</dependency>
 	</dependencies>
 
 	<build>

@@ -11,7 +11,7 @@ import java.util.List;
 
 @Protected
 @RestController
-@RequestMapping("/tilbakemelding")
+@RequestMapping("/tilbakemeldinger")
 public class TilbakemeldingController {
 
     private final TilbakemeldingRepository repository;

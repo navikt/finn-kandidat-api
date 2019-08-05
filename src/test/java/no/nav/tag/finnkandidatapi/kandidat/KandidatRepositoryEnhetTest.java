@@ -39,7 +39,6 @@ public class KandidatRepositoryEnhetTest {
     public void setUp() {
         when(jdbcInsert.withTableName(anyString())).thenReturn(jdbcInsert);
         when(jdbcInsert.usingGeneratedKeyColumns(anyString())).thenReturn(jdbcInsert);
-
         when(jdbcInsert.executeAndReturnKey(any(Map.class))).thenReturn(0);
         when(jdbcTemplate.queryForObject(any(), any(), eq(kandidatMapper))).thenReturn(enKandidat());
 

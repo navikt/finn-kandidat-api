@@ -216,15 +216,4 @@ public class KandidatRepositoryTest {
         Optional<Integer> id = repository.slettKandidat(kandidat.getFnr(), enVeileder(), now());
         assertThat(id).isEmpty();
     }
-
-    @Test
-    public void slettKandidat__skal_sette_riktig_brukertype() {
-
-        Kandidat kandidat = enKandidat();
-        repository.lagreKandidat(kandidat);
-        repository.slettKandidat(kandidat.getFnr(), enVeileder(), now());
-
-        Optional<Integer> id = repository.slettKandidat(kandidat.getFnr(), enVeileder(), now());
-        assertThat(id).isEmpty();
-    }
 }

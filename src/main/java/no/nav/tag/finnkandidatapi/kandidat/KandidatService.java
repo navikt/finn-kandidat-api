@@ -4,8 +4,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.finnkandidatapi.aktørregister.AktørRegisterClient;
 import no.nav.tag.finnkandidatapi.kafka.OppfølgingAvsluttetMelding;
+import no.nav.tag.finnkandidatapi.DateProvider;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatEndret;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatOpprettet;
+import no.nav.tag.finnkandidatapi.metrikker.KandidatSlettet;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +23,7 @@ public class KandidatService {
     private final KandidatRepository kandidatRepository;
     private final ApplicationEventPublisher eventPublisher;
     private final AktørRegisterClient aktørRegisterClient;
+    private final DateProvider dateProvider;
 
     public Optional<Kandidat> hentNyesteKandidat(String fnr) {
         return kandidatRepository.hentNyesteKandidat(fnr);
@@ -50,7 +53,7 @@ public class KandidatService {
 
     private void oppdaterSistEndretFelter(Kandidat kandidat, Veileder innloggetVeileder) {
         kandidat.setSistEndretAv(innloggetVeileder.getNavIdent());
-        kandidat.setSistEndret(LocalDateTime.now());
+        kandidat.setSistEndret(dateProvider.now());
     }
 
     public void behandleOppfølgingAvsluttet(OppfølgingAvsluttetMelding oppfølgingAvsluttetMelding) {
@@ -62,7 +65,14 @@ public class KandidatService {
         }
     }
 
-    public Integer slettKandidat(String fnr) {
-        return kandidatRepository.slettKandidat(fnr);
+    Optional<Integer> slettKandidat(String fnr, Veileder innloggetVeileder) {
+        LocalDateTime slettetTidspunkt = dateProvider.now();
+        Optional<Integer> optionalId = kandidatRepository.slettKandidat(fnr, innloggetVeileder, slettetTidspunkt);
+
+        optionalId.ifPresent(id -> eventPublisher.publishEvent(
+                new KandidatSlettet(id, fnr, innloggetVeileder, slettetTidspunkt))
+        );
+
+        return optionalId;
     }
 }

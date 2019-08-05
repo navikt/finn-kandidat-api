@@ -31,4 +31,9 @@ public class MetrikkRegistrering {
     public void kandidatEndret(KandidatEndret event) {
         log.info("event=kandidat.endret, id={}", event.getKandidat().getId());
     }
+
+    @EventListener
+    public void kandidatSlettet(KandidatSlettet event) {
+        log.info("event=kandidat.slettet, id={}", event.getId());
+    }
 }

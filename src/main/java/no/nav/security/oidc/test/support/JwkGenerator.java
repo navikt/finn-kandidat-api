@@ -16,7 +16,7 @@ import java.text.ParseException;
 
 public class JwkGenerator {
     public static String DEFAULT_KEYID = "localhost-signer";
-    public static String DEFAULT_JWKSET_FILE = "/jwkset.json";
+    public static String DEFAULT_JWKSET_FILE = "/local-login/jwkset.json";
 
     public JwkGenerator() {
     }

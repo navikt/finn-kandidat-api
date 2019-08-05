@@ -13,8 +13,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import java.util.List;
 import java.util.Optional;
 
-import static no.nav.tag.finnkandidatapi.TestData.enKandidat;
-import static no.nav.tag.finnkandidatapi.TestData.enVeileder;
+import static no.nav.tag.finnkandidatapi.TestData.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
@@ -37,6 +36,7 @@ public class KandidatControllerTest {
 
     @Test
     public void opprettKandidat__skal_sjekke_skrivetilgang() {
+        værInnloggetSom(enVeileder());
         Kandidat kandidat = enKandidat();
 
         try {
@@ -86,6 +86,7 @@ public class KandidatControllerTest {
 
     @Test
     public void endreKandidat__skal_sjekke_skrivetilgang() {
+        værInnloggetSom(enVeileder());
         Kandidat kandidat = enKandidat();
 
         try {
@@ -169,6 +170,7 @@ public class KandidatControllerTest {
 
     @Test(expected = NotFoundException.class)
     public void hentKandidat__skal_kaste_NotFoundException_hvis_kandidat_ikke_fins() {
+        værInnloggetSom(enVeileder());
         String fnr = enKandidat().getFnr();
         when(service.hentNyesteKandidat(fnr)).thenReturn(Optional.empty());
         controller.hentKandidat(fnr);
@@ -189,6 +191,7 @@ public class KandidatControllerTest {
 
     @Test
     public void hentKandidat__skal_sjekke_lesetilgang() {
+        værInnloggetSom(enVeileder());
         String fnr = "12345678910";
 
         try {
@@ -201,13 +204,15 @@ public class KandidatControllerTest {
     @Test
     public void hentSkrivetilgang__skal_returnere_ok_hvis_veileder_har_skrivetilgang() {
         værInnloggetSom(enVeileder());
+        String fnr = "12345678910";
 
-        controller.hentSkrivetilgang(anyString());
-        verify(tilgangskontroll, times(1)).sjekkSkrivetilgangTilKandidat(anyString());
+        controller.hentSkrivetilgang(fnr);
+        verify(tilgangskontroll, times(1)).sjekkSkrivetilgangTilKandidat(fnr);
     }
 
     @Test
     public void slettKandidat__skal_sjekke_skrivetilgang() {
+        værInnloggetSom(enVeileder());
         String fnr = "12345678901";
 
         try {
@@ -219,10 +224,11 @@ public class KandidatControllerTest {
 
     @Test
     public void slettKandidat__skal_returnere_ok() {
-        værInnloggetSom(enVeileder());
+        Veileder veileder = enVeileder();
+        værInnloggetSom(veileder);
         Kandidat kandidat = enKandidat();
 
-        when(service.slettKandidat(kandidat.getFnr())).thenReturn(1);
+        when(service.slettKandidat(kandidat.getFnr(), veileder)).thenReturn(Optional.of(1));
         ResponseEntity<String> respons = controller.slettKandidat(kandidat.getFnr());
 
         assertThat(respons.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -230,10 +236,10 @@ public class KandidatControllerTest {
 
     @Test(expected = NotFoundException.class)
     public void slettKandidat__skal_kaste_NotFoundException_hvis_kandidat_ikke_finnes() {
-        værInnloggetSom(enVeileder());
+        Veileder veileder = enVeileder();
+        værInnloggetSom(veileder);
         String uregistrertFnr = "12345678901";
 
-        when(service.slettKandidat(uregistrertFnr)).thenReturn(0);
         controller.slettKandidat(uregistrertFnr);
     }
 

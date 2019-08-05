@@ -169,6 +169,6 @@ public class KandidatServiceTest {
 
         kandidatService.behandleOppfølgingAvsluttet(new OppfølgingAvsluttetMelding(aktørId, new Date()));
 
-        verify(repository).slettKandidat(fnr);
+        verify(repository).slettKandidatSomMaskinbruker(fnr, dateProvider.now());
     }
 }

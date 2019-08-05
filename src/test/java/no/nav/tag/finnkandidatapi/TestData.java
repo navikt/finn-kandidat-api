@@ -4,7 +4,6 @@ import no.nav.tag.finnkandidatapi.kandidat.Kandidat;
 import no.nav.tag.finnkandidatapi.kandidat.Veileder;
 import no.nav.tag.finnkandidatapi.tilbakemelding.Behov;
 import no.nav.tag.finnkandidatapi.tilbakemelding.Tilbakemelding;
-import no.nav.tag.finnkandidatapi.tilgangskontroll.sts.STSToken;
 import no.nav.tag.finnkandidatapi.sts.STSToken;
 
 import java.time.LocalDateTime;

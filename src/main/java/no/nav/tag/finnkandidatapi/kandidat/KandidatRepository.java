@@ -18,6 +18,7 @@ public class KandidatRepository {
     static final String ID = "id";
     static final String FNR = "fnr";
     static final String REGISTRERT_AV = "registrert_av";
+    static final String REGISTRERT_AV_BRUKERTYPE = "registrert_av_brukertype";
     static final String REGISTRERINGSTIDSPUNKT = "registreringstidspunkt";
     static final String ARBEIDSTID_BEHOV = "arbeidstid_behov";
     static final String FYSISKE_BEHOV = "fysiske_behov";
@@ -27,20 +28,22 @@ public class KandidatRepository {
 
     private JdbcTemplate jdbcTemplate;
     private SimpleJdbcInsert jdbcInsert;
+    private final KandidatMapper kandidatMapper;
 
     @Autowired
-    public KandidatRepository(JdbcTemplate jdbcTemplate) {
+    public KandidatRepository(JdbcTemplate jdbcTemplate, SimpleJdbcInsert simpleJdbcInsert, KandidatMapper kandidatMapper) {
         this.jdbcTemplate = jdbcTemplate;
-        this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+        this.jdbcInsert = simpleJdbcInsert
                 .withTableName(KANDIDAT_TABELL)
                 .usingGeneratedKeyColumns(ID);
+        this.kandidatMapper = kandidatMapper;
     }
 
     public Optional<Kandidat> hentNyesteKandidat(String fnr) {
         try {
             Kandidat kandidat = jdbcTemplate.queryForObject(
                     "SELECT * FROM kandidat WHERE (fnr = ?) ORDER BY registreringstidspunkt DESC LIMIT 1", new Object[]{ fnr },
-                    new KandidatMapper()
+                    kandidatMapper
             );
             return Optional.ofNullable(kandidat);
         } catch (EmptyResultDataAccessException e) {
@@ -52,7 +55,7 @@ public class KandidatRepository {
         try {
             Kandidat kandidat = jdbcTemplate.queryForObject(
                     "SELECT * FROM kandidat WHERE id = ?", new Object[]{id},
-                    new KandidatMapper()
+                    kandidatMapper
             );
             return Optional.of(kandidat);
         } catch (EmptyResultDataAccessException e) {
@@ -72,7 +75,7 @@ public class KandidatRepository {
                         "AND k.registreringstidspunkt = gruppertKandidat.sisteRegistrert " +
                 "WHERE slettet = false " +
                 "ORDER BY k.registreringstidspunkt";
-        return jdbcTemplate.query(query, new KandidatMapper());
+        return jdbcTemplate.query(query, kandidatMapper);
     }
 
     public void slettAlleKandidater() {
@@ -88,6 +91,7 @@ public class KandidatRepository {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put(FNR, kandidat.getFnr());
         parameters.put(REGISTRERT_AV, kandidat.getSistEndretAv());
+        parameters.put(REGISTRERT_AV_BRUKERTYPE, Brukertype.VEILEDER.name());
         parameters.put(REGISTRERINGSTIDSPUNKT, kandidat.getSistEndret());
         parameters.put(ARBEIDSTID_BEHOV, kandidat.getArbeidstidBehov() == null ? null : kandidat.getArbeidstidBehov().name());
         parameters.put(FYSISKE_BEHOV, enumSetTilString(kandidat.getFysiskeBehov()));
@@ -95,6 +99,26 @@ public class KandidatRepository {
         parameters.put(GRUNNLEGGENDE_BEHOV, enumSetTilString(kandidat.getGrunnleggendeBehov()));
         parameters.put(SLETTET, false);
         return parameters;
+    }
+
+    public Optional<Integer> slettKandidatSomMaskinbruker(
+            String fnr,
+            LocalDateTime slettetTidspunkt
+    ) {
+
+        Optional<Kandidat> kandidat = hentNyesteKandidat(fnr);
+        if (kandidat.isEmpty()) {
+            return Optional.empty();
+        }
+
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put(FNR, fnr);
+        parameters.put(REGISTRERT_AV, Brukertype.SYSTEM.name());
+        parameters.put(REGISTRERT_AV_BRUKERTYPE, Brukertype.SYSTEM.name());
+        parameters.put(REGISTRERINGSTIDSPUNKT, slettetTidspunkt);
+        parameters.put(SLETTET, true);
+
+        return Optional.of(jdbcInsert.executeAndReturnKey(parameters).intValue());
     }
 
     public Optional<Integer> slettKandidat(
@@ -110,6 +134,7 @@ public class KandidatRepository {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put(FNR, fnr);
         parameters.put(REGISTRERT_AV, slettetAv.getNavIdent());
+        parameters.put(REGISTRERT_AV_BRUKERTYPE, Brukertype.VEILEDER.name());
         parameters.put(REGISTRERINGSTIDSPUNKT, slettetTidspunkt);
         parameters.put(SLETTET, true);
 

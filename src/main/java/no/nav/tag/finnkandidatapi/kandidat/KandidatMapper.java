@@ -1,6 +1,7 @@
 package no.nav.tag.finnkandidatapi.kandidat;
 
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Component;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -12,6 +13,7 @@ import java.util.stream.Stream;
 
 import static no.nav.tag.finnkandidatapi.kandidat.KandidatRepository.*;
 
+@Component
 public class KandidatMapper implements RowMapper<Kandidat> {
 
     @Override

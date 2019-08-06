@@ -61,7 +61,7 @@ public class KandidatService {
         String fnr = aktørRegisterClient.tilFnr(oppfølgingAvsluttetMelding.getAktorId());
         Optional<Integer> slettetKey = kandidatRepository.slettKandidatSomMaskinbruker(fnr, dateProvider.now());
         if (slettetKey.isPresent()) {
-            log.info("Slettet kandidat med key {}", slettetKey);
+            log.info("Slettet kandidat med key {} pga. avsluttet oppfølging", slettetKey);
         }
     }
 

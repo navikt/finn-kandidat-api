@@ -30,8 +30,7 @@ public class KandidatControllerTest {
 
     @Before
     public void setUp() {
-        // TODO: Fjern
-        controller = new KandidatController(service, tilgangskontroll, mock(KafkaTemplate.class));
+        controller = new KandidatController(service, tilgangskontroll);
     }
 
     @Test

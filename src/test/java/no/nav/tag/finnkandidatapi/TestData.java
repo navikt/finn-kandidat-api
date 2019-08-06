@@ -54,6 +54,10 @@ public class TestData {
         return "Y123456";
     }
 
+    public static String enAktørId() {
+        return "123";
+    }
+
     public static Kandidat enKandidatMedNullOgTommeSet() {
         return Kandidat.builder()
                 .fysiskeBehov(Collections.emptySet())

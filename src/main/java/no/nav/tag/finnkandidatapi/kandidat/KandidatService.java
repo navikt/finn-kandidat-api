@@ -57,7 +57,6 @@ public class KandidatService {
     }
 
     public void behandleOppfølgingAvsluttet(OppfølgingAvsluttetMelding oppfølgingAvsluttetMelding) {
-        log.debug("Oppfølging avsluttet for aktørId {}", oppfølgingAvsluttetMelding.getAktorId());
         String fnr = aktørRegisterClient.tilFnr(oppfølgingAvsluttetMelding.getAktorId());
         Optional<Integer> slettetKey = kandidatRepository.slettKandidatSomMaskinbruker(fnr, dateProvider.now());
         if (slettetKey.isPresent()) {

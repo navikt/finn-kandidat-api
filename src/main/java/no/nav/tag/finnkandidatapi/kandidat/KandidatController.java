@@ -27,28 +27,10 @@ public class KandidatController {
 
     private final KandidatService kandidatService;
     private final TilgangskontrollService tilgangskontroll;
-    // TODO: Fjern kafka ting
-    private final KafkaTemplate<String, String> kafkaTemplate;
 
     @GetMapping("/{fnr}")
     public ResponseEntity<Kandidat> hentKandidat(@PathVariable("fnr") String fnr) {
         loggBrukAvEndepunkt("hentKandidat");
-
-        // TODO: Fjern kafka ting
-        if (fnr.equals("123")) {
-            kafkaTemplate.send("en-kafka-topic", fnr, "jayso");
-        } else {
-            try {
-                OppfølgingAvsluttetMelding oppfølgingAvsluttetMelding = OppfølgingAvsluttetMelding.builder()
-                        .aktorId(fnr)
-                        .sluttdato(new Date()).build();
-                String melding = new ObjectMapper().writeValueAsString(oppfølgingAvsluttetMelding);
-                kafkaTemplate.send("en-kafka-topic", fnr, melding);
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
-            }
-        }
-
         tilgangskontroll.sjekkLesetilgangTilKandidat(fnr);
 
         Kandidat kandidat = kandidatService.hentNyesteKandidat(fnr).orElseThrow(NotFoundException::new);

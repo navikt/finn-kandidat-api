@@ -17,11 +17,6 @@ public class OppfølgingAvsluttetUtils {
             return oppfølgingAvsluttetMelding;
 
         } catch (IOException e) {
-            // TODO:
-            //  Ha overvåkning på dette i Kibana board
-            //  Skriv test for om dette feiler
-            //  Sjekk om default er at melding blir konsumert igjen hvis noe feiler
-//            log.error("Kunne ikke deserialisere OppfølgingAvsluttetMelding", e);
             throw new RuntimeException("Kunne ikke deserialisere OppfølgingAvsluttetMelding", e);
         }
     }

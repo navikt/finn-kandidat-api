@@ -51,6 +51,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Slf4j
 public class OppfølgingAvsluttetConsumerTest {
 
+    // Disse to er koblet sammen gjennom mock serveren
+    private static final String FNR = "01065500791";
+    private static final String AKTØR_ID = "1856024171652";
+
     @Autowired
     private ConsumerProps consumerTopicProps;
 
@@ -66,6 +70,7 @@ public class OppfølgingAvsluttetConsumerTest {
 
     @Before
     public void setUp() {
+        // Config kopiert fra KafkaConfig
         Map<String, Object> consumerProps = KafkaTestUtils.consumerProps("testGroup", "true", embeddedKafka.getEmbeddedKafka());
         consumerProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         consumerProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
@@ -106,7 +111,7 @@ public class OppfølgingAvsluttetConsumerTest {
     @SneakyThrows
     public void skal_slette_kandidat_ved_mottatt_oppfølging_avsluttet_kafka_melding() {
         Kandidat kandidatSomSkalSlettes = enKandidat();
-        kandidatSomSkalSlettes.setFnr("01065500791");
+        kandidatSomSkalSlettes.setFnr(FNR);
         repository.lagreKandidat(kandidatSomSkalSlettes);
         sendOppFølgingAvsluttetMelding();
 
@@ -119,8 +124,7 @@ public class OppfølgingAvsluttetConsumerTest {
     }
 
     private void sendOppFølgingAvsluttetMelding() throws JsonProcessingException {
-        String aktørId = "1856024171652";
-        String melding = lagOppfølgingAvsluttetMelding(aktørId);
+        String melding = lagOppfølgingAvsluttetMelding(AKTØR_ID);
         producer.send(new ProducerRecord<>(consumerTopicProps.getTopic(), "123", melding));
     }
 

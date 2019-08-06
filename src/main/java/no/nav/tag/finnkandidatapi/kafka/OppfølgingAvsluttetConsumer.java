@@ -30,7 +30,9 @@ public class OppfølgingAvsluttetConsumer {
 
         try {
             OppfølgingAvsluttetMelding oppfølgingAvsluttetMelding = deserialiserMelding(melding.value());
-            kandidatService.behandleOppfølgingAvsluttet(oppfølgingAvsluttetMelding);
+
+            // TODO ta tilbake
+//            kandidatService.behandleOppfølgingAvsluttet(oppfølgingAvsluttetMelding);
 
         } catch (RuntimeException e) {
             log.error("Feil ved konsumering av avsluttet oppfølging melding. id {}, offset: {}, partition: {}",

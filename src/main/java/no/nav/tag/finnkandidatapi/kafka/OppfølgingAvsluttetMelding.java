@@ -1,16 +1,15 @@
 package no.nav.tag.finnkandidatapi.kafka;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.*;
 import java.util.Date;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class OppfølgingAvsluttetMelding {
 
     private String aktorId;

@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 public class AntallKandidaterGauge {
 
     public AntallKandidaterGauge(MeterRegistry meterRegistry, KandidatRepository repository) {
-        // TODO: Fjern 10
-        meterRegistry.gauge("finn.kandidat.kandidater.antall", repository, repositoriet -> repositoriet.hentKandidater().size() + 10);
+        meterRegistry.gauge("kandidater.antall", repository, repositoriet -> repositoriet.hentKandidater().size());
     }
 }

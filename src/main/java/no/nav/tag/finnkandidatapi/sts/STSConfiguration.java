@@ -1,4 +1,4 @@
-package no.nav.tag.finnkandidatapi.tilgangskontroll.sts;
+package no.nav.tag.finnkandidatapi.sts;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;

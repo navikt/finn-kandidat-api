@@ -1,4 +1,4 @@
-package no.nav.tag.finnkandidatapi.tilgangskontroll.sts;
+package no.nav.tag.finnkandidatapi.sts;
 
 import org.junit.Before;
 import org.junit.Test;

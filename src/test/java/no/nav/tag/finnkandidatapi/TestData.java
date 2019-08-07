@@ -4,7 +4,7 @@ import no.nav.tag.finnkandidatapi.kandidat.Kandidat;
 import no.nav.tag.finnkandidatapi.kandidat.Veileder;
 import no.nav.tag.finnkandidatapi.tilbakemelding.Behov;
 import no.nav.tag.finnkandidatapi.tilbakemelding.Tilbakemelding;
-import no.nav.tag.finnkandidatapi.tilgangskontroll.sts.STSToken;
+import no.nav.tag.finnkandidatapi.sts.STSToken;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -52,6 +52,10 @@ public class TestData {
 
     public static String enNavIdent() {
         return "Y123456";
+    }
+
+    public static String enAktørId() {
+        return "123";
     }
 
     public static Kandidat enKandidatMedNullOgTommeSet() {

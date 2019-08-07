@@ -1,8 +1,12 @@
 package no.nav.tag.finnkandidatapi.kandidat;
 
 import no.nav.tag.finnkandidatapi.DateProvider;
+import no.nav.tag.finnkandidatapi.aktørregister.AktørRegisterClient;
+import no.nav.tag.finnkandidatapi.kafka.OppfølgingAvsluttetMelding;
+import no.nav.tag.finnkandidatapi.aktørregister.AktørRegisterClient;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatEndret;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatOpprettet;
+import org.junit.Before;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatSlettet;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,6 +16,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.context.ApplicationEventPublisher;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,9 +42,12 @@ public class KandidatServiceTest {
     @Mock
     private DateProvider dateProvider;
 
+    @Mock
+    private AktørRegisterClient aktørRegisterClient;
+
     @Before
     public void setUp() {
-        kandidatService = new KandidatService(repository, eventPublisher, dateProvider);
+        kandidatService = new KandidatService(repository, eventPublisher, aktørRegisterClient, dateProvider);
     }
 
     @Test
@@ -151,5 +159,16 @@ public class KandidatServiceTest {
         when(repository.slettKandidat(eq(fnr), eq(veileder), any())).thenReturn(Optional.of(4));
 
         assertThat(kandidatService.slettKandidat(fnr, veileder).get()).isEqualTo(4);
+    }
+
+    @Test
+    public void behandleOppfølgingAvsluttet__skal_slette_kandidat() {
+        String aktørId = "1856024171652";
+        String fnr = "01065500791";
+        when(aktørRegisterClient.tilFnr(aktørId)).thenReturn(fnr);
+
+        kandidatService.behandleOppfølgingAvsluttet(new OppfølgingAvsluttetMelding(aktørId, new Date()));
+
+        verify(repository).slettKandidatSomMaskinbruker(fnr, dateProvider.now());
     }
 }

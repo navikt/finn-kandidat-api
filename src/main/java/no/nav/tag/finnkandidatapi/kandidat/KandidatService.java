@@ -1,5 +1,9 @@
 package no.nav.tag.finnkandidatapi.kandidat;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import no.nav.tag.finnkandidatapi.aktørregister.AktørRegisterClient;
+import no.nav.tag.finnkandidatapi.kafka.OppfølgingAvsluttetMelding;
 import no.nav.tag.finnkandidatapi.DateProvider;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatEndret;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatOpprettet;
@@ -11,18 +15,15 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
+@RequiredArgsConstructor
 public class KandidatService {
 
     private final KandidatRepository kandidatRepository;
     private final ApplicationEventPublisher eventPublisher;
+    private final AktørRegisterClient aktørRegisterClient;
     private final DateProvider dateProvider;
-
-    public KandidatService(KandidatRepository kandidatRepository, ApplicationEventPublisher eventPublisher, DateProvider dateProvider) {
-        this.kandidatRepository = kandidatRepository;
-        this.eventPublisher = eventPublisher;
-        this.dateProvider = dateProvider;
-    }
 
     public Optional<Kandidat> hentNyesteKandidat(String fnr) {
         return kandidatRepository.hentNyesteKandidat(fnr);
@@ -53,6 +54,14 @@ public class KandidatService {
     private void oppdaterSistEndretFelter(Kandidat kandidat, Veileder innloggetVeileder) {
         kandidat.setSistEndretAv(innloggetVeileder.getNavIdent());
         kandidat.setSistEndret(dateProvider.now());
+    }
+
+    public void behandleOppfølgingAvsluttet(OppfølgingAvsluttetMelding oppfølgingAvsluttetMelding) {
+        String fnr = aktørRegisterClient.tilFnr(oppfølgingAvsluttetMelding.getAktorId());
+        Optional<Integer> slettetKey = kandidatRepository.slettKandidatSomMaskinbruker(fnr, dateProvider.now());
+        if (slettetKey.isPresent()) {
+            log.info("Slettet kandidat med key {} pga. avsluttet oppfølging", slettetKey);
+        }
     }
 
     Optional<Integer> slettKandidat(String fnr, Veileder innloggetVeileder) {

@@ -108,8 +108,6 @@ public class OppfølgingAvsluttetConsumerTest {
         ContainerTestUtils.waitForAssignment(container, embeddedKafka.getEmbeddedKafka().getPartitionsPerTopic());
     }
 
-    // TODO
-    @Ignore
     @Test(timeout = 2000)
     @SneakyThrows
     public void skal_slette_kandidat_ved_mottatt_oppfølging_avsluttet_kafka_melding() {

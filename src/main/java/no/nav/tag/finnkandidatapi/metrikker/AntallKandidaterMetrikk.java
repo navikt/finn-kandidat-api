@@ -2,12 +2,12 @@ package no.nav.tag.finnkandidatapi.metrikker;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import no.nav.tag.finnkandidatapi.kandidat.KandidatRepository;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Configuration;
 
-@Component
-public class AntallKandidaterGauge {
+@Configuration
+public class AntallKandidaterMetrikk {
 
-    public AntallKandidaterGauge(MeterRegistry meterRegistry, KandidatRepository repository) {
+    public AntallKandidaterMetrikk(MeterRegistry meterRegistry, KandidatRepository repository) {
         meterRegistry.gauge("kandidater.antall", repository, repositoriet -> repositoriet.hentKandidater().size());
     }
 }

@@ -3,7 +3,6 @@ package no.nav.tag.finnkandidatapi.metrikker;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.metrics.MetricsFactory;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 

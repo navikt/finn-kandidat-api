@@ -1,5 +1,6 @@
 package no.nav.tag.finnkandidatapi.kandidat;
 
+import no.nav.tag.finnkandidatapi.metrikker.sensu.SensuClient;
 import no.nav.tag.finnkandidatapi.tilgangskontroll.TilgangskontrollService;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,7 +31,7 @@ public class KandidatControllerTest {
 
     @Before
     public void setUp() {
-        controller = new KandidatController(service, tilgangskontroll);
+        controller = new KandidatController(service, tilgangskontroll, mock(SensuClient.class));
     }
 
     @Test

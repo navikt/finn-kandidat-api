@@ -4,12 +4,14 @@ package no.nav.tag.finnkandidatapi.kandidat;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.security.oidc.api.Protected;
+import no.nav.tag.finnkandidatapi.metrikker.sensu.SensuClient;
 import no.nav.tag.finnkandidatapi.tilgangskontroll.TilgangskontrollService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -22,6 +24,8 @@ public class KandidatController {
 
     private final KandidatService kandidatService;
     private final TilgangskontrollService tilgangskontroll;
+    // TODO: Flytt til MetrikkRegistrering
+    private final SensuClient sensuClient;
 
     @GetMapping("/{fnr}")
     public ResponseEntity<Kandidat> hentKandidat(@PathVariable("fnr") String fnr) {
@@ -34,8 +38,7 @@ public class KandidatController {
 
     @GetMapping
     public ResponseEntity<List<Kandidat>> hentKandidater() {
-
-
+        sensuClient.sendEvent("finn.kandidat.hent.kandidater", Map.of("tag1", "en verdi"), Map.of("field1", "hei"));
 
         loggBrukAvEndepunkt("hentKandidater");
         List<Kandidat> kandidater = kandidatService.hentKandidater().stream()

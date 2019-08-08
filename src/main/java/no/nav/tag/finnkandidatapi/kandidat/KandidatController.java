@@ -39,6 +39,7 @@ public class KandidatController {
 
     @GetMapping
     public ResponseEntity<List<Kandidat>> hentKandidater() {
+        MetricsFactory.createEvent("finn.kandidat.kandidat.opprettet").report();
         loggBrukAvEndepunkt("hentKandidater");
         List<Kandidat> kandidater = kandidatService.hentKandidater().stream()
                 .filter(kandidat -> tilgangskontroll.harLesetilgangTilKandidat(kandidat.getFnr()))

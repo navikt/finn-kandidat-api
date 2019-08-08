@@ -21,8 +21,6 @@ public class MetrikkRegistrering {
     public void kandidatOpprettet(KandidatOpprettet event) {
         log.info("event=kandidat.opprettet, id={}", event.getKandidat().getId());
         counter("kandidat.opprettet").increment();
-
-        MetricsFactory.createEvent("finn.kandidat.kandidat.opprettet").report();
     }
 
     private Counter counter(String navn) {

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.metrics.MetricsFactory;
 import no.nav.security.oidc.api.Protected;
 import no.nav.tag.finnkandidatapi.kafka.OppfølgingAvsluttetMelding;
 import no.nav.tag.finnkandidatapi.tilgangskontroll.TilgangskontrollService;

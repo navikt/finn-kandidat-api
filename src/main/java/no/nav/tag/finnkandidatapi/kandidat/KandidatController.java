@@ -38,7 +38,7 @@ public class KandidatController {
 
     @GetMapping
     public ResponseEntity<List<Kandidat>> hentKandidater() {
-        sensuClient.sendEvent("finn.kandidat.hent.kandidater", Map.of("tag1", "en verdi"), Map.of("field1", "hei"));
+        sensuClient.sendEvent("finn.kandidat.hent.kandidater", Map.of("tag1", "enverdi"), Map.of("field1", 10));
 
         loggBrukAvEndepunkt("hentKandidater");
         List<Kandidat> kandidater = kandidatService.hentKandidater().stream()

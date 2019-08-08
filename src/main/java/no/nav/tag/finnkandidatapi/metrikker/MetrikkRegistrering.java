@@ -3,6 +3,7 @@ package no.nav.tag.finnkandidatapi.metrikker;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.metrics.MetricsFactory;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
@@ -20,6 +21,8 @@ public class MetrikkRegistrering {
     public void kandidatOpprettet(KandidatOpprettet event) {
         log.info("event=kandidat.opprettet, id={}", event.getKandidat().getId());
         counter("kandidat.opprettet").increment();
+
+        MetricsFactory.createEvent("finn.kandidat.kandidat.opprettet").report();
     }
 
     private Counter counter(String navn) {

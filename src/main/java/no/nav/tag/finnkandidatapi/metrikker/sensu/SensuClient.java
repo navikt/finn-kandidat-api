@@ -1,8 +1,7 @@
 package no.nav.tag.finnkandidatapi.metrikker.sensu;
 
 import com.google.common.base.Joiner;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -10,9 +9,9 @@ import java.net.*;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 public class SensuClient {
 
-    private static Logger log = LoggerFactory.getLogger(SensuClient.class);
     private final String sensuHost;
     private String environmentName;
     private int sensuPort;
@@ -33,7 +32,7 @@ public class SensuClient {
             final String dataPoint = toLineProtocol(measurement, addDefaultTags(tags), fields);
             String sensuEvent = createSensuEvent(measurement, dataPoint);
             writeToSocket(sensuEvent);
-            log.debug("Sent event with output {} to InfluxDB via sensu-client", dataPoint);
+            log.info("Sent event with output {} to InfluxDB via sensu-client", dataPoint);
         } catch (RuntimeException e) {
             log.error("Unable to send event to InfluxDB via sensu-client", e);
         }
@@ -93,7 +92,7 @@ public class SensuClient {
             OutputStreamWriter osw = new OutputStreamWriter(socket.getOutputStream(), "UTF-8");
             osw.write(data, 0, data.length());
             osw.flush();
-            log.debug("Wrote {} to socket with port {}", data, sensuPort);
+            log.info("Wrote {} to socket with port {}", data, sensuPort);
         } catch (ConnectException e) {
             // for å slippe full stacktrace i enhetstester mm.
             log.error("Unable to connect to {}:{} {}", sensuHost, sensuPort, e.getMessage());

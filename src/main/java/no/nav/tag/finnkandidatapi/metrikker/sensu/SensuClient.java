@@ -12,36 +12,35 @@ import java.util.Map;
 @Slf4j
 public class SensuClient {
 
-    private final String sensuHost;
     private String environmentName;
+    private final String sensuHost;
     private int sensuPort;
 
     public SensuClient(
             String environmentName,
-            int sensuPort,
-            String sensuHostname
+            String sensuHostname,
+            int sensuPort
     ) {
         this.environmentName = environmentName;
-        this.sensuPort = sensuPort;
         this.sensuHost = sensuHostname;
+        this.sensuPort = sensuPort;
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public void sendEvent(String measurement, Map tags, Map fields) {
+    public void sendEvent(String event, Map tags, Map fields) {
         try {
-            final String dataPoint = toLineProtocol(measurement, addDefaultTags(tags), fields);
-            String sensuEvent = createSensuEvent(measurement, dataPoint);
+            final String dataPoint = toLineProtocol(event, addDefaultTags(tags), fields);
+            String sensuEvent = createSensuEvent(event, dataPoint);
             writeToSocket(sensuEvent);
-            log.info("Sent event with output {} to InfluxDB via sensu-client", dataPoint);
+            log.debug("Sent event with output {} to InfluxDB via sensu-client", dataPoint);
         } catch (RuntimeException e) {
             log.error("Unable to send event to InfluxDB via sensu-client", e);
         }
     }
 
     private Map<String, Object> addDefaultTags(Map<String, Object> tags) {
-        Map<String, Object> map = new HashMap<>();
-        map.putAll(tags);
-        map.put("application", "finnkandidatapi");
+        Map<String, Object> map = new HashMap<>(tags);
+        map.put("application", "finn-kandidat-api");
         map.put("environment", environmentName);
         map.put("hostname", getHostname());
         return map;
@@ -92,7 +91,7 @@ public class SensuClient {
             OutputStreamWriter osw = new OutputStreamWriter(socket.getOutputStream(), "UTF-8");
             osw.write(data, 0, data.length());
             osw.flush();
-            log.info("Wrote {} to socket with port {}", data, sensuPort);
+            log.debug("Wrote {} to socket with port {}", data, sensuPort);
         } catch (ConnectException e) {
             // for å slippe full stacktrace i enhetstester mm.
             log.error("Unable to connect to {}:{} {}", sensuHost, sensuPort, e.getMessage());

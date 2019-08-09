@@ -52,7 +52,7 @@ public class SensuClient {
     }
 
     protected static String toLineProtocol(String measurement, Map<String, Object> tags, Map<String, Object> fields) {
-        return String.format("%s%s %s %d", measurement, tags != null ? "," + toCSV(tags) : "", transformFields(fields), System.currentTimeMillis() / 1000);
+        return String.format("%s%s %s %d", measurement, tags != null ? "," + toCSV(tags) : "", transformFields(fields), System.currentTimeMillis() * 1000000);
     }
 
     protected static String transformFields(Map<String, Object> fields) {

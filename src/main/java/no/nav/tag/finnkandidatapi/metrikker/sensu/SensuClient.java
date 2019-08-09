@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.*;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,6 +25,14 @@ public class SensuClient {
         this.environmentName = environmentName;
         this.sensuHost = sensuHostname;
         this.sensuPort = sensuPort;
+    }
+
+    public void sendEvent(String event) {
+        sendEvent(event, Collections.emptyMap(), Map.of("value", 1));
+    }
+
+    public void sendEvent(String event, Map fields) {
+        sendEvent(event, Collections.emptyMap(), fields);
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -56,14 +65,14 @@ public class SensuClient {
 
     protected static String transformFields(Map<String, Object> fields) {
         if (fields != null) {
-            String fieldsString = "";
+            StringBuilder fieldsString = new StringBuilder();
             for (Map.Entry<String, Object> field : fields.entrySet()) {
                 String key = field.getKey();
                 Object value = field.getValue();
                 if (value instanceof String) {
-                    fieldsString += "," + key + "=" + escape((String) value);
+                    fieldsString.append(",").append(key).append("=").append(escape((String) value));
                 } else {
-                    fieldsString += "," + key + "=" + value;
+                    fieldsString.append(",").append(key).append("=").append(value);
                 }
             }
             return fieldsString.substring(1);

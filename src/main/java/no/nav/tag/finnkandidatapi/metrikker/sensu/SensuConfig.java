@@ -17,6 +17,6 @@ public class SensuConfig {
 
     @Bean
     public SensuClient sensuClient() {
-        return new SensuClient(environment, SENSU_PORT, SENSU_HOSTNAME);
+        return new SensuClient("q1", SENSU_PORT, SENSU_HOSTNAME);
     }
 }

@@ -41,7 +41,7 @@ public class SensuClient {
     private Map<String, Object> addDefaultTags(Map<String, Object> tags) {
         Map<String, Object> map = new HashMap<>();
         map.putAll(tags);
-        map.put("application", "finn-kandidat-api");
+        map.put("application", "finnkandidatapi");
         map.put("environment", environmentName);
         map.put("hostname", getHostname());
         return map;

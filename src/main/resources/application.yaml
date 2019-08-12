@@ -15,9 +15,6 @@ spring:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
 
-sensu.hostname: sensu.nais
-sensu.port: 3030
-
 ---
 spring.profiles: local
 
@@ -46,9 +43,6 @@ SERVICEBRUKER_BRUKERNAVN: na
 SERVICEBRUKER_PASSORD: na
 
 oppfolging-avsluttet.topic: en-kafka-topic
-
-sensu.hostname: localhost
-sensu.port: 3030
 
 ---
 spring:

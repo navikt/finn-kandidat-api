@@ -5,7 +5,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-@EnableOIDCTokenValidation
+@EnableOIDCTokenValidation(ignore = {
+		"springfox.documentation.swagger.web.ApiResourceController",
+		"org.springframework"
+})
 public class FinnKandidatApiApplication {
 
 	public static void main(String[] args) {

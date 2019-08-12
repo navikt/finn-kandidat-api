@@ -8,16 +8,16 @@ import org.springframework.context.annotation.Configuration;
 public class SensuConfig {
 
     @Value("${sensu.hostname}")
-    private String hostname;
+    private String sensuHostname;
 
     @Value("${sensu.port}")
-    private int port;
+    private int sensuPort;
 
     @Value("${NAIS_CLUSTER_NAME:lokalt}")
     private String environment;
 
     @Bean
     public SensuClient sensuClient() {
-        return new SensuClient(environment, hostname, port, "finn-kandidat-api");
+        return new SensuClient(environment, sensuHostname, sensuPort, "finn-kandidat-api");
     }
 }

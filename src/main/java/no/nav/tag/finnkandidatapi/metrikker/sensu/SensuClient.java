@@ -3,6 +3,7 @@ package no.nav.tag.finnkandidatapi.metrikker.sensu;
 import com.google.common.base.Joiner;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.*;
@@ -10,21 +11,28 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 @Slf4j
 public class SensuClient {
 
     private String environmentName;
     private final String sensuHost;
     private int sensuPort;
+    private String hostName;
+    private String applicationName;
 
     public SensuClient(
             String environmentName,
             String sensuHostname,
-            int sensuPort
+            int sensuPort,
+            String applicationName
     ) {
         this.environmentName = environmentName;
         this.sensuHost = sensuHostname;
         this.sensuPort = sensuPort;
+        this.applicationName = applicationName;
+        this.hostName = getHostname();
     }
 
     public void sendEvent(String event) {
@@ -49,9 +57,9 @@ public class SensuClient {
 
     private Map<String, Object> addDefaultTags(Map<String, Object> tags) {
         Map<String, Object> map = new HashMap<>(tags);
-        map.put("application", "finn-kandidat-api");
+        map.put("application", applicationName);
         map.put("environment", environmentName);
-        map.put("hostname", getHostname());
+        map.put("hostname", hostName);
         return map;
     }
 
@@ -95,11 +103,13 @@ public class SensuClient {
 
     private void writeToSocket(String data) {
         try (Socket socket = new Socket()) {
-            socket.connect(new InetSocketAddress(sensuHost, sensuPort), 1000);
+            socket.connect(new InetSocketAddress(sensuHost, sensuPort), 500);
 
-            OutputStreamWriter osw = new OutputStreamWriter(socket.getOutputStream(), "UTF-8");
-            osw.write(data, 0, data.length());
-            osw.flush();
+            BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), UTF_8));
+            bufferedWriter.write(data);
+            bufferedWriter.newLine();
+            bufferedWriter.flush();
+
             log.debug("Wrote {} to socket with port {}", data, sensuPort);
         } catch (ConnectException e) {
             // for å slippe full stacktrace i enhetstester mm.

@@ -7,16 +7,17 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class SensuConfig {
 
-    // TODO flytt til config
-    private static final String SENSU_HOSTNAME = "sensu.nais";
-    private static final int SENSU_PORT = 3030;
+    @Value("${sensu.hostname}")
+    private String hostname;
 
-    // TODO flytt til config
+    @Value("${sensu.port}")
+    private int port;
+
     @Value("${NAIS_CLUSTER_NAME:lokalt}")
     private String environment;
 
     @Bean
     public SensuClient sensuClient() {
-        return new SensuClient(environment, SENSU_HOSTNAME, SENSU_PORT);
+        return new SensuClient(environment, hostname, port, "finn-kandidat-api");
     }
 }

@@ -2,7 +2,6 @@ package no.nav.tag.finnkandidatapi.metrikker.sensu;
 
 import no.nav.metrics.MetricsClient;
 import no.nav.metrics.MetricsConfig;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
@@ -10,10 +9,8 @@ import org.springframework.context.annotation.Profile;
 @Profile({ "dev", "prod" })
 public class MetrikkConfig {
 
-    @Value("${NAIS_CLUSTER_NAME}")
-    private static String miljø;
-
-    static {
+    public MetrikkConfig() {
+        String miljø = System.getenv("NAIS_CLUSTER_NAME");
         MetricsClient.enableMetrics(MetricsConfig.resolveNaisConfig().withEnvironment(miljø));
     }
 }

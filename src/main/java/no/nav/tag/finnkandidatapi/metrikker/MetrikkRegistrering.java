@@ -1,8 +1,7 @@
 package no.nav.tag.finnkandidatapi.metrikker;
 
-import io.micrometer.core.instrument.Counter;
-import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.tag.finnkandidatapi.metrikker.sensu.SensuClient;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
@@ -10,30 +9,27 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class MetrikkRegistrering {
 
-    private final MeterRegistry meterRegistry;
+    private SensuClient sensuClient;
 
-    public MetrikkRegistrering(MeterRegistry meterRegistry) {
-        this.meterRegistry = meterRegistry;
+    public MetrikkRegistrering(SensuClient sensuClient) {
+        this.sensuClient = sensuClient;
     }
 
     @EventListener
     public void kandidatOpprettet(KandidatOpprettet event) {
         log.info("event=kandidat.opprettet, id={}", event.getKandidat().getId());
-        counter("kandidat.opprettet").increment();
-    }
-
-    private Counter counter(String navn) {
-        return Counter.builder("finn-kandidat." + navn)
-                .register(meterRegistry);
+        sensuClient.sendEvent("kandidat.opprettet");
     }
 
     @EventListener
     public void kandidatEndret(KandidatEndret event) {
         log.info("event=kandidat.endret, id={}", event.getKandidat().getId());
+        sensuClient.sendEvent("kandidat.endret");
     }
 
     @EventListener
     public void kandidatSlettet(KandidatSlettet event) {
         log.info("event=kandidat.slettet, id={}", event.getId());
+        sensuClient.sendEvent("kandidat.slettet");
     }
 }

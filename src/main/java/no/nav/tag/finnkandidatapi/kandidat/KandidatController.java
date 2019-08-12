@@ -24,8 +24,6 @@ public class KandidatController {
 
     private final KandidatService kandidatService;
     private final TilgangskontrollService tilgangskontroll;
-    // TODO: Flytt til MetrikkRegistrering
-    private final SensuClient sensuClient;
 
     @GetMapping("/{fnr}")
     public ResponseEntity<Kandidat> hentKandidat(@PathVariable("fnr") String fnr) {
@@ -38,10 +36,6 @@ public class KandidatController {
 
     @GetMapping
     public ResponseEntity<List<Kandidat>> hentKandidater() {
-        sensuClient.sendEvent("kandidater.hentet");
-        sensuClient.sendEvent("kandidater.hentet", Map.of("etfield", 10));
-        sensuClient.sendEvent("kandidater.hentet", Map.of("entag", "hey"), Map.of("etfield", 10));
-
         loggBrukAvEndepunkt("hentKandidater");
         List<Kandidat> kandidater = kandidatService.hentKandidater().stream()
                 .filter(kandidat -> tilgangskontroll.harLesetilgangTilKandidat(kandidat.getFnr()))

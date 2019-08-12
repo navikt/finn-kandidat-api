@@ -1,6 +1,5 @@
 package no.nav.tag.finnkandidatapi.kandidat;
 
-import no.nav.tag.finnkandidatapi.metrikker.sensu.SensuClient;
 import no.nav.tag.finnkandidatapi.tilgangskontroll.TilgangskontrollService;
 import org.junit.Before;
 import org.junit.Test;
@@ -9,7 +8,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.kafka.core.KafkaTemplate;
 
 import java.util.List;
 import java.util.Optional;
@@ -31,7 +29,7 @@ public class KandidatControllerTest {
 
     @Before
     public void setUp() {
-        controller = new KandidatController(service, tilgangskontroll, mock(SensuClient.class));
+        controller = new KandidatController(service, tilgangskontroll);
     }
 
     @Test

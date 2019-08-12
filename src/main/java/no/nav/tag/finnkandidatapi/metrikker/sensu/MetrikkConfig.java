@@ -9,7 +9,8 @@ import org.springframework.context.annotation.Profile;
 @Profile({ "dev", "prod" })
 public class MetrikkConfig {
 
-    static {
-        MetricsClient.enableMetrics(MetricsConfig.resolveNaisConfig());
+    public MetrikkConfig() {
+        String miljø = System.getenv("NAIS_CLUSTER_NAME");
+        MetricsClient.enableMetrics(MetricsConfig.resolveNaisConfig().withEnvironment(miljø));
     }
 }

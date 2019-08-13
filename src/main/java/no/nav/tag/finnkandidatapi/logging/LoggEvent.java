@@ -5,6 +5,7 @@ import net.minidev.json.JSONObject;
 
 @Data
 public class LoggEvent {
-    private String eventnavn;
-    private JSONObject felter;
+    private String name;
+    private JSONObject tags;
+    private JSONObject fields;
 }

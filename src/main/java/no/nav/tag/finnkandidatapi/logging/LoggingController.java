@@ -11,8 +11,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.stream.Stream;
-
 @Slf4j
 @Protected
 @RestController
@@ -40,13 +38,11 @@ public class LoggingController {
     }
 
     private boolean tagsInneholderNoeAnnetEnnStrings(JSONObject tags) {
-        return Stream.of(tags.values().toArray()).anyMatch(verdi -> !(verdi instanceof String));
+        return tags.values().stream().anyMatch(verdi -> !(verdi instanceof String));
     }
 
     private void leggTilTags(JSONObject tags, Event event) {
-        tags.forEach((tag, verdi) -> {
-            event.addTagToReport(tag, (String) verdi);
-        });
+        tags.forEach((tag, verdi) -> event.addTagToReport(tag, (String) verdi));
     }
 
     private void leggTilFields(JSONObject fields, Event event) {

@@ -1,9 +1,9 @@
 package no.nav.tag.finnkandidatapi.logging;
 
-import lombok.Data;
+import lombok.Value;
 import net.minidev.json.JSONObject;
 
-@Data
+@Value
 public class LoggEvent {
     private String name;
     private JSONObject tags;

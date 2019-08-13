@@ -1,13 +1,16 @@
 package no.nav.tag.finnkandidatapi;
 
+import net.minidev.json.JSONObject;
 import no.nav.tag.finnkandidatapi.kandidat.Kandidat;
 import no.nav.tag.finnkandidatapi.kandidat.Veileder;
+import no.nav.tag.finnkandidatapi.logging.LoggEvent;
 import no.nav.tag.finnkandidatapi.tilbakemelding.Behov;
 import no.nav.tag.finnkandidatapi.tilbakemelding.Tilbakemelding;
 import no.nav.tag.finnkandidatapi.sts.STSToken;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Set;
 
 import static no.nav.tag.finnkandidatapi.kandidat.ArbeidsmiljøBehov.MENTOR;
@@ -79,5 +82,19 @@ public class TestData {
                 Behov.ARBEIDSTID,
                 "kul tilbakemelding"
         );
+    }
+
+    public static LoggEvent enLoggEvent() {
+        String name = "eventnavn";
+        JSONObject tags = new JSONObject(Map.of("tag1", "verdi1", "tag2", "verdi2"));
+        JSONObject fields = new JSONObject(Map.of("field1", "verdi1", "field2", 2));
+        return new LoggEvent(name, tags, fields);
+    }
+
+    public static LoggEvent enLoggEventMedIntTag() {
+        String name = "eventnavn";
+        JSONObject tags = new JSONObject(Map.of("tag1", 1, "tag2", "verdi2"));
+        JSONObject fields = new JSONObject(Map.of("field1", "verdi1", "field2", 2));
+        return new LoggEvent(name, tags, fields);
     }
 }

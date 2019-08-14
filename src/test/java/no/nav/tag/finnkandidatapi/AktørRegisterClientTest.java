@@ -35,7 +35,7 @@ public class AktørRegisterClientTest {
     @Mock
     private STSClient stsClient;
 
-    private String aktørId = "123";
+    private String fnr = "12312312312";
 
     @Before
     public void setUp() {
@@ -44,27 +44,27 @@ public class AktørRegisterClientTest {
 
     @Test(expected = FinnKandidatException.class)
     public void validerRespons__skal_kaste_exception_hvis_ingen_identinfo() {
-        IdentinfoForAktør responsUtenFnr = new IdentinfoForAktør(Collections.emptyList(), null);
-        mockKallTilAktørRegister(responsUtenFnr);
-        aktørRegisterClient.tilFnr(aktørId);
+        IdentinfoForAktør responsUtenAktorId = new IdentinfoForAktør(Collections.emptyList(), null);
+        mockKallTilAktørRegister(responsUtenAktorId);
+        aktørRegisterClient.tilAktorId(fnr);
     }
 
     @Test(expected = FinnKandidatException.class)
     public void validerRespons__skal_kaste_exception_hvis_aktørregister_returnerer_med_feilmelding() {
         IdentinfoForAktør responsMedFeilmelding = new IdentinfoForAktør(Collections.singletonList((new Identinfo("", "", true))), "feil");
         mockKallTilAktørRegister(responsMedFeilmelding);
-        aktørRegisterClient.tilFnr(aktørId);
+        aktørRegisterClient.tilAktorId(fnr);
     }
 
     @Test(expected = FinnKandidatException.class)
     public void validerRespons__skal_kaste_exception_hvis_aktørregister_returnerer_flere_identer() {
         IdentinfoForAktør responsMedFlereFnr = new IdentinfoForAktør(Arrays.asList(new Identinfo("", "", true), new Identinfo("", "", true)), null);
         mockKallTilAktørRegister(responsMedFlereFnr);
-        aktørRegisterClient.tilFnr(aktørId);
+        aktørRegisterClient.tilAktorId(fnr);
     }
 
     private void mockKallTilAktørRegister(IdentinfoForAktør identinfoForAktør) {
-        ResponseEntity<Map<String, IdentinfoForAktør>> respons = ResponseEntity.ok(Map.of(aktørId, identinfoForAktør));
+        ResponseEntity<Map<String, IdentinfoForAktør>> respons = ResponseEntity.ok(Map.of(fnr, identinfoForAktør));
 
         when(stsClient.hentSTSToken()).thenReturn(etStsToken());
         when(restTemplate.exchange(

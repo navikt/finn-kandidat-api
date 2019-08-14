@@ -27,26 +27,34 @@ public class AktørRegisterClient {
         this.stsClient = stsClient;
     }
 
-    public String tilFnr(String aktørId) {
+    public String tilFnr(String aktorId) {
+        return konverterId(aktorId,  "NorskIdent");
+    }
+
+    public String tilAktorId(String fnr) {
+        return konverterId(fnr,  "AktoerId");
+    }
+
+    private String konverterId(String fraId, String type) {
         String uri = UriComponentsBuilder.fromHttpUrl(aktørRegisterUrl)
                 .path("/identer")
-                .queryParam("identgruppe", "NorskIdent")
+                .queryParam("identgruppe", type)
                 .queryParam("gjeldende", true)
                 .toUriString();
 
         ResponseEntity<Map<String, IdentinfoForAktør>> respons = restTemplate.exchange(
                 uri,
                 HttpMethod.GET,
-                httpHeadere(aktørId),
+                httpHeadere(fraId),
                 new ParameterizedTypeReference<Map<String, IdentinfoForAktør>>() {}
         );
 
-        IdentinfoForAktør identinfoForAktør = respons.getBody().get(aktørId);
-        validerRespons(aktørId, identinfoForAktør);
-        return hentGjeldendeFnr(identinfoForAktør);
+        IdentinfoForAktør identinfoForAktør = respons.getBody().get(fraId);
+        validerRespons(fraId, identinfoForAktør, type);
+        return hentGjeldendeId(identinfoForAktør);
     }
 
-    private String hentGjeldendeFnr(IdentinfoForAktør identinfoForAktør) {
+    private String hentGjeldendeId(IdentinfoForAktør identinfoForAktør) {
         return identinfoForAktør.getIdenter().get(0).getIdent();
     }
 
@@ -59,17 +67,18 @@ public class AktørRegisterClient {
         return new HttpEntity<>(headers);
     }
 
-    private void validerRespons(String aktørId, IdentinfoForAktør identinfoForAktør) {
+    private void validerRespons(String id, IdentinfoForAktør identinfoForAktør, String type) {
         if (identinfoForAktør == null) {
-            throw new FinnKandidatException("Fant ingen identinfo for aktørId: " + aktørId);
+            throw new FinnKandidatException("Fant ingen identinfo for id: " + id + " type " + type);
         }
 
         if (identinfoForAktør.getFeilmelding() != null) {
-            throw new FinnKandidatException("Feil fra aktørregister for aktørId " + aktørId + ", feilmelding: " + identinfoForAktør.getFeilmelding());
+            throw new FinnKandidatException("Feil fra aktørregister for id " + id + " type " + type + ", feilmelding: " + identinfoForAktør.getFeilmelding());
         }
 
         if (identinfoForAktør.getIdenter().size() != 1) {
-            throw new FinnKandidatException("Forventet 1 fnr for aktørId" + aktørId + ", fant " + identinfoForAktør.getIdenter().size());
+            throw new FinnKandidatException("Forventet 1 fnr for id" + id + " type " + type + ", fant " + identinfoForAktør.getIdenter().size());
         }
     }
+
 }

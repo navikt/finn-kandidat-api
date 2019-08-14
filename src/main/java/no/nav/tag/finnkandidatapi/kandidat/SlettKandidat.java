@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 public class SlettKandidat {
-    private String fnr;
+    private String aktorId;
     private String slettetAv;
     private LocalDateTime slettetTidspunkt;
 }

@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class KandidatSlettet {
     private Integer id;
-    private String fnr;
+    private String aktorId;
     private Veileder slettetAv;
     private LocalDateTime slettetTidspunkt;
 }

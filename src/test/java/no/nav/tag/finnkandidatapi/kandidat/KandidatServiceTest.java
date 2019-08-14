@@ -62,8 +62,8 @@ public class KandidatServiceTest {
 
     @Test
     public void hentKandidater__skal_returnere_kandidater() {
-        Kandidat kandidat1 = enKandidat("1234567890");
-        Kandidat kandidat2 = enKandidat("2345678901");
+        Kandidat kandidat1 = enKandidat("1000000000001");
+        Kandidat kandidat2 = enKandidat("1000000000002");
         when(repository.hentKandidater()).thenReturn(List.of(kandidat1, kandidat2));
 
         List<Kandidat> hentedeKandidater = kandidatService.hentKandidater();
@@ -126,49 +126,47 @@ public class KandidatServiceTest {
     }
 
     @Test
-    public void slettKandidat_skal_slette_kandidat_med_riktig_fnr_veilder_og_tidspunkt() {
-        String fnr = "12345678910";
+    public void slettKandidat_skal_slette_kandidat_med_riktig_aktor_id_veilder_og_tidspunkt() {
+        String aktorId = "1000000000001";
         Veileder veileder = enVeileder();
         LocalDateTime datetime = LocalDateTime.now();
         when(dateProvider.now()).thenReturn(datetime);
 
-        kandidatService.slettKandidat(fnr, veileder);
+        kandidatService.slettKandidat(aktorId, veileder);
 
-        verify(repository).slettKandidat(fnr, veileder, datetime);
+        verify(repository).slettKandidat(aktorId, veileder, datetime);
     }
 
     @Test
     public void slettKandidat_skal_publisere_KandidatSlettet_event() {
-        String fnr = "12345678910";
+        String aktorId = "1000000000001";
         Veileder veileder = enVeileder();
         LocalDateTime datetime = LocalDateTime.now();
 
         when(dateProvider.now()).thenReturn(datetime);
-        when(repository.slettKandidat(fnr, veileder, datetime)).thenReturn(Optional.of(4));
+        when(repository.slettKandidat(aktorId, veileder, datetime)).thenReturn(Optional.of(4));
 
-        kandidatService.slettKandidat(fnr, veileder);
+        kandidatService.slettKandidat(aktorId, veileder);
 
-        verify(eventPublisher).publishEvent(new KandidatSlettet(4, fnr, veileder, datetime));
+        verify(eventPublisher).publishEvent(new KandidatSlettet(4, aktorId, veileder, datetime));
     }
 
     @Test
     public void slettKandidat_skal_returnere_id() {
-        String fnr = "12345678910";
+        String aktorId = "1000000000001";
         Veileder veileder = enVeileder();
 
-        when(repository.slettKandidat(eq(fnr), eq(veileder), any())).thenReturn(Optional.of(4));
+        when(repository.slettKandidat(eq(aktorId), eq(veileder), any())).thenReturn(Optional.of(4));
 
-        assertThat(kandidatService.slettKandidat(fnr, veileder).get()).isEqualTo(4);
+        assertThat(kandidatService.slettKandidat(aktorId, veileder).get()).isEqualTo(4);
     }
 
     @Test
     public void behandleOppfølgingAvsluttet__skal_slette_kandidat() {
-        String aktørId = "1856024171652";
-        String fnr = "01065500791";
-        when(aktørRegisterClient.tilFnr(aktørId)).thenReturn(fnr);
+        String aktorId = "1000000000001";
 
-        kandidatService.behandleOppfølgingAvsluttet(new OppfølgingAvsluttetMelding(aktørId, new Date()));
+        kandidatService.behandleOppfølgingAvsluttet(new OppfølgingAvsluttetMelding(aktorId, new Date()));
 
-        verify(repository).slettKandidatSomMaskinbruker(fnr, dateProvider.now());
+        verify(repository).slettKandidatSomMaskinbruker(aktorId, dateProvider.now());
     }
 }

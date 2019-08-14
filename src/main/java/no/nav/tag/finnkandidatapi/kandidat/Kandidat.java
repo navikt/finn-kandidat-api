@@ -11,6 +11,7 @@ import java.util.Set;
 public class Kandidat {
     private Integer id;
     private String fnr;
+    private String aktorId;
     private String sistEndretAv;
     private LocalDateTime sistEndret;
     private ArbeidstidBehov arbeidstidBehov;

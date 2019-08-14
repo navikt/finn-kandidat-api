@@ -53,7 +53,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class OppfølgingAvsluttetConsumerTest {
 
     // Disse to er koblet sammen gjennom mock serveren
-    private static final String FNR = "01065500791";
     private static final String AKTØR_ID = "1856024171652";
 
     @Autowired
@@ -112,14 +111,14 @@ public class OppfølgingAvsluttetConsumerTest {
     @SneakyThrows
     public void skal_slette_kandidat_ved_mottatt_oppfølging_avsluttet_kafka_melding() {
         Kandidat kandidatSomSkalSlettes = enKandidat();
-        kandidatSomSkalSlettes.setFnr(FNR);
+        kandidatSomSkalSlettes.setAktorId(AKTØR_ID);
         repository.lagreKandidat(kandidatSomSkalSlettes);
         sendOppFølgingAvsluttetMelding();
 
         boolean kandidatErslettet = false;
         while(!kandidatErslettet) {
             Thread.sleep(10);
-            kandidatErslettet = repository.hentNyesteKandidat(kandidatSomSkalSlettes.getFnr()).isEmpty();
+            kandidatErslettet = repository.hentNyesteKandidat(kandidatSomSkalSlettes.getAktorId()).isEmpty();
         }
         assertThat(kandidatErslettet).isTrue();
     }

@@ -67,6 +67,10 @@ public class KandidatService {
         return aktørRegisterClient.tilAktorId(fnr);
     }
 
+    public String hentFnr(String aktorId) {
+        return aktørRegisterClient.tilFnr(aktorId);
+    }
+
     Optional<Integer> slettKandidat(String aktorId, Veileder innloggetVeileder) {
         LocalDateTime slettetTidspunkt = dateProvider.now();
         Optional<Integer> optionalId = kandidatRepository.slettKandidat(aktorId, innloggetVeileder, slettetTidspunkt);

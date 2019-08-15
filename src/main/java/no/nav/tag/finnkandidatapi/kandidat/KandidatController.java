@@ -24,11 +24,29 @@ public class KandidatController {
     private final KandidatService kandidatService;
     private final TilgangskontrollService tilgangskontroll;
 
-    @GetMapping("/{aktorid}")
+    @GetMapping("/{aktorId}")
     public ResponseEntity<Kandidat> hentKandidat(@PathVariable("aktorId") String aktorId) {
         loggBrukAvEndepunkt("hentKandidat");
         tilgangskontroll.sjekkLesetilgangTilKandidat(aktorId);
         Kandidat kandidat = kandidatService.hentNyesteKandidat(aktorId).orElseThrow(NotFoundException::new);
+        return ResponseEntity.ok(kandidat);
+    }
+
+    @GetMapping("/eksisterendeaktor/{fnr}")
+    public ResponseEntity<Kandidat> eksisterendeAktør(@PathVariable("fnr") String fnr) {
+        loggBrukAvEndepunkt("finnesKandidat");
+        String aktorId;
+        try {
+            aktorId = kandidatService.hentAktorId(fnr);
+        } catch (FinnKandidatException fe) {
+             log.info("Aktør ikke funnet for fnr:" + fnr, fe);
+            throw new NotFoundException("Aktør mangler");
+        }
+
+        tilgangskontroll.sjekkLesetilgangTilKandidat(aktorId);
+
+        Kandidat kandidat = kandidatService.hentNyesteKandidat(aktorId)
+                .orElse(Kandidat.builder().aktorId(aktorId).build());
         return ResponseEntity.ok(kandidat);
     }
 
@@ -48,9 +66,12 @@ public class KandidatController {
     @PostMapping
     public ResponseEntity<Kandidat> opprettKandidat(@RequestBody Kandidat kandidat) {
         loggBrukAvEndepunkt("opprettKandidat");
-        String aktorId = kandidatService.hentAktorId(kandidat.getFnr());
+        String aktorId = kandidat.getAktorId();
         tilgangskontroll.sjekkSkrivetilgangTilKandidat(aktorId);
-        kandidat.setAktorId(aktorId);
+
+        String fnr = kandidatService.hentFnr(aktorId);
+
+        kandidat.setFnr(fnr);
 
         Veileder veileder = tilgangskontroll.hentInnloggetVeileder();
         Kandidat opprettetKandidat = kandidatService.opprettKandidat(kandidat, veileder).orElseThrow(FinnKandidatException::new);
@@ -70,15 +91,15 @@ public class KandidatController {
                 .body(endretKandidat);
     }
 
-    @GetMapping("/{aktorid}/skrivetilgang")
-    public ResponseEntity hentSkrivetilgang(@PathVariable("aktorid") String aktorId) {
+    @GetMapping("/{aktorId}/skrivetilgang")
+    public ResponseEntity hentSkrivetilgang(@PathVariable("aktorId") String aktorId) {
         loggBrukAvEndepunkt("hentSkrivetilgang");
         tilgangskontroll.sjekkSkrivetilgangTilKandidat(aktorId);
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/{aktorid}")
-    public ResponseEntity slettKandidat(@PathVariable("aktorid") String aktorId) {
+    @DeleteMapping("/{aktorId}")
+    public ResponseEntity slettKandidat(@PathVariable("aktorId") String aktorId) {
         loggBrukAvEndepunkt("slettKandidat");
         tilgangskontroll.sjekkSkrivetilgangTilKandidat(aktorId);
 

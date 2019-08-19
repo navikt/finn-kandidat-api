@@ -2,6 +2,7 @@ package no.nav.tag.finnkandidatapi.metrikker;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import no.nav.tag.finnkandidatapi.kandidat.Brukertype;
 import no.nav.tag.finnkandidatapi.kandidat.Veileder;
 
 import java.time.LocalDateTime;
@@ -11,6 +12,6 @@ import java.time.LocalDateTime;
 public class KandidatSlettet {
     private Integer id;
     private String fnr;
-    private Veileder slettetAv;
+    private Brukertype slettetAv;
     private LocalDateTime slettetTidspunkt;
 }

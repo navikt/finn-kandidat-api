@@ -8,6 +8,7 @@ import no.nav.tag.finnkandidatapi.DateProvider;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatEndret;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatOpprettet;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatSlettet;
+import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
@@ -60,6 +61,7 @@ public class KandidatService {
         String fnr = aktørRegisterClient.tilFnr(oppfølgingAvsluttetMelding.getAktorId());
         Optional<Integer> slettetKey = kandidatRepository.slettKandidatSomMaskinbruker(fnr, dateProvider.now());
         if (slettetKey.isPresent()) {
+            eventPublisher.publishEvent(new KandidatSlettet(slettetKey.get(), fnr, Brukertype.SYSTEM, dateProvider.now()));
             log.info("Slettet kandidat med key {} pga. avsluttet oppfølging", slettetKey);
         }
     }
@@ -69,7 +71,7 @@ public class KandidatService {
         Optional<Integer> optionalId = kandidatRepository.slettKandidat(fnr, innloggetVeileder, slettetTidspunkt);
 
         optionalId.ifPresent(id -> eventPublisher.publishEvent(
-                new KandidatSlettet(id, fnr, innloggetVeileder, slettetTidspunkt))
+                new KandidatSlettet(id, fnr, Brukertype.VEILEDER, slettetTidspunkt))
         );
 
         return optionalId;

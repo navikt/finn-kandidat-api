@@ -27,7 +27,7 @@ public class MetrikkRegistrering {
                     .addTagToReport("slettetAv", Brukertype.VEILEDER.name())
                     .report();
 
-        } else if(event.getSlettetAv().equals(Brukertype.SYSTEM)) {
+        } else if (event.getSlettetAv().equals(Brukertype.SYSTEM)) {
             MetricsFactory.createEvent("finn-kandidat.kandidat.slettet")
                     .addTagToReport("slettetAv", Brukertype.SYSTEM.name())
                     .report();

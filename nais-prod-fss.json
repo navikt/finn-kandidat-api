@@ -15,11 +15,11 @@
     "vault": { "enabled": true },
     "liveness": {
       "path": "/finn-kandidat-api/internal/actuator/info",
-      "initialDelay": 20
+      "initialDelay": 30
     },
     "readiness": {
       "path": "/finn-kandidat-api/internal/actuator/info",
-      "initialDelay": 20
+      "initialDelay": 30
     },
     "ingresses": [
       "https://arbeidsgiver.nais.adeo.no/finn-kandidat-api/"

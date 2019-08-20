@@ -13,7 +13,7 @@ import static no.nav.tag.finnkandidatapi.kafka.OppfølgingAvsluttetUtils.deseria
 @Component
 public class OppfølgingAvsluttetConsumer {
 
-    private static final String AVSLUTTET_OPPFØLGING_FEILET = "finnkandidat.avsluttetoppfolging.feilet";
+    public static final String AVSLUTTET_OPPFØLGING_FEILET = "finnkandidat.avsluttetoppfolging.feilet";
 
     private KandidatService kandidatService;
     @SuppressWarnings({"unused", "FieldCanBeLocal"})
@@ -43,8 +43,6 @@ public class OppfølgingAvsluttetConsumer {
         try {
             OppfølgingAvsluttetMelding oppfølgingAvsluttetMelding = deserialiserMelding(melding.value());
             kandidatService.behandleOppfølgingAvsluttet(oppfølgingAvsluttetMelding);
-            // TODO: Fjern
-            meterRegistry.counter(AVSLUTTET_OPPFØLGING_FEILET).increment();
 
         } catch (RuntimeException e) {
             meterRegistry.counter(AVSLUTTET_OPPFØLGING_FEILET).increment();

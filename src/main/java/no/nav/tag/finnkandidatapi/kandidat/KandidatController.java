@@ -1,6 +1,7 @@
 package no.nav.tag.finnkandidatapi.kandidat;
 
 
+import io.micrometer.core.instrument.MeterRegistry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.security.oidc.api.Protected;
@@ -13,6 +14,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static no.nav.tag.finnkandidatapi.kafka.OppfølgingAvsluttetConsumer.AVSLUTTET_OPPFØLGING_FEILET;
+
 @Slf4j
 @Protected
 @RestController
@@ -22,6 +25,8 @@ public class KandidatController {
 
     private final KandidatService kandidatService;
     private final TilgangskontrollService tilgangskontroll;
+    // TODO: Fjern
+    private final MeterRegistry meterRegistry;
 
     @GetMapping("/{fnr}")
     public ResponseEntity<Kandidat> hentKandidat(@PathVariable("fnr") String fnr) {
@@ -34,6 +39,8 @@ public class KandidatController {
 
     @GetMapping
     public ResponseEntity<List<Kandidat>> hentKandidater() {
+        // TODO: Fjern
+        meterRegistry.counter(AVSLUTTET_OPPFØLGING_FEILET).increment();
         loggBrukAvEndepunkt("hentKandidater");
         List<Kandidat> kandidater = kandidatService.hentKandidater().stream()
                 .filter(kandidat -> tilgangskontroll.harLesetilgangTilKandidat(kandidat.getFnr()))

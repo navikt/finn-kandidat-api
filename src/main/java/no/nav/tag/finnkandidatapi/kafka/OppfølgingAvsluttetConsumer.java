@@ -43,6 +43,8 @@ public class OppfølgingAvsluttetConsumer {
         try {
             OppfølgingAvsluttetMelding oppfølgingAvsluttetMelding = deserialiserMelding(melding.value());
             kandidatService.behandleOppfølgingAvsluttet(oppfølgingAvsluttetMelding);
+            // TODO: Fjern
+            meterRegistry.counter(AVSLUTTET_OPPFØLGING_FEILET).increment();
 
         } catch (RuntimeException e) {
             meterRegistry.counter(AVSLUTTET_OPPFØLGING_FEILET).increment();

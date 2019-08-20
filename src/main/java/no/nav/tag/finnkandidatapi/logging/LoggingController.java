@@ -1,5 +1,6 @@
 package no.nav.tag.finnkandidatapi.logging;
 
+import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONObject;
 import no.nav.metrics.Event;
@@ -11,11 +12,19 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import static no.nav.tag.finnkandidatapi.kafka.OppfølgingAvsluttetConsumer.AVSLUTTET_OPPFØLGING_FEILET;
+
 @Slf4j
 @Protected
 @RestController
 @RequestMapping("/events")
 public class LoggingController {
+
+    private MeterRegistry meterRegistry;
+
+    public LoggingController(MeterRegistry meterRegistry) {
+        this.meterRegistry = meterRegistry;
+    }
 
     @PostMapping
     public ResponseEntity sendEvent(@RequestBody LoggEvent loggEvent) {
@@ -28,6 +37,7 @@ public class LoggingController {
         if (tagsInneholderNoeAnnetEnnStrings(loggEvent.getTags())) {
             return ResponseEntity.badRequest().body("Tags kan kun inneholde strings");
         }
+        meterRegistry.counter(AVSLUTTET_OPPFØLGING_FEILET).increment();
 
         Event event = MetricsFactory.createEvent(loggEvent.getName());
         leggTilTags(loggEvent.getTags(), event);

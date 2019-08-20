@@ -16,28 +16,28 @@ public class TilgangskontrollService {
         this.veilarbabacClient = veilarbabacClient;
     }
 
-    public boolean harLesetilgangTilKandidat(String aktorId) {
-        return hentTilgang(aktorId, TilgangskontrollAction.read);
+    public boolean harLesetilgangTilKandidat(String aktørId) {
+        return hentTilgang(aktørId, TilgangskontrollAction.read);
     }
 
-    public void sjekkLesetilgangTilKandidat(String aktorId) {
-        sjekkTilgang(aktorId, TilgangskontrollAction.read);
+    public void sjekkLesetilgangTilKandidat(String aktørId) {
+        sjekkTilgang(aktørId, TilgangskontrollAction.read);
     }
 
-    public void sjekkSkrivetilgangTilKandidat(String aktorId) {
-        sjekkTilgang(aktorId, TilgangskontrollAction.update);
+    public void sjekkSkrivetilgangTilKandidat(String aktørId) {
+        sjekkTilgang(aktørId, TilgangskontrollAction.update);
     }
 
-    private void sjekkTilgang(String aktorId, TilgangskontrollAction action) {
-        if (!hentTilgang(aktorId, action)) {
+    private void sjekkTilgang(String aktørId, TilgangskontrollAction action) {
+        if (!hentTilgang(aktørId, action)) {
             throw new TilgangskontrollException("Veileder har ikke følgende tilgang for kandidat: " + action);
         }
     }
 
-    private boolean hentTilgang(String aktorId, TilgangskontrollAction action) {
-        return veilarbabacClient.sjekkTilgangAktorId(
+    private boolean hentTilgang(String aktørId, TilgangskontrollAction action) {
+        return veilarbabacClient.sjekkTilgangAktørId(
                 hentInnloggetVeileder(),
-                aktorId,
+                aktørId,
                 action
         );
     }

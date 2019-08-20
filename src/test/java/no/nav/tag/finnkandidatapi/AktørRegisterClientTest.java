@@ -44,23 +44,23 @@ public class AktørRegisterClientTest {
 
     @Test(expected = FinnKandidatException.class)
     public void validerRespons__skal_kaste_exception_hvis_ingen_identinfo() {
-        IdentinfoForAktør responsUtenAktorId = new IdentinfoForAktør(Collections.emptyList(), null);
-        mockKallTilAktørRegister(responsUtenAktorId);
-        aktørRegisterClient.tilAktorId(fnr);
+        IdentinfoForAktør responsUtenAktørId = new IdentinfoForAktør(Collections.emptyList(), null);
+        mockKallTilAktørRegister(responsUtenAktørId);
+        aktørRegisterClient.tilAktørId(fnr);
     }
 
     @Test(expected = FinnKandidatException.class)
     public void validerRespons__skal_kaste_exception_hvis_aktørregister_returnerer_med_feilmelding() {
         IdentinfoForAktør responsMedFeilmelding = new IdentinfoForAktør(Collections.singletonList((new Identinfo("", "", true))), "feil");
         mockKallTilAktørRegister(responsMedFeilmelding);
-        aktørRegisterClient.tilAktorId(fnr);
+        aktørRegisterClient.tilAktørId(fnr);
     }
 
     @Test(expected = FinnKandidatException.class)
     public void validerRespons__skal_kaste_exception_hvis_aktørregister_returnerer_flere_identer() {
         IdentinfoForAktør responsMedFlereFnr = new IdentinfoForAktør(Arrays.asList(new Identinfo("", "", true), new Identinfo("", "", true)), null);
         mockKallTilAktørRegister(responsMedFlereFnr);
-        aktørRegisterClient.tilAktorId(fnr);
+        aktørRegisterClient.tilAktørId(fnr);
     }
 
     private void mockKallTilAktørRegister(IdentinfoForAktør identinfoForAktør) {

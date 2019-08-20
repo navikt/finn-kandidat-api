@@ -27,11 +27,11 @@ public class AktørRegisterClient {
         this.stsClient = stsClient;
     }
 
-    public String tilFnr(String aktorId) {
-        return konverterId(aktorId,  "NorskIdent");
+    public String tilFnr(String aktørId) {
+        return konverterId(aktørId,  "NorskIdent");
     }
 
-    public String tilAktorId(String fnr) {
+    public String tilAktørId(String fnr) {
         return konverterId(fnr,  "AktoerId");
     }
 

@@ -12,6 +12,6 @@ import java.util.Date;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class OppfølgingAvsluttetMelding {
 
-    private String aktorId;
+    private String aktørId;
     private Date sluttdato;
 }

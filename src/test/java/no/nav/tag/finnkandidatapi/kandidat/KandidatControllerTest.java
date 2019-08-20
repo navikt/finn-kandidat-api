@@ -41,7 +41,7 @@ public class KandidatControllerTest {
             controller.opprettKandidat(kandidat);
         } catch (Exception ignored) {}
 
-        verify(tilgangskontroll, times(1)).sjekkSkrivetilgangTilKandidat(kandidat.getAktorId());
+        verify(tilgangskontroll, times(1)).sjekkSkrivetilgangTilKandidat(kandidat.getAktørId());
     }
 
     @Test
@@ -91,7 +91,7 @@ public class KandidatControllerTest {
             controller.endreKandidat(kandidat);
         } catch (Exception ignored) {}
 
-        verify(tilgangskontroll, times(1)).sjekkSkrivetilgangTilKandidat(kandidat.getAktorId());
+        verify(tilgangskontroll, times(1)).sjekkSkrivetilgangTilKandidat(kandidat.getAktørId());
     }
 
     @Test
@@ -169,9 +169,9 @@ public class KandidatControllerTest {
     @Test(expected = NotFoundException.class)
     public void hentKandidat__skal_kaste_NotFoundException_hvis_kandidat_ikke_fins() {
         værInnloggetSom(enVeileder());
-        String aktorId = enKandidat().getAktorId();
-        when(service.hentNyesteKandidat(aktorId)).thenReturn(Optional.empty());
-        controller.hentKandidat(aktorId);
+        String aktørId = enKandidat().getAktørId();
+        when(service.hentNyesteKandidat(aktørId)).thenReturn(Optional.empty());
+        controller.hentKandidat(aktørId);
     }
 
     @Test
@@ -179,9 +179,9 @@ public class KandidatControllerTest {
         værInnloggetSom(enVeileder());
         Kandidat kandidat = enKandidat();
 
-        when(service.hentNyesteKandidat(kandidat.getAktorId())).thenReturn(Optional.of(kandidat));
+        when(service.hentNyesteKandidat(kandidat.getAktørId())).thenReturn(Optional.of(kandidat));
 
-        ResponseEntity<Kandidat> respons = controller.hentKandidat(kandidat.getAktorId());
+        ResponseEntity<Kandidat> respons = controller.hentKandidat(kandidat.getAktørId());
 
         assertThat(respons.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(respons.getBody()).isEqualTo(kandidat);
@@ -190,34 +190,34 @@ public class KandidatControllerTest {
     @Test
     public void hentKandidat__skal_sjekke_lesetilgang() {
         værInnloggetSom(enVeileder());
-        String aktorId = "1000000000001";
+        String aktørId = "1000000000001";
 
         try {
-            controller.hentKandidat(aktorId);
+            controller.hentKandidat(aktørId);
         } catch (Exception ignored) {}
 
-        verify(tilgangskontroll, times(1)).sjekkLesetilgangTilKandidat(aktorId);
+        verify(tilgangskontroll, times(1)).sjekkLesetilgangTilKandidat(aktørId);
     }
 
     @Test
     public void hentSkrivetilgang__skal_returnere_ok_hvis_veileder_har_skrivetilgang() {
         værInnloggetSom(enVeileder());
-        String aktorId = "1000000000001";
+        String aktørId = "1000000000001";
 
-        controller.hentSkrivetilgang(aktorId);
-        verify(tilgangskontroll, times(1)).sjekkSkrivetilgangTilKandidat(aktorId);
+        controller.hentSkrivetilgang(aktørId);
+        verify(tilgangskontroll, times(1)).sjekkSkrivetilgangTilKandidat(aktørId);
     }
 
     @Test
     public void slettKandidat__skal_sjekke_skrivetilgang() {
         værInnloggetSom(enVeileder());
-        String aktorId = "1000000000001";
+        String aktørId = "1000000000001";
 
         try {
-            controller.slettKandidat(aktorId );
+            controller.slettKandidat(aktørId );
         } catch (Exception ignored) {}
 
-        verify(tilgangskontroll, times(1)).sjekkSkrivetilgangTilKandidat(aktorId);
+        verify(tilgangskontroll, times(1)).sjekkSkrivetilgangTilKandidat(aktørId);
     }
 
     @Test
@@ -226,8 +226,8 @@ public class KandidatControllerTest {
         værInnloggetSom(veileder);
         Kandidat kandidat = enKandidat();
 
-        when(service.slettKandidat(kandidat.getAktorId(), veileder)).thenReturn(Optional.of(1));
-        ResponseEntity<String> respons = controller.slettKandidat(kandidat.getAktorId());
+        when(service.slettKandidat(kandidat.getAktørId(), veileder)).thenReturn(Optional.of(1));
+        ResponseEntity<String> respons = controller.slettKandidat(kandidat.getAktørId());
 
         assertThat(respons.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
@@ -236,9 +236,9 @@ public class KandidatControllerTest {
     public void slettKandidat__skal_kaste_NotFoundException_hvis_kandidat_ikke_finnes() {
         Veileder veileder = enVeileder();
         værInnloggetSom(veileder);
-        String uregistrertAktorId = "1000000000001";
+        String uregistrertAktørId = "1000000000001";
 
-        controller.slettKandidat(uregistrertAktorId);
+        controller.slettKandidat(uregistrertAktørId);
     }
 
     private void værInnloggetSom(Veileder veileder) {

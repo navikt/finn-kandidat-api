@@ -40,10 +40,10 @@ public class KandidatRepository {
         this.kandidatMapper = kandidatMapper;
     }
 
-    public Optional<Kandidat> hentNyesteKandidat(String aktorId) {
+    public Optional<Kandidat> hentNyesteKandidat(String aktørId) {
         try {
             Kandidat kandidat = jdbcTemplate.queryForObject(
-                    "SELECT * FROM kandidat WHERE (aktor_id = ?) ORDER BY registreringstidspunkt DESC LIMIT 1", new Object[]{ aktorId },
+                    "SELECT * FROM kandidat WHERE (aktor_id = ?) ORDER BY registreringstidspunkt DESC LIMIT 1", new Object[]{ aktørId },
                     kandidatMapper
             );
             return Optional.ofNullable(kandidat);
@@ -91,7 +91,7 @@ public class KandidatRepository {
     private Map<String, Object> lagInsertParameter(Kandidat kandidat) {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put(FNR, kandidat.getFnr());
-        parameters.put(AKTOR_ID, kandidat.getAktorId());
+        parameters.put(AKTOR_ID, kandidat.getAktørId());
         parameters.put(REGISTRERT_AV, kandidat.getSistEndretAv());
         parameters.put(REGISTRERT_AV_BRUKERTYPE, Brukertype.VEILEDER.name());
         parameters.put(REGISTRERINGSTIDSPUNKT, kandidat.getSistEndret());
@@ -104,17 +104,17 @@ public class KandidatRepository {
     }
 
     public Optional<Integer> slettKandidatSomMaskinbruker(
-            String aktorId,
+            String aktørId,
             LocalDateTime slettetTidspunkt
     ) {
 
-        Optional<Kandidat> kandidat = hentNyesteKandidat(aktorId);
+        Optional<Kandidat> kandidat = hentNyesteKandidat(aktørId);
         if (kandidat.isEmpty()) {
             return Optional.empty();
         }
 
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put(AKTOR_ID, aktorId);
+        parameters.put(AKTOR_ID, aktørId);
         parameters.put(REGISTRERT_AV, Brukertype.SYSTEM.name());
         parameters.put(REGISTRERT_AV_BRUKERTYPE, Brukertype.SYSTEM.name());
         parameters.put(REGISTRERINGSTIDSPUNKT, slettetTidspunkt);
@@ -124,17 +124,17 @@ public class KandidatRepository {
     }
 
     public Optional<Integer> slettKandidat(
-            String aktorId,
+            String aktørId,
             Veileder slettetAv,
             LocalDateTime slettetTidspunkt
     ) {
-        Optional<Kandidat> kandidat = hentNyesteKandidat(aktorId);
+        Optional<Kandidat> kandidat = hentNyesteKandidat(aktørId);
         if (kandidat.isEmpty()) {
             return Optional.empty();
         }
 
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put(AKTOR_ID, aktorId);
+        parameters.put(AKTOR_ID, aktørId);
         parameters.put(REGISTRERT_AV, slettetAv.getNavIdent());
         parameters.put(REGISTRERT_AV_BRUKERTYPE, Brukertype.VEILEDER.name());
         parameters.put(REGISTRERINGSTIDSPUNKT, slettetTidspunkt);

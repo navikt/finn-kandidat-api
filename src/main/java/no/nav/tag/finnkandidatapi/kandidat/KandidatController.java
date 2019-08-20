@@ -24,29 +24,29 @@ public class KandidatController {
     private final KandidatService kandidatService;
     private final TilgangskontrollService tilgangskontroll;
 
-    @GetMapping("/{aktorId}")
-    public ResponseEntity<Kandidat> hentKandidat(@PathVariable("aktorId") String aktorId) {
+    @GetMapping("/{aktørId}")
+    public ResponseEntity<Kandidat> hentKandidat(@PathVariable("aktørId") String aktørId) {
         loggBrukAvEndepunkt("hentKandidat");
-        tilgangskontroll.sjekkLesetilgangTilKandidat(aktorId);
-        Kandidat kandidat = kandidatService.hentNyesteKandidat(aktorId).orElseThrow(NotFoundException::new);
+        tilgangskontroll.sjekkLesetilgangTilKandidat(aktørId);
+        Kandidat kandidat = kandidatService.hentNyesteKandidat(aktørId).orElseThrow(NotFoundException::new);
         return ResponseEntity.ok(kandidat);
     }
 
     @GetMapping("/eksisterendeaktor/{fnr}")
     public ResponseEntity<Kandidat> eksisterendeAktør(@PathVariable("fnr") String fnr) {
         loggBrukAvEndepunkt("finnesKandidat");
-        String aktorId;
+        String aktørId;
         try {
-            aktorId = kandidatService.hentAktorId(fnr);
+            aktørId = kandidatService.hentAktørId(fnr);
         } catch (FinnKandidatException fe) {
              log.info("Aktør ikke funnet for fnr:" + fnr, fe);
             throw new NotFoundException("Aktør mangler");
         }
 
-        tilgangskontroll.sjekkLesetilgangTilKandidat(aktorId);
+        tilgangskontroll.sjekkLesetilgangTilKandidat(aktørId);
 
-        Kandidat kandidat = kandidatService.hentNyesteKandidat(aktorId)
-                .orElse(Kandidat.builder().aktorId(aktorId).build());
+        Kandidat kandidat = kandidatService.hentNyesteKandidat(aktørId)
+                .orElse(Kandidat.builder().aktørId(aktørId).build());
         return ResponseEntity.ok(kandidat);
     }
 
@@ -54,22 +54,22 @@ public class KandidatController {
     public ResponseEntity<List<Kandidat>> hentKandidater() {
         loggBrukAvEndepunkt("hentKandidater");
         List<Kandidat> kandidater = kandidatService.hentKandidater().stream()
-                .filter(kandidat -> tilgangskontroll.harLesetilgangTilKandidat(kandidat.getAktorId()))
+                .filter(kandidat -> tilgangskontroll.harLesetilgangTilKandidat(kandidat.getAktørId()))
                 .collect(Collectors.toList());
 
         kandidater.stream()
-                .filter(kandidat -> StringUtils.isBlank(kandidat.getAktorId()))
-                .forEach(kandidat -> kandidat.setAktorId(kandidatService.hentAktorId(kandidat.getFnr())));
+                .filter(kandidat -> StringUtils.isBlank(kandidat.getAktørId()))
+                .forEach(kandidat -> kandidat.setAktørId(kandidatService.hentAktørId(kandidat.getFnr())));
         return ResponseEntity.ok(kandidater);
     }
 
     @PostMapping
     public ResponseEntity<Kandidat> opprettKandidat(@RequestBody Kandidat kandidat) {
         loggBrukAvEndepunkt("opprettKandidat");
-        String aktorId = kandidat.getAktorId();
-        tilgangskontroll.sjekkSkrivetilgangTilKandidat(aktorId);
+        String aktørId = kandidat.getAktørId();
+        tilgangskontroll.sjekkSkrivetilgangTilKandidat(aktørId);
 
-        String fnr = kandidatService.hentFnr(aktorId);
+        String fnr = kandidatService.hentFnr(aktørId);
 
         kandidat.setFnr(fnr);
 
@@ -83,7 +83,7 @@ public class KandidatController {
     @PutMapping
     public ResponseEntity<Kandidat> endreKandidat(@RequestBody Kandidat kandidat) {
         loggBrukAvEndepunkt("endreKandidat");
-        tilgangskontroll.sjekkSkrivetilgangTilKandidat(kandidat.getAktorId());
+        tilgangskontroll.sjekkSkrivetilgangTilKandidat(kandidat.getAktørId());
         Veileder veileder = tilgangskontroll.hentInnloggetVeileder();
         Kandidat endretKandidat = kandidatService.endreKandidat(kandidat, veileder).orElseThrow(FinnKandidatException::new);
         return ResponseEntity
@@ -91,19 +91,19 @@ public class KandidatController {
                 .body(endretKandidat);
     }
 
-    @GetMapping("/{aktorId}/skrivetilgang")
-    public ResponseEntity hentSkrivetilgang(@PathVariable("aktorId") String aktorId) {
+    @GetMapping("/{aktørId}/skrivetilgang")
+    public ResponseEntity hentSkrivetilgang(@PathVariable("aktørId") String aktørId) {
         loggBrukAvEndepunkt("hentSkrivetilgang");
-        tilgangskontroll.sjekkSkrivetilgangTilKandidat(aktorId);
+        tilgangskontroll.sjekkSkrivetilgangTilKandidat(aktørId);
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/{aktorId}")
-    public ResponseEntity slettKandidat(@PathVariable("aktorId") String aktorId) {
+    @DeleteMapping("/{aktørId}")
+    public ResponseEntity slettKandidat(@PathVariable("aktørId") String aktørId) {
         loggBrukAvEndepunkt("slettKandidat");
-        tilgangskontroll.sjekkSkrivetilgangTilKandidat(aktorId);
+        tilgangskontroll.sjekkSkrivetilgangTilKandidat(aktørId);
 
-        Optional<Integer> id = kandidatService.slettKandidat(aktorId, tilgangskontroll.hentInnloggetVeileder());
+        Optional<Integer> id = kandidatService.slettKandidat(aktørId, tilgangskontroll.hentInnloggetVeileder());
 
         if (id.isEmpty()) {
             throw new NotFoundException();

@@ -125,48 +125,48 @@ public class KandidatServiceTest {
 
     @Test
     public void slettKandidat_skal_slette_kandidat_med_riktig_aktor_id_veilder_og_tidspunkt() {
-        String aktorId = "1000000000001";
+        String aktørId = "1000000000001";
         Veileder veileder = enVeileder();
         LocalDateTime datetime = LocalDateTime.now();
         when(dateProvider.now()).thenReturn(datetime);
 
-        kandidatService.slettKandidat(aktorId, veileder);
+        kandidatService.slettKandidat(aktørId, veileder);
 
-        verify(repository).slettKandidat(aktorId, veileder, datetime);
+        verify(repository).slettKandidat(aktørId, veileder, datetime);
     }
 
     @Test
     public void slettKandidat_skal_publisere_KandidatSlettet_event() {
-        String aktorId = "1000000000001";
+        String aktørId = "1000000000001";
         Veileder veileder = enVeileder();
         LocalDateTime datetime = LocalDateTime.now();
 
         when(dateProvider.now()).thenReturn(datetime);
         Optional<Integer> slettetKey = Optional.of(4);
-        when(repository.slettKandidat(aktorId, veileder, datetime)).thenReturn(slettetKey);
+        when(repository.slettKandidat(aktørId, veileder, datetime)).thenReturn(slettetKey);
 
-        kandidatService.slettKandidat(aktorId, veileder);
+        kandidatService.slettKandidat(aktørId, veileder);
 
-        verify(eventPublisher).publishEvent(new KandidatSlettet(slettetKey.get(), aktorId, Brukertype.VEILEDER, datetime));
+        verify(eventPublisher).publishEvent(new KandidatSlettet(slettetKey.get(), aktørId, Brukertype.VEILEDER, datetime));
     }
 
     @Test
     public void slettKandidat_skal_returnere_id() {
-        String aktorId = "1000000000001";
+        String aktørId = "1000000000001";
         Veileder veileder = enVeileder();
 
-        when(repository.slettKandidat(eq(aktorId), eq(veileder), any())).thenReturn(Optional.of(4));
+        when(repository.slettKandidat(eq(aktørId), eq(veileder), any())).thenReturn(Optional.of(4));
 
-        assertThat(kandidatService.slettKandidat(aktorId, veileder).get()).isEqualTo(4);
+        assertThat(kandidatService.slettKandidat(aktørId, veileder).get()).isEqualTo(4);
     }
 
     @Test
     public void behandleOppfølgingAvsluttet__skal_slette_kandidat() {
-        String aktorId = "1000000000001";
+        String aktørId = "1000000000001";
 
-        kandidatService.behandleOppfølgingAvsluttet(new OppfølgingAvsluttetMelding(aktorId, new Date()));
+        kandidatService.behandleOppfølgingAvsluttet(new OppfølgingAvsluttetMelding(aktørId, new Date()));
 
-        verify(repository).slettKandidatSomMaskinbruker(aktorId, dateProvider.now());
+        verify(repository).slettKandidatSomMaskinbruker(aktørId, dateProvider.now());
     }
 
     @Test

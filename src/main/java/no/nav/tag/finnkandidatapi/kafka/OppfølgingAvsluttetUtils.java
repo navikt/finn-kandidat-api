@@ -10,7 +10,7 @@ public class OppfølgingAvsluttetUtils {
             ObjectMapper mapper = new ObjectMapper();
             OppfølgingAvsluttetMelding oppfølgingAvsluttetMelding = mapper.readValue(melding, OppfølgingAvsluttetMelding.class);
 
-            if (oppfølgingAvsluttetMelding.getAktorId() == null || oppfølgingAvsluttetMelding.getSluttdato() == null) {
+            if (oppfølgingAvsluttetMelding.getAktørId() == null || oppfølgingAvsluttetMelding.getSluttdato() == null) {
                 throw new RuntimeException("Kunne ikke deserialisere OppfølgingAvsluttetMelding, melding: " + oppfølgingAvsluttetMelding);
             }
 

@@ -32,7 +32,7 @@ public class VeilarbabacClient {
         this.veilarbabacUrl = veilarbabacUrl;
     }
 
-    public boolean sjekkTilgangAktorId(Veileder veileder, String id, TilgangskontrollAction action) {
+    public boolean sjekkTilgangAktørId(Veileder veileder, String id, TilgangskontrollAction action) {
         return sjekkTilgang(veileder, id, action, "aktorId");
     }
 

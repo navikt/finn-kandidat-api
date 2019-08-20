@@ -25,8 +25,8 @@ public class KandidatService {
     private final AktørRegisterClient aktørRegisterClient;
     private final DateProvider dateProvider;
 
-    public Optional<Kandidat> hentNyesteKandidat(String aktorId) {
-        return kandidatRepository.hentNyesteKandidat(aktorId);
+    public Optional<Kandidat> hentNyesteKandidat(String aktørId) {
+        return kandidatRepository.hentNyesteKandidat(aktørId);
     }
 
     public List<Kandidat> hentKandidater() {
@@ -57,27 +57,27 @@ public class KandidatService {
     }
 
     public void behandleOppfølgingAvsluttet(OppfølgingAvsluttetMelding oppfølgingAvsluttetMelding) {
-        Optional<Integer> slettetKey = kandidatRepository.slettKandidatSomMaskinbruker(oppfølgingAvsluttetMelding.getAktorId(), dateProvider.now());
+        Optional<Integer> slettetKey = kandidatRepository.slettKandidatSomMaskinbruker(oppfølgingAvsluttetMelding.getAktørId(), dateProvider.now());
         if (slettetKey.isPresent()) {
-            eventPublisher.publishEvent(new KandidatSlettet(slettetKey.get(), oppfølgingAvsluttetMelding.getAktorId(), Brukertype.SYSTEM, dateProvider.now()));
+            eventPublisher.publishEvent(new KandidatSlettet(slettetKey.get(), oppfølgingAvsluttetMelding.getAktørId(), Brukertype.SYSTEM, dateProvider.now()));
             log.info("Slettet kandidat med id {} pga. avsluttet oppfølging", slettetKey.get());
         }
     }
 
-    public String hentAktorId(String fnr) {
-        return aktørRegisterClient.tilAktorId(fnr);
+    public String hentAktørId(String fnr) {
+        return aktørRegisterClient.tilAktørId(fnr);
     }
 
-    public String hentFnr(String aktorId) {
-        return aktørRegisterClient.tilFnr(aktorId);
+    public String hentFnr(String aktørId) {
+        return aktørRegisterClient.tilFnr(aktørId);
     }
 
-    Optional<Integer> slettKandidat(String aktorId, Veileder innloggetVeileder) {
+    Optional<Integer> slettKandidat(String aktørId, Veileder innloggetVeileder) {
         LocalDateTime slettetTidspunkt = dateProvider.now();
-        Optional<Integer> optionalId = kandidatRepository.slettKandidat(aktorId, innloggetVeileder, slettetTidspunkt);
+        Optional<Integer> optionalId = kandidatRepository.slettKandidat(aktørId, innloggetVeileder, slettetTidspunkt);
 
         optionalId.ifPresent(id -> eventPublisher.publishEvent(
-                new KandidatSlettet(id, aktorId, Brukertype.VEILEDER, slettetTidspunkt))
+                new KandidatSlettet(id, aktørId, Brukertype.VEILEDER, slettetTidspunkt))
         );
 
         return optionalId;

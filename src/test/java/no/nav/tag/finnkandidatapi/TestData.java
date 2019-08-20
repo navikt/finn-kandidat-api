@@ -27,7 +27,7 @@ public class TestData {
                 .sistEndret(LocalDateTime.now())
                 .sistEndretAv(enNavIdent())
                 .fnr("12345678901")
-                .aktorId("1000000000001")
+                .aktørId("1000000000001")
                 .arbeidstidBehov(KAN_IKKE_JOBBE)
                 .fysiskeBehov(Set.of(ARBEIDSSTILLING, ERGONOMI))
                 .arbeidsmiljøBehov(Set.of(MENTOR, TILRETTELAGTE_ARBEIDSOPPGAVER))
@@ -35,8 +35,8 @@ public class TestData {
                 .build();
     }
 
-    public static Kandidat enKandidat(String aktorId) {
-        return kandidatBuilder().aktorId(aktorId).build();
+    public static Kandidat enKandidat(String aktørId) {
+        return kandidatBuilder().aktørId(aktørId).build();
     }
 
     public static Kandidat.KandidatBuilder kandidatBuilder() {
@@ -44,7 +44,7 @@ public class TestData {
                 .sistEndret(LocalDateTime.now())
                 .sistEndretAv(enNavIdent())
                 .fnr("12345678901")
-                .aktorId("1000000000001")
+                .aktørId("1000000000001")
                 .arbeidstidBehov(KAN_IKKE_JOBBE)
                 .fysiskeBehov(Set.of(ARBEIDSSTILLING, ERGONOMI))
                 .arbeidsmiljøBehov(Set.of(MENTOR, TILRETTELAGTE_ARBEIDSOPPGAVER))

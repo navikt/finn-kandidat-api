@@ -3,12 +3,10 @@ package no.nav.tag.finnkandidatapi.kandidat;
 import no.nav.tag.finnkandidatapi.DateProvider;
 import no.nav.tag.finnkandidatapi.aktørregister.AktørRegisterClient;
 import no.nav.tag.finnkandidatapi.kafka.OppfølgingAvsluttetMelding;
-import no.nav.tag.finnkandidatapi.aktørregister.AktørRegisterClient;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatEndret;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatOpprettet;
 import org.junit.Before;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatSlettet;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -144,11 +142,12 @@ public class KandidatServiceTest {
         LocalDateTime datetime = LocalDateTime.now();
 
         when(dateProvider.now()).thenReturn(datetime);
-        when(repository.slettKandidat(aktorId, veileder, datetime)).thenReturn(Optional.of(4));
+        Optional<Integer> slettetKey = Optional.of(4);
+        when(repository.slettKandidat(aktorId, veileder, datetime)).thenReturn(slettetKey);
 
         kandidatService.slettKandidat(aktorId, veileder);
 
-        verify(eventPublisher).publishEvent(new KandidatSlettet(4, aktorId, veileder, datetime));
+        verify(eventPublisher).publishEvent(new KandidatSlettet(slettetKey.get(), aktorId, Brukertype.VEILEDER, datetime));
     }
 
     @Test
@@ -168,5 +167,18 @@ public class KandidatServiceTest {
         kandidatService.behandleOppfølgingAvsluttet(new OppfølgingAvsluttetMelding(aktorId, new Date()));
 
         verify(repository).slettKandidatSomMaskinbruker(aktorId, dateProvider.now());
+    }
+
+    @Test
+    public void behandleOppfølgingAvsluttet__skal_publisere_KandidatSlettet_event() {
+        String aktørId = "1856024171652";
+        LocalDateTime datetime = LocalDateTime.now();
+        when(dateProvider.now()).thenReturn(datetime);
+        Optional<Integer> slettetKey = Optional.of(4);
+        when(repository.slettKandidatSomMaskinbruker(aktørId, datetime)).thenReturn(slettetKey);
+
+        kandidatService.behandleOppfølgingAvsluttet(new OppfølgingAvsluttetMelding(aktørId, new Date()));
+
+        verify(eventPublisher).publishEvent(new KandidatSlettet(slettetKey.get(), aktørId, Brukertype.SYSTEM, datetime));
     }
 }

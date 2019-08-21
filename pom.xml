@@ -139,6 +139,11 @@
 			<artifactId>metrics</artifactId>
 			<version>1.2019.07.25-08.54-f2bfe18c24bc</version>
 		</dependency>
+		<dependency>
+			<groupId>no.bekk.bekkopen</groupId>
+			<artifactId>nocommons</artifactId>
+			<version>0.8.2</version>
+		</dependency>
 	</dependencies>
 
 	<build>

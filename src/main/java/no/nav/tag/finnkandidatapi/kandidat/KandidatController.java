@@ -3,6 +3,7 @@ package no.nav.tag.finnkandidatapi.kandidat;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import no.bekk.bekkopen.person.FodselsnummerValidator;
 import no.nav.security.oidc.api.Protected;
 import no.nav.tag.finnkandidatapi.tilgangskontroll.TilgangskontrollService;
 import org.apache.commons.lang3.StringUtils;
@@ -13,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static no.bekk.bekkopen.person.FodselsnummerValidator.isValid;
 
 @Slf4j
 @Protected
@@ -32,22 +35,17 @@ public class KandidatController {
         return ResponseEntity.ok(kandidat);
     }
 
-    @GetMapping("/eksisterendeaktor/{fnr}")
-    public ResponseEntity<Kandidat> eksisterendeAktør(@PathVariable("fnr") String fnr) {
-        loggBrukAvEndepunkt("finnesKandidat");
-        String aktørId;
-        try {
-            aktørId = kandidatService.hentAktørId(fnr);
-        } catch (FinnKandidatException fe) {
-             log.info("Aktør ikke funnet for fnr:" + fnr, fe);
-            throw new NotFoundException("Aktør mangler");
+    @GetMapping("/{fnr}/aktørId")
+    public ResponseEntity<String> hentAktørId(@PathVariable("fnr") String fnr) {
+        loggBrukAvEndepunkt("hentAktørId");
+
+        boolean gyldigFnr = isValid(fnr);
+        if (!gyldigFnr) {
+            return ResponseEntity.badRequest().body("Ugyldig fødselsnummer");
         }
 
-        tilgangskontroll.sjekkLesetilgangTilKandidat(aktørId);
-
-        Kandidat kandidat = kandidatService.hentNyesteKandidat(aktørId)
-                .orElse(Kandidat.builder().aktørId(aktørId).build());
-        return ResponseEntity.ok(kandidat);
+        String aktørId = kandidatService.hentAktørId(fnr);
+        return ResponseEntity.ok(aktørId);
     }
 
     @GetMapping
@@ -57,6 +55,8 @@ public class KandidatController {
                 .filter(kandidat -> tilgangskontroll.harLesetilgangTilKandidat(kandidat.getAktørId()))
                 .collect(Collectors.toList());
 
+        // TODO: Fjerne denne når vi vet at alle kandidater har en aktørId?
+        //  Her knytter oss hardt mot aktørregisteret for hver gang noen kaller dette endepunktet
         kandidater.stream()
                 .filter(kandidat -> StringUtils.isBlank(kandidat.getAktørId()))
                 .forEach(kandidat -> kandidat.setAktørId(kandidatService.hentAktørId(kandidat.getFnr())));

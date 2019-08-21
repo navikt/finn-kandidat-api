@@ -200,6 +200,28 @@ public class KandidatControllerTest {
     }
 
     @Test
+    public void hentAktørId__skal_returnere_ok_med_atkørId() {
+        værInnloggetSom(enVeileder());
+        String fnr = "02020963312";
+        String aktørId = "1000000000001";
+        when(service.hentAktørId(fnr)).thenReturn(aktørId);
+
+        ResponseEntity<String> respons = controller.hentAktørId(fnr);
+
+        assertThat(respons.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(respons.getBody()).isEqualTo(aktørId);
+    }
+
+    @Test(expected = FinnKandidatException.class)
+    public void hentAktørId__skal_kaste_FinnKandidatException_hvis_kall_til_aktørregister_feiler() {
+        værInnloggetSom(enVeileder());
+        String fnr = "02020963312";
+        when(service.hentAktørId(fnr)).thenThrow(FinnKandidatException.class);
+
+        controller.hentAktørId(fnr);
+    }
+
+    @Test
     public void hentSkrivetilgang__skal_returnere_ok_hvis_veileder_har_skrivetilgang() {
         værInnloggetSom(enVeileder());
         String aktørId = "1000000000001";

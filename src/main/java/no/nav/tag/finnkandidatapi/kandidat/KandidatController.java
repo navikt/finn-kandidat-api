@@ -3,7 +3,6 @@ package no.nav.tag.finnkandidatapi.kandidat;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import no.bekk.bekkopen.person.FodselsnummerValidator;
 import no.nav.security.oidc.api.Protected;
 import no.nav.tag.finnkandidatapi.tilgangskontroll.TilgangskontrollService;
 import org.apache.commons.lang3.StringUtils;
@@ -86,9 +85,7 @@ public class KandidatController {
         tilgangskontroll.sjekkSkrivetilgangTilKandidat(kandidat.getAktørId());
         Veileder veileder = tilgangskontroll.hentInnloggetVeileder();
         Kandidat endretKandidat = kandidatService.endreKandidat(kandidat, veileder).orElseThrow(FinnKandidatException::new);
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(endretKandidat);
+        return ResponseEntity.ok(endretKandidat);
     }
 
     @GetMapping("/{aktørId}/skrivetilgang")
@@ -106,7 +103,7 @@ public class KandidatController {
         Optional<Integer> id = kandidatService.slettKandidat(aktørId, tilgangskontroll.hentInnloggetVeileder());
 
         if (id.isEmpty()) {
-            throw new NotFoundException();
+            return ResponseEntity.notFound().build();
         }
 
         return ResponseEntity.ok().build();

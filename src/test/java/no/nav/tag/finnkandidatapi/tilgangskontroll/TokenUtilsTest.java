@@ -35,26 +35,10 @@ public class TokenUtilsTest {
         assertThat(tokenUtils.hentInnloggetVeileder()).isEqualTo(veileder);
     }
 
-    @Test
-    public void hentInnloggetVeileder__skal_returnere_riktig_veileder_med_openAM_token() {
-        Veileder veileder = enVeileder();
-        værInnloggetMedOpenAM(veileder);
-        assertThat(tokenUtils.hentInnloggetVeileder()).isEqualTo(veileder);
-    }
-
     @Test(expected = TilgangskontrollException.class)
     public void hentInnloggetVeileder__skal_kaste_exception_hvis_ikke_inlogget() {
         værUinnlogget();
         tokenUtils.hentInnloggetVeileder();
-    }
-
-    private void værInnloggetMedOpenAM(Veileder veileder) {
-        OIDCValidationContext context = new OIDCValidationContext();
-        TokenContext tokenContext = new TokenContext(TokenUtils.ISSUER_ISSO_OPENAM, "");
-        OIDCClaims oidcClaims = new OIDCClaims(createSignedJWT(veileder.getNavIdent(), 0, new HashMap<>(), TokenUtils.ISSUER_ISSO_OPENAM, "aud-isso-openam"));
-        context.addValidatedToken(TokenUtils.ISSUER_ISSO_OPENAM, tokenContext, oidcClaims);
-
-        when(contextHolder.getOIDCValidationContext()).thenReturn(context);
     }
 
     private void værInnloggetMedAzureAD(Veileder veileder) {

@@ -13,7 +13,6 @@ import java.util.Optional;
 @Component
 public class TokenUtils {
     public final static String ISSUER_ISSO = "isso";
-    public final static String ISSUER_ISSO_OPENAM = "isso-openam";
 
     private final OIDCRequestContextHolder contextHolder;
 
@@ -23,11 +22,7 @@ public class TokenUtils {
     }
 
     public Veileder hentInnloggetVeileder() {
-        if (erInnloggetNavAnsattMedOpenAMToken()) {
-            String ident = contextHolder.getOIDCValidationContext().getClaims(ISSUER_ISSO_OPENAM).getSubject();
-            return new Veileder(ident);
-
-        } else if (erInnloggetNavAnsattMedAzureADToken()) {
+        if (erInnloggetNavAnsattMedAzureADToken()) {
             String navIdent = hentClaim(ISSUER_ISSO, "NAVident")
                     .orElseThrow(() -> new TilgangskontrollException("Innlogget bruker er ikke veileder."));
             return new Veileder(navIdent);
@@ -41,14 +36,6 @@ public class TokenUtils {
                 .map(jwtClaimsSet -> (String) jwtClaimsSet.getClaims().get("NAVident"))
                 .filter(this::erNAVIdent);
         return navIdent.isPresent();
-    }
-
-    private boolean erInnloggetNavAnsattMedOpenAMToken() {
-        OIDCClaims claims = contextHolder.getOIDCValidationContext().getClaims(ISSUER_ISSO_OPENAM);
-        if (claims == null) {
-            return false;
-        }
-        return erNAVIdent(claims.getSubject());
     }
 
     private Optional<String> hentClaim(String issuer, String claim) {

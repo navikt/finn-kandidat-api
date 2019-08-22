@@ -34,7 +34,7 @@ public class KandidatController {
         return ResponseEntity.ok(kandidat);
     }
 
-    @GetMapping("/{fnr}/aktørId")
+    @GetMapping("/{fnr}/aktorId")
     public ResponseEntity<String> hentAktørId(@PathVariable("fnr") String fnr) {
         loggBrukAvEndepunkt("hentAktørId");
 
@@ -45,6 +45,13 @@ public class KandidatController {
 
         String aktørId = kandidatService.hentAktørId(fnr);
         return ResponseEntity.ok(aktørId);
+    }
+
+    @GetMapping("/{aktørId}/fnr")
+    public ResponseEntity<String> hentFnr(@PathVariable("aktørId") String aktørId) {
+        loggBrukAvEndepunkt("hentFnr");
+        String fnr = kandidatService.hentFnr(aktørId);
+        return ResponseEntity.ok(fnr);
     }
 
     @GetMapping
@@ -65,11 +72,9 @@ public class KandidatController {
     @PostMapping
     public ResponseEntity<Kandidat> opprettKandidat(@RequestBody Kandidat kandidat) {
         loggBrukAvEndepunkt("opprettKandidat");
-        String aktørId = kandidat.getAktørId();
-        tilgangskontroll.sjekkSkrivetilgangTilKandidat(aktørId);
+        tilgangskontroll.sjekkSkrivetilgangTilKandidat(kandidat.getAktørId());
 
-        String fnr = kandidatService.hentFnr(aktørId);
-
+        String fnr = kandidatService.hentFnr(kandidat.getAktørId());
         kandidat.setFnr(fnr);
 
         Veileder veileder = tilgangskontroll.hentInnloggetVeileder();

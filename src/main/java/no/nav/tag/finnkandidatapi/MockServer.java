@@ -45,7 +45,7 @@ public class MockServer {
 
     private void mockAktørregister(@Value("${aktørregister.url}") String aktørregisterUrl) {
         Map<String, StringValuePattern> aktørId = new HashMap<>();
-        aktørId.put("identgruppe",WireMock.equalTo("AktoerId"));
+        aktørId.put("identgruppe", WireMock.equalTo("AktoerId"));
         mockKall(aktørregisterUrl + "/identer" + "?identgruppe=AktoerId&gjeldende=true",
                 aktørId,
                 "{\n" +
@@ -62,7 +62,7 @@ public class MockServer {
                 "}");
 
         Map<String, StringValuePattern> norskIdent = new HashMap<>();
-        norskIdent.put("identgruppe",WireMock.equalTo("NorskIdent"));
+        norskIdent.put("identgruppe", WireMock.equalTo("NorskIdent"));
         mockKall(aktørregisterUrl + "/identer" + "?identgruppe=NorskIdent&gjeldende=true",
                 norskIdent,
                 "{\n" +

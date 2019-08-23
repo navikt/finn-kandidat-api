@@ -181,4 +181,39 @@ public class KandidatServiceTest {
 
         verify(eventPublisher).publishEvent(new KandidatSlettet(slettetKey.get(), aktørId, Brukertype.SYSTEM, datetime));
     }
+
+    @Test
+    public void hentAktørId__skal_returnere_aktørId() {
+        String fnr = "12345678901";
+        String aktørId = "1856024171652";
+        when(aktørRegisterClient.tilAktørId(fnr)).thenReturn(aktørId);
+
+        String hentetAktørId = kandidatService.hentAktørId(fnr);
+        assertThat(hentetAktørId).isEqualTo(aktørId);
+    }
+
+    @Test(expected = FinnKandidatException.class)
+    public void hentAktørId__skal_kaste_exception_hvis_aktørregister_ikke_finner_aktørId() {
+        String fnr = "12345678901";
+        when(aktørRegisterClient.tilAktørId(fnr)).thenThrow(FinnKandidatException.class);
+        kandidatService.hentAktørId(fnr);
+    }
+
+    @Test
+    public void hentFnr__skal_returnere_fnr() {
+        String aktørId = "1856024171652";
+        String fnr = "12345678901";
+        when(aktørRegisterClient.tilFnr(aktørId)).thenReturn(fnr);
+
+        String hentetFnr = kandidatService.hentFnr(aktørId);
+        assertThat(hentetFnr).isEqualTo(fnr);
+    }
+
+    @Test(expected = FinnKandidatException.class)
+    public void hentFnr__skal_kaste_exception_hvis_aktørregister_ikke_finner_fnr() {
+        String aktørId = "1856024171652";
+        when(aktørRegisterClient.tilFnr(aktørId)).thenThrow(FinnKandidatException.class);
+        kandidatService.hentFnr(aktørId);
+    }
+
 }

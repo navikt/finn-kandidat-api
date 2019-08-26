@@ -35,7 +35,7 @@ public class TilgangskontrollService {
     }
 
     private boolean hentTilgang(String aktørId, TilgangskontrollAction action) {
-        return veilarbabacClient.sjekkTilgangAktørId(
+        return veilarbabacClient.sjekkTilgang(
                 hentInnloggetVeileder(),
                 aktørId,
                 action

@@ -47,19 +47,19 @@ public class VeilarbabacClientTest {
     @Test
     public void harSkrivetilgangTilKandidat__skal_returnere_false_hvis_deny() {
         mockReturverdiFraVeilarbabac(DENY_RESPONSE);
-        assertThat(veilarbabacClient.sjekkTilgangAktørId(enVeileder(), "1000000000001", TilgangskontrollAction.update)).isFalse();
+        assertThat(veilarbabacClient.sjekkTilgang(enVeileder(), "1000000000001", TilgangskontrollAction.update)).isFalse();
     }
 
     @Test
     public void harSkrivetilgangTilKandidat__skal_returnere_true_hvis_permit() {
         mockReturverdiFraVeilarbabac(PERMIT_RESPONSE);
-        assertThat(veilarbabacClient.sjekkTilgangAktørId(enVeileder(), "1000000000001", TilgangskontrollAction.update)).isTrue();
+        assertThat(veilarbabacClient.sjekkTilgang(enVeileder(), "1000000000001", TilgangskontrollAction.update)).isTrue();
     }
 
     @Test(expected = FinnKandidatException.class)
     public void harSkrivetilgangTilKandidat__skal_kaste_exception_hvis_ikke_allow_eller_deny() {
         mockReturverdiFraVeilarbabac("blabla");
-        veilarbabacClient.sjekkTilgangAktørId(enVeileder(), "1000000000001", TilgangskontrollAction.update);
+        veilarbabacClient.sjekkTilgang(enVeileder(), "1000000000001", TilgangskontrollAction.update);
     }
 
     @Test
@@ -71,7 +71,7 @@ public class VeilarbabacClientTest {
 
         when(stsClient.hentSTSToken()).thenReturn(stsToken);
 
-        veilarbabacClient.sjekkTilgangAktørId(enVeileder(), aktørId, TilgangskontrollAction.update);
+        veilarbabacClient.sjekkTilgang(enVeileder(), aktørId, TilgangskontrollAction.update);
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("subject", veileder.getNavIdent());

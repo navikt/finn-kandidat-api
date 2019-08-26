@@ -32,12 +32,8 @@ public class VeilarbabacClient {
         this.veilarbabacUrl = veilarbabacUrl;
     }
 
-    public boolean sjekkTilgangAktørId(Veileder veileder, String id, TilgangskontrollAction action) {
-        return sjekkTilgang(veileder, id, action, "aktorId");
-    }
-
-    private boolean sjekkTilgang(Veileder veileder, String id, TilgangskontrollAction action, String idType) {
-        String response = hentTilgang(veileder, id, action, idType);
+    public boolean sjekkTilgang(Veileder veileder, String id, TilgangskontrollAction action) {
+        String response = hentTilgang(veileder, id, action);
 
         if (PERMIT_RESPONSE.equals(response)) {
             return true;
@@ -48,10 +44,10 @@ public class VeilarbabacClient {
         throw new FinnKandidatException("Ukjent respons fra veilarbabac: " + response);
     }
 
-    private String hentTilgang(Veileder veileder, String id, TilgangskontrollAction action, String idType) {
+    private String hentTilgang(Veileder veileder, String id, TilgangskontrollAction action) {
         String uriString = UriComponentsBuilder.fromHttpUrl(veilarbabacUrl)
                 .path("/person")
-                .queryParam(idType, id)
+                .queryParam("aktorId", id)
                 .queryParam("action", action.toString())
                 .toUriString();
 

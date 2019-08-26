@@ -124,7 +124,7 @@ public class KandidatServiceTest {
     }
 
     @Test
-    public void slettKandidat_skal_slette_kandidat_med_riktig_aktor_id_veilder_og_tidspunkt() {
+    public void slettKandidat_skal_slette_kandidat_med_riktig_aktør_id_veilder_og_tidspunkt() {
         String aktørId = "1000000000001";
         Veileder veileder = enVeileder();
         LocalDateTime datetime = LocalDateTime.now();

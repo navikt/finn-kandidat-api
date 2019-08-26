@@ -116,7 +116,7 @@ public class KandidatRepositoryTest {
     }
 
     @Test
-    public void hentKandidater__skal_returnere_siste_kandidat_etter_lagret_flere_kandidater_med_samme_aktor_id() {
+    public void hentKandidater__skal_returnere_siste_kandidat_etter_lagret_flere_kandidater_med_samme_aktør_id() {
         Kandidat kandidat = kandidatBuilder()
                 .aktørId("1000000000001")
                 .sistEndret(now())
@@ -200,7 +200,7 @@ public class KandidatRepositoryTest {
     }
 
     @Test
-    public void slettKandidat__skal_returnere_empty_hvis_aktor_id_ikke_finnes() {
+    public void slettKandidat__skal_returnere_empty_hvis_aktør_id_ikke_finnes() {
         String uregistrertAktørId = "1000000000001";
 
         Optional<Integer> id = repository.slettKandidat(uregistrertAktørId, enVeileder(), now());

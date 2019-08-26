@@ -17,7 +17,7 @@ public class KandidatRepository {
     static final String KANDIDAT_TABELL = "kandidat";
     static final String ID = "id";
     static final String FNR = "fnr";
-    static final String AKTOR_ID = "aktor_id";
+    static final String AKTØR_ID = "aktor_id";
     static final String REGISTRERT_AV = "registrert_av";
     static final String REGISTRERT_AV_BRUKERTYPE = "registrert_av_brukertype";
     static final String REGISTRERINGSTIDSPUNKT = "registreringstidspunkt";
@@ -91,7 +91,7 @@ public class KandidatRepository {
     private Map<String, Object> lagInsertParameter(Kandidat kandidat) {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put(FNR, kandidat.getFnr());
-        parameters.put(AKTOR_ID, kandidat.getAktørId());
+        parameters.put(AKTØR_ID, kandidat.getAktørId());
         parameters.put(REGISTRERT_AV, kandidat.getSistEndretAv());
         parameters.put(REGISTRERT_AV_BRUKERTYPE, Brukertype.VEILEDER.name());
         parameters.put(REGISTRERINGSTIDSPUNKT, kandidat.getSistEndret());
@@ -114,7 +114,7 @@ public class KandidatRepository {
         }
 
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put(AKTOR_ID, aktørId);
+        parameters.put(AKTØR_ID, aktørId);
         parameters.put(REGISTRERT_AV, Brukertype.SYSTEM.name());
         parameters.put(REGISTRERT_AV_BRUKERTYPE, Brukertype.SYSTEM.name());
         parameters.put(REGISTRERINGSTIDSPUNKT, slettetTidspunkt);
@@ -134,7 +134,7 @@ public class KandidatRepository {
         }
 
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put(AKTOR_ID, aktørId);
+        parameters.put(AKTØR_ID, aktørId);
         parameters.put(REGISTRERT_AV, slettetAv.getNavIdent());
         parameters.put(REGISTRERT_AV_BRUKERTYPE, Brukertype.VEILEDER.name());
         parameters.put(REGISTRERINGSTIDSPUNKT, slettetTidspunkt);

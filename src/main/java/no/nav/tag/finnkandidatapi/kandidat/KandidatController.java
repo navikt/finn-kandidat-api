@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.security.oidc.api.Protected;
 import no.nav.tag.finnkandidatapi.tilgangskontroll.TilgangskontrollService;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -57,15 +56,10 @@ public class KandidatController {
     @GetMapping
     public ResponseEntity<List<Kandidat>> hentKandidater() {
         loggBrukAvEndepunkt("hentKandidater");
-        List<Kandidat> kandidater = kandidatService.hentKandidater().stream()
+        List<Kandidat> kandidater =
+                kandidatService.hentKandidater().stream()
                 .filter(kandidat -> tilgangskontroll.harLesetilgangTilKandidat(kandidat.getAktørId()))
                 .collect(Collectors.toList());
-
-        // TODO: Fjerne denne når vi vet at alle kandidater har en aktørId?
-        //  Her knytter oss hardt mot aktørregisteret for hver gang noen kaller dette endepunktet
-        kandidater.stream()
-                .filter(kandidat -> StringUtils.isBlank(kandidat.getAktørId()))
-                .forEach(kandidat -> kandidat.setAktørId(kandidatService.hentAktørId(kandidat.getFnr())));
         return ResponseEntity.ok(kandidater);
     }
 
@@ -123,12 +117,5 @@ public class KandidatController {
                 tilgangskontroll.hentInnloggetVeileder().getNavIdent(),
                 endepunkt
         );
-    }
-
-    // TODO: Fjern etter bruk
-    @GetMapping("/leggTilAktorId")
-    public ResponseEntity leggTilAktorIdPåKandidater() {
-        kandidatService.leggTilAktørIdPåKandidater();
-        return ResponseEntity.ok().build();
     }
 }

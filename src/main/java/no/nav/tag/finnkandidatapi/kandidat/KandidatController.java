@@ -125,4 +125,10 @@ public class KandidatController {
         );
     }
 
+    // TODO: Fjern etter bruk
+    @GetMapping("/leggTilAktorId")
+    public ResponseEntity leggTilAktorIdPåKandidater() {
+        kandidatService.leggTilAktørIdPåKandidater();
+        return ResponseEntity.ok().build();
+    }
 }

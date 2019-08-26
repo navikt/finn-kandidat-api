@@ -199,7 +199,7 @@ public class KandidatControllerTest {
     }
 
     @Test
-    public void hentAktørId__skal_returnere_ok_med_atkørId() {
+    public void hentAktørId__skal_returnere_ok_med_aktørId() {
         værInnloggetSom(enVeileder());
         String fnr = "02020963312";
         String aktørId = "1000000000001";

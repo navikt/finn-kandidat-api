@@ -51,7 +51,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Slf4j
 public class OppfølgingAvsluttetConsumerTest {
 
-    // Disse to er koblet sammen gjennom mock serveren
     private static final String AKTØR_ID = "1856024171652";
 
     @Autowired

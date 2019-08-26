@@ -143,10 +143,6 @@ public class KandidatRepository {
         return Optional.of(jdbcInsert.executeAndReturnKey(parameters).intValue());
     }
 
-    public List<Kandidat> hentAlleRader() {
-        return jdbcTemplate.query("SELECT * from kandidat", kandidatMapper);
-    }
-
     public int leggTilAktørId(String fnr, String aktørId) {
         return jdbcTemplate.update("UPDATE kandidat SET aktor_id = ? WHERE fnr = ?", aktørId, fnr);
     }

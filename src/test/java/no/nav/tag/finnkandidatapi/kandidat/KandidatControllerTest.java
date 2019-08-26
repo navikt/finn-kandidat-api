@@ -37,6 +37,7 @@ public class KandidatControllerTest {
         Veileder veileder = enVeileder();
         Kandidat kandidat = enKandidat();
         værInnloggetSom(veileder);
+        when(service.hentFnr(anyString())).thenReturn("123123123");
         when(service.opprettKandidat(kandidat, veileder)).thenReturn(Optional.of(kandidat));
 
         controller.opprettKandidat(kandidat);
@@ -50,6 +51,7 @@ public class KandidatControllerTest {
         værInnloggetSom(veileder);
         Kandidat kandidat = enKandidat();
 
+        when(service.hentFnr(anyString())).thenReturn("123123123");
         when(service.opprettKandidat(kandidat, veileder)).thenReturn(Optional.of(kandidat));
 
         ResponseEntity<Kandidat> respons = controller.opprettKandidat(kandidat);
@@ -65,6 +67,7 @@ public class KandidatControllerTest {
         Veileder veileder = enVeileder();
         værInnloggetSom(veileder);
 
+        when(service.hentFnr(anyString())).thenReturn("123123123");
         when(service.opprettKandidat(kandidat, veileder)).thenReturn(Optional.of(kandidat));
 
         controller.opprettKandidat(kandidat);
@@ -78,6 +81,7 @@ public class KandidatControllerTest {
         Veileder veileder = enVeileder();
         værInnloggetSom(veileder);
 
+        when(service.hentFnr(anyString())).thenReturn("123123123");
         when(service.opprettKandidat(kandidat, veileder)).thenReturn(Optional.empty());
         controller.opprettKandidat(kandidat);
     }

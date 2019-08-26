@@ -28,6 +28,7 @@ public class KandidatMapper implements RowMapper<Kandidat> {
         return Kandidat.builder()
                 .id(rs.getInt(ID))
                 .fnr(rs.getString(FNR))
+                .aktørId(rs.getString(AKTØR_ID))
                 .sistEndretAv(rs.getString(REGISTRERT_AV))
                 .sistEndret(sistEndret)
                 .arbeidstidBehov(arbeidstidBehov)

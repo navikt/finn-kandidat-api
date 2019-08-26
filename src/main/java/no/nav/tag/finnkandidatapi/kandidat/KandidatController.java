@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.security.oidc.api.Protected;
 import no.nav.tag.finnkandidatapi.tilgangskontroll.TilgangskontrollService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +13,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static no.bekk.bekkopen.person.FodselsnummerValidator.isValid;
 
 @Slf4j
 @Protected
@@ -23,28 +26,60 @@ public class KandidatController {
     private final KandidatService kandidatService;
     private final TilgangskontrollService tilgangskontroll;
 
-    @GetMapping("/{fnr}")
-    public ResponseEntity<Kandidat> hentKandidat(@PathVariable("fnr") String fnr) {
+    @GetMapping("/{aktørId}")
+    public ResponseEntity<Kandidat> hentKandidat(@PathVariable("aktørId") String aktørId) {
         loggBrukAvEndepunkt("hentKandidat");
-        tilgangskontroll.sjekkLesetilgangTilKandidat(fnr);
-
-        Kandidat kandidat = kandidatService.hentNyesteKandidat(fnr).orElseThrow(NotFoundException::new);
+        tilgangskontroll.sjekkLesetilgangTilKandidat(aktørId);
+        Kandidat kandidat = kandidatService.hentNyesteKandidat(aktørId).orElseThrow(NotFoundException::new);
         return ResponseEntity.ok(kandidat);
+    }
+
+    @GetMapping("/{fnr}/aktorId")
+    public ResponseEntity<String> hentAktørId(@PathVariable("fnr") String fnr) {
+        loggBrukAvEndepunkt("hentAktørId");
+
+        boolean gyldigFnr = isValid(fnr);
+        if (!gyldigFnr) {
+            return ResponseEntity.badRequest().body("Ugyldig fødselsnummer");
+        }
+
+        String aktørId = kandidatService.hentAktørId(fnr);
+        return ResponseEntity.ok(aktørId);
+    }
+
+    @GetMapping("/{aktørId}/fnr")
+    public ResponseEntity<String> hentFnr(@PathVariable("aktørId") String aktørId) {
+        loggBrukAvEndepunkt("hentFnr");
+        String fnr = kandidatService.hentFnr(aktørId);
+        return ResponseEntity.ok(fnr);
     }
 
     @GetMapping
     public ResponseEntity<List<Kandidat>> hentKandidater() {
         loggBrukAvEndepunkt("hentKandidater");
         List<Kandidat> kandidater = kandidatService.hentKandidater().stream()
-                .filter(kandidat -> tilgangskontroll.harLesetilgangTilKandidat(kandidat.getFnr()))
+                .filter(kandidat -> tilgangskontroll.harLesetilgangTilKandidat(kandidat.getAktørId()))
                 .collect(Collectors.toList());
+
+        // TODO: Fjerne denne når vi vet at alle kandidater har en aktørId?
+        //  Her knytter oss hardt mot aktørregisteret for hver gang noen kaller dette endepunktet
+        kandidater.stream()
+                .filter(kandidat -> StringUtils.isBlank(kandidat.getAktørId()))
+                .forEach(kandidat -> kandidat.setAktørId(kandidatService.hentAktørId(kandidat.getFnr())));
         return ResponseEntity.ok(kandidater);
     }
 
     @PostMapping
     public ResponseEntity<Kandidat> opprettKandidat(@RequestBody Kandidat kandidat) {
         loggBrukAvEndepunkt("opprettKandidat");
-        tilgangskontroll.sjekkSkrivetilgangTilKandidat(kandidat.getFnr());
+        tilgangskontroll.sjekkSkrivetilgangTilKandidat(kandidat.getAktørId());
+
+        String fnr = kandidatService.hentFnr(kandidat.getAktørId());
+        if (!fnr.equals(kandidat.getFnr())) {
+            log.warn("Fnr fra frontend og fnr fra aktørregister er forskjellig");
+        }
+        kandidat.setFnr(fnr);
+
         Veileder veileder = tilgangskontroll.hentInnloggetVeileder();
         Kandidat opprettetKandidat = kandidatService.opprettKandidat(kandidat, veileder).orElseThrow(FinnKandidatException::new);
         return ResponseEntity
@@ -55,30 +90,28 @@ public class KandidatController {
     @PutMapping
     public ResponseEntity<Kandidat> endreKandidat(@RequestBody Kandidat kandidat) {
         loggBrukAvEndepunkt("endreKandidat");
-        tilgangskontroll.sjekkSkrivetilgangTilKandidat(kandidat.getFnr());
+        tilgangskontroll.sjekkSkrivetilgangTilKandidat(kandidat.getAktørId());
         Veileder veileder = tilgangskontroll.hentInnloggetVeileder();
         Kandidat endretKandidat = kandidatService.endreKandidat(kandidat, veileder).orElseThrow(FinnKandidatException::new);
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(endretKandidat);
+        return ResponseEntity.ok(endretKandidat);
     }
 
-    @GetMapping("/{fnr}/skrivetilgang")
-    public ResponseEntity hentSkrivetilgang(@PathVariable("fnr") String fnr) {
+    @GetMapping("/{aktørId}/skrivetilgang")
+    public ResponseEntity hentSkrivetilgang(@PathVariable("aktørId") String aktørId) {
         loggBrukAvEndepunkt("hentSkrivetilgang");
-        tilgangskontroll.sjekkSkrivetilgangTilKandidat(fnr);
+        tilgangskontroll.sjekkSkrivetilgangTilKandidat(aktørId);
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/{fnr}")
-    public ResponseEntity slettKandidat(@PathVariable("fnr") String fnr) {
+    @DeleteMapping("/{aktørId}")
+    public ResponseEntity slettKandidat(@PathVariable("aktørId") String aktørId) {
         loggBrukAvEndepunkt("slettKandidat");
-        tilgangskontroll.sjekkSkrivetilgangTilKandidat(fnr);
+        tilgangskontroll.sjekkSkrivetilgangTilKandidat(aktørId);
 
-        Optional<Integer> id = kandidatService.slettKandidat(fnr, tilgangskontroll.hentInnloggetVeileder());
+        Optional<Integer> id = kandidatService.slettKandidat(aktørId, tilgangskontroll.hentInnloggetVeileder());
 
         if (id.isEmpty()) {
-            throw new NotFoundException();
+            return ResponseEntity.notFound().build();
         }
 
         return ResponseEntity.ok().build();
@@ -92,4 +125,10 @@ public class KandidatController {
         );
     }
 
+    // TODO: Fjern etter bruk
+    @GetMapping("/leggTilAktorId")
+    public ResponseEntity leggTilAktorIdPåKandidater() {
+        kandidatService.leggTilAktørIdPåKandidater();
+        return ResponseEntity.ok().build();
+    }
 }

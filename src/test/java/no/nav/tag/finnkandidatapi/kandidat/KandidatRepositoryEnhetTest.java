@@ -47,14 +47,14 @@ public class KandidatRepositoryEnhetTest {
 
     @Test
     public void slettKandidat__skal_sette_veileder_som_brukertype() {
-        repository.slettKandidat(enKandidat().getFnr(), enVeileder(), now());
+        repository.slettKandidat(enKandidat().getAktørId(), enVeileder(), now());
         verify(jdbcInsert, times(1)).executeAndReturnKey(requestCaptor.capture());
         assertThat(requestCaptor.getValue().get("registrert_av_brukertype")).isEqualTo(Brukertype.VEILEDER.name());
     }
 
     @Test
     public void slettKandidatSomMaskinbruker__skal_sette_maskin_som_brukertype() {
-        repository.slettKandidatSomMaskinbruker(enKandidat().getFnr(), now());
+        repository.slettKandidatSomMaskinbruker(enKandidat().getAktørId(), now());
         verify(jdbcInsert, times(1)).executeAndReturnKey(requestCaptor.capture());
         assertThat(requestCaptor.getValue().get("registrert_av_brukertype")).isEqualTo(Brukertype.SYSTEM.name());
 

@@ -17,7 +17,6 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,8 +51,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Slf4j
 public class OppfølgingAvsluttetConsumerTest {
 
-    // Disse to er koblet sammen gjennom mock serveren
-    private static final String FNR = "01065500791";
     private static final String AKTØR_ID = "1856024171652";
 
     @Autowired
@@ -112,14 +109,14 @@ public class OppfølgingAvsluttetConsumerTest {
     @SneakyThrows
     public void skal_slette_kandidat_ved_mottatt_oppfølging_avsluttet_kafka_melding() {
         Kandidat kandidatSomSkalSlettes = enKandidat();
-        kandidatSomSkalSlettes.setFnr(FNR);
+        kandidatSomSkalSlettes.setAktørId(AKTØR_ID);
         repository.lagreKandidat(kandidatSomSkalSlettes);
         sendOppFølgingAvsluttetMelding();
 
         boolean kandidatErslettet = false;
         while(!kandidatErslettet) {
             Thread.sleep(10);
-            kandidatErslettet = repository.hentNyesteKandidat(kandidatSomSkalSlettes.getFnr()).isEmpty();
+            kandidatErslettet = repository.hentNyesteKandidat(kandidatSomSkalSlettes.getAktørId()).isEmpty();
         }
         assertThat(kandidatErslettet).isTrue();
     }
@@ -131,7 +128,7 @@ public class OppfølgingAvsluttetConsumerTest {
 
     private String lagOppfølgingAvsluttetMelding(String aktørId) throws JsonProcessingException {
         OppfølgingAvsluttetMelding oppfølgingAvsluttetMelding = OppfølgingAvsluttetMelding.builder()
-                .aktorId(aktørId)
+                .aktørId(aktørId)
                 .sluttdato(new Date()).build();
         ObjectMapper objectMapper = new ObjectMapper();
         return objectMapper.writeValueAsString(oppfølgingAvsluttetMelding);

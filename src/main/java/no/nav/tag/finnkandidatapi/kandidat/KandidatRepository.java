@@ -17,6 +17,7 @@ public class KandidatRepository {
     static final String KANDIDAT_TABELL = "kandidat";
     static final String ID = "id";
     static final String FNR = "fnr";
+    static final String AKTØR_ID = "aktor_id";
     static final String REGISTRERT_AV = "registrert_av";
     static final String REGISTRERT_AV_BRUKERTYPE = "registrert_av_brukertype";
     static final String REGISTRERINGSTIDSPUNKT = "registreringstidspunkt";
@@ -39,10 +40,10 @@ public class KandidatRepository {
         this.kandidatMapper = kandidatMapper;
     }
 
-    public Optional<Kandidat> hentNyesteKandidat(String fnr) {
+    public Optional<Kandidat> hentNyesteKandidat(String aktørId) {
         try {
             Kandidat kandidat = jdbcTemplate.queryForObject(
-                    "SELECT * FROM kandidat WHERE (fnr = ?) ORDER BY registreringstidspunkt DESC LIMIT 1", new Object[]{ fnr },
+                    "SELECT * FROM kandidat WHERE (aktor_id = ?) ORDER BY registreringstidspunkt DESC LIMIT 1", new Object[]{ aktørId },
                     kandidatMapper
             );
             return Optional.ofNullable(kandidat);
@@ -68,10 +69,10 @@ public class KandidatRepository {
                 "SELECT k.* " +
                 "FROM kandidat k " +
                         "INNER JOIN " +
-                        "(SELECT fnr, MAX(registreringstidspunkt) AS sisteRegistrert " +
+                        "(SELECT aktor_id, MAX(registreringstidspunkt) AS sisteRegistrert " +
                         "FROM kandidat " +
-                        "GROUP BY fnr) gruppertKandidat " +
-                        "ON k.fnr = gruppertKandidat.fnr " +
+                        "GROUP BY aktor_id) gruppertKandidat " +
+                        "ON k.aktor_id = gruppertKandidat.aktor_id " +
                         "AND k.registreringstidspunkt = gruppertKandidat.sisteRegistrert " +
                 "WHERE slettet = false " +
                 "ORDER BY k.registreringstidspunkt";
@@ -90,6 +91,7 @@ public class KandidatRepository {
     private Map<String, Object> lagInsertParameter(Kandidat kandidat) {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put(FNR, kandidat.getFnr());
+        parameters.put(AKTØR_ID, kandidat.getAktørId());
         parameters.put(REGISTRERT_AV, kandidat.getSistEndretAv());
         parameters.put(REGISTRERT_AV_BRUKERTYPE, Brukertype.VEILEDER.name());
         parameters.put(REGISTRERINGSTIDSPUNKT, kandidat.getSistEndret());
@@ -102,17 +104,17 @@ public class KandidatRepository {
     }
 
     public Optional<Integer> slettKandidatSomMaskinbruker(
-            String fnr,
+            String aktørId,
             LocalDateTime slettetTidspunkt
     ) {
 
-        Optional<Kandidat> kandidat = hentNyesteKandidat(fnr);
+        Optional<Kandidat> kandidat = hentNyesteKandidat(aktørId);
         if (kandidat.isEmpty()) {
             return Optional.empty();
         }
 
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put(FNR, fnr);
+        parameters.put(AKTØR_ID, aktørId);
         parameters.put(REGISTRERT_AV, Brukertype.SYSTEM.name());
         parameters.put(REGISTRERT_AV_BRUKERTYPE, Brukertype.SYSTEM.name());
         parameters.put(REGISTRERINGSTIDSPUNKT, slettetTidspunkt);
@@ -122,22 +124,26 @@ public class KandidatRepository {
     }
 
     public Optional<Integer> slettKandidat(
-            String fnr,
+            String aktørId,
             Veileder slettetAv,
             LocalDateTime slettetTidspunkt
     ) {
-        Optional<Kandidat> kandidat = hentNyesteKandidat(fnr);
+        Optional<Kandidat> kandidat = hentNyesteKandidat(aktørId);
         if (kandidat.isEmpty()) {
             return Optional.empty();
         }
 
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put(FNR, fnr);
+        parameters.put(AKTØR_ID, aktørId);
         parameters.put(REGISTRERT_AV, slettetAv.getNavIdent());
         parameters.put(REGISTRERT_AV_BRUKERTYPE, Brukertype.VEILEDER.name());
         parameters.put(REGISTRERINGSTIDSPUNKT, slettetTidspunkt);
         parameters.put(SLETTET, true);
 
         return Optional.of(jdbcInsert.executeAndReturnKey(parameters).intValue());
+    }
+
+    public int leggTilAktørId(String fnr, String aktørId) {
+        return jdbcTemplate.update("UPDATE kandidat SET aktor_id = ? WHERE fnr = ?", aktørId, fnr);
     }
 }

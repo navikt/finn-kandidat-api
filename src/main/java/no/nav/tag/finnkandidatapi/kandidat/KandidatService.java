@@ -25,8 +25,8 @@ public class KandidatService {
     private final AktørRegisterClient aktørRegisterClient;
     private final DateProvider dateProvider;
 
-    public Optional<Kandidat> hentNyesteKandidat(String fnr) {
-        return kandidatRepository.hentNyesteKandidat(fnr);
+    public Optional<Kandidat> hentNyesteKandidat(String aktørId) {
+        return kandidatRepository.hentNyesteKandidat(aktørId);
     }
 
     public List<Kandidat> hentKandidater() {
@@ -57,22 +57,39 @@ public class KandidatService {
     }
 
     public void behandleOppfølgingAvsluttet(OppfølgingAvsluttetMelding oppfølgingAvsluttetMelding) {
-        String fnr = aktørRegisterClient.tilFnr(oppfølgingAvsluttetMelding.getAktorId());
-        Optional<Integer> slettetKey = kandidatRepository.slettKandidatSomMaskinbruker(fnr, dateProvider.now());
+        Optional<Integer> slettetKey = kandidatRepository.slettKandidatSomMaskinbruker(oppfølgingAvsluttetMelding.getAktørId(), dateProvider.now());
         if (slettetKey.isPresent()) {
-            eventPublisher.publishEvent(new KandidatSlettet(slettetKey.get(), fnr, Brukertype.SYSTEM, dateProvider.now()));
-            log.info("Slettet kandidat med key {} pga. avsluttet oppfølging", slettetKey);
+            eventPublisher.publishEvent(new KandidatSlettet(slettetKey.get(), oppfølgingAvsluttetMelding.getAktørId(), Brukertype.SYSTEM, dateProvider.now()));
+            log.info("Slettet kandidat med id {} pga. avsluttet oppfølging", slettetKey.get());
         }
     }
 
-    Optional<Integer> slettKandidat(String fnr, Veileder innloggetVeileder) {
+    public String hentAktørId(String fnr) {
+        return aktørRegisterClient.tilAktørId(fnr);
+    }
+
+    public String hentFnr(String aktørId) {
+        return aktørRegisterClient.tilFnr(aktørId);
+    }
+
+    Optional<Integer> slettKandidat(String aktørId, Veileder innloggetVeileder) {
         LocalDateTime slettetTidspunkt = dateProvider.now();
-        Optional<Integer> optionalId = kandidatRepository.slettKandidat(fnr, innloggetVeileder, slettetTidspunkt);
+        Optional<Integer> optionalId = kandidatRepository.slettKandidat(aktørId, innloggetVeileder, slettetTidspunkt);
 
         optionalId.ifPresent(id -> eventPublisher.publishEvent(
-                new KandidatSlettet(id, fnr, Brukertype.VEILEDER, slettetTidspunkt))
+                new KandidatSlettet(id, aktørId, Brukertype.VEILEDER, slettetTidspunkt))
         );
 
         return optionalId;
+    }
+
+    public void leggTilAktørIdPåKandidater() {
+        log.info("Legger til aktørId på kandidater");
+        List<Kandidat> kandidater = kandidatRepository.hentKandidater();
+        kandidater.forEach(kandidat -> {
+            String aktørId = aktørRegisterClient.tilAktørId(kandidat.getFnr());
+            int antallOppdaterteRader = kandidatRepository.leggTilAktørId(kandidat.getFnr(), aktørId);
+            log.info("Oppdaterte {} rader", antallOppdaterteRader);
+        });
     }
 }

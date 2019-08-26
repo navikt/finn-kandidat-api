@@ -60,8 +60,8 @@ public class KandidatServiceTest {
 
     @Test
     public void hentKandidater__skal_returnere_kandidater() {
-        Kandidat kandidat1 = enKandidat("1234567890");
-        Kandidat kandidat2 = enKandidat("2345678901");
+        Kandidat kandidat1 = enKandidat("1000000000001");
+        Kandidat kandidat2 = enKandidat("1000000000002");
         when(repository.hentKandidater()).thenReturn(List.of(kandidat1, kandidat2));
 
         List<Kandidat> hentedeKandidater = kandidatService.hentKandidater();
@@ -124,65 +124,96 @@ public class KandidatServiceTest {
     }
 
     @Test
-    public void slettKandidat_skal_slette_kandidat_med_riktig_fnr_veilder_og_tidspunkt() {
-        String fnr = "12345678910";
+    public void slettKandidat_skal_slette_kandidat_med_riktig_aktør_id_veilder_og_tidspunkt() {
+        String aktørId = "1000000000001";
         Veileder veileder = enVeileder();
         LocalDateTime datetime = LocalDateTime.now();
         when(dateProvider.now()).thenReturn(datetime);
 
-        kandidatService.slettKandidat(fnr, veileder);
+        kandidatService.slettKandidat(aktørId, veileder);
 
-        verify(repository).slettKandidat(fnr, veileder, datetime);
+        verify(repository).slettKandidat(aktørId, veileder, datetime);
     }
 
     @Test
     public void slettKandidat_skal_publisere_KandidatSlettet_event() {
-        String fnr = "12345678910";
+        String aktørId = "1000000000001";
         Veileder veileder = enVeileder();
         LocalDateTime datetime = LocalDateTime.now();
 
         when(dateProvider.now()).thenReturn(datetime);
         Optional<Integer> slettetKey = Optional.of(4);
-        when(repository.slettKandidat(fnr, veileder, datetime)).thenReturn(slettetKey);
+        when(repository.slettKandidat(aktørId, veileder, datetime)).thenReturn(slettetKey);
 
-        kandidatService.slettKandidat(fnr, veileder);
+        kandidatService.slettKandidat(aktørId, veileder);
 
-        verify(eventPublisher).publishEvent(new KandidatSlettet(slettetKey.get(), fnr, Brukertype.VEILEDER, datetime));
+        verify(eventPublisher).publishEvent(new KandidatSlettet(slettetKey.get(), aktørId, Brukertype.VEILEDER, datetime));
     }
 
     @Test
     public void slettKandidat_skal_returnere_id() {
-        String fnr = "12345678910";
+        String aktørId = "1000000000001";
         Veileder veileder = enVeileder();
 
-        when(repository.slettKandidat(eq(fnr), eq(veileder), any())).thenReturn(Optional.of(4));
+        when(repository.slettKandidat(eq(aktørId), eq(veileder), any())).thenReturn(Optional.of(4));
 
-        assertThat(kandidatService.slettKandidat(fnr, veileder).get()).isEqualTo(4);
+        assertThat(kandidatService.slettKandidat(aktørId, veileder).get()).isEqualTo(4);
     }
 
     @Test
     public void behandleOppfølgingAvsluttet__skal_slette_kandidat() {
-        String aktørId = "1856024171652";
-        String fnr = "01065500791";
-        when(aktørRegisterClient.tilFnr(aktørId)).thenReturn(fnr);
+        String aktørId = "1000000000001";
 
         kandidatService.behandleOppfølgingAvsluttet(new OppfølgingAvsluttetMelding(aktørId, new Date()));
 
-        verify(repository).slettKandidatSomMaskinbruker(fnr, dateProvider.now());
+        verify(repository).slettKandidatSomMaskinbruker(aktørId, dateProvider.now());
     }
 
     @Test
     public void behandleOppfølgingAvsluttet__skal_publisere_KandidatSlettet_event() {
         String aktørId = "1856024171652";
-        String fnr = "01065500791";
         LocalDateTime datetime = LocalDateTime.now();
-        when(aktørRegisterClient.tilFnr(aktørId)).thenReturn(fnr);
         when(dateProvider.now()).thenReturn(datetime);
         Optional<Integer> slettetKey = Optional.of(4);
-        when(repository.slettKandidatSomMaskinbruker(fnr, datetime)).thenReturn(slettetKey);
+        when(repository.slettKandidatSomMaskinbruker(aktørId, datetime)).thenReturn(slettetKey);
 
         kandidatService.behandleOppfølgingAvsluttet(new OppfølgingAvsluttetMelding(aktørId, new Date()));
 
-        verify(eventPublisher).publishEvent(new KandidatSlettet(slettetKey.get(), fnr, Brukertype.SYSTEM, datetime));
+        verify(eventPublisher).publishEvent(new KandidatSlettet(slettetKey.get(), aktørId, Brukertype.SYSTEM, datetime));
     }
+
+    @Test
+    public void hentAktørId__skal_returnere_aktørId() {
+        String fnr = "12345678901";
+        String aktørId = "1856024171652";
+        when(aktørRegisterClient.tilAktørId(fnr)).thenReturn(aktørId);
+
+        String hentetAktørId = kandidatService.hentAktørId(fnr);
+        assertThat(hentetAktørId).isEqualTo(aktørId);
+    }
+
+    @Test(expected = FinnKandidatException.class)
+    public void hentAktørId__skal_kaste_exception_hvis_aktørregister_ikke_finner_aktørId() {
+        String fnr = "12345678901";
+        when(aktørRegisterClient.tilAktørId(fnr)).thenThrow(FinnKandidatException.class);
+        kandidatService.hentAktørId(fnr);
+    }
+
+    @Test
+    public void hentFnr__skal_returnere_fnr() {
+        String aktørId = "1856024171652";
+        String fnr = "12345678901";
+        when(aktørRegisterClient.tilFnr(aktørId)).thenReturn(fnr);
+
+        String hentetFnr = kandidatService.hentFnr(aktørId);
+        assertThat(hentetFnr).isEqualTo(fnr);
+    }
+
+    @Test(expected = FinnKandidatException.class)
+    public void hentFnr__skal_kaste_exception_hvis_aktørregister_ikke_finner_fnr() {
+        String aktørId = "1856024171652";
+        when(aktørRegisterClient.tilFnr(aktørId)).thenThrow(FinnKandidatException.class);
+        kandidatService.hentFnr(aktørId);
+    }
+
 }

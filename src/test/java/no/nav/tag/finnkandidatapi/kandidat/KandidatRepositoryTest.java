@@ -71,7 +71,7 @@ public class KandidatRepositoryTest {
 
         repository.lagreKandidat(kandidat1);
         repository.lagreKandidat(kandidat2);
-        Kandidat sisteKandidat = repository.hentNyesteKandidat(kandidat1.getFnr()).get();
+        Kandidat sisteKandidat = repository.hentNyesteKandidat(kandidat1.getAktørId()).get();
 
         assertThat(sisteKandidat).isEqualToIgnoringGivenFields(kandidat2, "id");
     }
@@ -81,9 +81,9 @@ public class KandidatRepositoryTest {
         Kandidat kandidat = enKandidat();
 
         repository.lagreKandidat(kandidat);
-        repository.slettKandidat(kandidat.getFnr(), enVeileder(), now());
+        repository.slettKandidat(kandidat.getAktørId(), enVeileder(), now());
 
-        assertThat(repository.hentNyesteKandidat(kandidat.getFnr())).isEmpty();
+        assertThat(repository.hentNyesteKandidat(kandidat.getAktørId())).isEmpty();
     }
 
     @Test
@@ -100,9 +100,9 @@ public class KandidatRepositoryTest {
 
     @Test
     public void hentKandidater__skal_returnere_lagrede_kandidater() {
-        Kandidat kandidat1 = enKandidat("01234567890");
-        Kandidat kandidat2 = enKandidat("12345678901");
-        Kandidat kandidat3 = enKandidat("23456789012");
+        Kandidat kandidat1 = enKandidat("1000000000001");
+        Kandidat kandidat2 = enKandidat("1000000000002");
+        Kandidat kandidat3 = enKandidat("1000000000003");
         repository.lagreKandidat(kandidat1);
         repository.lagreKandidat(kandidat2);
         repository.lagreKandidat(kandidat3);
@@ -116,17 +116,17 @@ public class KandidatRepositoryTest {
     }
 
     @Test
-    public void hentKandidater__skal_returnere_siste_kandidat_etter_lagret_flere_kandidater_med_samme_fnr() {
+    public void hentKandidater__skal_returnere_siste_kandidat_etter_lagret_flere_kandidater_med_samme_aktør_id() {
         Kandidat kandidat = kandidatBuilder()
-                .fnr("01234567890")
+                .aktørId("1000000000001")
                 .sistEndret(now())
                 .build();
         Kandidat nyereKandidat = kandidatBuilder()
-                .fnr("01234567890")
+                .aktørId("1000000000001")
                 .sistEndret(now().plusMinutes(1))
                 .build();
         Kandidat sisteKandidat = kandidatBuilder()
-                .fnr("01234567890")
+                .aktørId("1000000000001")
                 .sistEndret(now().plusMinutes(2))
                 .build();
 
@@ -143,12 +143,12 @@ public class KandidatRepositoryTest {
     @Test
     public void hentKandidater__skal_returnere_kandidater_sortert_på_sist_endret_tidspunkt() {
         Kandidat kandidat1 = kandidatBuilder()
-                .fnr("1234567890")
+                .aktørId("1000000000001")
                 .sistEndret(now().plusMinutes(1))
                 .build();
 
         Kandidat kandidat2 = kandidatBuilder()
-                .fnr("2345678901")
+                .aktørId("1000000000002")
                 .sistEndret(now())
                 .build();
 
@@ -169,12 +169,12 @@ public class KandidatRepositoryTest {
 
     @Test
     public void hentKandidater__skal_ikke_returnere_slettede_kandidater() {
-        Kandidat kandidat1 = enKandidat("12345678910");
-        Kandidat kandidat2 = enKandidat("10987654321");
+        Kandidat kandidat1 = enKandidat("1000000000001");
+        Kandidat kandidat2 = enKandidat("1000000000002");
 
         repository.lagreKandidat(kandidat1);
         repository.lagreKandidat(kandidat2);
-        repository.slettKandidat(kandidat1.getFnr(), enVeileder(), now());
+        repository.slettKandidat(kandidat1.getAktørId(), enVeileder(), now());
 
         List<Kandidat> kandidater = repository.hentKandidater();
 
@@ -200,10 +200,10 @@ public class KandidatRepositoryTest {
     }
 
     @Test
-    public void slettKandidat__skal_returnere_empty_hvis_fnr_ikke_finnes() {
-        String uregistrertFnr = "12345678901";
+    public void slettKandidat__skal_returnere_empty_hvis_aktør_id_ikke_finnes() {
+        String uregistrertAktørId = "1000000000001";
 
-        Optional<Integer> id = repository.slettKandidat(uregistrertFnr, enVeileder(), now());
+        Optional<Integer> id = repository.slettKandidat(uregistrertAktørId, enVeileder(), now());
         assertThat(id).isEmpty();
     }
 
@@ -211,9 +211,9 @@ public class KandidatRepositoryTest {
     public void slettKandidat__skal_returnere_empty_hvis_kandidat_allerede_er_slettet() {
         Kandidat kandidat = enKandidat();
         repository.lagreKandidat(kandidat);
-        repository.slettKandidat(kandidat.getFnr(), enVeileder(), now());
+        repository.slettKandidat(kandidat.getAktørId(), enVeileder(), now());
 
-        Optional<Integer> id = repository.slettKandidat(kandidat.getFnr(), enVeileder(), now());
+        Optional<Integer> id = repository.slettKandidat(kandidat.getAktørId(), enVeileder(), now());
         assertThat(id).isEmpty();
     }
 }

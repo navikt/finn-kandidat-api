@@ -47,40 +47,40 @@ public class VeilarbabacClientTest {
     @Test
     public void harSkrivetilgangTilKandidat__skal_returnere_false_hvis_deny() {
         mockReturverdiFraVeilarbabac(DENY_RESPONSE);
-        assertThat(veilarbabacClient.sjekkTilgang(enVeileder(), "12345678910", TilgangskontrollAction.update)).isFalse();
+        assertThat(veilarbabacClient.sjekkTilgang(enVeileder(), "1000000000001", TilgangskontrollAction.update)).isFalse();
     }
 
     @Test
     public void harSkrivetilgangTilKandidat__skal_returnere_true_hvis_permit() {
         mockReturverdiFraVeilarbabac(PERMIT_RESPONSE);
-        assertThat(veilarbabacClient.sjekkTilgang(enVeileder(), "12345678910", TilgangskontrollAction.update)).isTrue();
+        assertThat(veilarbabacClient.sjekkTilgang(enVeileder(), "1000000000001", TilgangskontrollAction.update)).isTrue();
     }
 
     @Test(expected = FinnKandidatException.class)
     public void harSkrivetilgangTilKandidat__skal_kaste_exception_hvis_ikke_allow_eller_deny() {
         mockReturverdiFraVeilarbabac("blabla");
-        veilarbabacClient.sjekkTilgang(enVeileder(), "12345678910", TilgangskontrollAction.update);
+        veilarbabacClient.sjekkTilgang(enVeileder(), "1000000000001", TilgangskontrollAction.update);
     }
 
     @Test
     public void harSkrivetilgangTilKandidat__skal_gjøre_kall_med_riktige_parametre() {
         STSToken stsToken = etStsToken();
-        String fnr = "12345678910";
+        String aktørId = "1000000000001";
 
         Veileder veileder = enVeileder();
 
         when(stsClient.hentSTSToken()).thenReturn(stsToken);
 
-        veilarbabacClient.sjekkTilgang(enVeileder(), fnr, TilgangskontrollAction.update);
+        veilarbabacClient.sjekkTilgang(enVeileder(), aktørId, TilgangskontrollAction.update);
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("subject", veileder.getNavIdent());
         headers.set("subjectType", "InternBruker");
-        headers.set("AUTHORIZATION", "Bearer " + stsToken.getAccessToken());
+        headers.set("Authorization", "Bearer " + stsToken.getAccessToken());
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         verify(restTemplate).exchange(
-                eq("https://test.no/person?fnr=" + fnr + "&action=update"),
+                eq("https://test.no/person?aktorId=" + aktørId + "&action=update"),
                 eq(HttpMethod.GET),
                 eq(new HttpEntity(headers)),
                 eq(String.class)

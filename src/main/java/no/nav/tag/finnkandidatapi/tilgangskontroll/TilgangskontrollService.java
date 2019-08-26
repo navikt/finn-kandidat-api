@@ -16,28 +16,28 @@ public class TilgangskontrollService {
         this.veilarbabacClient = veilarbabacClient;
     }
 
-    public boolean harLesetilgangTilKandidat(String fnr) {
-        return hentTilgang(fnr, TilgangskontrollAction.read);
+    public boolean harLesetilgangTilKandidat(String aktørId) {
+        return hentTilgang(aktørId, TilgangskontrollAction.read);
     }
 
-    public void sjekkLesetilgangTilKandidat(String fnr) {
-        sjekkTilgang(fnr, TilgangskontrollAction.read);
+    public void sjekkLesetilgangTilKandidat(String aktørId) {
+        sjekkTilgang(aktørId, TilgangskontrollAction.read);
     }
 
-    public void sjekkSkrivetilgangTilKandidat(String fnr) {
-        sjekkTilgang(fnr, TilgangskontrollAction.update);
+    public void sjekkSkrivetilgangTilKandidat(String aktørId) {
+        sjekkTilgang(aktørId, TilgangskontrollAction.update);
     }
 
-    private void sjekkTilgang(String fnr, TilgangskontrollAction action) {
-        if (!hentTilgang(fnr, action)) {
+    private void sjekkTilgang(String aktørId, TilgangskontrollAction action) {
+        if (!hentTilgang(aktørId, action)) {
             throw new TilgangskontrollException("Veileder har ikke følgende tilgang for kandidat: " + action);
         }
     }
 
-    private boolean hentTilgang(String fnr, TilgangskontrollAction action) {
+    private boolean hentTilgang(String aktørId, TilgangskontrollAction action) {
         return veilarbabacClient.sjekkTilgang(
                 hentInnloggetVeileder(),
-                fnr,
+                aktørId,
                 action
         );
     }

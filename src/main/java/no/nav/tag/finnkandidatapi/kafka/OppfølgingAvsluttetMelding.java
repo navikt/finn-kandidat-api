@@ -1,6 +1,7 @@
 package no.nav.tag.finnkandidatapi.kafka;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import java.util.Date;
 
@@ -12,6 +13,7 @@ import java.util.Date;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class OppfølgingAvsluttetMelding {
 
-    private String aktorId;
+    @JsonProperty("aktorId")
+    private String aktørId;
     private Date sluttdato;
 }

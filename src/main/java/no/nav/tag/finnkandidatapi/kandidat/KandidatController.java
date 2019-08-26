@@ -75,6 +75,9 @@ public class KandidatController {
         tilgangskontroll.sjekkSkrivetilgangTilKandidat(kandidat.getAktørId());
 
         String fnr = kandidatService.hentFnr(kandidat.getAktørId());
+        if (!fnr.equals(kandidat.getFnr())) {
+            log.warn("Fnr fra frontend og fnr fra aktørregister er forskjellig");
+        }
         kandidat.setFnr(fnr);
 
         Veileder veileder = tilgangskontroll.hentInnloggetVeileder();

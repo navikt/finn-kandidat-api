@@ -82,14 +82,4 @@ public class KandidatService {
 
         return optionalId;
     }
-
-    public void leggTilAktørIdPåKandidater() {
-        log.info("Legger til aktørId på kandidater");
-        List<Kandidat> kandidater = kandidatRepository.hentKandidatRader();
-        kandidater.forEach(kandidat -> {
-            String aktørId = aktørRegisterClient.tilAktørId(kandidat.getFnr());
-            int antallOppdaterteRader = kandidatRepository.leggTilAktørId(kandidat.getFnr(), aktørId);
-            log.info("Oppdaterte {} rader", antallOppdaterteRader);
-        });
-    }
 }

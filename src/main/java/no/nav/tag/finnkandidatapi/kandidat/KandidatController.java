@@ -25,14 +25,6 @@ public class KandidatController {
     private final KandidatService kandidatService;
     private final TilgangskontrollService tilgangskontroll;
 
-    @GetMapping("/innloggetVeileder")
-    public ResponseEntity<String> hentInnloggetVeileder() {
-        loggBrukAvEndepunkt("innloggetVeileder");
-        Veileder veileder = tilgangskontroll.hentInnloggetVeileder();
-
-        return ResponseEntity.ok(veileder.getNavIdent());
-    }
-
     @GetMapping("/{aktørId}")
     public ResponseEntity<Kandidat> hentKandidat(@PathVariable("aktørId") String aktørId) {
         loggBrukAvEndepunkt("hentKandidat");

@@ -285,16 +285,6 @@ public class KandidatControllerTest {
         assertThat(respons.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 
-    @Test
-    public void hentInnloggetVeileder__skal_returnere_innlogget_veileder_sin_navident() {
-        Veileder veileder = enVeileder();
-        værInnloggetSom(veileder);
-
-        ResponseEntity respons = controller.hentInnloggetVeileder();
-        assertThat(respons.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(respons.getBody()).isEqualTo(veileder.getNavIdent());
-    }
-
     private void værInnloggetSom(Veileder veileder) {
         when(tilgangskontroll.hentInnloggetVeileder()).thenReturn(veileder);
     }

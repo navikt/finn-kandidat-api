@@ -1,4 +1,4 @@
-package no.nav.tag.finnkandidatapi.aktørregister;
+package no.nav.tag.finnkandidatapi.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

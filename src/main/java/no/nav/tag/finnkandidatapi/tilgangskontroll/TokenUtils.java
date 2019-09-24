@@ -4,6 +4,7 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.security.oidc.context.OIDCClaims;
 import no.nav.security.oidc.context.OIDCRequestContextHolder;
+import no.nav.security.oidc.context.TokenContext;
 import no.nav.tag.finnkandidatapi.kandidat.Veileder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -30,6 +31,11 @@ public class TokenUtils {
             throw new TilgangskontrollException("Bruker er ikke innlogget.");
         }
     }
+
+    public TokenContext getTokenForInnloggetBruker() {
+        return contextHolder.getOIDCValidationContext().getToken(ISSUER_ISSO);
+    }
+
 
     private boolean erInnloggetNavAnsattMedAzureADToken() {
         Optional<String> navIdent = hentClaimSet(ISSUER_ISSO)

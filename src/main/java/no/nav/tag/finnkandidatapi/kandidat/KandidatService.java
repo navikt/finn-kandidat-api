@@ -8,6 +8,8 @@ import no.nav.tag.finnkandidatapi.DateProvider;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatEndret;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatOpprettet;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatSlettet;
+import no.nav.tag.finnkandidatapi.veilarbarena.Personinfo;
+import no.nav.tag.finnkandidatapi.veilarbarena.VeilarbArenaClient;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +26,7 @@ public class KandidatService {
     private final ApplicationEventPublisher eventPublisher;
     private final AktørRegisterClient aktørRegisterClient;
     private final DateProvider dateProvider;
+    private VeilarbArenaClient veilarbarenaClient;
 
     public Optional<Kandidat> hentNyesteKandidat(String aktørId) {
         return kandidatRepository.hentNyesteKandidat(aktørId);
@@ -34,6 +37,10 @@ public class KandidatService {
     }
 
     public Optional<Kandidat> opprettKandidat(Kandidat kandidat, Veileder innloggetVeileder) {
+        // TODO: Hent personinfo, trekk ut nav-kontor, lagre nav-kontor sammen med kandidat
+        Personinfo personinfo = veilarbarenaClient.hentPersoninfo(kandidat.getFnr());
+        kandidat.setNavKontor(personinfo.getNav_kontor());
+
         Optional<Kandidat> lagretKandidat = oppdaterSistEndretFelterOgLagreKandidat(kandidat, innloggetVeileder);
 
         lagretKandidat.ifPresent(value -> {

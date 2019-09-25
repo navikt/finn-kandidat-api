@@ -27,6 +27,7 @@ public class KandidatRepository {
     static final String ARBEIDSMILJØ_BEHOV = "arbeidsmiljø_behov";
     static final String GRUNNLEGGENDE_BEHOV = "grunnleggende_behov";
     static final String SLETTET = "slettet";
+    static final String NAV_KONTOR = "nav_kontor";
 
     private JdbcTemplate jdbcTemplate;
     private SimpleJdbcInsert jdbcInsert;
@@ -125,6 +126,7 @@ public class KandidatRepository {
         parameters.put(FYSISKE_BEHOV, enumSetTilString(kandidat.getFysiskeBehov()));
         parameters.put(ARBEIDSMILJØ_BEHOV, enumSetTilString(kandidat.getArbeidsmiljøBehov()));
         parameters.put(GRUNNLEGGENDE_BEHOV, enumSetTilString(kandidat.getGrunnleggendeBehov()));
+        parameters.put(NAV_KONTOR, kandidat.getNavKontor());
         parameters.put(SLETTET, false);
         return parameters;
     }

@@ -5,6 +5,7 @@ import no.nav.tag.finnkandidatapi.aktørregister.AktørRegisterClient;
 import no.nav.tag.finnkandidatapi.kafka.oppfølgingAvsluttet.OppfølgingAvsluttetMelding;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatEndret;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatOpprettet;
+import no.nav.tag.finnkandidatapi.veilarbarena.VeilarbArenaClient;
 import org.junit.Before;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatSlettet;
 import org.junit.Test;
@@ -42,9 +43,12 @@ public class KandidatServiceTest {
     @Mock
     private AktørRegisterClient aktørRegisterClient;
 
+    @Mock
+    private VeilarbArenaClient veilarbArenaClient;
+
     @Before
     public void setUp() {
-        kandidatService = new KandidatService(repository, eventPublisher, aktørRegisterClient, dateProvider);
+        kandidatService = new KandidatService(repository, eventPublisher, aktørRegisterClient, dateProvider, veilarbArenaClient);
     }
 
     @Test
@@ -77,6 +81,7 @@ public class KandidatServiceTest {
         when(dateProvider.now()).thenReturn(datetime);
         when(repository.lagreKandidat(any(Kandidat.class))).thenReturn(1);
         when(repository.hentKandidat(1)).thenReturn(Optional.of(kandidat));
+        when(veilarbArenaClient.hentPersoninfo(kandidat.getFnr())).thenReturn(personinfo());
 
         kandidatService.opprettKandidat(kandidat, veileder);
 
@@ -87,11 +92,13 @@ public class KandidatServiceTest {
     @Test
     public void opprettKandidat__skal_publisere_KandidatOpprettet_event() {
         Kandidat kandidat = enKandidat();
-        when(repository.lagreKandidat(kandidat)).thenReturn(1);
-        when(repository.hentKandidat(1)).thenReturn(Optional.of(kandidat));
+        Integer kandidatId = 1;
+
+        when(repository.lagreKandidat(kandidat)).thenReturn(kandidatId);
+        when(repository.hentKandidat(kandidatId)).thenReturn(Optional.of(kandidat));
+        when(veilarbArenaClient.hentPersoninfo(kandidat.getFnr())).thenReturn(personinfo());
 
         kandidatService.opprettKandidat(kandidat, enVeileder());
-
         verify(eventPublisher).publishEvent(new KandidatOpprettet(kandidat));
     }
 

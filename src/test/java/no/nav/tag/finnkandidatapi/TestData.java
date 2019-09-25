@@ -8,6 +8,7 @@ import no.nav.tag.finnkandidatapi.logging.LoggEvent;
 import no.nav.tag.finnkandidatapi.tilbakemelding.Behov;
 import no.nav.tag.finnkandidatapi.tilbakemelding.Tilbakemelding;
 import no.nav.tag.finnkandidatapi.sts.STSToken;
+import no.nav.tag.finnkandidatapi.veilarbarena.Personinfo;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -34,7 +35,16 @@ public class TestData {
                 .fysiskeBehov(Set.of(ARBEIDSSTILLING, ERGONOMI))
                 .arbeidsmiljøBehov(Set.of(MENTOR, TILRETTELAGTE_ARBEIDSOPPGAVER))
                 .grunnleggendeBehov(Set.of(SNAKKE_NORSK, SKRIVE_NORSK, LESE_NORSK))
+                .navKontor(etNavKontor())
                 .build();
+    }
+
+    public static String etNavKontor() {
+        return "0325";
+    }
+
+    public static Personinfo personinfo() {
+        return Personinfo.builder().nav_kontor(etNavKontor()).build();
     }
 
     public static Kandidat enKandidat(String aktørId) {

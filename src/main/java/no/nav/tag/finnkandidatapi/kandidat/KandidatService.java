@@ -26,7 +26,7 @@ public class KandidatService {
     private final ApplicationEventPublisher eventPublisher;
     private final AktørRegisterClient aktørRegisterClient;
     private final DateProvider dateProvider;
-    private VeilarbArenaClient veilarbarenaClient;
+    private final VeilarbArenaClient veilarbarenaClient;
 
     public Optional<Kandidat> hentNyesteKandidat(String aktørId) {
         return kandidatRepository.hentNyesteKandidat(aktørId);

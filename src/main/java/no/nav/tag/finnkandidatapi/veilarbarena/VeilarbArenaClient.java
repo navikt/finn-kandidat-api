@@ -1,7 +1,7 @@
 package no.nav.tag.finnkandidatapi.veilarbarena;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.tag.finnkandidatapi.tilgangskontroll.TokenUtils;
+import no.nav.tag.finnkandidatapi.sts.STSClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -14,14 +14,14 @@ import org.springframework.web.util.UriComponentsBuilder;
 @Slf4j
 @Component
 public class VeilarbArenaClient {
-    private final TokenUtils tokenUtils;
     private final RestTemplate restTemplate;
     private final String veilarbarenaUrl;
+    private final STSClient stsClient;
 
-    public VeilarbArenaClient(TokenUtils tokenUtils, RestTemplate restTemplate, @Value("${veilarbarena.url}") String veilarbarenaUrl) {
-        this.tokenUtils = tokenUtils;
+    public VeilarbArenaClient(RestTemplate restTemplate, @Value("${veilarbarena.url}") String veilarbarenaUrl, STSClient stsClient) {
         this.restTemplate = restTemplate;
         this.veilarbarenaUrl = veilarbarenaUrl;
+        this.stsClient = stsClient;
     }
 
     public Personinfo hentPersoninfo(String fnr) {
@@ -42,9 +42,11 @@ public class VeilarbArenaClient {
 
     private HttpEntity httpHeadere() {
         HttpHeaders headers = new HttpHeaders();
-
-        // TODO: Cookie eller bearer auth?
-        headers.setBearerAuth(tokenUtils.getTokenForInnloggetBruker().getIdToken());
+        headers.setBearerAuth(hentOidcTokenTilSystembruker());
         return new HttpEntity<>(headers);
+    }
+
+    private String hentOidcTokenTilSystembruker() {
+        return stsClient.hentSTSToken().getAccessToken();
     }
 }

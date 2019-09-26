@@ -32,11 +32,6 @@ public class TokenUtils {
         }
     }
 
-    public TokenContext getTokenForInnloggetBruker() {
-        return contextHolder.getOIDCValidationContext().getToken(ISSUER_ISSO);
-    }
-
-
     private boolean erInnloggetNavAnsattMedAzureADToken() {
         Optional<String> navIdent = hentClaimSet(ISSUER_ISSO)
                 .map(jwtClaimsSet -> (String) jwtClaimsSet.getClaims().get("NAVident"))

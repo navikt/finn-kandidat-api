@@ -37,9 +37,12 @@ public class KandidatService {
 
     public Optional<Kandidat> opprettKandidat(Kandidat kandidat, Veileder innloggetVeileder) {
         Optional<Kandidat> lagretKandidat = oppdaterSistEndretFelterOgLagreKandidat(kandidat, innloggetVeileder);
-        lagretKandidat.ifPresent(value -> eventPublisher.publishEvent(new KandidatOpprettet(value)));
 
-        kandidatEndretProducer.kandidatEndret(kandidat.getAktørId(), true);
+        lagretKandidat.ifPresent(value -> {
+            eventPublisher.publishEvent(new KandidatOpprettet(value));
+            kandidatEndretProducer.kandidatEndret(kandidat.getAktørId(), true);
+        });
+
         return lagretKandidat;
     }
 

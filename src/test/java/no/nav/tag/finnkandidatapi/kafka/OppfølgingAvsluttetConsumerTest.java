@@ -1,4 +1,4 @@
-package no.nav.tag.finnkandidatapi;
+package no.nav.tag.finnkandidatapi.kafka;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -139,5 +139,7 @@ public class OppfølgingAvsluttetConsumerTest {
         if (container != null) {
             container.stop();
         }
+
+        embeddedKafka.destroy();
     }
 }

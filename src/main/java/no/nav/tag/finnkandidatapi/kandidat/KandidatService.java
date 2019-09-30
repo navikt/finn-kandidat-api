@@ -63,6 +63,7 @@ public class KandidatService {
     public void behandleOppfølgingAvsluttet(OppfølgingAvsluttetMelding oppfølgingAvsluttetMelding) {
         Optional<Integer> slettetKey = kandidatRepository.slettKandidatSomMaskinbruker(oppfølgingAvsluttetMelding.getAktørId(), dateProvider.now());
         if (slettetKey.isPresent()) {
+            kandidatEndretProducer.kandidatEndret(oppfølgingAvsluttetMelding.getAktørId(), false);
             eventPublisher.publishEvent(new KandidatSlettet(slettetKey.get(), oppfølgingAvsluttetMelding.getAktørId(), Brukertype.SYSTEM, dateProvider.now()));
             log.info("Slettet kandidat med id {} pga. avsluttet oppfølging", slettetKey.get());
         }
@@ -80,11 +81,12 @@ public class KandidatService {
         LocalDateTime slettetTidspunkt = dateProvider.now();
         Optional<Integer> optionalId = kandidatRepository.slettKandidat(aktørId, innloggetVeileder, slettetTidspunkt);
 
-        optionalId.ifPresent(id -> eventPublisher.publishEvent(
-                new KandidatSlettet(id, aktørId, Brukertype.VEILEDER, slettetTidspunkt))
-        );
-
-        kandidatEndretProducer.kandidatEndret(aktørId, false);
+        optionalId.ifPresent(id -> {
+            kandidatEndretProducer.kandidatEndret(aktørId, false);
+            eventPublisher.publishEvent(
+                    new KandidatSlettet(id, aktørId, Brukertype.VEILEDER, slettetTidspunkt)
+            );
+        });
 
         return optionalId;
     }

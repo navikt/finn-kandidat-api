@@ -45,4 +45,14 @@ public class KafkaConfig {
     public ConsumerFactory<String, String> consumerFactory(KafkaProperties properties) {
         return new DefaultKafkaConsumerFactory<>(properties.buildConsumerProperties());
     }
+
+    @Bean // TODO: Støtter kafka-events i det hele tatt booleans?
+    public KafkaTemplate<String, Boolean> kafkaTemplate(ProducerFactory<String, Boolean> producerFactory) {
+        return new KafkaTemplate<>(producerFactory);
+    }
+
+    @Bean
+    public ProducerFactory<String, Boolean> producerFactory(KafkaProperties properties) {
+        return new DefaultKafkaProducerFactory<>(properties.buildProducerProperties());
+    }
 }

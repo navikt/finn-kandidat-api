@@ -10,10 +10,18 @@ spring:
   kafka:
     bootstrap-servers: ${spring.embedded.kafka.brokers}
     client-id: finn-kandidat-api
+    properties:
+      schema.registry.url: http://en.url
+#     TODO: trengs denne?
+      specific.avro.reader: true
     consumer:
       group-id: finn-kandidat
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
+#      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
 
 kanidat-endret.topic: aapen-tag-kandidatEndret-v1-default
 
@@ -59,9 +67,6 @@ spring:
       ssl.truststore:
         location: ${javax.net.ssl.trustStore}
         password: ${javax.net.ssl.trustStorePassword}
-      producer:
-        key-serializer: org.apache.kafka.common.serialization.StringSerializer
-        value-serializer: org.apache.kafka.common.serialization.StringSerializer
 
 oppfolging-avsluttet.topic: aapen-fo-endringPaaAvsluttOppfolging-v1-q0
 
@@ -98,9 +103,6 @@ spring:
       ssl.truststore:
         location: ${javax.net.ssl.trustStore}
         password: ${javax.net.ssl.trustStorePassword}
-      producer:
-        key-serializer: org.apache.kafka.common.serialization.StringSerializer
-        value-serializer: org.apache.kafka.common.serialization.StringSerializer
 
 oppfolging-avsluttet.topic: aapen-fo-endringPaaAvsluttOppfolging-v1-p
 

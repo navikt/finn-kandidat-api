@@ -10,21 +10,22 @@ import java.util.concurrent.ExecutionException;
 @Component
 @Slf4j
 public class  KandidatEndretProducer {
-    private KafkaTemplate<String, String> kafkaTemplate;
+    private KafkaTemplate<String, InkluderingsKandidat> kafkaTemplate;
     private String topic;
 
-    public KandidatEndretProducer(KafkaTemplate<String, String> kafkaTemplate,
+    public KandidatEndretProducer(KafkaTemplate<String, InkluderingsKandidat> kafkaTemplate,
                                   @Value("${kanidat-endret.topic}") String topic) {
         this.kafkaTemplate = kafkaTemplate;
         this.topic = topic;
     }
 
     public void kandidatEndret(String aktørId, Boolean harTilretteleggingsbehov) {
+
         try {
             kafkaTemplate.send(
                     topic,
                     aktørId,
-                    harTilretteleggingsbehov.toString()
+                    new InkluderingsKandidat(aktørId, harTilretteleggingsbehov)
             ).get();
 
             log.info("Kandidats behov for tilrettelegging sendt på Kafka-topic");

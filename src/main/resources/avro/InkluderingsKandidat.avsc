@@ -1,0 +1,15 @@
+{
+  "namespace": "no.nav.tag.finnkandidatapi.kafka",
+  "type": "record",
+  "name": "InkluderingsKandidat",
+  "fields": [
+    {
+      "name": "aktørId",
+      "type": "string"
+    },
+    {
+      "name": "harTilretteleggingsbehov",
+      "type": "boolean"
+    }
+  ]
+}

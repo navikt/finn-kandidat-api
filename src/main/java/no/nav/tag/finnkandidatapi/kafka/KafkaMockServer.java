@@ -21,6 +21,8 @@ public class KafkaMockServer implements DisposableBean {
         embeddedKafka.afterPropertiesSet();
     }
 
+    // TODO: Flytte schemating inn her også?
+
     @Override
     public void destroy() {
         log.info("Stopper embedded Kafka");

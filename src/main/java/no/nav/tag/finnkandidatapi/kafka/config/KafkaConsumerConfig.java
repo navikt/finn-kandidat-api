@@ -11,6 +11,7 @@ import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
 import org.springframework.kafka.listener.SeekToCurrentErrorHandler;
+import org.springframework.kafka.support.converter.MessagingMessageConverter;
 import org.springframework.retry.backoff.ExponentialBackOffPolicy;
 import org.springframework.retry.policy.AlwaysRetryPolicy;
 import org.springframework.retry.support.RetryTemplate;
@@ -20,10 +21,10 @@ import org.springframework.retry.support.RetryTemplate;
 public class KafkaConsumerConfig {
 
     @Bean
-    public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, String>> kafkaListenerContainerFactory(
-            ConsumerFactory<String, String> consumerFactory
+    public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer> kafkaListenerContainerFactory(
+            ConsumerFactory consumerFactory
     ) {
-        ConcurrentKafkaListenerContainerFactory<String, String> factory = configureFactory(consumerFactory);
+        ConcurrentKafkaListenerContainerFactory factory = configureFactory(consumerFactory);
         ExponentialBackOffPolicy backOffPolicy = configureBackOffPolicy();
         RetryTemplate retryTemplate = configureRetryTemplate(backOffPolicy);
 

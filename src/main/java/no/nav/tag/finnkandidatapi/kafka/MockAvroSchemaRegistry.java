@@ -31,7 +31,7 @@ class MockAvroSchemaRegistry {
      * the @EmbeddedKafka setup doesn't include a schema registry.
      * @return MockSchemaRegistryClient instance
      */
-    @Bean
+//    @Bean
     SchemaRegistryClient schemaRegistryClient() {
         return new MockSchemaRegistryClient();
     }
@@ -40,7 +40,7 @@ class MockAvroSchemaRegistry {
      * KafkaAvroSerializer that uses the MockSchemaRegistryClient
      * @return KafkaAvroSerializer instance
      */
-    @Bean
+//    @Bean
     KafkaAvroSerializer kafkaAvroSerializer(SchemaRegistryClient schemaRegistryClient) {
         return new KafkaAvroSerializer(schemaRegistryClient);
     }
@@ -51,7 +51,7 @@ class MockAvroSchemaRegistry {
      * is set. Without this, the consumer will receive GenericData records.
      * @return KafkaAvroDeserializer instance
      */
-    @Bean
+//    @Bean
     KafkaAvroDeserializer kafkaAvroDeserializer(
             SchemaRegistryClient schemaRegistryClient,
             KafkaProperties properties
@@ -65,8 +65,8 @@ class MockAvroSchemaRegistry {
      * is used rather than trying to reach out via HTTP to a schema registry
      * @return DefaultKafkaProducerFactory instance
      */
-    @Primary
-    @Bean
+//    @Primary
+//    @Bean
     DefaultKafkaProducerFactory producerFactory2(
             KafkaAvroSerializer kafkaAvroSerializer,
             KafkaProperties properties
@@ -85,8 +85,8 @@ class MockAvroSchemaRegistry {
      * @return DefaultKafkaConsumerFactory instance
      */
     // TODO: endre navn
-    @Primary
-    @Bean
+//    @Primary
+//    @Bean
     DefaultKafkaConsumerFactory consumerFactory2(
             KafkaAvroDeserializer kafkaAvroDeserializer,
             KafkaProperties properties
@@ -105,7 +105,7 @@ class MockAvroSchemaRegistry {
      * @return ConcurrentKafkaListenerContainerFactory instance
      */
     // TODO: Fikse navn
-    @Bean
+//    @Bean
     ConcurrentKafkaListenerContainerFactory kafkaListenerContainerFactory2(
             ConsumerFactory consumerFactory
     ) {

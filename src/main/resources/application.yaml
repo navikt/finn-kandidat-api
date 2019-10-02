@@ -17,8 +17,9 @@ spring:
     consumer:
       group-id: finn-kandidat
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
-#      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+#      TODO: denne skal være String for en topic og Avro for en annen
+#      value-deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: io.confluent.kafka.serializers.KafkaAvroSerializer

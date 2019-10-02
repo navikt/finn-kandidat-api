@@ -1,5 +1,6 @@
 package no.nav.tag.finnkandidatapi.kafka.config;
 
+import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import no.nav.tag.finnkandidatapi.kafka.InkluderingsKandidat;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.context.annotation.Bean;
@@ -13,10 +14,9 @@ import org.springframework.kafka.core.ProducerFactory;
 @EnableKafka
 public class KafkaProducerConfig {
 
+//    @Bean
     // TODO: Fiks bean her
-    @Bean
     public ProducerFactory<String, InkluderingsKandidat> producerFactory(KafkaProperties properties) {
-        // Set deserializer og serializer her og ikke i config hvor det alltid blir lastet?
         return new DefaultKafkaProducerFactory<>(properties.buildProducerProperties());
     }
 

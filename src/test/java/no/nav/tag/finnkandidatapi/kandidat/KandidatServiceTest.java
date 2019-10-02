@@ -3,7 +3,7 @@ package no.nav.tag.finnkandidatapi.kandidat;
 import no.nav.tag.finnkandidatapi.DateProvider;
 import no.nav.tag.finnkandidatapi.aktørregister.AktørRegisterClient;
 import no.nav.tag.finnkandidatapi.kafka.KandidatEndretProducer;
-import no.nav.tag.finnkandidatapi.kafka.OppfølgingAvsluttetMelding;
+import no.nav.tag.finnkandidatapi.kafka.oppfølgingAvsluttet.OppfølgingAvsluttetMelding;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatEndret;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatOpprettet;
 import org.junit.Before;

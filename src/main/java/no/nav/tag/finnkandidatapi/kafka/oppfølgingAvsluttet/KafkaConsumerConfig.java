@@ -1,4 +1,4 @@
-package no.nav.tag.finnkandidatapi.config;
+package no.nav.tag.finnkandidatapi.kafka.oppfølgingAvsluttet;
 
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.context.annotation.Bean;
@@ -34,6 +34,7 @@ public class KafkaConsumerConfig {
     public ConsumerFactory<String, String> consumerFactory(KafkaProperties properties) {
         return new DefaultKafkaConsumerFactory<>(properties.buildConsumerProperties());
     }
+
 
     private RetryTemplate configureRetryTemplate(ExponentialBackOffPolicy backOffPolicy) {
         RetryTemplate retryTemplate = new RetryTemplate();

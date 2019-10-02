@@ -2,8 +2,8 @@ package no.nav.tag.finnkandidatapi.kandidat;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
-import no.nav.tag.finnkandidatapi.kafka.OppfølgingAvsluttetMelding;
-import no.nav.tag.finnkandidatapi.kafka.OppfølgingAvsluttetUtils;
+import no.nav.tag.finnkandidatapi.kafka.oppfølgingAvsluttet.OppfølgingAvsluttetMelding;
+import no.nav.tag.finnkandidatapi.kafka.oppfølgingAvsluttet.OppfølgingAvsluttetUtils;
 import org.junit.Test;
 
 import java.util.Date;

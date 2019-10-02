@@ -2,6 +2,7 @@ package no.nav.tag.finnkandidatapi.kafka;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.tag.finnkandidatapi.kafka.oppfølgingAvsluttet.ConsumerProps;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.context.annotation.Profile;
 import org.springframework.kafka.test.EmbeddedKafkaBroker;

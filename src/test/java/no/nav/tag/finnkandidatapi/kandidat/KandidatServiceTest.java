@@ -19,8 +19,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import static no.nav.tag.finnkandidatapi.TestData.enKandidat;
-import static no.nav.tag.finnkandidatapi.TestData.enVeileder;
+import static no.nav.tag.finnkandidatapi.TestData.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -258,6 +257,22 @@ public class KandidatServiceTest {
         String aktørId = "1856024171652";
         when(aktørRegisterClient.tilFnr(aktørId)).thenThrow(FinnKandidatException.class);
         kandidatService.hentFnr(aktørId);
+    }
+
+    @Test
+    public void kandidatEksisterer__skal_returnere_true_hvis_kandidat_eksisterer() {
+        String aktørId = enAktørId();
+        when(repository.hentNyesteKandidat(aktørId)).thenReturn(Optional.of(enKandidat()));
+        boolean kandidatEksisterer = kandidatService.kandidatEksisterer(aktørId);
+        assertThat(kandidatEksisterer).isTrue();
+    }
+
+    @Test
+    public void kandidatEksisterer__skal_returnere_false_hvis_kandidat_ikke_eksisterer() {
+        String aktørId = enAktørId();
+        when(repository.hentNyesteKandidat(aktørId)).thenReturn(Optional.empty());
+        boolean kandidatEksisterer = kandidatService.kandidatEksisterer(aktørId);
+        assertThat(kandidatEksisterer).isFalse();
     }
 
 }

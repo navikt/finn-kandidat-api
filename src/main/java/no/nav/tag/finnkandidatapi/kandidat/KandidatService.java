@@ -93,4 +93,9 @@ public class KandidatService {
 
         return optionalId;
     }
+
+    public boolean kandidatEksisterer(String aktørId) {
+        Optional<Kandidat> kandidat = kandidatRepository.hentNyesteKandidat(aktørId);
+        return kandidat.isPresent();
+    }
 }

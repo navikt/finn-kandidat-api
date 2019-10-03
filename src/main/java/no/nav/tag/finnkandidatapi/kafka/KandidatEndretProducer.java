@@ -48,6 +48,8 @@ public class  KandidatEndretProducer {
             log.info("Kandidats behov for tilrettelegging sendt på Kafka-topic, offset: {}",
                     result.getRecordMetadata().offset());
 
+            // sjekk antall meldinger med inkludering prometheus melding
+
         } catch (JsonProcessingException e) {
             // TODO: Ha varsel på dette i Grafana med all info som trengs
             meterRegistry.counter(KANDIDAT_ENDRET_PRODUSENT_FEILET).increment();

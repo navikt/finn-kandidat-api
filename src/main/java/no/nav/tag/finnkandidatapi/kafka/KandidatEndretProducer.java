@@ -58,6 +58,7 @@ public class  KandidatEndretProducer {
         } catch (InterruptedException | ExecutionException e) {
             // TODO: Ha varsel på dette i Grafana med all info som trengs
             meterRegistry.counter(KANDIDAT_ENDRET_PRODUSENT_FEILET).increment();
+            // TOOD: Håndter kafka-meldinger som ikke ble sendt.
             log.error("Kunne ikke sende kandidat på Kafka-topic", e);
         }
     }

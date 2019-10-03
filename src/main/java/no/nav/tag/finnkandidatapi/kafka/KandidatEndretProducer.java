@@ -40,6 +40,7 @@ public class  KandidatEndretProducer {
         } catch (JsonProcessingException e) {
             log.error("Kunne ikke serialisere kandidat endret", e);
         } catch (InterruptedException | ExecutionException e) {
+            // TOOD: Håndter kafka-meldinger som ikke ble sendt.
             log.error("Kunne ikke sende kandidat på Kafka-topic", e);
         }
     }

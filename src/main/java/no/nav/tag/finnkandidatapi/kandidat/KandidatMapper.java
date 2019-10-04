@@ -22,6 +22,10 @@ public class KandidatMapper implements RowMapper<Kandidat> {
             return null;
         }
 
+        return mapKandidat(rs, i);
+    }
+
+    public Kandidat mapKandidat(ResultSet rs, int i) throws SQLException {
         LocalDateTime sistEndret = rs.getTimestamp(REGISTRERINGSTIDSPUNKT) == null ? null : rs.getTimestamp(REGISTRERINGSTIDSPUNKT).toLocalDateTime();
         ArbeidstidBehov arbeidstidBehov = rs.getString(ARBEIDSTID_BEHOV) == null ? null : ArbeidstidBehov.valueOf(rs.getString(ARBEIDSTID_BEHOV));
 

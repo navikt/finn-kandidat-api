@@ -1,5 +1,6 @@
 package no.nav.tag.finnkandidatapi.kandidat;
 
+import kafka.Kafka;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -30,14 +31,16 @@ public class KandidatRepository {
     private JdbcTemplate jdbcTemplate;
     private SimpleJdbcInsert jdbcInsert;
     private final KandidatMapper kandidatMapper;
+    private final KafkaKandidatMapper kafkaKandidatMapper;
 
     @Autowired
-    public KandidatRepository(JdbcTemplate jdbcTemplate, SimpleJdbcInsert simpleJdbcInsert, KandidatMapper kandidatMapper) {
+    public KandidatRepository(JdbcTemplate jdbcTemplate, SimpleJdbcInsert simpleJdbcInsert, KandidatMapper kandidatMapper, KafkaKandidatMapper kafkaKandidatMapper) {
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcInsert = simpleJdbcInsert
                 .withTableName(KANDIDAT_TABELL)
                 .usingGeneratedKeyColumns(ID);
         this.kandidatMapper = kandidatMapper;
+        this.kafkaKandidatMapper = kafkaKandidatMapper;
     }
 
     public Optional<Kandidat> hentNyesteKandidat(String aktørId) {
@@ -65,6 +68,10 @@ public class KandidatRepository {
     }
 
     public List<Kandidat> hentKandidater() {
+        return hentKandidater(false);
+    }
+
+    public List<Kandidat> hentKandidater(boolean inkluderSlettedeKandidater) {
         String query =
                 "SELECT k.* " +
                 "FROM kandidat k " +
@@ -74,10 +81,10 @@ public class KandidatRepository {
                         "GROUP BY aktor_id) gruppertKandidat " +
                         "ON k.aktor_id = gruppertKandidat.aktor_id " +
                         "AND k.registreringstidspunkt = gruppertKandidat.sisteRegistrert " +
-                "WHERE slettet = false " +
+                        (inkluderSlettedeKandidater ? "" : "WHERE slettet = false ") +
                 "ORDER BY k.registreringstidspunkt";
 
-        return jdbcTemplate.query(query, kandidatMapper);
+        return jdbcTemplate.query(query, inkluderSlettedeKandidater ? kafkaKandidatMapper : kandidatMapper);
     }
 
     public void slettAlleKandidater() {

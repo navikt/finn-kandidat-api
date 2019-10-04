@@ -1,4 +1,4 @@
-package no.nav.tag.finnkandidatapi.kafka;
+package no.nav.tag.finnkandidatapi.kafka.oppfølgingAvsluttet;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 

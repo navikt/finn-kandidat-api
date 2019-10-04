@@ -68,6 +68,13 @@ public class KandidatController {
         loggBrukAvEndepunkt("opprettKandidat");
         tilgangskontroll.sjekkSkrivetilgangTilKandidat(kandidat.getAktørId());
 
+        boolean kandidatEksisterer = kandidatService.kandidatEksisterer(kandidat.getAktørId());
+        if (kandidatEksisterer) {
+            return ResponseEntity
+                    .status(HttpStatus.CONFLICT)
+                    .build();
+        }
+
         String fnr = kandidatService.hentFnr(kandidat.getAktørId());
         if (!fnr.equals(kandidat.getFnr())) {
             log.warn("Fnr fra frontend og fnr fra aktørregister er forskjellig");

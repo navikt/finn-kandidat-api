@@ -2,7 +2,8 @@ package no.nav.tag.finnkandidatapi.kandidat;
 
 import no.nav.tag.finnkandidatapi.DateProvider;
 import no.nav.tag.finnkandidatapi.aktørregister.AktørRegisterClient;
-import no.nav.tag.finnkandidatapi.kafka.OppfølgingAvsluttetMelding;
+import no.nav.tag.finnkandidatapi.kafka.KandidatEndretProducer;
+import no.nav.tag.finnkandidatapi.kafka.oppfølgingAvsluttet.OppfølgingAvsluttetMelding;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatEndret;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatOpprettet;
 import org.junit.Before;
@@ -18,8 +19,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import static no.nav.tag.finnkandidatapi.TestData.enKandidat;
-import static no.nav.tag.finnkandidatapi.TestData.enVeileder;
+import static no.nav.tag.finnkandidatapi.TestData.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -43,9 +43,12 @@ public class KandidatServiceTest {
     @Mock
     private AktørRegisterClient aktørRegisterClient;
 
+    @Mock
+    private KandidatEndretProducer kandidatEndretProducer;
+
     @Before
     public void setUp() {
-        kandidatService = new KandidatService(repository, eventPublisher, aktørRegisterClient, dateProvider);
+        kandidatService = new KandidatService(repository, eventPublisher, aktørRegisterClient, kandidatEndretProducer, dateProvider);
     }
 
     @Test
@@ -94,6 +97,18 @@ public class KandidatServiceTest {
         kandidatService.opprettKandidat(kandidat, enVeileder());
 
         verify(eventPublisher).publishEvent(new KandidatOpprettet(kandidat));
+    }
+
+    @Test
+    public void opprettKandidat__skal_kalle_kandidatEndret_kafka_producer_hvis_kandidat_opprettet() {
+        Kandidat kandidat = enKandidat();
+
+        when(repository.lagreKandidat(kandidat)).thenReturn(1);
+        when(repository.hentKandidat(1)).thenReturn(Optional.of(kandidat));
+
+        kandidatService.opprettKandidat(kandidat, enVeileder());
+
+        verify(kandidatEndretProducer).kandidatEndret(kandidat.getAktørId(),true);
     }
 
     @Test
@@ -151,6 +166,21 @@ public class KandidatServiceTest {
     }
 
     @Test
+    public void slettKandidat__skal_kalle_kandidatEndret_kafka_producer_hvis_kandidat_slettet() {
+        String aktørId = "1000000000001";
+        Veileder veileder = enVeileder();
+        LocalDateTime datetime = LocalDateTime.now();
+
+        when(dateProvider.now()).thenReturn(datetime);
+        Optional<Integer> slettetKey = Optional.of(4);
+        when(repository.slettKandidat(aktørId, veileder, datetime)).thenReturn(slettetKey);
+
+        kandidatService.slettKandidat(aktørId, veileder);
+
+        verify(kandidatEndretProducer).kandidatEndret(aktørId, false);
+    }
+
+    @Test
     public void slettKandidat_skal_returnere_id() {
         String aktørId = "1000000000001";
         Veileder veileder = enVeileder();
@@ -180,6 +210,19 @@ public class KandidatServiceTest {
         kandidatService.behandleOppfølgingAvsluttet(new OppfølgingAvsluttetMelding(aktørId, new Date()));
 
         verify(eventPublisher).publishEvent(new KandidatSlettet(slettetKey.get(), aktørId, Brukertype.SYSTEM, datetime));
+    }
+
+    @Test
+    public void behandleOppfølgingAvsluttet__skal_kalle_kandidatEndret_kafka_producer_hvis_kandidat_slettet() {
+        String aktørId = "1856024171652";
+        LocalDateTime datetime = LocalDateTime.now();
+        when(dateProvider.now()).thenReturn(datetime);
+        Optional<Integer> slettetKey = Optional.of(4);
+        when(repository.slettKandidatSomMaskinbruker(aktørId, datetime)).thenReturn(slettetKey);
+
+        kandidatService.behandleOppfølgingAvsluttet(new OppfølgingAvsluttetMelding(aktørId, new Date()));
+
+        verify(kandidatEndretProducer).kandidatEndret(aktørId, false);
     }
 
     @Test
@@ -214,6 +257,22 @@ public class KandidatServiceTest {
         String aktørId = "1856024171652";
         when(aktørRegisterClient.tilFnr(aktørId)).thenThrow(FinnKandidatException.class);
         kandidatService.hentFnr(aktørId);
+    }
+
+    @Test
+    public void kandidatEksisterer__skal_returnere_true_hvis_kandidat_eksisterer() {
+        String aktørId = enAktørId();
+        when(repository.hentNyesteKandidat(aktørId)).thenReturn(Optional.of(enKandidat()));
+        boolean kandidatEksisterer = kandidatService.kandidatEksisterer(aktørId);
+        assertThat(kandidatEksisterer).isTrue();
+    }
+
+    @Test
+    public void kandidatEksisterer__skal_returnere_false_hvis_kandidat_ikke_eksisterer() {
+        String aktørId = enAktørId();
+        when(repository.hentNyesteKandidat(aktørId)).thenReturn(Optional.empty());
+        boolean kandidatEksisterer = kandidatService.kandidatEksisterer(aktørId);
+        assertThat(kandidatEksisterer).isFalse();
     }
 
 }

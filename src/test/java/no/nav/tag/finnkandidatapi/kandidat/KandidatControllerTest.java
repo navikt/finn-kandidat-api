@@ -76,7 +76,7 @@ public class KandidatControllerTest {
     }
 
     @Test(expected = FinnKandidatException.class)
-    public void opprettKandidat__skal_kaste_FinnKandidatException_hvis_kandidat_ikke_fins() {
+    public void opprettKandidat__skal_kaste_FinnKandidatException_hvis_kandidat_ikke_ble_lagret() {
         Kandidat kandidat = enKandidat();
         Veileder veileder = enVeileder();
         værInnloggetSom(veileder);
@@ -84,6 +84,18 @@ public class KandidatControllerTest {
         when(service.hentFnr(anyString())).thenReturn("123123123");
         when(service.opprettKandidat(kandidat, veileder)).thenReturn(Optional.empty());
         controller.opprettKandidat(kandidat);
+    }
+
+    @Test
+    public void opprettKandidat__skal_returnere_conflict_hvis_kandidat_eksisterer() {
+        Kandidat kandidat = enKandidat();
+        Veileder veileder = enVeileder();
+        værInnloggetSom(veileder);
+
+        when(service.kandidatEksisterer(kandidat.getAktørId())).thenReturn(true);
+
+        ResponseEntity<Kandidat> respons = controller.opprettKandidat(kandidat);
+        assertThat(respons.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
     }
 
     @Test

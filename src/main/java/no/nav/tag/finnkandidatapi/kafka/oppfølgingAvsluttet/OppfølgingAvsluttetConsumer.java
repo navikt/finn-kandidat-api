@@ -1,4 +1,4 @@
-package no.nav.tag.finnkandidatapi.kafka;
+package no.nav.tag.finnkandidatapi.kafka.oppfølgingAvsluttet;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
@@ -7,13 +7,13 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
-import static no.nav.tag.finnkandidatapi.kafka.OppfølgingAvsluttetUtils.deserialiserMelding;
+import static no.nav.tag.finnkandidatapi.kafka.oppfølgingAvsluttet.OppfølgingAvsluttetUtils.deserialiserMelding;
 
 @Slf4j
 @Component
 public class OppfølgingAvsluttetConsumer {
 
-    public static final String AVSLUTTET_OPPFØLGING_FEILET = "finnkandidat.avsluttetoppfolging.feilet";
+    private static final String AVSLUTTET_OPPFØLGING_FEILET = "finnkandidat.avsluttetoppfolging.feilet";
 
     private KandidatService kandidatService;
     @SuppressWarnings({"unused", "FieldCanBeLocal"})

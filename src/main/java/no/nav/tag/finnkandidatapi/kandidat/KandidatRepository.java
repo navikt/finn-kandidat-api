@@ -76,6 +76,7 @@ public class KandidatRepository {
                         "AND k.registreringstidspunkt = gruppertKandidat.sisteRegistrert " +
                 "WHERE slettet = false " +
                 "ORDER BY k.registreringstidspunkt";
+
         return jdbcTemplate.query(query, kandidatMapper);
     }
 

@@ -23,7 +23,7 @@ public class  KandidatEndretProducer {
 
     public KandidatEndretProducer(
             KafkaTemplate<String, String> kafkaTemplate,
-            @Value("${kanidat-endret.topic}") String topic,
+            @Value("${kandidat-endret.topic}") String topic,
             MeterRegistry meterRegistry
     ) {
         this.kafkaTemplate = kafkaTemplate;

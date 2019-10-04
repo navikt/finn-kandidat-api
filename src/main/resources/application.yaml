@@ -15,7 +15,7 @@ spring:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
 
-kanidat-endret.topic: aapen-tag-kandidatEndret-v1-default
+kandidat-endret.topic: aapen-tag-kandidatEndret-v1-default
 
 ---
 spring.profiles: local

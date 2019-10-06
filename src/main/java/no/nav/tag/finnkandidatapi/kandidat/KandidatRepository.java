@@ -68,23 +68,26 @@ public class KandidatRepository {
     }
 
     public List<Kandidat> hentKandidater() {
-        return hentKandidater(false);
+        String query = lagKandidatQuery(false);
+        return jdbcTemplate.query(query, kandidatMapper);
     }
 
-    public List<Kandidat> hentKandidater(boolean inkluderSlettedeKandidater) {
-        String query =
-                "SELECT k.* " +
-                "FROM kandidat k " +
-                        "INNER JOIN " +
-                        "(SELECT aktor_id, MAX(registreringstidspunkt) AS sisteRegistrert " +
-                        "FROM kandidat " +
-                        "GROUP BY aktor_id) gruppertKandidat " +
-                        "ON k.aktor_id = gruppertKandidat.aktor_id " +
-                        "AND k.registreringstidspunkt = gruppertKandidat.sisteRegistrert " +
-                        (inkluderSlettedeKandidater ? "" : "WHERE slettet = false ") +
-                "ORDER BY k.registreringstidspunkt";
+    public List<KafkaKandidat> hentKafkaKandidater() {
+        String query = lagKandidatQuery(true);
+        return jdbcTemplate.query(query, kafkaKandidatMapper);
+    }
 
-        return jdbcTemplate.query(query, inkluderSlettedeKandidater ? kafkaKandidatMapper : kandidatMapper);
+    private String lagKandidatQuery(boolean inkluderSlettedeKandidater) {
+        return "SELECT k.* " +
+                "FROM kandidat k " +
+                "INNER JOIN " +
+                "(SELECT aktor_id, MAX(registreringstidspunkt) AS sisteRegistrert " +
+                "FROM kandidat " +
+                "GROUP BY aktor_id) gruppertKandidat " +
+                "ON k.aktor_id = gruppertKandidat.aktor_id " +
+                "AND k.registreringstidspunkt = gruppertKandidat.sisteRegistrert " +
+                (inkluderSlettedeKandidater ? "" : "WHERE slettet = false ") +
+                "ORDER BY k.registreringstidspunkt";
     }
 
     public void slettAlleKandidater() {

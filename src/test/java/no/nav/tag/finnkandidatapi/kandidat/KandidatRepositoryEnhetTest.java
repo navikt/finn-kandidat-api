@@ -60,7 +60,5 @@ public class KandidatRepositoryEnhetTest {
         repository.slettKandidatSomMaskinbruker(enKandidat().getAktørId(), now());
         verify(jdbcInsert, times(1)).executeAndReturnKey(requestCaptor.capture());
         assertThat(requestCaptor.getValue().get("registrert_av_brukertype")).isEqualTo(Brukertype.SYSTEM.name());
-
     }
-
 }

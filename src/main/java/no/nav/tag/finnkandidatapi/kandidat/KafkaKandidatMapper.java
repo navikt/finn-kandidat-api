@@ -1,14 +1,22 @@
 package no.nav.tag.finnkandidatapi.kandidat;
 
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import static no.nav.tag.finnkandidatapi.kandidat.KandidatRepository.SLETTET;
+
 @Component
-public class KafkaKandidatMapper extends KandidatMapper {
+public class KafkaKandidatMapper implements RowMapper<KafkaKandidat> {
     @Override
-    public Kandidat mapRow(ResultSet rs, int i) throws SQLException {
-        return mapKandidat(rs, i);
+    public KafkaKandidat mapRow(ResultSet rs, int i) throws SQLException {
+        Kandidat kandidat = KandidatMapper.mapKandidat(rs, i);
+
+        return KafkaKandidat.builder()
+                .kandidat(kandidat)
+                .slettet(rs.getBoolean(SLETTET))
+                .build();
     }
 }

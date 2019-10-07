@@ -8,14 +8,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Component;
-
-import java.util.concurrent.ExecutionException;
+import org.springframework.util.concurrent.ListenableFuture;
 
 @Component
 @Slf4j
 public class  KandidatEndretProducer {
 
     private static final String KANDIDAT_ENDRET_PRODUSENT_FEILET = "finnkandidat.kandidatendret.feilet";
+    private static final String KANDIDAT_ENDRET_PRODUSENT_SUKSESS = "finnkandidat.kandidatendret.suksess";
 
     private KafkaTemplate<String, String> kafkaTemplate;
     private String topic;
@@ -30,6 +30,7 @@ public class  KandidatEndretProducer {
         this.topic = topic;
         this.meterRegistry = meterRegistry;
         meterRegistry.counter(KANDIDAT_ENDRET_PRODUSENT_FEILET);
+        meterRegistry.counter(KANDIDAT_ENDRET_PRODUSENT_SUKSESS);
     }
 
     public void kandidatEndret(String aktørId, Boolean harTilretteleggingsbehov) {
@@ -38,28 +39,24 @@ public class  KandidatEndretProducer {
             ObjectMapper mapper = new ObjectMapper();
             String serialisertKandidatEndret = mapper.writeValueAsString(kandidatEndret);
 
-            SendResult<String, String> result = kafkaTemplate.send(
+            ListenableFuture<SendResult<String, String>> future = kafkaTemplate.send(
                     topic,
                     aktørId,
                     serialisertKandidatEndret
-            ).get();
+            );
 
-            // TODO: Logge mer her? Ok å logge aktørId?
-            log.info("Kandidats behov for tilrettelegging sendt på Kafka-topic, offset: {}",
-                    result.getRecordMetadata().offset());
-
-            // sjekk antall meldinger med inkludering prometheus melding
+            future.addCallback(result -> {
+                log.info("Kandidats behov for tilrettelegging sendt på Kafka-topic, aktørId: {}", aktørId);
+                meterRegistry.counter(KANDIDAT_ENDRET_PRODUSENT_SUKSESS).increment();
+            },
+            exception -> {
+                log.error("Kunne ikke sende kandidat på Kafka-topic, aktørId: {}", aktørId, exception);
+                meterRegistry.counter(KANDIDAT_ENDRET_PRODUSENT_FEILET).increment();
+            });
 
         } catch (JsonProcessingException e) {
-            // TODO: Ha varsel på dette i Grafana med all info som trengs
-            meterRegistry.counter(KANDIDAT_ENDRET_PRODUSENT_FEILET).increment();
             log.error("Kunne ikke serialisere kandidat endret", e);
-
-        } catch (InterruptedException | ExecutionException e) {
-            // TODO: Ha varsel på dette i Grafana med all info som trengs
             meterRegistry.counter(KANDIDAT_ENDRET_PRODUSENT_FEILET).increment();
-            // TOOD: Håndter kafka-meldinger som ikke ble sendt.
-            log.error("Kunne ikke sende kandidat på Kafka-topic", e);
         }
     }
 }

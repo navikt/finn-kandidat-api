@@ -13,10 +13,11 @@ public class KafkaKandidatMapper implements RowMapper<KafkaKandidat> {
     @Override
     public KafkaKandidat mapRow(ResultSet rs, int i) throws SQLException {
         Kandidat kandidat = KandidatMapper.mapKandidat(rs, i);
-
-        return KafkaKandidat.builder()
+        KafkaKandidat kafkaKandidat = KafkaKandidat.builder()
                 .kandidat(kandidat)
                 .slettet(rs.getBoolean(SLETTET))
                 .build();
+
+        return kafkaKandidat;
     }
 }

@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -179,6 +180,65 @@ public class KandidatRepositoryTest {
         List<Kandidat> kandidater = repository.hentKandidater();
 
         assertThat(kandidater.size()).isEqualTo(1);
+    }
+
+    @Test
+    public void hentKafkaKandidater__skal_returnere_alle_kandidater_inkludert_slettede() {
+        Kandidat kandidat1 = enKandidat("1000000000001");
+        Kandidat kandidat2 = enKandidat("1000000000002");
+
+        repository.lagreKandidat(kandidat1);
+        repository.lagreKandidat(kandidat2);
+
+        Optional<Integer> slettetKandidatId = repository.slettKandidat(kandidat2.getAktørId(), enVeileder(), now());
+
+        List<KafkaKandidat> kandidater = repository.hentKafkaKandidater();
+
+        assertThat(kandidater.size()).isEqualTo(2);
+        assertThat(kandidater.get(1).getKandidat().getId()).isEqualTo(slettetKandidatId.get());
+        assertThat(kandidater.get(1).isSlettet()).isTrue();
+    }
+
+    @Test
+    public void hentKafkaKandidater__skal_returnere_de_siste_registrerte_kandidatene() {
+        Kandidat kandidat = kandidatBuilder()
+                .aktørId("1000000000001")
+                .sistEndret(now())
+                .build();
+        Kandidat sisteKandidat = kandidatBuilder()
+                .aktørId("1000000000001")
+                .sistEndret(now().plusMinutes(2))
+                .build();
+
+        repository.lagreKandidat(kandidat);
+        repository.lagreKandidat(sisteKandidat);
+
+        List<KafkaKandidat> kandidater = repository.hentKafkaKandidater();
+
+        assertThat(kandidater.size()).isEqualTo(1);
+        assertThat(kandidater.get(0).getKandidat()).isEqualToIgnoringGivenFields(sisteKandidat, "id");
+    }
+
+    @Test
+    public void hentKafkaKandidater__skal_returnere_de_siste_registrerte_og_slettede_kandidatene() {
+        Kandidat kandidat = kandidatBuilder()
+                .aktørId("1000000000001")
+                .sistEndret(now())
+                .build();
+        Kandidat sisteKandidat = kandidatBuilder()
+                .aktørId("1000000000001")
+                .sistEndret(now().plusMinutes(2))
+                .build();
+
+        repository.lagreKandidat(kandidat);
+        repository.lagreKandidat(sisteKandidat);
+
+        repository.slettKandidat(sisteKandidat.getAktørId(), enVeileder(), now().plusMinutes(3));
+
+        List<KafkaKandidat> kandidater = repository.hentKafkaKandidater();
+
+        assertThat(kandidater.size()).isEqualTo(1);
+        assertThat(kandidater.get(0).isSlettet()).isTrue();
     }
 
     @Test

@@ -1,6 +1,7 @@
 package no.nav.tag.finnkandidatapi.kandidat;
 
 import kafka.Kafka;
+import no.nav.tag.finnkandidatapi.kafka.KandidatEndret;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -31,16 +32,16 @@ public class KandidatRepository {
     private JdbcTemplate jdbcTemplate;
     private SimpleJdbcInsert jdbcInsert;
     private final KandidatMapper kandidatMapper;
-    private final KafkaKandidatMapper kafkaKandidatMapper;
+    private final KandidatEndretMapper kandidatEndretMapper;
 
     @Autowired
-    public KandidatRepository(JdbcTemplate jdbcTemplate, SimpleJdbcInsert simpleJdbcInsert, KandidatMapper kandidatMapper, KafkaKandidatMapper kafkaKandidatMapper) {
+    public KandidatRepository(JdbcTemplate jdbcTemplate, SimpleJdbcInsert simpleJdbcInsert, KandidatMapper kandidatMapper, KandidatEndretMapper kandidatEndretMapper) {
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcInsert = simpleJdbcInsert
                 .withTableName(KANDIDAT_TABELL)
                 .usingGeneratedKeyColumns(ID);
         this.kandidatMapper = kandidatMapper;
-        this.kafkaKandidatMapper = kafkaKandidatMapper;
+        this.kandidatEndretMapper = kandidatEndretMapper;
     }
 
     public Optional<Kandidat> hentNyesteKandidat(String aktørId) {
@@ -72,9 +73,9 @@ public class KandidatRepository {
         return jdbcTemplate.query(query, kandidatMapper);
     }
 
-    public List<KafkaKandidat> hentKafkaKandidater() {
+    public List<KandidatEndret> hentSisteKandidatendringer() {
         String query = lagKandidatQuery(true);
-        return jdbcTemplate.query(query, kafkaKandidatMapper);
+        return jdbcTemplate.query(query, kandidatEndretMapper);
     }
 
     private String lagKandidatQuery(boolean inkluderSlettedeKandidater) {

@@ -2,8 +2,8 @@ package no.nav.tag.finnkandidatapi.kafka.republisher;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.security.oidc.api.Protected;
+import no.nav.tag.finnkandidatapi.kafka.KandidatEndret;
 import no.nav.tag.finnkandidatapi.kafka.KandidatEndretProducer;
-import no.nav.tag.finnkandidatapi.kandidat.KafkaKandidat;
 import no.nav.tag.finnkandidatapi.kandidat.KandidatRepository;
 import no.nav.tag.finnkandidatapi.tilgangskontroll.TilgangskontrollException;
 import no.nav.tag.finnkandidatapi.tilgangskontroll.TilgangskontrollService;
@@ -41,8 +41,8 @@ public class KafkaRepublisher {
     public ResponseEntity republiserAlleKandidater() {
         sjekkTilgangTilRepublisher();
 
-        for (KafkaKandidat kafkaKandidat : kandidatRepository.hentKafkaKandidater()) {
-            kandidatEndretProducer.kandidatEndret(kafkaKandidat.getKandidat().getAktørId(), kafkaKandidat.isSlettet());
+        for (KandidatEndret endretKandidat : kandidatRepository.hentSisteKandidatendringer()) {
+            kandidatEndretProducer.kandidatEndret(endretKandidat.getAktoerId(), endretKandidat.isHarTilretteleggingsbehov());
         }
 
         return ResponseEntity.status(HttpStatus.OK).build();

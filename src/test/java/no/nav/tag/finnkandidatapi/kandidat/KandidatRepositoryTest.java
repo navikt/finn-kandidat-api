@@ -1,5 +1,6 @@
 package no.nav.tag.finnkandidatapi.kandidat;
 
+import no.nav.tag.finnkandidatapi.kafka.KandidatEndret;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -183,24 +184,23 @@ public class KandidatRepositoryTest {
     }
 
     @Test
-    public void hentKafkaKandidater__skal_returnere_alle_kandidater_inkludert_slettede() {
+    public void hentSisteKandidatendringer__skal_returnere_alle_kandidater_inkludert_slettede() {
         Kandidat kandidat1 = enKandidat("1000000000001");
         Kandidat kandidat2 = enKandidat("1000000000002");
 
         repository.lagreKandidat(kandidat1);
         repository.lagreKandidat(kandidat2);
 
-        Optional<Integer> slettetKandidatId = repository.slettKandidat(kandidat2.getAktørId(), enVeileder(), now());
+        repository.slettKandidat(kandidat2.getAktørId(), enVeileder(), now());
 
-        List<KafkaKandidat> kandidater = repository.hentKafkaKandidater();
+        List<KandidatEndret> kandidater = repository.hentSisteKandidatendringer();
 
         assertThat(kandidater.size()).isEqualTo(2);
-        assertThat(kandidater.get(1).getKandidat().getId()).isEqualTo(slettetKandidatId.get());
-        assertThat(kandidater.get(1).isSlettet()).isTrue();
+        assertThat(kandidater.get(1).isHarTilretteleggingsbehov()).isTrue();
     }
 
     @Test
-    public void hentKafkaKandidater__skal_returnere_de_siste_registrerte_kandidatene() {
+    public void hentSisteKandidatendringer__skal_returnere_de_siste_registrerte_kandidatene() {
         Kandidat kandidat = kandidatBuilder()
                 .aktørId("1000000000001")
                 .sistEndret(now())
@@ -213,14 +213,14 @@ public class KandidatRepositoryTest {
         repository.lagreKandidat(kandidat);
         repository.lagreKandidat(sisteKandidat);
 
-        List<KafkaKandidat> kandidater = repository.hentKafkaKandidater();
+        List<KandidatEndret> kandidater = repository.hentSisteKandidatendringer();
 
         assertThat(kandidater.size()).isEqualTo(1);
-        assertThat(kandidater.get(0).getKandidat()).isEqualToIgnoringGivenFields(sisteKandidat, "id");
+        assertThat(kandidater.get(0).getAktoerId()).isEqualTo(sisteKandidat.getAktørId());
     }
 
     @Test
-    public void hentKafkaKandidater__skal_returnere_de_siste_registrerte_og_slettede_kandidatene() {
+    public void hentSisteKandidatendringer__skal_returnere_de_siste_registrerte_og_slettede_kandidatene() {
         Kandidat kandidat = kandidatBuilder()
                 .aktørId("1000000000001")
                 .sistEndret(now())
@@ -235,10 +235,10 @@ public class KandidatRepositoryTest {
 
         repository.slettKandidat(sisteKandidat.getAktørId(), enVeileder(), now().plusMinutes(3));
 
-        List<KafkaKandidat> kandidater = repository.hentKafkaKandidater();
+        List<KandidatEndret> kandidater = repository.hentSisteKandidatendringer();
 
         assertThat(kandidater.size()).isEqualTo(1);
-        assertThat(kandidater.get(0).isSlettet()).isTrue();
+        assertThat(kandidater.get(0).isHarTilretteleggingsbehov()).isTrue();
     }
 
     @Test

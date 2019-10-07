@@ -80,14 +80,14 @@ public class KandidatRepository {
 
     private String lagKandidatQuery(boolean inkluderSlettedeKandidater) {
         return "SELECT k.* " +
-                "FROM kandidat k " +
-                "INNER JOIN " +
-                "(SELECT aktor_id, MAX(registreringstidspunkt) AS sisteRegistrert " +
-                "FROM kandidat " +
-                "GROUP BY aktor_id) gruppertKandidat " +
-                "ON k.aktor_id = gruppertKandidat.aktor_id " +
-                "AND k.registreringstidspunkt = gruppertKandidat.sisteRegistrert " +
-                (inkluderSlettedeKandidater ? "" : "WHERE slettet = false ") +
+                    "FROM kandidat k " +
+                    "INNER JOIN " +
+                    "(SELECT aktor_id, MAX(registreringstidspunkt) AS sisteRegistrert " +
+                    "FROM kandidat " +
+                    "GROUP BY aktor_id) gruppertKandidat " +
+                    "ON k.aktor_id = gruppertKandidat.aktor_id " +
+                    "AND k.registreringstidspunkt = gruppertKandidat.sisteRegistrert " +
+                    (inkluderSlettedeKandidater ? "" : "WHERE slettet = false") +
                 "ORDER BY k.registreringstidspunkt";
     }
 

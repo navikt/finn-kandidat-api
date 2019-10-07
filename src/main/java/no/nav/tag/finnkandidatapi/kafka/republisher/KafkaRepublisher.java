@@ -41,9 +41,9 @@ public class KafkaRepublisher {
     public ResponseEntity republiserAlleKandidater() {
         sjekkTilgangTilRepublisher();
 
-        for (KandidatEndret endretKandidat : kandidatRepository.hentSisteKandidatendringer()) {
-            kandidatEndretProducer.kandidatEndret(endretKandidat.getAktoerId(), endretKandidat.isHarTilretteleggingsbehov());
-        }
+        kandidatRepository.hentSisteKandidatendringer().forEach(kandidatendring -> {
+            kandidatEndretProducer.kandidatEndret(kandidatendring.getAktoerId(), kandidatendring.isHarTilretteleggingsbehov());
+        });
 
         return ResponseEntity.status(HttpStatus.OK).build();
     }

@@ -1,6 +1,7 @@
 package no.nav.tag.finnkandidatapi.kafka.republisher;
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.security.oidc.api.Protected;
 import no.nav.tag.finnkandidatapi.kafka.KandidatEndretProducer;
 import no.nav.tag.finnkandidatapi.kandidat.KafkaKandidat;
 import no.nav.tag.finnkandidatapi.kandidat.KandidatRepository;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @Component
+@Protected
 @Slf4j
 public class KafkaRepublisher {
     private final KandidatEndretProducer kandidatEndretProducer;

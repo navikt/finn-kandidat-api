@@ -56,7 +56,7 @@ public class OppfølgingAvsluttetConsumerTest {
     private ConsumerProps consumerTopicProps;
 
     @Autowired
-    private KafkaMockServer embeddedKafka;
+    private EnKafkaMockServer embeddedKafka;
 
     private Producer<String, String> producer;
 

@@ -31,7 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class HarTilretteleggingsbehovProducerTest {
 
     @Autowired
-    private KafkaMockServer embeddedKafka;
+    private EnKafkaMockServer embeddedKafka;
 
     @Autowired
     private HarTilretteleggingsbehovProducer harTilretteleggingsbehovProducer;

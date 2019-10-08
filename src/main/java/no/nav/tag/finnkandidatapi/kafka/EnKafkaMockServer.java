@@ -12,11 +12,18 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @Getter
-public class KafkaMockServer implements DisposableBean {
+public class EnKafkaMockServer implements DisposableBean {
 
     private final EmbeddedKafkaBroker embeddedKafka;
 
-    public KafkaMockServer(ConsumerProps consumerProps) {
+    /*
+        TODO: Fikse bug med initialiseringsrekkefølge i Spring
+        HarTilretteleggingsbehov må initialiseres etter denne klassen,
+        og må dermed hete noe etter denne klassen i alfabetet siden
+        Spring initialiserer komponenter i alfabetisk rekkefølge hvis
+        de ikke har noen synlige avhengigheter.
+     */
+    public EnKafkaMockServer(ConsumerProps consumerProps) {
         log.info("Starter embedded Kafka");
         embeddedKafka = new EmbeddedKafkaBroker(1, true, 1, consumerProps.getTopic(), "aapen-tag-kandidatEndret-v1-default");
         embeddedKafka.afterPropertiesSet();

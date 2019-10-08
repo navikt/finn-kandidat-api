@@ -12,7 +12,7 @@ import org.springframework.util.concurrent.ListenableFuture;
 
 @Component
 @Slf4j
-public class  KandidatEndretProducer {
+public class KandidatEndretProducer {
 
     private static final String KANDIDAT_ENDRET_PRODUSENT_FEILET = "finnkandidat.kandidatendret.feilet";
     private static final String KANDIDAT_ENDRET_PRODUSENT_SUKSESS = "finnkandidat.kandidatendret.suksess";

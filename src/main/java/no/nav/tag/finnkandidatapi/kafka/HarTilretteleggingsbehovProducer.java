@@ -18,7 +18,7 @@ import java.util.concurrent.ExecutionException;
 @Slf4j
 public class HarTilretteleggingsbehovProducer {
 
-    private static final String HAR_TILRETTELEGGINGSBEHOV_PRODUSENT_FEILET = "finnkandidat.harTilretteleggingsbehovProdusent.feilet";
+    private static final String KANDIDAT_ENDRET_PRODUSENT_FEILET = "finnkandidat.kandidatendret.feilet";
 
     private KafkaTemplate<String, String> kafkaTemplate;
     private String topic;
@@ -32,7 +32,7 @@ public class HarTilretteleggingsbehovProducer {
         this.kafkaTemplate = kafkaTemplate;
         this.topic = topic;
         this.meterRegistry = meterRegistry;
-        meterRegistry.counter(HAR_TILRETTELEGGINGSBEHOV_PRODUSENT_FEILET);
+        meterRegistry.counter(KANDIDAT_ENDRET_PRODUSENT_FEILET);
     }
 
     @EventListener
@@ -45,16 +45,16 @@ public class HarTilretteleggingsbehovProducer {
         sendKafkamelding(event.getAktørId(), false);
     }
 
-    public void sendKafkamelding(String aktørId, boolean harTilretteleggingsbehov) {
+    public void sendKafkamelding(String aktørId, Boolean harTilretteleggingsbehov) {
         try {
             ObjectMapper mapper = new ObjectMapper();
-            HarTilretteleggingsbehov kandidatoppdatering = new HarTilretteleggingsbehov(aktørId, harTilretteleggingsbehov);
-            String serialisertKandidatoppdatering = mapper.writeValueAsString(kandidatoppdatering);
+            HarTilretteleggingsbehov melding = new HarTilretteleggingsbehov(aktørId, harTilretteleggingsbehov);
+            String serialisertMelding = mapper.writeValueAsString(melding);
 
             SendResult<String, String> result = kafkaTemplate.send(
                     topic,
                     aktørId,
-                    serialisertKandidatoppdatering
+                    serialisertMelding
             ).get();
 
             // TODO: Logge mer her? Ok å logge aktørId?
@@ -65,12 +65,12 @@ public class HarTilretteleggingsbehovProducer {
 
         } catch (JsonProcessingException e) {
             // TODO: Ha varsel på dette i Grafana med all info som trengs
-            meterRegistry.counter(HAR_TILRETTELEGGINGSBEHOV_PRODUSENT_FEILET).increment();
+            meterRegistry.counter(KANDIDAT_ENDRET_PRODUSENT_FEILET).increment();
             log.error("Kunne ikke serialisere kandidat endret", e);
 
         } catch (InterruptedException | ExecutionException e) {
             // TODO: Ha varsel på dette i Grafana med all info som trengs
-            meterRegistry.counter(HAR_TILRETTELEGGINGSBEHOV_PRODUSENT_FEILET).increment();
+            meterRegistry.counter(KANDIDAT_ENDRET_PRODUSENT_FEILET).increment();
             // TOOD: Håndter kafka-meldinger som ikke ble sendt.
             log.error("Kunne ikke sende kandidat på Kafka-topic", e);
         }

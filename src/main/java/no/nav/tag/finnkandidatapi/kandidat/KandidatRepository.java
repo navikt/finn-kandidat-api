@@ -31,16 +31,16 @@ public class KandidatRepository {
     private JdbcTemplate jdbcTemplate;
     private SimpleJdbcInsert jdbcInsert;
     private final KandidatMapper kandidatMapper;
-    private final KandidatoppdateringMapper kandidatoppdateringMapper;
+    private final HarTilretteleggingsbehovMapper harTilretteleggingsbehovMapper;
 
     @Autowired
-    public KandidatRepository(JdbcTemplate jdbcTemplate, SimpleJdbcInsert simpleJdbcInsert, KandidatMapper kandidatMapper, KandidatoppdateringMapper kandidatoppdateringMapper) {
+    public KandidatRepository(JdbcTemplate jdbcTemplate, SimpleJdbcInsert simpleJdbcInsert, KandidatMapper kandidatMapper, HarTilretteleggingsbehovMapper harTilretteleggingsbehovMapper) {
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcInsert = simpleJdbcInsert
                 .withTableName(KANDIDAT_TABELL)
                 .usingGeneratedKeyColumns(ID);
         this.kandidatMapper = kandidatMapper;
-        this.kandidatoppdateringMapper = kandidatoppdateringMapper;
+        this.harTilretteleggingsbehovMapper = harTilretteleggingsbehovMapper;
     }
 
     public Optional<Kandidat> hentNyesteKandidat(String aktørId) {
@@ -74,7 +74,7 @@ public class KandidatRepository {
 
     public List<HarTilretteleggingsbehov> hentHarTilretteleggingsbehov() {
         String query = lagKandidatQuery(true);
-        return jdbcTemplate.query(query, kandidatoppdateringMapper);
+        return jdbcTemplate.query(query, harTilretteleggingsbehovMapper);
     }
 
     private String lagKandidatQuery(boolean inkluderSlettedeKandidater) {

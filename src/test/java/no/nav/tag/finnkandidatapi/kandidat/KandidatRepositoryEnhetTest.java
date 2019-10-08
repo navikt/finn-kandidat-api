@@ -25,7 +25,7 @@ public class KandidatRepositoryEnhetTest {
     private KandidatMapper kandidatMapper;
 
     @Mock
-    private KandidatoppdateringMapper kandidatoppdateringMapper;
+    private HarTilretteleggingsbehovMapper harTilretteleggingsbehovMapper;
 
     @Mock
     private SimpleJdbcInsert jdbcInsert;
@@ -45,7 +45,7 @@ public class KandidatRepositoryEnhetTest {
         when(jdbcInsert.executeAndReturnKey(any(Map.class))).thenReturn(0);
         when(jdbcTemplate.queryForObject(any(), any(), eq(kandidatMapper))).thenReturn(enKandidat());
 
-        repository = new KandidatRepository(jdbcTemplate, jdbcInsert, kandidatMapper, kandidatoppdateringMapper);
+        repository = new KandidatRepository(jdbcTemplate, jdbcInsert, kandidatMapper, harTilretteleggingsbehovMapper);
     }
 
     @Test

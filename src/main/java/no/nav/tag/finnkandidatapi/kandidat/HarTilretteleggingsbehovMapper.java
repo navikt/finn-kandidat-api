@@ -10,7 +10,7 @@ import java.sql.SQLException;
 import static no.nav.tag.finnkandidatapi.kandidat.KandidatRepository.*;
 
 @Component
-public class KandidatoppdateringMapper implements RowMapper<HarTilretteleggingsbehov> {
+public class HarTilretteleggingsbehovMapper implements RowMapper<HarTilretteleggingsbehov> {
     @Override
     public HarTilretteleggingsbehov mapRow(ResultSet rs, int i) throws SQLException {
         return new HarTilretteleggingsbehov(rs.getString(AKTØR_ID), rs.getBoolean(SLETTET));

@@ -13,7 +13,7 @@ import java.util.concurrent.ExecutionException;
 
 @Component
 @Slf4j
-public class KandidatendringProducer {
+public class KandidatoppdateringProducer {
 
     private static final String KANDIDAT_ENDRET_PRODUSENT_FEILET = "finnkandidat.kandidatendret.feilet";
 
@@ -21,7 +21,7 @@ public class KandidatendringProducer {
     private String topic;
     private MeterRegistry meterRegistry;
 
-    public KandidatendringProducer(
+    public KandidatoppdateringProducer(
             KafkaTemplate<String, String> kafkaTemplate,
             @Value("${kandidat-endret.topic}") String topic,
             MeterRegistry meterRegistry
@@ -32,16 +32,16 @@ public class KandidatendringProducer {
         meterRegistry.counter(KANDIDAT_ENDRET_PRODUSENT_FEILET);
     }
 
-    public void kandidatEndret(String aktørId, boolean harTilretteleggingsbehov) {
+    public void kandidatOppdatert(String aktørId, boolean harTilretteleggingsbehov) {
         try {
             ObjectMapper mapper = new ObjectMapper();
-            Kandidatendring kandidatendring = new Kandidatendring(aktørId, harTilretteleggingsbehov);
-            String serialisertKandidatEndret = mapper.writeValueAsString(kandidatendring);
+            Kandidatoppdatering kandidatoppdatering = new Kandidatoppdatering(aktørId, harTilretteleggingsbehov);
+            String serialisertKandidatoppdatering = mapper.writeValueAsString(kandidatoppdatering);
 
             SendResult<String, String> result = kafkaTemplate.send(
                     topic,
                     aktørId,
-                    serialisertKandidatEndret
+                    serialisertKandidatoppdatering
             ).get();
 
             // TODO: Logge mer her? Ok å logge aktørId?

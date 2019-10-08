@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class Kandidatendring {
+public class Kandidatoppdatering {
     private String aktoerId;
     private boolean harTilretteleggingsbehov;
 }

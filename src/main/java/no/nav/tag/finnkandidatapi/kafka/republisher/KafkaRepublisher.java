@@ -2,7 +2,7 @@ package no.nav.tag.finnkandidatapi.kafka.republisher;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.security.oidc.api.Protected;
-import no.nav.tag.finnkandidatapi.kafka.KandidatendringProducer;
+import no.nav.tag.finnkandidatapi.kafka.KandidatoppdateringProducer;
 import no.nav.tag.finnkandidatapi.kandidat.KandidatRepository;
 import no.nav.tag.finnkandidatapi.tilgangskontroll.TilgangskontrollException;
 import no.nav.tag.finnkandidatapi.tilgangskontroll.TilgangskontrollService;
@@ -18,19 +18,19 @@ import org.springframework.web.bind.annotation.RestController;
 @Protected
 @Slf4j
 public class KafkaRepublisher {
-    private final KandidatendringProducer kandidatEndretProducer;
+    private final KandidatoppdateringProducer kandidatoppdateringProducer;
     private final KandidatRepository kandidatRepository;
     private final TilgangskontrollService tilgangskontrollService;
     private final KafkaRepublisherConfig config;
 
     @Autowired
     public KafkaRepublisher(
-            KandidatendringProducer kandidatEndretProducer,
+            KandidatoppdateringProducer kandidatoppdateringProducer,
             KandidatRepository kandidatRepository,
             TilgangskontrollService tilgangskontrollService,
             KafkaRepublisherConfig config
     ) {
-        this.kandidatEndretProducer = kandidatEndretProducer;
+        this.kandidatoppdateringProducer = kandidatoppdateringProducer;
         this.kandidatRepository = kandidatRepository;
         this.tilgangskontrollService = tilgangskontrollService;
         this.config = config;
@@ -44,8 +44,8 @@ public class KafkaRepublisher {
     public ResponseEntity republiserAlleKandidater() {
         sjekkTilgangTilRepublisher();
 
-        kandidatRepository.hentNyesteKandidatendringer().forEach(kandidatendring -> {
-            kandidatEndretProducer.kandidatEndret(kandidatendring.getAktoerId(), kandidatendring.isHarTilretteleggingsbehov());
+        kandidatRepository.hentNyesteKandidatoppdateringer().forEach(oppdatering -> {
+            kandidatoppdateringProducer.kandidatOppdatert(oppdatering.getAktoerId(), oppdatering.isHarTilretteleggingsbehov());
         });
 
         return ResponseEntity.status(HttpStatus.OK).build();

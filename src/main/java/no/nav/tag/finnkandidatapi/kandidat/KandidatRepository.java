@@ -1,6 +1,6 @@
 package no.nav.tag.finnkandidatapi.kandidat;
 
-import no.nav.tag.finnkandidatapi.kafka.Kandidatendring;
+import no.nav.tag.finnkandidatapi.kafka.Kandidatoppdatering;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -31,16 +31,16 @@ public class KandidatRepository {
     private JdbcTemplate jdbcTemplate;
     private SimpleJdbcInsert jdbcInsert;
     private final KandidatMapper kandidatMapper;
-    private final KandidatendringMapper kandidatendringMapper;
+    private final KandidatoppdateringMapper kandidatoppdateringMapper;
 
     @Autowired
-    public KandidatRepository(JdbcTemplate jdbcTemplate, SimpleJdbcInsert simpleJdbcInsert, KandidatMapper kandidatMapper, KandidatendringMapper kandidatendringMapper) {
+    public KandidatRepository(JdbcTemplate jdbcTemplate, SimpleJdbcInsert simpleJdbcInsert, KandidatMapper kandidatMapper, KandidatoppdateringMapper kandidatoppdateringMapper) {
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcInsert = simpleJdbcInsert
                 .withTableName(KANDIDAT_TABELL)
                 .usingGeneratedKeyColumns(ID);
         this.kandidatMapper = kandidatMapper;
-        this.kandidatendringMapper = kandidatendringMapper;
+        this.kandidatoppdateringMapper = kandidatoppdateringMapper;
     }
 
     public Optional<Kandidat> hentNyesteKandidat(String aktørId) {
@@ -72,9 +72,9 @@ public class KandidatRepository {
         return jdbcTemplate.query(query, kandidatMapper);
     }
 
-    public List<Kandidatendring> hentNyesteKandidatendringer() {
+    public List<Kandidatoppdatering> hentNyesteKandidatoppdateringer() {
         String query = lagKandidatQuery(true);
-        return jdbcTemplate.query(query, kandidatendringMapper);
+        return jdbcTemplate.query(query, kandidatoppdateringMapper);
     }
 
     private String lagKandidatQuery(boolean inkluderSlettedeKandidater) {

@@ -28,13 +28,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 @DirtiesContext
 @ActiveProfiles({"local", "mock"})
-public class KandidatEndretProducerTest {
+public class KandidatoppdateringProducerTest {
 
     @Autowired
     private KafkaMockServer embeddedKafka;
 
     @Autowired
-    private KandidatendringProducer kandidatEndretProducer;
+    private KandidatoppdateringProducer kandidatoppdateringProducer;
 
     private Consumer<String, String> consumer;
 
@@ -46,20 +46,20 @@ public class KandidatEndretProducerTest {
 
         ConsumerFactory<String, String> cf = new DefaultKafkaConsumerFactory<>(consumerProps);
         consumer = cf.createConsumer();
-        embeddedKafka.getEmbeddedKafka().consumeFromAnEmbeddedTopic(consumer, "aapen-tag-kandidatEndret-v1-default");
+        embeddedKafka.getEmbeddedKafka().consumeFromAnEmbeddedTopic(consumer, "aapen-tag-kandidatoppdatering-v1-default");
     }
 
     @Test
-    public void kandidatEndret__skal_sende_melding_på_kafka_topic() throws JSONException {
-        Kandidatendring kandidatEndret = new Kandidatendring(enAktørId(), true);
-        kandidatEndretProducer.kandidatEndret(kandidatEndret.getAktoerId(), kandidatEndret.isHarTilretteleggingsbehov());
+    public void kandidatOppdatert__skal_sende_melding_på_kafka_topic() throws JSONException {
+        Kandidatoppdatering kandidatoppdatering = new Kandidatoppdatering(enAktørId(), true);
+        kandidatoppdateringProducer.kandidatOppdatert(kandidatoppdatering.getAktoerId(), kandidatoppdatering.isHarTilretteleggingsbehov());
 
-        ConsumerRecord<String, String> melding = KafkaTestUtils.getSingleRecord(consumer, "aapen-tag-kandidatEndret-v1-default");
+        ConsumerRecord<String, String> melding = KafkaTestUtils.getSingleRecord(consumer, "aapen-tag-kandidatoppdatering-v1-default");
 
         JSONObject json = new JSONObject(melding.value());
-        assertThat(melding.key()).isEqualTo(kandidatEndret.getAktoerId());
-        assertThat(json.get("aktoerId")).isEqualTo(kandidatEndret.getAktoerId());
-        assertThat(json.get("harTilretteleggingsbehov")).isEqualTo(kandidatEndret.isHarTilretteleggingsbehov());
+        assertThat(melding.key()).isEqualTo(kandidatoppdatering.getAktoerId());
+        assertThat(json.get("aktoerId")).isEqualTo(kandidatoppdatering.getAktoerId());
+        assertThat(json.get("harTilretteleggingsbehov")).isEqualTo(kandidatoppdatering.isHarTilretteleggingsbehov());
     }
 
     @After

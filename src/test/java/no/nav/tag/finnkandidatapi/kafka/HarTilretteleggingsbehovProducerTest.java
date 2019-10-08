@@ -46,7 +46,7 @@ public class HarTilretteleggingsbehovProducerTest {
 
         ConsumerFactory<String, String> cf = new DefaultKafkaConsumerFactory<>(consumerProps);
         consumer = cf.createConsumer();
-        embeddedKafka.getEmbeddedKafka().consumeFromAnEmbeddedTopic(consumer, "aapen-tag-kandidatoppdatering-v1-default");
+        embeddedKafka.getEmbeddedKafka().consumeFromAnEmbeddedTopic(consumer, "aapen-tag-kandidatEndret-v1-default");
     }
 
     @Test
@@ -54,7 +54,7 @@ public class HarTilretteleggingsbehovProducerTest {
         HarTilretteleggingsbehov harTilretteleggingsbehov = new HarTilretteleggingsbehov(enAktørId(), true);
         harTilretteleggingsbehovProducer.sendKafkamelding(harTilretteleggingsbehov.getAktoerId(), harTilretteleggingsbehov.isHarTilretteleggingsbehov());
 
-        ConsumerRecord<String, String> melding = KafkaTestUtils.getSingleRecord(consumer, "aapen-tag-kandidatoppdatering-v1-default");
+        ConsumerRecord<String, String> melding = KafkaTestUtils.getSingleRecord(consumer, "aapen-tag-kandidatEndret-v1-default");
 
         JSONObject json = new JSONObject(melding.value());
         assertThat(melding.key()).isEqualTo(harTilretteleggingsbehov.getAktoerId());

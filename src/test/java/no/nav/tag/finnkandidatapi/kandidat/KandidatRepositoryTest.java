@@ -195,7 +195,7 @@ public class KandidatRepositoryTest {
         List<HarTilretteleggingsbehov> kandidater = repository.hentHarTilretteleggingsbehov();
 
         assertThat(kandidater.size()).isEqualTo(2);
-        assertThat(kandidater.get(1).isHarTilretteleggingsbehov()).isTrue();
+        assertThat(kandidater.get(1).isHarTilretteleggingsbehov()).isFalse();
     }
 
     @Test
@@ -225,21 +225,15 @@ public class KandidatRepositoryTest {
                 .aktørId("1000000000001")
                 .sistEndret(now())
                 .build();
-        Kandidat sisteKandidat = kandidatBuilder()
-                .aktørId("1000000000001")
-                .sistEndret(now().plusMinutes(2))
-                .build();
 
         repository.lagreKandidat(kandidat);
-        repository.lagreKandidat(sisteKandidat);
-
-        repository.slettKandidat(sisteKandidat.getAktørId(), enVeileder(), now().plusMinutes(3));
+        repository.slettKandidat(kandidat.getAktørId(), enVeileder(), now().plusMinutes(3));
 
         List<HarTilretteleggingsbehov> kandidatoppdateringer = repository.hentHarTilretteleggingsbehov();
 
         assertThat(kandidatoppdateringer.size()).isEqualTo(1);
-        assertThat(kandidatoppdateringer.get(0).isHarTilretteleggingsbehov()).isTrue();
-        assertThat(kandidatoppdateringer.get(0).getAktoerId()).isEqualTo(sisteKandidat.getAktørId());
+        assertThat(kandidatoppdateringer.get(0).isHarTilretteleggingsbehov()).isFalse();
+        assertThat(kandidatoppdateringer.get(0).getAktoerId()).isEqualTo(kandidat.getAktørId());
     }
 
     @Test

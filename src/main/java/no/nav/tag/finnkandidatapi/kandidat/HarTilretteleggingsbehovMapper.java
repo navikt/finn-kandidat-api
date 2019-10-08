@@ -13,6 +13,6 @@ import static no.nav.tag.finnkandidatapi.kandidat.KandidatRepository.*;
 public class HarTilretteleggingsbehovMapper implements RowMapper<HarTilretteleggingsbehov> {
     @Override
     public HarTilretteleggingsbehov mapRow(ResultSet rs, int i) throws SQLException {
-        return new HarTilretteleggingsbehov(rs.getString(AKTØR_ID), rs.getBoolean(SLETTET));
+        return new HarTilretteleggingsbehov(rs.getString(AKTØR_ID), !rs.getBoolean(SLETTET));
     }
 }

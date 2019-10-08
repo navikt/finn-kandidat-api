@@ -1,6 +1,6 @@
 package no.nav.tag.finnkandidatapi.kandidat;
 
-import no.nav.tag.finnkandidatapi.kafka.Kandidatoppdatering;
+import no.nav.tag.finnkandidatapi.kafka.HarTilretteleggingsbehov;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -72,7 +72,7 @@ public class KandidatRepository {
         return jdbcTemplate.query(query, kandidatMapper);
     }
 
-    public List<Kandidatoppdatering> hentNyesteKandidatoppdateringer() {
+    public List<HarTilretteleggingsbehov> hentHarTilretteleggingsbehov() {
         String query = lagKandidatQuery(true);
         return jdbcTemplate.query(query, kandidatoppdateringMapper);
     }

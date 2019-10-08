@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class Kandidatoppdatering {
+public class HarTilretteleggingsbehov {
     private String aktoerId;
     private boolean harTilretteleggingsbehov;
 }

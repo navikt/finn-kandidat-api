@@ -4,7 +4,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.tag.finnkandidatapi.metrikker.KandidatOpprettet;
+import no.nav.tag.finnkandidatapi.metrikker.KandidatSlettet;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.event.EventListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Component;
@@ -13,15 +16,15 @@ import java.util.concurrent.ExecutionException;
 
 @Component
 @Slf4j
-public class KandidatoppdateringProducer {
+public class HarTilretteleggingsbehovProducer {
 
-    private static final String KANDIDAT_ENDRET_PRODUSENT_FEILET = "finnkandidat.kandidatendret.feilet";
+    private static final String HAR_TILRETTELEGGINGSBEHOV_PRODUSENT_FEILET = "finnkandidat.harTilretteleggingsbehovProdusent.feilet";
 
     private KafkaTemplate<String, String> kafkaTemplate;
     private String topic;
     private MeterRegistry meterRegistry;
 
-    public KandidatoppdateringProducer(
+    public HarTilretteleggingsbehovProducer(
             KafkaTemplate<String, String> kafkaTemplate,
             @Value("${kandidat-endret.topic}") String topic,
             MeterRegistry meterRegistry
@@ -29,13 +32,23 @@ public class KandidatoppdateringProducer {
         this.kafkaTemplate = kafkaTemplate;
         this.topic = topic;
         this.meterRegistry = meterRegistry;
-        meterRegistry.counter(KANDIDAT_ENDRET_PRODUSENT_FEILET);
+        meterRegistry.counter(HAR_TILRETTELEGGINGSBEHOV_PRODUSENT_FEILET);
     }
 
-    public void kandidatOppdatert(String aktørId, boolean harTilretteleggingsbehov) {
+    @EventListener
+    public void kandidatOpprettet(KandidatOpprettet event) {
+        sendKafkamelding(event.getKandidat().getAktørId(), true);
+    }
+
+    @EventListener
+    public void kandidatSlettet(KandidatSlettet event) {
+        sendKafkamelding(event.getAktørId(), false);
+    }
+
+    public void sendKafkamelding(String aktørId, boolean harTilretteleggingsbehov) {
         try {
             ObjectMapper mapper = new ObjectMapper();
-            Kandidatoppdatering kandidatoppdatering = new Kandidatoppdatering(aktørId, harTilretteleggingsbehov);
+            HarTilretteleggingsbehov kandidatoppdatering = new HarTilretteleggingsbehov(aktørId, harTilretteleggingsbehov);
             String serialisertKandidatoppdatering = mapper.writeValueAsString(kandidatoppdatering);
 
             SendResult<String, String> result = kafkaTemplate.send(
@@ -52,12 +65,12 @@ public class KandidatoppdateringProducer {
 
         } catch (JsonProcessingException e) {
             // TODO: Ha varsel på dette i Grafana med all info som trengs
-            meterRegistry.counter(KANDIDAT_ENDRET_PRODUSENT_FEILET).increment();
+            meterRegistry.counter(HAR_TILRETTELEGGINGSBEHOV_PRODUSENT_FEILET).increment();
             log.error("Kunne ikke serialisere kandidat endret", e);
 
         } catch (InterruptedException | ExecutionException e) {
             // TODO: Ha varsel på dette i Grafana med all info som trengs
-            meterRegistry.counter(KANDIDAT_ENDRET_PRODUSENT_FEILET).increment();
+            meterRegistry.counter(HAR_TILRETTELEGGINGSBEHOV_PRODUSENT_FEILET).increment();
             // TOOD: Håndter kafka-meldinger som ikke ble sendt.
             log.error("Kunne ikke sende kandidat på Kafka-topic", e);
         }

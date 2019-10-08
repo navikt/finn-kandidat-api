@@ -28,13 +28,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 @DirtiesContext
 @ActiveProfiles({"local", "mock"})
-public class KandidatoppdateringProducerTest {
+public class HarTilretteleggingsbehovProducerTest {
 
     @Autowired
     private KafkaMockServer embeddedKafka;
 
     @Autowired
-    private KandidatoppdateringProducer kandidatoppdateringProducer;
+    private HarTilretteleggingsbehovProducer harTilretteleggingsbehovProducer;
 
     private Consumer<String, String> consumer;
 
@@ -51,15 +51,15 @@ public class KandidatoppdateringProducerTest {
 
     @Test
     public void kandidatOppdatert__skal_sende_melding_på_kafka_topic() throws JSONException {
-        Kandidatoppdatering kandidatoppdatering = new Kandidatoppdatering(enAktørId(), true);
-        kandidatoppdateringProducer.kandidatOppdatert(kandidatoppdatering.getAktoerId(), kandidatoppdatering.isHarTilretteleggingsbehov());
+        HarTilretteleggingsbehov harTilretteleggingsbehov = new HarTilretteleggingsbehov(enAktørId(), true);
+        harTilretteleggingsbehovProducer.sendKafkamelding(harTilretteleggingsbehov.getAktoerId(), harTilretteleggingsbehov.isHarTilretteleggingsbehov());
 
         ConsumerRecord<String, String> melding = KafkaTestUtils.getSingleRecord(consumer, "aapen-tag-kandidatoppdatering-v1-default");
 
         JSONObject json = new JSONObject(melding.value());
-        assertThat(melding.key()).isEqualTo(kandidatoppdatering.getAktoerId());
-        assertThat(json.get("aktoerId")).isEqualTo(kandidatoppdatering.getAktoerId());
-        assertThat(json.get("harTilretteleggingsbehov")).isEqualTo(kandidatoppdatering.isHarTilretteleggingsbehov());
+        assertThat(melding.key()).isEqualTo(harTilretteleggingsbehov.getAktoerId());
+        assertThat(json.get("aktoerId")).isEqualTo(harTilretteleggingsbehov.getAktoerId());
+        assertThat(json.get("harTilretteleggingsbehov")).isEqualTo(harTilretteleggingsbehov.isHarTilretteleggingsbehov());
     }
 
     @After

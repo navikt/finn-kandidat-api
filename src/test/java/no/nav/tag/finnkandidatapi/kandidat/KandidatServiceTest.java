@@ -2,7 +2,6 @@ package no.nav.tag.finnkandidatapi.kandidat;
 
 import no.nav.tag.finnkandidatapi.DateProvider;
 import no.nav.tag.finnkandidatapi.aktørregister.AktørRegisterClient;
-import no.nav.tag.finnkandidatapi.kafka.KandidatoppdateringProducer;
 import no.nav.tag.finnkandidatapi.kafka.oppfølgingAvsluttet.OppfølgingAvsluttetMelding;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatEndret;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatOpprettet;
@@ -43,12 +42,9 @@ public class KandidatServiceTest {
     @Mock
     private AktørRegisterClient aktørRegisterClient;
 
-    @Mock
-    private KandidatoppdateringProducer kandidatoppdateringProducer;
-
     @Before
     public void setUp() {
-        kandidatService = new KandidatService(repository, eventPublisher, aktørRegisterClient, kandidatoppdateringProducer, dateProvider);
+        kandidatService = new KandidatService(repository, eventPublisher, aktørRegisterClient, dateProvider);
     }
 
     @Test
@@ -97,18 +93,6 @@ public class KandidatServiceTest {
         kandidatService.opprettKandidat(kandidat, enVeileder());
 
         verify(eventPublisher).publishEvent(new KandidatOpprettet(kandidat));
-    }
-
-    @Test
-    public void opprettKandidat__skal_kalle_kandidatoppdateringProducer_hvis_kandidat_opprettet() {
-        Kandidat kandidat = enKandidat();
-
-        when(repository.lagreKandidat(kandidat)).thenReturn(1);
-        when(repository.hentKandidat(1)).thenReturn(Optional.of(kandidat));
-
-        kandidatService.opprettKandidat(kandidat, enVeileder());
-
-        verify(kandidatoppdateringProducer).kandidatOppdatert(kandidat.getAktørId(),true);
     }
 
     @Test
@@ -166,21 +150,6 @@ public class KandidatServiceTest {
     }
 
     @Test
-    public void slettKandidat__skal_kalle_kandidatoppdateringProducer_hvis_kandidat_slettet() {
-        String aktørId = "1000000000001";
-        Veileder veileder = enVeileder();
-        LocalDateTime datetime = LocalDateTime.now();
-
-        when(dateProvider.now()).thenReturn(datetime);
-        Optional<Integer> slettetKey = Optional.of(4);
-        when(repository.slettKandidat(aktørId, veileder, datetime)).thenReturn(slettetKey);
-
-        kandidatService.slettKandidat(aktørId, veileder);
-
-        verify(kandidatoppdateringProducer).kandidatOppdatert(aktørId, false);
-    }
-
-    @Test
     public void slettKandidat_skal_returnere_id() {
         String aktørId = "1000000000001";
         Veileder veileder = enVeileder();
@@ -210,19 +179,6 @@ public class KandidatServiceTest {
         kandidatService.behandleOppfølgingAvsluttet(new OppfølgingAvsluttetMelding(aktørId, new Date()));
 
         verify(eventPublisher).publishEvent(new KandidatSlettet(slettetKey.get(), aktørId, Brukertype.SYSTEM, datetime));
-    }
-
-    @Test
-    public void behandleOppfølgingAvsluttet__skal_kalle_kandidatoppdateringProducer_hvis_kandidat_slettet() {
-        String aktørId = "1856024171652";
-        LocalDateTime datetime = LocalDateTime.now();
-        when(dateProvider.now()).thenReturn(datetime);
-        Optional<Integer> slettetKey = Optional.of(4);
-        when(repository.slettKandidatSomMaskinbruker(aktørId, datetime)).thenReturn(slettetKey);
-
-        kandidatService.behandleOppfølgingAvsluttet(new OppfølgingAvsluttetMelding(aktørId, new Date()));
-
-        verify(kandidatoppdateringProducer).kandidatOppdatert(aktørId, false);
     }
 
     @Test

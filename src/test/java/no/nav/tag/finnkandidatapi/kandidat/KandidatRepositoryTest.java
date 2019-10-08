@@ -1,6 +1,6 @@
 package no.nav.tag.finnkandidatapi.kandidat;
 
-import no.nav.tag.finnkandidatapi.kafka.KandidatEndret;
+import no.nav.tag.finnkandidatapi.kafka.Kandidatendring;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -9,7 +9,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -193,14 +192,14 @@ public class KandidatRepositoryTest {
 
         repository.slettKandidat(kandidat2.getAktørId(), enVeileder(), now());
 
-        List<KandidatEndret> kandidater = repository.hentSisteKandidatendringer();
+        List<Kandidatendring> kandidater = repository.hentNyesteKandidatendringer();
 
         assertThat(kandidater.size()).isEqualTo(2);
         assertThat(kandidater.get(1).isHarTilretteleggingsbehov()).isTrue();
     }
 
     @Test
-    public void hentSisteKandidatendringer__skal_returnere_de_siste_registrerte_kandidatene() {
+    public void hentNyesteKandidatendringer__skal_returnere_de_siste_registrerte_kandidatene() {
         Kandidat kandidat = kandidatBuilder()
                 .aktørId("1000000000001")
                 .sistEndret(now())
@@ -213,14 +212,14 @@ public class KandidatRepositoryTest {
         repository.lagreKandidat(kandidat);
         repository.lagreKandidat(sisteKandidat);
 
-        List<KandidatEndret> kandidater = repository.hentSisteKandidatendringer();
+        List<Kandidatendring> kandidater = repository.hentNyesteKandidatendringer();
 
         assertThat(kandidater.size()).isEqualTo(1);
         assertThat(kandidater.get(0).getAktoerId()).isEqualTo(sisteKandidat.getAktørId());
     }
 
     @Test
-    public void hentSisteKandidatendringer__skal_returnere_de_siste_registrerte_og_slettede_kandidatene() {
+    public void hentNyesteKandidatendringer__skal_returnere_den_nyeste_kandidatendringen() {
         Kandidat kandidat = kandidatBuilder()
                 .aktørId("1000000000001")
                 .sistEndret(now())
@@ -235,10 +234,11 @@ public class KandidatRepositoryTest {
 
         repository.slettKandidat(sisteKandidat.getAktørId(), enVeileder(), now().plusMinutes(3));
 
-        List<KandidatEndret> kandidater = repository.hentSisteKandidatendringer();
+        List<Kandidatendring> kandidatendringer = repository.hentNyesteKandidatendringer();
 
-        assertThat(kandidater.size()).isEqualTo(1);
-        assertThat(kandidater.get(0).isHarTilretteleggingsbehov()).isTrue();
+        assertThat(kandidatendringer.size()).isEqualTo(1);
+        assertThat(kandidatendringer.get(0).isHarTilretteleggingsbehov()).isTrue();
+        assertThat(kandidatendringer.get(0).getAktoerId()).isEqualTo(sisteKandidat.getAktørId());
     }
 
     @Test

@@ -1,6 +1,6 @@
 package no.nav.tag.finnkandidatapi.kandidat;
 
-import no.nav.tag.finnkandidatapi.kafka.KandidatEndret;
+import no.nav.tag.finnkandidatapi.kafka.Kandidatendring;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
@@ -10,9 +10,9 @@ import java.sql.SQLException;
 import static no.nav.tag.finnkandidatapi.kandidat.KandidatRepository.*;
 
 @Component
-public class KandidatEndretMapper implements RowMapper<KandidatEndret> {
+public class KandidatendringMapper implements RowMapper<Kandidatendring> {
     @Override
-    public KandidatEndret mapRow(ResultSet rs, int i) throws SQLException {
-        return new KandidatEndret(rs.getString(AKTØR_ID), rs.getBoolean(SLETTET));
+    public Kandidatendring mapRow(ResultSet rs, int i) throws SQLException {
+        return new Kandidatendring(rs.getString(AKTØR_ID), rs.getBoolean(SLETTET));
     }
 }

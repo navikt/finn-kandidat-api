@@ -2,8 +2,7 @@ package no.nav.tag.finnkandidatapi.kafka.republisher;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.security.oidc.api.Protected;
-import no.nav.tag.finnkandidatapi.kafka.KandidatEndret;
-import no.nav.tag.finnkandidatapi.kafka.KandidatEndretProducer;
+import no.nav.tag.finnkandidatapi.kafka.KandidatendringProducer;
 import no.nav.tag.finnkandidatapi.kandidat.KandidatRepository;
 import no.nav.tag.finnkandidatapi.tilgangskontroll.TilgangskontrollException;
 import no.nav.tag.finnkandidatapi.tilgangskontroll.TilgangskontrollService;
@@ -19,14 +18,18 @@ import org.springframework.web.bind.annotation.RestController;
 @Protected
 @Slf4j
 public class KafkaRepublisher {
-    private final KandidatEndretProducer kandidatEndretProducer;
+    private final KandidatendringProducer kandidatEndretProducer;
     private final KandidatRepository kandidatRepository;
     private final TilgangskontrollService tilgangskontrollService;
     private final KafkaRepublisherConfig config;
 
     @Autowired
     public KafkaRepublisher(
-            KandidatEndretProducer kandidatEndretProducer, KandidatRepository kandidatRepository, TilgangskontrollService tilgangskontrollService, KafkaRepublisherConfig config) {
+            KandidatendringProducer kandidatEndretProducer,
+            KandidatRepository kandidatRepository,
+            TilgangskontrollService tilgangskontrollService,
+            KafkaRepublisherConfig config
+    ) {
         this.kandidatEndretProducer = kandidatEndretProducer;
         this.kandidatRepository = kandidatRepository;
         this.tilgangskontrollService = tilgangskontrollService;
@@ -41,7 +44,7 @@ public class KafkaRepublisher {
     public ResponseEntity republiserAlleKandidater() {
         sjekkTilgangTilRepublisher();
 
-        kandidatRepository.hentSisteKandidatendringer().forEach(kandidatendring -> {
+        kandidatRepository.hentNyesteKandidatendringer().forEach(kandidatendring -> {
             kandidatEndretProducer.kandidatEndret(kandidatendring.getAktoerId(), kandidatendring.isHarTilretteleggingsbehov());
         });
 

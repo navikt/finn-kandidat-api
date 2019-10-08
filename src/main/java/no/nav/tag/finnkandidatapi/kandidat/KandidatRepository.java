@@ -1,7 +1,6 @@
 package no.nav.tag.finnkandidatapi.kandidat;
 
-import kafka.Kafka;
-import no.nav.tag.finnkandidatapi.kafka.KandidatEndret;
+import no.nav.tag.finnkandidatapi.kafka.Kandidatendring;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -32,22 +31,22 @@ public class KandidatRepository {
     private JdbcTemplate jdbcTemplate;
     private SimpleJdbcInsert jdbcInsert;
     private final KandidatMapper kandidatMapper;
-    private final KandidatEndretMapper kandidatEndretMapper;
+    private final KandidatendringMapper kandidatendringMapper;
 
     @Autowired
-    public KandidatRepository(JdbcTemplate jdbcTemplate, SimpleJdbcInsert simpleJdbcInsert, KandidatMapper kandidatMapper, KandidatEndretMapper kandidatEndretMapper) {
+    public KandidatRepository(JdbcTemplate jdbcTemplate, SimpleJdbcInsert simpleJdbcInsert, KandidatMapper kandidatMapper, KandidatendringMapper kandidatendringMapper) {
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcInsert = simpleJdbcInsert
                 .withTableName(KANDIDAT_TABELL)
                 .usingGeneratedKeyColumns(ID);
         this.kandidatMapper = kandidatMapper;
-        this.kandidatEndretMapper = kandidatEndretMapper;
+        this.kandidatendringMapper = kandidatendringMapper;
     }
 
     public Optional<Kandidat> hentNyesteKandidat(String aktørId) {
         try {
             Kandidat kandidat = jdbcTemplate.queryForObject(
-                    "SELECT * FROM kandidat WHERE (aktor_id = ?) ORDER BY registreringstidspunkt DESC LIMIT 1", new Object[]{ aktørId },
+                    "SELECT * FROM kandidat WHERE (aktor_id = ?) ORDER BY registreringstidspunkt DESC LIMIT 1", new Object[]{aktørId},
                     kandidatMapper
             );
             return Optional.ofNullable(kandidat);
@@ -73,22 +72,24 @@ public class KandidatRepository {
         return jdbcTemplate.query(query, kandidatMapper);
     }
 
-    public List<KandidatEndret> hentSisteKandidatendringer() {
+    public List<Kandidatendring> hentNyesteKandidatendringer() {
         String query = lagKandidatQuery(true);
-        return jdbcTemplate.query(query, kandidatEndretMapper);
+        return jdbcTemplate.query(query, kandidatendringMapper);
     }
 
     private String lagKandidatQuery(boolean inkluderSlettedeKandidater) {
-        return "SELECT k.* " +
-                    "FROM kandidat k " +
-                    "INNER JOIN " +
-                    "(SELECT aktor_id, MAX(registreringstidspunkt) AS sisteRegistrert " +
-                    "FROM kandidat " +
-                    "GROUP BY aktor_id) gruppertKandidat " +
-                    "ON k.aktor_id = gruppertKandidat.aktor_id " +
-                    "AND k.registreringstidspunkt = gruppertKandidat.sisteRegistrert " +
-                    (inkluderSlettedeKandidater ? "" : "WHERE slettet = false") +
-                "ORDER BY k.registreringstidspunkt";
+        return (
+                "SELECT k.* " +
+                        "FROM kandidat k " +
+                        "INNER JOIN " +
+                        "(SELECT aktor_id, MAX(registreringstidspunkt) AS sisteRegistrert " +
+                        "FROM kandidat " +
+                        "GROUP BY aktor_id) gruppertKandidat " +
+                        "ON k.aktor_id = gruppertKandidat.aktor_id " +
+                        "AND k.registreringstidspunkt = gruppertKandidat.sisteRegistrert " +
+                        (inkluderSlettedeKandidater ? "" : "WHERE slettet = false ") +
+                        "ORDER BY k.registreringstidspunkt"
+        );
     }
 
     public void slettAlleKandidater() {

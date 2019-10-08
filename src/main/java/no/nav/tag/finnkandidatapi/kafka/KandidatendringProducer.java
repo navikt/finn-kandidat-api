@@ -13,7 +13,7 @@ import java.util.concurrent.ExecutionException;
 
 @Component
 @Slf4j
-public class  KandidatEndretProducer {
+public class KandidatendringProducer {
 
     private static final String KANDIDAT_ENDRET_PRODUSENT_FEILET = "finnkandidat.kandidatendret.feilet";
 
@@ -21,7 +21,7 @@ public class  KandidatEndretProducer {
     private String topic;
     private MeterRegistry meterRegistry;
 
-    public KandidatEndretProducer(
+    public KandidatendringProducer(
             KafkaTemplate<String, String> kafkaTemplate,
             @Value("${kandidat-endret.topic}") String topic,
             MeterRegistry meterRegistry
@@ -32,11 +32,11 @@ public class  KandidatEndretProducer {
         meterRegistry.counter(KANDIDAT_ENDRET_PRODUSENT_FEILET);
     }
 
-    public void kandidatEndret(String aktørId, Boolean harTilretteleggingsbehov) {
+    public void kandidatEndret(String aktørId, boolean harTilretteleggingsbehov) {
         try {
-            KandidatEndret kandidatEndret = new KandidatEndret(aktørId, harTilretteleggingsbehov);
             ObjectMapper mapper = new ObjectMapper();
-            String serialisertKandidatEndret = mapper.writeValueAsString(kandidatEndret);
+            Kandidatendring kandidatendring = new Kandidatendring(aktørId, harTilretteleggingsbehov);
+            String serialisertKandidatEndret = mapper.writeValueAsString(kandidatendring);
 
             SendResult<String, String> result = kafkaTemplate.send(
                     topic,

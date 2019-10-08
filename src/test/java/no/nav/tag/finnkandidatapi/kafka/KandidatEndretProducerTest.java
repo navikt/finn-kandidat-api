@@ -34,7 +34,7 @@ public class KandidatEndretProducerTest {
     private KafkaMockServer embeddedKafka;
 
     @Autowired
-    private KandidatEndretProducer kandidatEndretProducer;
+    private KandidatendringProducer kandidatEndretProducer;
 
     private Consumer<String, String> consumer;
 
@@ -51,7 +51,7 @@ public class KandidatEndretProducerTest {
 
     @Test
     public void kandidatEndret__skal_sende_melding_på_kafka_topic() throws JSONException {
-        KandidatEndret kandidatEndret = new KandidatEndret(enAktørId(), true);
+        Kandidatendring kandidatEndret = new Kandidatendring(enAktørId(), true);
         kandidatEndretProducer.kandidatEndret(kandidatEndret.getAktoerId(), kandidatEndret.isHarTilretteleggingsbehov());
 
         ConsumerRecord<String, String> melding = KafkaTestUtils.getSingleRecord(consumer, "aapen-tag-kandidatEndret-v1-default");

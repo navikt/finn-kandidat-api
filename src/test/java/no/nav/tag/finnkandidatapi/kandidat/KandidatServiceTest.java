@@ -2,7 +2,7 @@ package no.nav.tag.finnkandidatapi.kandidat;
 
 import no.nav.tag.finnkandidatapi.DateProvider;
 import no.nav.tag.finnkandidatapi.aktørregister.AktørRegisterClient;
-import no.nav.tag.finnkandidatapi.kafka.KandidatEndretProducer;
+import no.nav.tag.finnkandidatapi.kafka.KandidatendringProducer;
 import no.nav.tag.finnkandidatapi.kafka.oppfølgingAvsluttet.OppfølgingAvsluttetMelding;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatEndret;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatOpprettet;
@@ -44,7 +44,7 @@ public class KandidatServiceTest {
     private AktørRegisterClient aktørRegisterClient;
 
     @Mock
-    private KandidatEndretProducer kandidatEndretProducer;
+    private KandidatendringProducer kandidatEndretProducer;
 
     @Before
     public void setUp() {

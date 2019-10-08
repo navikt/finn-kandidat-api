@@ -25,7 +25,7 @@ public class KandidatRepositoryEnhetTest {
     private KandidatMapper kandidatMapper;
 
     @Mock
-    private KandidatEndretMapper kandidatEndretMapper;
+    private KandidatendringMapper kandidatEndretMapper;
 
     @Mock
     private SimpleJdbcInsert jdbcInsert;

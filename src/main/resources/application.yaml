@@ -14,6 +14,8 @@ spring:
       group-id: finn-kandidat
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    producer:
+      retries: 25
 
 kandidat-endret.topic: aapen-tag-kandidatEndret-v1-default
 

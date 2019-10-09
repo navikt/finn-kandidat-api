@@ -10,7 +10,7 @@ spec:
       channel: 'tag-notifications'
       prependText: '<!here> '
   alerts:
-    - alert: (finn-kandidat-api) Konsumering av avsluttet oppfølging melding feilet
+    - alert: (finn-kandidat-api) Konsumering av avsluttet oppfølging-melding feilet
       expr: sum(increase(finnkandidat_avsluttetoppfolging_feilet_total[5m])) > 0
       for: 1m
       action: "Gå i Kibana og søk etter følgende for de siste 10 min: application:finn-kandidat-api AND envclass:p AND level:Error"

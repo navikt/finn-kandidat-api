@@ -2,6 +2,7 @@ package no.nav.tag.finnkandidatapi.kafka.republisher;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.security.oidc.api.Protected;
+import no.nav.tag.finnkandidatapi.kafka.HarTilretteleggingsbehov;
 import no.nav.tag.finnkandidatapi.kafka.HarTilretteleggingsbehovProducer;
 import no.nav.tag.finnkandidatapi.kandidat.KandidatRepository;
 import no.nav.tag.finnkandidatapi.tilgangskontroll.TilgangskontrollException;
@@ -12,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @Component
@@ -42,20 +45,25 @@ public class KafkaRepublisher {
      */
     @PostMapping("/internal/kafka/republish")
     public ResponseEntity republiserAlleKandidater() {
-        sjekkTilgangTilRepublisher();
+        String ident = sjekkTilgangTilRepublisher();
 
-        kandidatRepository.hentHarTilretteleggingsbehov().forEach(oppdatering -> {
+        List<HarTilretteleggingsbehov> kandidatoppdateringer = kandidatRepository.hentHarTilretteleggingsbehov();
+
+        log.warn("Bruker med ident {} republiserer alle {} kandidater!", ident, kandidatoppdateringer.size());
+        kandidatoppdateringer.forEach(oppdatering -> {
             harTilretteleggingsbehovProducer.sendKafkamelding(oppdatering.getAktoerId(), oppdatering.isHarTilretteleggingsbehov());
         });
 
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    private void sjekkTilgangTilRepublisher() {
+    private String sjekkTilgangTilRepublisher() {
         String innloggetNavIdent = tilgangskontrollService.hentInnloggetVeileder().getNavIdent();
 
         if (!config.getNavIdenterSomKanRepublisere().contains(innloggetNavIdent)) {
             throw new TilgangskontrollException("Bruker med ident " + innloggetNavIdent + " har ikke tilgang til å republisere Kafka-meldinger");
         }
+
+        return innloggetNavIdent;
     }
 }

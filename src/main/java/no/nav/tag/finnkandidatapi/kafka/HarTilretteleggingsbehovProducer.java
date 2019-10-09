@@ -4,7 +4,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.tag.finnkandidatapi.metrikker.KandidatOpprettet;
+import no.nav.tag.finnkandidatapi.metrikker.KandidatSlettet;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.event.EventListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Component;
@@ -13,7 +16,7 @@ import java.util.concurrent.ExecutionException;
 
 @Component
 @Slf4j
-public class  KandidatEndretProducer {
+public class HarTilretteleggingsbehovProducer {
 
     private static final String KANDIDAT_ENDRET_PRODUSENT_FEILET = "finnkandidat.kandidatendret.feilet";
 
@@ -21,7 +24,7 @@ public class  KandidatEndretProducer {
     private String topic;
     private MeterRegistry meterRegistry;
 
-    public KandidatEndretProducer(
+    public HarTilretteleggingsbehovProducer(
             KafkaTemplate<String, String> kafkaTemplate,
             @Value("${kandidat-endret.topic}") String topic,
             MeterRegistry meterRegistry
@@ -32,16 +35,26 @@ public class  KandidatEndretProducer {
         meterRegistry.counter(KANDIDAT_ENDRET_PRODUSENT_FEILET);
     }
 
-    public void kandidatEndret(String aktørId, Boolean harTilretteleggingsbehov) {
+    @EventListener
+    public void kandidatOpprettet(KandidatOpprettet event) {
+        sendKafkamelding(event.getKandidat().getAktørId(), true);
+    }
+
+    @EventListener
+    public void kandidatSlettet(KandidatSlettet event) {
+        sendKafkamelding(event.getAktørId(), false);
+    }
+
+    public void sendKafkamelding(String aktørId, Boolean harTilretteleggingsbehov) {
         try {
-            KandidatEndret kandidatEndret = new KandidatEndret(aktørId, harTilretteleggingsbehov);
             ObjectMapper mapper = new ObjectMapper();
-            String serialisertKandidatEndret = mapper.writeValueAsString(kandidatEndret);
+            HarTilretteleggingsbehov melding = new HarTilretteleggingsbehov(aktørId, harTilretteleggingsbehov);
+            String serialisertMelding = mapper.writeValueAsString(melding);
 
             SendResult<String, String> result = kafkaTemplate.send(
                     topic,
                     aktørId,
-                    serialisertKandidatEndret
+                    serialisertMelding
             ).get();
 
             // TODO: Logge mer her? Ok å logge aktørId?

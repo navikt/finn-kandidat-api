@@ -1,5 +1,6 @@
 package no.nav.tag.finnkandidatapi.kandidat;
 
+import no.nav.tag.finnkandidatapi.kafka.HarTilretteleggingsbehov;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -179,6 +180,60 @@ public class KandidatRepositoryTest {
         List<Kandidat> kandidater = repository.hentKandidater();
 
         assertThat(kandidater.size()).isEqualTo(1);
+    }
+
+    @Test
+    public void hentHarTilretteleggingsbehov__skal_returnere_alle_kandidater_inkludert_slettede() {
+        Kandidat kandidat1 = enKandidat("1000000000001");
+        Kandidat kandidat2 = enKandidat("1000000000002");
+
+        repository.lagreKandidat(kandidat1);
+        repository.lagreKandidat(kandidat2);
+
+        repository.slettKandidat(kandidat2.getAktørId(), enVeileder(), now());
+
+        List<HarTilretteleggingsbehov> kandidater = repository.hentHarTilretteleggingsbehov();
+
+        assertThat(kandidater.size()).isEqualTo(2);
+        assertThat(kandidater.get(1).isHarTilretteleggingsbehov()).isFalse();
+    }
+
+    @Test
+    public void hentHarTilretteleggingsbehov__skal_returnere_om_den_siste_registrerte_kandidaten_har_tilretteleggingsbehov() {
+        Kandidat kandidat = kandidatBuilder()
+                .aktørId("1000000000001")
+                .sistEndret(now())
+                .build();
+        Kandidat sisteKandidat = kandidatBuilder()
+                .aktørId("1000000000001")
+                .sistEndret(now().plusMinutes(2))
+                .build();
+
+        repository.lagreKandidat(kandidat);
+        repository.lagreKandidat(sisteKandidat);
+
+        List<HarTilretteleggingsbehov> kandidater = repository.hentHarTilretteleggingsbehov();
+
+        assertThat(kandidater.size()).isEqualTo(1);
+        assertThat(kandidater.get(0).getAktoerId()).isEqualTo(sisteKandidat.getAktørId());
+        assertThat(kandidater.get(0).isHarTilretteleggingsbehov()).isTrue();
+    }
+
+    @Test
+    public void hentHarTilretteleggingsbehov__skal_returnere_den_nyeste_kandidatoppdateringen() {
+        Kandidat kandidat = kandidatBuilder()
+                .aktørId("1000000000001")
+                .sistEndret(now())
+                .build();
+
+        repository.lagreKandidat(kandidat);
+        repository.slettKandidat(kandidat.getAktørId(), enVeileder(), now().plusMinutes(3));
+
+        List<HarTilretteleggingsbehov> kandidatoppdateringer = repository.hentHarTilretteleggingsbehov();
+
+        assertThat(kandidatoppdateringer.size()).isEqualTo(1);
+        assertThat(kandidatoppdateringer.get(0).isHarTilretteleggingsbehov()).isFalse();
+        assertThat(kandidatoppdateringer.get(0).getAktoerId()).isEqualTo(kandidat.getAktørId());
     }
 
     @Test

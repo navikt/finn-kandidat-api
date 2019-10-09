@@ -4,8 +4,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
+import no.finn.unleash.Unleash;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatOpprettet;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatSlettet;
+import no.nav.tag.finnkandidatapi.unleash.UnleashConfiguration;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.EventListener;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -23,15 +25,17 @@ public class HarTilretteleggingsbehovProducer {
     private KafkaTemplate<String, String> kafkaTemplate;
     private String topic;
     private MeterRegistry meterRegistry;
+    private Unleash unleash;
 
     public HarTilretteleggingsbehovProducer(
             KafkaTemplate<String, String> kafkaTemplate,
             @Value("${kandidat-endret.topic}") String topic,
-            MeterRegistry meterRegistry
-    ) {
+            MeterRegistry meterRegistry,
+            Unleash unleash) {
         this.kafkaTemplate = kafkaTemplate;
         this.topic = topic;
         this.meterRegistry = meterRegistry;
+        this.unleash = unleash;
         meterRegistry.counter(HAR_TILRETTELEGGINGSBEHOV_PRODUSENT_SUKSESS);
         meterRegistry.counter(HAR_TILRETTELEGGINGSBEHOV_PRODUSENT_FEILET);
     }
@@ -47,6 +51,11 @@ public class HarTilretteleggingsbehovProducer {
     }
 
     public void sendKafkamelding(String aktørId, Boolean harTilretteleggingsbehov) {
+        if (!unleash.isEnabled(UnleashConfiguration.HAR_TILRETTELEGGINGSBEHOV_PRODUCER_FEATURE)) {
+            log.info("Har tilretteleggingsbehov produsent er slått av, skulle publisere aktørId: {}", aktørId);
+            return;
+        }
+
         try {
             ObjectMapper mapper = new ObjectMapper();
             HarTilretteleggingsbehov melding = new HarTilretteleggingsbehov(aktørId, harTilretteleggingsbehov);

@@ -1,5 +1,7 @@
 package no.nav.tag.finnkandidatapi.kafka;
 
+import no.finn.unleash.Unleash;
+import no.nav.tag.finnkandidatapi.unleash.UnleashConfiguration;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;

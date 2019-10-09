@@ -1,0 +1,25 @@
+apiVersion: "nais.io/v1alpha1"
+kind: "Alert"
+metadata:
+  name: finn-kandidat-api-alert
+  labels:
+    team: teamtag
+spec:
+  receivers:
+    slack:
+      channel: 'tag-notifications'
+      prependText: '<!here> '
+  alerts:
+    - alert: (finn-kandidat-api) Konsumering av avsluttet oppfølging melding feilet
+      expr: sum(increase(finnkandidat_avsluttetoppfolging_feilet_total[5m])) > 0
+      for: 1m
+      action: "Gå i Kibana og søk etter følgende for de siste 10 min: application:finn-kandidat-api AND envclass:p AND level:Error"
+    - alert: (finn-kandidat-api) Publisering av kafkamelding til PAM feilet
+      expr: sum(increase(finnkandidat_hartilretteleggingsbehov_feilet_total{app="finn-kandidat-api"}[10m])) > 0
+      for: 1m
+      action: "Gå inn i Kibana (https://logs.adeo.no) og søk etter følgende for de siste 15 minutter: application:finn-kandidat-api AND envclass:p AND level:Error"
+    - alert: finn-kandidat-api er nede
+      expr: sum(up{app="finn-kandidat-api", job="kubernetes-pods"}) == 0
+      for: 2m
+      description: "{{ $labels.app }} er nede i {{ $labels.kubernetes_namespace }}"
+      action: "`kubectl describe pod {{ $labels.kubernetes_pod_name }} -n {{ $labels.kubernetes_namespace }}` for events, og `kubectl logs {{ $labels.kubernetes_pod_name }} -n {{ $labels.kubernetes_namespace }}` for logger"

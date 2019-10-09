@@ -28,13 +28,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 @DirtiesContext
 @ActiveProfiles({"local", "mock"})
-public class KandidatEndretProducerTest {
+public class HarTilretteleggingsbehovProducerTest {
 
     @Autowired
-    private KafkaMockServer embeddedKafka;
+    private EnKafkaMockServer embeddedKafka;
 
     @Autowired
-    private KandidatEndretProducer kandidatEndretProducer;
+    private HarTilretteleggingsbehovProducer harTilretteleggingsbehovProducer;
 
     private Consumer<String, String> consumer;
 
@@ -50,16 +50,16 @@ public class KandidatEndretProducerTest {
     }
 
     @Test
-    public void kandidatEndret__skal_sende_melding_på_kafka_topic() throws JSONException {
-        KandidatEndret kandidatEndret = new KandidatEndret(enAktørId(), true);
-        kandidatEndretProducer.kandidatEndret(kandidatEndret.getAktoerId(), kandidatEndret.isHarTilretteleggingsbehov());
+    public void kandidatOppdatert__skal_sende_melding_på_kafka_topic() throws JSONException {
+        HarTilretteleggingsbehov harTilretteleggingsbehov = new HarTilretteleggingsbehov(enAktørId(), true);
+        harTilretteleggingsbehovProducer.sendKafkamelding(harTilretteleggingsbehov.getAktoerId(), harTilretteleggingsbehov.isHarTilretteleggingsbehov());
 
         ConsumerRecord<String, String> melding = KafkaTestUtils.getSingleRecord(consumer, "aapen-tag-kandidatEndret-v1-default");
 
         JSONObject json = new JSONObject(melding.value());
-        assertThat(melding.key()).isEqualTo(kandidatEndret.getAktoerId());
-        assertThat(json.get("aktoerId")).isEqualTo(kandidatEndret.getAktoerId());
-        assertThat(json.get("harTilretteleggingsbehov")).isEqualTo(kandidatEndret.isHarTilretteleggingsbehov());
+        assertThat(melding.key()).isEqualTo(harTilretteleggingsbehov.getAktoerId());
+        assertThat(json.get("aktoerId")).isEqualTo(harTilretteleggingsbehov.getAktoerId());
+        assertThat(json.get("harTilretteleggingsbehov")).isEqualTo(harTilretteleggingsbehov.isHarTilretteleggingsbehov());
     }
 
     @After

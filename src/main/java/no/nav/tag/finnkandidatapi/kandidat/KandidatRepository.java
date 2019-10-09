@@ -1,5 +1,6 @@
 package no.nav.tag.finnkandidatapi.kandidat;
 
+import no.nav.tag.finnkandidatapi.kafka.HarTilretteleggingsbehov;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -30,20 +31,22 @@ public class KandidatRepository {
     private JdbcTemplate jdbcTemplate;
     private SimpleJdbcInsert jdbcInsert;
     private final KandidatMapper kandidatMapper;
+    private final HarTilretteleggingsbehovMapper harTilretteleggingsbehovMapper;
 
     @Autowired
-    public KandidatRepository(JdbcTemplate jdbcTemplate, SimpleJdbcInsert simpleJdbcInsert, KandidatMapper kandidatMapper) {
+    public KandidatRepository(JdbcTemplate jdbcTemplate, SimpleJdbcInsert simpleJdbcInsert, KandidatMapper kandidatMapper, HarTilretteleggingsbehovMapper harTilretteleggingsbehovMapper) {
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcInsert = simpleJdbcInsert
                 .withTableName(KANDIDAT_TABELL)
                 .usingGeneratedKeyColumns(ID);
         this.kandidatMapper = kandidatMapper;
+        this.harTilretteleggingsbehovMapper = harTilretteleggingsbehovMapper;
     }
 
     public Optional<Kandidat> hentNyesteKandidat(String aktørId) {
         try {
             Kandidat kandidat = jdbcTemplate.queryForObject(
-                    "SELECT * FROM kandidat WHERE (aktor_id = ?) ORDER BY registreringstidspunkt DESC LIMIT 1", new Object[]{ aktørId },
+                    "SELECT * FROM kandidat WHERE (aktor_id = ?) ORDER BY registreringstidspunkt DESC LIMIT 1", new Object[]{aktørId},
                     kandidatMapper
             );
             return Optional.ofNullable(kandidat);
@@ -65,18 +68,28 @@ public class KandidatRepository {
     }
 
     public List<Kandidat> hentKandidater() {
-        String query =
+        String query = lagKandidatQuery(false);
+        return jdbcTemplate.query(query, kandidatMapper);
+    }
+
+    public List<HarTilretteleggingsbehov> hentHarTilretteleggingsbehov() {
+        String query = lagKandidatQuery(true);
+        return jdbcTemplate.query(query, harTilretteleggingsbehovMapper);
+    }
+
+    private String lagKandidatQuery(boolean inkluderSlettedeKandidater) {
+        return (
                 "SELECT k.* " +
-                "FROM kandidat k " +
+                        "FROM kandidat k " +
                         "INNER JOIN " +
                         "(SELECT aktor_id, MAX(registreringstidspunkt) AS sisteRegistrert " +
                         "FROM kandidat " +
                         "GROUP BY aktor_id) gruppertKandidat " +
                         "ON k.aktor_id = gruppertKandidat.aktor_id " +
                         "AND k.registreringstidspunkt = gruppertKandidat.sisteRegistrert " +
-                "WHERE slettet = false " +
-                "ORDER BY k.registreringstidspunkt";
-        return jdbcTemplate.query(query, kandidatMapper);
+                        (inkluderSlettedeKandidater ? "" : "WHERE slettet = false ") +
+                        "ORDER BY k.registreringstidspunkt"
+        );
     }
 
     public void slettAlleKandidater() {

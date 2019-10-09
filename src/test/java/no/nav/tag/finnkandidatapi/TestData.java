@@ -1,6 +1,7 @@
 package no.nav.tag.finnkandidatapi;
 
 import net.minidev.json.JSONObject;
+import no.nav.tag.finnkandidatapi.kafka.HarTilretteleggingsbehov;
 import no.nav.tag.finnkandidatapi.kandidat.Kandidat;
 import no.nav.tag.finnkandidatapi.kandidat.Veileder;
 import no.nav.tag.finnkandidatapi.logging.LoggEvent;
@@ -9,6 +10,7 @@ import no.nav.tag.finnkandidatapi.tilbakemelding.Tilbakemelding;
 import no.nav.tag.finnkandidatapi.sts.STSToken;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;

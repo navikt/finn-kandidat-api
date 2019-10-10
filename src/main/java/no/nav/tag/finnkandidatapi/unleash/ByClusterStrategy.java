@@ -8,18 +8,18 @@ import java.util.Arrays;
 import java.util.Map;
 
 @Component
-public class ByEnvironmentStrategy implements Strategy {
-    private final String environment;
+public class ByClusterStrategy implements Strategy {
+    private final String cluster;
 
-    public ByEnvironmentStrategy(
-            @Value("${spring.profiles.active}") String environment
+    public ByClusterStrategy(
+            @Value("${nais.cluster-name}") String cluster
     ) {
-        this.environment = environment;
+        this.cluster = cluster;
     }
 
     @Override
     public String getName() {
-        return "byEnvironment";
+        return "byCluster";
     }
 
     @Override
@@ -28,12 +28,12 @@ public class ByEnvironmentStrategy implements Strategy {
             return false;
         }
 
-        String miljøParameter = parameters.get("miljø");
-        if (miljøParameter == null) {
+        String clusterParameter = parameters.get("cluster");
+        if (clusterParameter == null) {
             return false;
         }
 
-        String[] miljøer = miljøParameter.split(",");
-        return Arrays.asList(miljøer).contains(environment);
+        String[] alleClustere = clusterParameter.split(",");
+        return Arrays.asList(alleClustere).contains(cluster);
     }
 }

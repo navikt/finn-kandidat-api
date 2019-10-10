@@ -20,7 +20,7 @@ public class UnleashConfiguration {
     @Profile({"dev", "prod"})
     @Bean
     public Unleash unleash(
-            ByEnvironmentStrategy byEnvironmentStrategy,
+            ByClusterStrategy byClusterStrategy,
             @Value("${unleash.url}") String unleashUrl,
             @Value("${spring.profiles.active}") String profile
     ) {
@@ -30,7 +30,7 @@ public class UnleashConfiguration {
                 .unleashAPI(unleashUrl)
                 .build();
 
-        return new DefaultUnleash(config, byEnvironmentStrategy);
+        return new DefaultUnleash(config, byClusterStrategy);
     }
 
     @Profile({"local", "mock"})

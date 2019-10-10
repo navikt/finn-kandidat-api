@@ -34,6 +34,7 @@ no.nav.security.oidc:
 
 tilgangskontroll.tilbakemeldinger: X12345,Y23456,Z34567,X123456
 tilgangskontroll.republisering: X12345,Y23456,Z34567,X123456
+nais.cluster-name: na
 
 mock:
   port: 8081
@@ -83,6 +84,7 @@ no.nav.security.oidc:
 
 tilgangskontroll.tilbakemeldinger: ${TILGANGSKONTROLL_TILBAKEMELDINGER}
 tilgangskontroll.republisering: ${TILGANGSKONTROLL_REPUBLISERING}
+nais.cluster-name: ${NAIS_CLUSTER_NAME}
 
 sts.url: https://security-token-service.nais.preprod.local/rest/v1
 veilarbabac.url: https://veilarbabac-q1.nais.preprod.local
@@ -125,6 +127,7 @@ no.nav.security.oidc:
 
 tilgangskontroll.tilbakemeldinger: ${TILGANGSKONTROLL_TILBAKEMELDINGER}
 tilgangskontroll.republisering: ${TILGANGSKONTROLL_REPUBLISERING}
+nais.cluster-name: ${NAIS_CLUSTER_NAME}
 
 sts.url: https://security-token-service.nais.adeo.no/rest/v1
 veilarbabac.url: https://veilarbabac.nais.adeo.no

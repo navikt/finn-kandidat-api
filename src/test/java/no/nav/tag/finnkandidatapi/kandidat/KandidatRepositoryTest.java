@@ -237,6 +237,26 @@ public class KandidatRepositoryTest {
     }
 
     @Test
+    public void hentHarTilretteleggingsbehovForEnEnkeltKandidat__skal_returnere_hvorvidt_kandidaten_har_tilretteleggingsbehov() {
+        Kandidat kandidat = kandidatBuilder()
+                .aktørId("1000000000001")
+                .build();
+        Kandidat kandidat2 = kandidatBuilder()
+                .aktørId("1000000000002")
+                .build();
+
+        repository.lagreKandidat(kandidat);
+        repository.lagreKandidat(kandidat2);
+        repository.slettKandidat(kandidat2.getAktørId(), enVeileder(), now());
+
+        Optional<HarTilretteleggingsbehov> harTilretteleggingsbehov = repository.hentHarTilretteleggingsbehovForEnEnkeltKandidat(kandidat.getAktørId());
+        Optional<HarTilretteleggingsbehov> harTilretteleggingsbehov2 = repository.hentHarTilretteleggingsbehovForEnEnkeltKandidat(kandidat2.getAktørId());
+
+        assertThat(harTilretteleggingsbehov.get().isHarTilretteleggingsbehov()).isTrue();
+        assertThat(harTilretteleggingsbehov2.get().isHarTilretteleggingsbehov()).isFalse();
+    }
+
+    @Test
     public void skal_kunne_lagre_og_hente_ut_flere_ganger() {
         Kandidat behovTilLagring1 = enKandidat();
         Integer lagretId1 = repository.lagreKandidat(behovTilLagring1);

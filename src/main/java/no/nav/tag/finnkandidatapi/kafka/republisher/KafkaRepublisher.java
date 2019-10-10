@@ -11,10 +11,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @Component
@@ -41,6 +43,7 @@ public class KafkaRepublisher {
 
     /**
      * Republiser alle kandidater til Kafka. Brukes bare i spesielle tilfeller.
+     *
      * @return 200 OK hvis kandidater ble republisert.
      */
     @PostMapping("/internal/kafka/republish")
@@ -54,7 +57,29 @@ public class KafkaRepublisher {
             harTilretteleggingsbehovProducer.sendKafkamelding(oppdatering.getAktoerId(), oppdatering.isHarTilretteleggingsbehov());
         });
 
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.ok().build();
+    }
+
+    /*
+     * Republiser en enkelt kandidat til Kafka. Brukes bare i spesielle tilfeller.
+     */
+    @PostMapping("/internal/kafka/republish/{aktørId}")
+    public ResponseEntity republiserEnEnkeltKandidat(@PathVariable("aktørId") String aktørId) {
+        String ident = sjekkTilgangTilRepublisher();
+
+        Optional<HarTilretteleggingsbehov> harTilretteleggingsbehov = kandidatRepository.hentHarTilretteleggingsbehovForEnEnkeltKandidat(aktørId);
+
+        if (harTilretteleggingsbehov.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        log.warn("Bruker med ident {} republiserer kandidat med aktørId {}.", ident, aktørId);
+        harTilretteleggingsbehovProducer.sendKafkamelding(
+                aktørId,
+                harTilretteleggingsbehov.get().isHarTilretteleggingsbehov()
+        );
+
+        return ResponseEntity.ok().build();
     }
 
     private String sjekkTilgangTilRepublisher() {

@@ -55,6 +55,19 @@ public class KandidatRepository {
         }
     }
 
+    public Optional<HarTilretteleggingsbehov> hentHarTilretteleggingsbehovForEnEnkeltKandidat(String aktørId) {
+        try {
+            HarTilretteleggingsbehov harTilretteleggingsbehov = jdbcTemplate.queryForObject(
+                    "SELECT * FROM kandidat WHERE (aktor_id = ?) ORDER BY registreringstidspunkt DESC LIMIT 1", new Object[]{aktørId},
+                    harTilretteleggingsbehovMapper
+            );
+
+            return Optional.ofNullable(harTilretteleggingsbehov);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
     public Optional<Kandidat> hentKandidat(Integer id) {
         try {
             Kandidat kandidat = jdbcTemplate.queryForObject(

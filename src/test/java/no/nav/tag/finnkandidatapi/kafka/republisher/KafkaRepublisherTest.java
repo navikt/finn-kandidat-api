@@ -56,7 +56,7 @@ public class KafkaRepublisherTest {
     }
 
     @Test
-    public void republiserAlleKandidater__skal_returnere_200_ok_hvis_suksess() {
+    public void republiserAlleKandidater__skal_returnere_200_hvis_suksess() {
         Veileder veileder = enVeileder();
 
         when(tilgangskontrollService.hentInnloggetVeileder()).thenReturn(veileder);
@@ -85,51 +85,55 @@ public class KafkaRepublisherTest {
     }
 
     @Test(expected = TilgangskontrollException.class)
-    public void republiserEnEnkeltKandidat__skal_returnere_401_ved_autentiseringsfeil() {
+    public void republiserKandidat__skal_returnere_401_ved_autentiseringsfeil() {
         when(tilgangskontrollService.hentInnloggetVeileder()).thenReturn(enVeileder());
         when(config.getNavIdenterSomKanRepublisere()).thenReturn(new ArrayList<>());
 
-        kafkaRepublisher.republiserEnEnkeltKandidat(enAktørId());
+        kafkaRepublisher.republiserKandidat(enAktørId());
     }
 
     @Test
-    public void republiserEnEnkeltKandidat__skal_returnere_404_not_found_hvis_kandidat_med_aktørId_ikke_eksisterer() {
+    public void republiserKandidat__skal_returnere_404_hvis_kandidat_med_aktørId_ikke_eksisterer() {
         Veileder veileder = enVeileder();
+        String aktørId = enAktørId();
 
         when(tilgangskontrollService.hentInnloggetVeileder()).thenReturn(veileder);
         when(config.getNavIdenterSomKanRepublisere()).thenReturn(Arrays.asList(veileder.getNavIdent()));
+        when(repository.hentHarTilretteleggingsbehov(aktørId)).thenReturn(
+                Optional.empty()
+        );
 
-        ResponseEntity response = kafkaRepublisher.republiserEnEnkeltKandidat(enAktørId());
+        ResponseEntity response = kafkaRepublisher.republiserKandidat(aktørId);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 
     @Test
-    public void republiserEnEnkeltKandidat__skal_returnere_200_ok_hvis_suksess() {
+    public void republiserKandidat__skal_returnere_200_hvis_suksess() {
         Veileder veileder = enVeileder();
         String aktørId = enAktørId();
 
         when(tilgangskontrollService.hentInnloggetVeileder()).thenReturn(veileder);
         when(config.getNavIdenterSomKanRepublisere()).thenReturn(Arrays.asList(veileder.getNavIdent()));
-        when(repository.hentHarTilretteleggingsbehovForEnEnkeltKandidat(enAktørId())).thenReturn(
+        when(repository.hentHarTilretteleggingsbehov(enAktørId())).thenReturn(
                 Optional.of(new HarTilretteleggingsbehov(aktørId, true))
         );
 
-        ResponseEntity response = kafkaRepublisher.republiserEnEnkeltKandidat(aktørId);
+        ResponseEntity response = kafkaRepublisher.republiserKandidat(aktørId);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
     @Test
-    public void republiserEnEnkeltKandidat__skal_republisere_hvorvidt_kandidaten_har_tilretteleggingsbehov() {
+    public void republiserKandidat__skal_republisere_hvorvidt_kandidaten_har_tilretteleggingsbehov() {
         Veileder veileder = enVeileder();
         String aktørId = enAktørId();
 
         when(tilgangskontrollService.hentInnloggetVeileder()).thenReturn(veileder);
         when(config.getNavIdenterSomKanRepublisere()).thenReturn(Arrays.asList(veileder.getNavIdent()));
-        when(repository.hentHarTilretteleggingsbehovForEnEnkeltKandidat(aktørId)).thenReturn(
+        when(repository.hentHarTilretteleggingsbehov(aktørId)).thenReturn(
                 Optional.of(new HarTilretteleggingsbehov(aktørId, true))
         );
 
-        kafkaRepublisher.republiserEnEnkeltKandidat(aktørId);
+        kafkaRepublisher.republiserKandidat(aktørId);
 
         verify(producer).sendKafkamelding(aktørId, true);
     }

@@ -64,10 +64,10 @@ public class KafkaRepublisher {
      * Republiser en enkelt kandidat til Kafka. Brukes bare i spesielle tilfeller.
      */
     @PostMapping("/internal/kafka/republish/{aktørId}")
-    public ResponseEntity republiserEnEnkeltKandidat(@PathVariable("aktørId") String aktørId) {
+    public ResponseEntity republiserKandidat(@PathVariable("aktørId") String aktørId) {
         String ident = sjekkTilgangTilRepublisher();
 
-        Optional<HarTilretteleggingsbehov> harTilretteleggingsbehov = kandidatRepository.hentHarTilretteleggingsbehovForEnEnkeltKandidat(aktørId);
+        Optional<HarTilretteleggingsbehov> harTilretteleggingsbehov = kandidatRepository.hentHarTilretteleggingsbehov(aktørId);
 
         if (harTilretteleggingsbehov.isEmpty()) {
             return ResponseEntity.notFound().build();

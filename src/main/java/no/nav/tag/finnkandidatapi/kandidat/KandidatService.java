@@ -38,7 +38,7 @@ public class KandidatService {
 
     public Optional<Kandidat> opprettKandidat(Kandidat kandidat, Veileder innloggetVeileder) {
         Personinfo personinfo = veilarbarenaClient.hentPersoninfo(kandidat.getFnr());
-        kandidat.setNavKontor(personinfo.getNav_kontor());
+        kandidat.setNavKontor(personinfo.getNavKontor());
 
         Optional<Kandidat> lagretKandidat = oppdaterSistEndretFelterOgLagreKandidat(kandidat, innloggetVeileder);
 

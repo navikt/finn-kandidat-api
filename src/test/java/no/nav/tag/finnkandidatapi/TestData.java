@@ -44,7 +44,7 @@ public class TestData {
     }
 
     public static Personinfo personinfo() {
-        return Personinfo.builder().nav_kontor(etNavKontor()).build();
+        return Personinfo.builder().navKontor(etNavKontor()).build();
     }
 
     public static Kandidat enKandidat(String aktørId) {

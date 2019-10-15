@@ -18,5 +18,5 @@ public class Kandidat {
     private Set<FysiskBehov> fysiskeBehov;
     private Set<ArbeidsmiljøBehov> arbeidsmiljøBehov;
     private Set<GrunnleggendeBehov> grunnleggendeBehov;
-    private String navKontor; // TODO: Vurder å lagre PersonInfo her istedenfor?
+    private String navKontor;
 }

@@ -22,7 +22,6 @@ public class TokenUtils {
     }
 
     public String hentOidcToken() {
-        // TODO: sjekke om den fins (hasValidTokenFor) med optional
         return contextHolder.getOIDCValidationContext().getToken(ISSUER_ISSO).getIdToken();
     }
 

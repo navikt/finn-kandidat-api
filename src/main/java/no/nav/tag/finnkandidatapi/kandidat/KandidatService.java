@@ -37,7 +37,6 @@ public class KandidatService {
     }
 
     public Optional<Kandidat> opprettKandidat(Kandidat kandidat, Veileder innloggetVeileder) {
-        log.info("Henter nav-kontoret til bruker med aktørId {} fra VeilarbArena", kandidat.getAktørId());
         Personinfo personinfo = veilarbarenaClient.hentPersoninfo(kandidat.getFnr());
         kandidat.setNavKontor(personinfo.getNav_kontor());
 

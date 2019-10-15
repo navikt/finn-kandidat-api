@@ -41,7 +41,6 @@ public class VeilarbArenaClient {
                 Personinfo.class
         );
 
-        // TODO: Valider respons?
         return respons.getBody();
     }
 

@@ -106,7 +106,6 @@ public class MockServer implements DisposableBean {
         );
 
         String path = getPath(veilarbarenaUrl + "/oppfolgingsbruker");
-        // TODO: Legg på Authorization header?
         server.stubFor(
                 WireMock.get(WireMock.urlPathMatching(path + "/[0-9]+")).willReturn(WireMock.aResponse()
                         .withHeader("Content-Type", "application/json")

@@ -1,14 +1,12 @@
 package no.nav.tag.finnkandidatapi.veilarbarena;
 
 import no.nav.tag.finnkandidatapi.kandidat.Kandidat;
-import no.nav.tag.finnkandidatapi.sts.STSClient;
-import no.nav.tag.finnkandidatapi.sts.STSToken;
+import no.nav.tag.finnkandidatapi.tilgangskontroll.TokenUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
@@ -26,9 +24,12 @@ public class VeilarbArenaClientTest {
     @Mock
     private RestTemplate restTemplate;
 
+    @Mock
+    private TokenUtils tokenUtils;
+
     @Before
     public void setUp() {
-        veilarbArenaClient = new VeilarbArenaClient(restTemplate, "https://www.eksempel.no");
+        veilarbArenaClient = new VeilarbArenaClient(restTemplate, "https://www.eksempel.no", tokenUtils);
     }
 
     @Test
@@ -36,9 +37,12 @@ public class VeilarbArenaClientTest {
         Kandidat kandidat = enKandidat();
         Personinfo personinfo = personinfo();
 
-        when(restTemplate.getForEntity(anyString(), eq(Personinfo.class)))
+        when(restTemplate.exchange(anyString(), any(), any(), eq(Personinfo.class)))
                 .thenReturn(new ResponseEntity<>(personinfo, HttpStatus.OK));
+        when(tokenUtils.hentOidcToken()).thenReturn("123");
 
-        assertThat(veilarbArenaClient.hentPersoninfo(kandidat.getFnr())).isEqualTo(personinfo);
+        Personinfo hentetPersoninfo = veilarbArenaClient.hentPersoninfo(kandidat.getFnr());
+
+        assertThat(hentetPersoninfo).isEqualTo(personinfo);
     }
 }

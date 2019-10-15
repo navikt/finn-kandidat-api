@@ -1,10 +1,8 @@
 package no.nav.tag.finnkandidatapi.tilgangskontroll;
 
 import com.nimbusds.jwt.JWTClaimsSet;
-import lombok.extern.slf4j.Slf4j;
 import no.nav.security.oidc.context.OIDCClaims;
 import no.nav.security.oidc.context.OIDCRequestContextHolder;
-import no.nav.security.oidc.context.TokenContext;
 import no.nav.tag.finnkandidatapi.kandidat.Veileder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -13,13 +11,19 @@ import java.util.Optional;
 
 @Component
 public class TokenUtils {
-    public final static String ISSUER_ISSO = "isso";
+
+    final static String ISSUER_ISSO = "isso";
 
     private final OIDCRequestContextHolder contextHolder;
 
     @Autowired
     public TokenUtils(OIDCRequestContextHolder contextHolder) {
         this.contextHolder = contextHolder;
+    }
+
+    public String hentOidcToken() {
+        // TODO: sjekke om den fins (hasValidTokenFor) med optional
+        return contextHolder.getOIDCValidationContext().getToken(ISSUER_ISSO).getIdToken();
     }
 
     public Veileder hentInnloggetVeileder() {

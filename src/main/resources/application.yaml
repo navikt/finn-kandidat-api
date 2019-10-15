@@ -1,21 +1,21 @@
 server.servlet.context-path: /finn-kandidat-api
 
 management.endpoints.web:
-    exposure.include: info, health, metrics, prometheus
-    base-path: /internal/actuator
+  exposure.include: info, health, metrics, prometheus
+  base-path: /internal/actuator
 
 spring.profiles.active: local, mock
 
 spring:
-    kafka:
-        bootstrap-servers: ${spring.embedded.kafka.brokers}
-        client-id: finn-kandidat-api
-        consumer:
-            group-id: finn-kandidat
-            key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-            value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-        producer:
-            retries: 25
+  kafka:
+    bootstrap-servers: ${spring.embedded.kafka.brokers}
+    client-id: finn-kandidat-api
+    consumer:
+      group-id: finn-kandidat
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    producer:
+      retries: 25
 
 kandidat-endret.topic: aapen-tag-kandidatEndret-v1-default
 
@@ -23,22 +23,22 @@ kandidat-endret.topic: aapen-tag-kandidatEndret-v1-default
 spring.profiles: local
 
 spring.h2.console:
-    enabled: true
-    path: /h2
+  enabled: true
+  path: /h2
 
 no.nav.security.oidc:
-    issuers: isso
-    issuer.isso:
-        discoveryurl: http://metadata-isso
-        accepted_audience: aud-isso
+  issuers: isso
+  issuer.isso:
+    discoveryurl: http://metadata-isso
+    accepted_audience: aud-isso
 
 tilgangskontroll.tilbakemeldinger: X12345,Y23456,Z34567,X123456
 tilgangskontroll.republisering: X12345,Y23456,Z34567,X123456
 nais.cluster-name: na
 
 mock:
-    port: 8081
-    baseUrl: http://localhost:${mock.port}
+  port: 8081
+  baseUrl: http://localhost:${mock.port}
 
 sts.url: ${mock.baseUrl}/sts
 veilarbabac.url: ${mock.baseUrl}/veilarbabac
@@ -53,35 +53,35 @@ oppfolging-avsluttet.topic: en-kafka-topic
 
 ---
 spring:
-    profiles: dev
-    kafka:
-        bootstrap-servers: b27apvl00045.preprod.local:8443, b27apvl00046.preprod.local:8443, b27apvl00047.preprod.local:8443
-        properties:
-            security.protocol: SASL_SSL
-            sasl:
-                mechanism: PLAIN
-                jaas.config: org.apache.kafka.common.security.plain.PlainLoginModule required username="${SERVICEBRUKER_BRUKERNAVN}" password="${SERVICEBRUKER_PASSORD}";
-            ssl.truststore:
-                location: ${javax.net.ssl.trustStore}
-                password: ${javax.net.ssl.trustStorePassword}
-            producer:
-                key-serializer: org.apache.kafka.common.serialization.StringSerializer
-                value-serializer: org.apache.kafka.common.serialization.StringSerializer
+  profiles: dev
+  kafka:
+    bootstrap-servers: b27apvl00045.preprod.local:8443, b27apvl00046.preprod.local:8443, b27apvl00047.preprod.local:8443
+    properties:
+      security.protocol: SASL_SSL
+      sasl:
+        mechanism: PLAIN
+        jaas.config: org.apache.kafka.common.security.plain.PlainLoginModule required username="${SERVICEBRUKER_BRUKERNAVN}" password="${SERVICEBRUKER_PASSORD}";
+      ssl.truststore:
+        location: ${javax.net.ssl.trustStore}
+        password: ${javax.net.ssl.trustStorePassword}
+      producer:
+        key-serializer: org.apache.kafka.common.serialization.StringSerializer
+        value-serializer: org.apache.kafka.common.serialization.StringSerializer
 
 oppfolging-avsluttet.topic: aapen-fo-endringPaaAvsluttOppfolging-v1-q0
 
 database:
-    navn: finn-kandidat-dev
-    url: jdbc:postgresql://b27dbvl007.preprod.local:5432/finn-kandidat-dev
+  navn: finn-kandidat-dev
+  url: jdbc:postgresql://b27dbvl007.preprod.local:5432/finn-kandidat-dev
 
 vault.mount-path: postgresql/preprod-fss
 
 no.nav.security.oidc:
-    issuers: isso
-    issuer.isso:
-        discoveryurl: https://login.microsoftonline.com/NAVQ.onmicrosoft.com/.well-known/openid-configuration
-        accepted_audience: 38e07d31-659d-4595-939a-f18dce3446c5
-        proxyurl: http://webproxy.nais:8088
+  issuers: isso
+  issuer.isso:
+    discoveryurl: https://login.microsoftonline.com/NAVQ.onmicrosoft.com/.well-known/openid-configuration
+    accepted_audience: 38e07d31-659d-4595-939a-f18dce3446c5
+    proxyurl: http://webproxy.nais:8088
 
 tilgangskontroll.tilbakemeldinger: ${TILGANGSKONTROLL_TILBAKEMELDINGER}
 tilgangskontroll.republisering: ${TILGANGSKONTROLL_REPUBLISERING}
@@ -96,35 +96,35 @@ veilarbarena.url: https://veilarbarena-q0.nais.preprod.local/veilarbarena/api
 
 ---
 spring:
-    profiles: prod
-    kafka:
-        bootstrap-servers: a01apvl00145.adeo.no:8443, a01apvl00146.adeo.no:8443, a01apvl00147.adeo.no:8443, a01apvl00148.adeo.no:8443, a01apvl00149.adeo.no:8443, a01apvl00150.adeo.no:8443
-        properties:
-            security.protocol: SASL_SSL
-            sasl:
-                mechanism: PLAIN
-                jaas.config: org.apache.kafka.common.security.plain.PlainLoginModule required username="${SERVICEBRUKER_BRUKERNAVN}" password="${SERVICEBRUKER_PASSORD}";
-            ssl.truststore:
-                location: ${javax.net.ssl.trustStore}
-                password: ${javax.net.ssl.trustStorePassword}
-            producer:
-                key-serializer: org.apache.kafka.common.serialization.StringSerializer
-                value-serializer: org.apache.kafka.common.serialization.StringSerializer
+  profiles: prod
+  kafka:
+    bootstrap-servers: a01apvl00145.adeo.no:8443, a01apvl00146.adeo.no:8443, a01apvl00147.adeo.no:8443, a01apvl00148.adeo.no:8443, a01apvl00149.adeo.no:8443, a01apvl00150.adeo.no:8443
+    properties:
+      security.protocol: SASL_SSL
+      sasl:
+        mechanism: PLAIN
+        jaas.config: org.apache.kafka.common.security.plain.PlainLoginModule required username="${SERVICEBRUKER_BRUKERNAVN}" password="${SERVICEBRUKER_PASSORD}";
+      ssl.truststore:
+        location: ${javax.net.ssl.trustStore}
+        password: ${javax.net.ssl.trustStorePassword}
+      producer:
+        key-serializer: org.apache.kafka.common.serialization.StringSerializer
+        value-serializer: org.apache.kafka.common.serialization.StringSerializer
 
 oppfolging-avsluttet.topic: aapen-fo-endringPaaAvsluttOppfolging-v1-p
 
 database:
-    navn: finn-kandidat-prod
-    url: jdbc:postgresql://a01dbfl039.adeo.no:5432/finn-kandidat-prod
+  navn: finn-kandidat-prod
+  url: jdbc:postgresql://a01dbfl039.adeo.no:5432/finn-kandidat-prod
 
 vault.mount-path: postgresql/prod-fss
 
 no.nav.security.oidc:
-    issuers: isso
-    issuer.isso:
-        discoveryurl: https://login.microsoftonline.com/navno.onmicrosoft.com/.well-known/openid-configuration
-        accepted_audience: 9b4e07a3-4f4c-4bab-b866-87f62dff480d
-        proxyurl: http://webproxy.nais:8088
+  issuers: isso
+  issuer.isso:
+    discoveryurl: https://login.microsoftonline.com/navno.onmicrosoft.com/.well-known/openid-configuration
+    accepted_audience: 9b4e07a3-4f4c-4bab-b866-87f62dff480d
+    proxyurl: http://webproxy.nais:8088
 
 tilgangskontroll.tilbakemeldinger: ${TILGANGSKONTROLL_TILBAKEMELDINGER}
 tilgangskontroll.republisering: ${TILGANGSKONTROLL_REPUBLISERING}

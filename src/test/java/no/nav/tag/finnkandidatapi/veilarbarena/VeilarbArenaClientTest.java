@@ -26,12 +26,9 @@ public class VeilarbArenaClientTest {
     @Mock
     private RestTemplate restTemplate;
 
-    @Mock
-    private STSClient stsClient;
-
     @Before
     public void setUp() {
-        veilarbArenaClient = new VeilarbArenaClient(restTemplate, "https://www.eksempel.no", stsClient);
+        veilarbArenaClient = new VeilarbArenaClient(restTemplate, "https://www.eksempel.no");
     }
 
     @Test
@@ -39,10 +36,9 @@ public class VeilarbArenaClientTest {
         Kandidat kandidat = enKandidat();
         Personinfo personinfo = personinfo();
 
-        when(restTemplate.exchange(anyString(), any(), any(), eq(Personinfo.class)))
+        when(restTemplate.getForEntity(anyString(), eq(Personinfo.class)))
                 .thenReturn(new ResponseEntity<>(personinfo, HttpStatus.OK));
-        when(stsClient.hentSTSToken()).thenReturn(new STSToken());
 
-        assertThat(veilarbArenaClient.hentPersoninfo(kandidat.getFnr()).equals(personinfo));
+        assertThat(veilarbArenaClient.hentPersoninfo(kandidat.getFnr())).isEqualTo(personinfo);
     }
 }

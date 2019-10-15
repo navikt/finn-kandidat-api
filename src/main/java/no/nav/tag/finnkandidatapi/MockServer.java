@@ -86,7 +86,7 @@ public class MockServer implements DisposableBean {
         String body = (
             "{\n" +
                 "\"aktoerid\": null," +
-                "\"fodselsnr\": \"21055932120\"," +
+                "\"fodselsnr\": \"01065500791\"," +
                 "\"formidlingsgruppekode\": \"ARBS\"," +
                 "\"iserv_fra_dato\": null," +
                 "\"etternavn\": null," +

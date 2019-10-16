@@ -89,7 +89,7 @@ public class KandidatController {
     }
 
     @PutMapping
-    public ResponseEntity<Kandidat> endreKandidat(@RequestBody Kandidat kandidat) {
+    public ResponseEntity<Kandidat> endreKandidat(@RequestBody Kandidatendring kandidat) {
         loggBrukAvEndepunkt("endreKandidat");
         tilgangskontroll.sjekkSkrivetilgangTilKandidat(kandidat.getAktørId());
         Veileder veileder = tilgangskontroll.hentInnloggetVeileder();

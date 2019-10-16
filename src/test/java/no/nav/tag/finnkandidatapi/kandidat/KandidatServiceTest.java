@@ -105,6 +105,7 @@ public class KandidatServiceTest {
     @Test
     public void endreKandidat__skal_endre_sistEndretAv_og_sistEndret_med_innlogget_veileder() {
         Kandidat kandidat = enKandidat();
+        Kandidatendring kandidatendring = enKandidatendring();
         Veileder veileder = enVeileder();
         LocalDateTime datetime = LocalDateTime.now();
 
@@ -112,10 +113,14 @@ public class KandidatServiceTest {
         when(repository.lagreKandidat(any(Kandidat.class))).thenReturn(1);
         when(repository.hentKandidat(1)).thenReturn(Optional.of(kandidat));
 
-        kandidatService.endreKandidat(kandidat, veileder);
+        kandidatService.endreKandidat(kandidatendring, veileder);
 
         assertThat(kandidat.getSistEndretAv()).isEqualTo(veileder.getNavIdent());
         assertThat(kandidat.getSistEndret()).isEqualTo(datetime);
+        assertThat(kandidat.getArbeidstidBehov()).isEqualTo(kandidatendring.getArbeidstidBehov());
+        assertThat(kandidat.getArbeidsmiljøBehov()).isEqualTo(kandidatendring.getArbeidstidBehov());
+        assertThat(kandidat.getFysiskeBehov()).isEqualTo(kandidatendring.getFysiskeBehov());
+        assertThat(kandidat.getGrunnleggendeBehov()).isEqualTo(kandidatendring.getGrunnleggendeBehov());
     }
 
     @Test

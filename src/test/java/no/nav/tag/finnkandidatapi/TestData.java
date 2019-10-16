@@ -3,6 +3,7 @@ package no.nav.tag.finnkandidatapi;
 import net.minidev.json.JSONObject;
 import no.nav.tag.finnkandidatapi.kafka.HarTilretteleggingsbehov;
 import no.nav.tag.finnkandidatapi.kandidat.Kandidat;
+import no.nav.tag.finnkandidatapi.kandidat.Kandidatendring;
 import no.nav.tag.finnkandidatapi.kandidat.Veileder;
 import no.nav.tag.finnkandidatapi.logging.LoggEvent;
 import no.nav.tag.finnkandidatapi.tilbakemelding.Behov;
@@ -16,8 +17,8 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
-import static no.nav.tag.finnkandidatapi.kandidat.ArbeidsmiljøBehov.MENTOR;
-import static no.nav.tag.finnkandidatapi.kandidat.ArbeidsmiljøBehov.TILRETTELAGTE_ARBEIDSOPPGAVER;
+import static no.nav.tag.finnkandidatapi.kandidat.ArbeidsmiljøBehov.*;
+import static no.nav.tag.finnkandidatapi.kandidat.ArbeidstidBehov.HELTID;
 import static no.nav.tag.finnkandidatapi.kandidat.ArbeidstidBehov.KAN_IKKE_JOBBE;
 import static no.nav.tag.finnkandidatapi.kandidat.FysiskBehov.ARBEIDSSTILLING;
 import static no.nav.tag.finnkandidatapi.kandidat.FysiskBehov.ERGONOMI;
@@ -36,6 +37,16 @@ public class TestData {
                 .arbeidsmiljøBehov(Set.of(MENTOR, TILRETTELAGTE_ARBEIDSOPPGAVER))
                 .grunnleggendeBehov(Set.of(SNAKKE_NORSK, SKRIVE_NORSK, LESE_NORSK))
                 .navKontor(etNavKontor())
+                .build();
+    }
+
+    public static Kandidatendring enKandidatendring() {
+        return Kandidatendring.builder()
+                .aktørId("1000000000001")
+                .arbeidstidBehov(HELTID)
+                .fysiskeBehov(Set.of(ARBEIDSSTILLING))
+                .arbeidsmiljøBehov(Set.of(MENTOR, TILRETTELAGTE_ARBEIDSOPPGAVER, ANNET))
+                .grunnleggendeBehov(Set.of(SNAKKE_NORSK, LESE_NORSK))
                 .build();
     }
 

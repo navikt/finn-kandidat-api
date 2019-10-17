@@ -28,6 +28,7 @@ public class KandidatService {
     private final DateProvider dateProvider;
     private final VeilarbArenaClient veilarbarenaClient;
 
+
     public Optional<Kandidat> hentNyesteKandidat(String aktørId) {
         return kandidatRepository.hentNyesteKandidat(aktørId);
     }
@@ -50,13 +51,12 @@ public class KandidatService {
     }
 
     public Optional<Kandidat> endreKandidat(Kandidatendring kandidatendring, Veileder innloggetVeileder) {
+        // TODO: Hvis ikke finnes returnerer vi Optional.empty()
         Kandidat kandidat = hentNyesteKandidat(kandidatendring.getAktørId()).orElseThrow(NotFoundException::new);
+        Kandidat endretkandidat = Kandidat.endreKandidat(kandidat, kandidatendring, innloggetVeileder, dateProvider.now());
 
-        oppdaterBehov(kandidat, kandidatendring, innloggetVeileder);
-
-        Integer id = kandidatRepository.lagreKandidat(kandidat);
+        Integer id = kandidatRepository.lagreKandidat(endretkandidat);
         Optional<Kandidat> lagretKandidat = kandidatRepository.hentKandidat(id);
-
         lagretKandidat.ifPresent(value -> eventPublisher.publishEvent(new KandidatEndret(value)));
 
         return lagretKandidat;
@@ -69,16 +69,6 @@ public class KandidatService {
     }
 
     private void oppdaterSistEndretFelter(Kandidat kandidat, Veileder innloggetVeileder) {
-        kandidat.setSistEndretAv(innloggetVeileder.getNavIdent());
-        kandidat.setSistEndret(dateProvider.now());
-    }
-
-    private void oppdaterBehov(Kandidat kandidat, Kandidatendring kandidatendring, Veileder innloggetVeileder) {
-        kandidat.setArbeidstidBehov(kandidatendring.getArbeidstidBehov());
-        kandidat.setArbeidsmiljøBehov(kandidatendring.getArbeidsmiljøBehov());
-        kandidat.setFysiskeBehov(kandidatendring.getFysiskeBehov());
-        kandidat.setGrunnleggendeBehov(kandidatendring.getGrunnleggendeBehov());
-
         kandidat.setSistEndretAv(innloggetVeileder.getNavIdent());
         kandidat.setSistEndret(dateProvider.now());
     }

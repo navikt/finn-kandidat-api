@@ -89,11 +89,12 @@ public class KandidatController {
     }
 
     @PutMapping
-    public ResponseEntity<Kandidat> endreKandidat(@RequestBody Kandidatendring kandidat) {
+    public ResponseEntity<Kandidat> endreKandidat(@RequestBody Kandidatendring kandidatendring) {
         loggBrukAvEndepunkt("endreKandidat");
-        tilgangskontroll.sjekkSkrivetilgangTilKandidat(kandidat.getAktørId());
+        tilgangskontroll.sjekkSkrivetilgangTilKandidat(kandidatendring.getAktørId());
         Veileder veileder = tilgangskontroll.hentInnloggetVeileder();
-        Kandidat endretKandidat = kandidatService.endreKandidat(kandidat, veileder).orElseThrow(FinnKandidatException::new);
+        Kandidat endretKandidat = kandidatService.endreKandidat(kandidatendring, veileder)
+                .orElseThrow(FinnKandidatException::new);
         return ResponseEntity.ok(endretKandidat);
     }
 

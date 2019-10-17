@@ -101,13 +101,13 @@ public class KandidatControllerTest {
     @Test
     public void endreKandidat__skal_sjekke_skrivetilgang() {
         værInnloggetSom(enVeileder());
-        Kandidat kandidat = enKandidat();
+        Kandidatendring kandidatendring = enKandidatendring();
 
         try {
-            controller.endreKandidat(kandidat);
+            controller.endreKandidat(kandidatendring);
         } catch (Exception ignored) {}
 
-        verify(tilgangskontroll, times(1)).sjekkSkrivetilgangTilKandidat(kandidat.getAktørId());
+        verify(tilgangskontroll, times(1)).sjekkSkrivetilgangTilKandidat(kandidatendring.getAktørId());
     }
 
     @Test
@@ -115,10 +115,11 @@ public class KandidatControllerTest {
         Veileder veileder = enVeileder();
         værInnloggetSom(veileder);
         Kandidat kandidat = enKandidat();
+        Kandidatendring kandidatendring = enKandidatendring();
 
-        when(service.endreKandidat(kandidat, veileder)).thenReturn(Optional.of(kandidat));
+        when(service.endreKandidat(kandidatendring, veileder)).thenReturn(Optional.of(kandidat));
 
-        ResponseEntity<Kandidat> respons = controller.endreKandidat(kandidat);
+        ResponseEntity<Kandidat> respons = controller.endreKandidat(kandidatendring);
         Kandidat hentetKandidat = respons.getBody();
 
         assertThat(respons.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -128,25 +129,31 @@ public class KandidatControllerTest {
     @Test
     public void endreKandidat__skal_kalle_kandidat_service_med_riktige_parameter() {
         Kandidat kandidat = enKandidat();
+        Kandidatendring kandidatendring = enKandidatendring();
         Veileder veileder = enVeileder();
         værInnloggetSom(veileder);
 
-        when(service.endreKandidat(kandidat, veileder)).thenReturn(Optional.of(kandidat));
+        when(service.endreKandidat(kandidatendring, veileder)).thenReturn(Optional.of(kandidat));
 
-        controller.endreKandidat(kandidat);
+        controller.endreKandidat(kandidatendring);
 
-        verify(service).endreKandidat(kandidat, veileder);
+        verify(service).endreKandidat(kandidatendring, veileder);
     }
 
     @Test(expected = FinnKandidatException.class)
     public void endreKandidat__skal_kaste_FinnKandidatException_hvis_kandidat_ikke_fins() {
-        Kandidat kandidat = enKandidat();
+        Kandidatendring kandidatendring = enKandidatendring();
         Veileder veileder = enVeileder();
         værInnloggetSom(veileder);
 
-        when(service.endreKandidat(kandidat, veileder)).thenReturn(Optional.empty());
-        controller.endreKandidat(kandidat);
+        when(service.endreKandidat(kandidatendring, veileder)).thenReturn(Optional.empty());
+
+        controller.endreKandidat(kandidatendring);
     }
+
+    // TODO:
+//    @Test
+//    public void endreKandidat__skal_kaste_FinnKandidatException_hvis_
 
     @Test
     public void hentKandidater__skal_returnere_ok_med_kandidater() {

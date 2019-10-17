@@ -51,9 +51,15 @@ public class KandidatService {
     }
 
     public Optional<Kandidat> endreKandidat(Kandidatendring kandidatendring, Veileder innloggetVeileder) {
-        // TODO: Hvis ikke finnes returnerer vi Optional.empty()
-        Kandidat kandidat = hentNyesteKandidat(kandidatendring.getAktørId()).orElseThrow(NotFoundException::new);
-        Kandidat endretkandidat = Kandidat.endreKandidat(kandidat, kandidatendring, innloggetVeileder, dateProvider.now());
+        Optional<Kandidat> nyesteKandidat = hentNyesteKandidat(kandidatendring.getAktørId());
+        if (nyesteKandidat.isEmpty()) return Optional.empty();
+
+        Kandidat endretkandidat = Kandidat.endreKandidat(
+                nyesteKandidat.get(),
+                kandidatendring,
+                innloggetVeileder,
+                dateProvider.now()
+        );
 
         Integer id = kandidatRepository.lagreKandidat(endretkandidat);
         Optional<Kandidat> lagretKandidat = kandidatRepository.hentKandidat(id);

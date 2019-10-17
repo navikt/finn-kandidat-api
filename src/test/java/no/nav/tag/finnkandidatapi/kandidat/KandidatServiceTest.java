@@ -121,6 +121,20 @@ public class KandidatServiceTest {
     }
 
     @Test
+    public void endreKandidat__skal_returnere_empty_hvis_ingen_kandidat() {
+        when(repository.hentNyesteKandidat(enAktørId())).thenReturn(Optional.empty());
+        Optional<Kandidat> endretKandidat = kandidatService.endreKandidat(enKandidatendring(), enVeileder());
+        assertThat(endretKandidat).isEmpty();
+    }
+
+    @Test
+    public void endreKandidat__skal_returnere_empty_hvis_man_ikke_kunne_lagre_kandidat() {
+        when(repository.hentKandidat(1)).thenReturn(Optional.empty());
+        Optional<Kandidat> endretKandidat = kandidatService.endreKandidat(enKandidatendring(), enVeileder());
+        assertThat(endretKandidat).isEmpty();
+    }
+
+    @Test
     public void endreKandidat__skal_publisere_Kandidatoppdatering_event() {
         Kandidat kandidat = enKandidat();
         when(repository.hentNyesteKandidat(kandidat.getAktørId())).thenReturn(Optional.of(kandidat));

@@ -151,10 +151,6 @@ public class KandidatControllerTest {
         controller.endreKandidat(kandidatendring);
     }
 
-    // TODO:
-//    @Test
-//    public void endreKandidat__skal_kaste_FinnKandidatException_hvis_
-
     @Test
     public void hentKandidater__skal_returnere_ok_med_kandidater() {
         værInnloggetSom(enVeileder());

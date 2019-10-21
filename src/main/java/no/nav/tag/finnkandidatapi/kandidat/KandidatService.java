@@ -2,6 +2,7 @@ package no.nav.tag.finnkandidatapi.kandidat;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import no.finn.unleash.Unleash;
 import no.nav.tag.finnkandidatapi.aktørregister.AktørRegisterClient;
 import no.nav.tag.finnkandidatapi.kafka.oppfølgingAvsluttet.OppfølgingAvsluttetMelding;
 import no.nav.tag.finnkandidatapi.DateProvider;
@@ -17,6 +18,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import static no.nav.tag.finnkandidatapi.unleash.UnleashConfiguration.HENT_PERSONINFO_OPPRETT_KANDIDAT;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -27,7 +30,7 @@ public class KandidatService {
     private final AktørRegisterClient aktørRegisterClient;
     private final DateProvider dateProvider;
     private final VeilarbArenaClient veilarbarenaClient;
-
+    private final Unleash unleash;
 
     public Optional<Kandidat> hentNyesteKandidat(String aktørId) {
         return kandidatRepository.hentNyesteKandidat(aktørId);
@@ -38,8 +41,10 @@ public class KandidatService {
     }
 
     public Optional<Kandidat> opprettKandidat(Kandidat kandidat, Veileder innloggetVeileder) {
-        Personinfo personinfo = veilarbarenaClient.hentPersoninfo(kandidat.getFnr());
-        kandidat.setNavKontor(personinfo.getNavKontor());
+        if (unleash.isEnabled(HENT_PERSONINFO_OPPRETT_KANDIDAT)) {
+            Personinfo personinfo = veilarbarenaClient.hentPersoninfo(kandidat.getFnr());
+            kandidat.setNavKontor(personinfo.getNavKontor());
+        }
 
         Optional<Kandidat> lagretKandidat = oppdaterSistEndretFelterOgLagreKandidat(kandidat, innloggetVeileder);
 

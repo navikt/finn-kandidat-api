@@ -17,6 +17,9 @@ public class UnleashConfiguration {
     public static final String HAR_TILRETTELEGGINGSBEHOV_PRODUCER_FEATURE =
             "finnkandidat.hartilretteleggingsbehov.producer";
 
+    public static final String HENT_PERSONINFO_OPPRETT_KANDIDAT =
+            "finnkandidat.hent-personinfo-opprett-kandidat";
+
     @Profile({"dev", "prod"})
     @Bean
     public Unleash unleash(
@@ -38,6 +41,7 @@ public class UnleashConfiguration {
     public Unleash unleashMock() {
         FakeUnleash fakeUnleash = new FakeUnleash();
         fakeUnleash.enable(HAR_TILRETTELEGGINGSBEHOV_PRODUCER_FEATURE);
+        fakeUnleash.enable(HENT_PERSONINFO_OPPRETT_KANDIDAT);
         return fakeUnleash;
     }
 }

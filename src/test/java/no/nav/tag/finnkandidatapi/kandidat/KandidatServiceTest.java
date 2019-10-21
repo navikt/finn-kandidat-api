@@ -1,5 +1,6 @@
 package no.nav.tag.finnkandidatapi.kandidat;
 
+import no.finn.unleash.Unleash;
 import no.nav.tag.finnkandidatapi.DateProvider;
 import no.nav.tag.finnkandidatapi.aktørregister.AktørRegisterClient;
 import no.nav.tag.finnkandidatapi.kafka.oppfølgingAvsluttet.OppfølgingAvsluttetMelding;
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static no.nav.tag.finnkandidatapi.TestData.*;
+import static no.nav.tag.finnkandidatapi.unleash.UnleashConfiguration.HENT_PERSONINFO_OPPRETT_KANDIDAT;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -46,9 +48,20 @@ public class KandidatServiceTest {
     @Mock
     private VeilarbArenaClient veilarbArenaClient;
 
+    @Mock
+    private Unleash unleash;
+
     @Before
     public void setUp() {
-        kandidatService = new KandidatService(repository, eventPublisher, aktørRegisterClient, dateProvider, veilarbArenaClient);
+        when(unleash.isEnabled(HENT_PERSONINFO_OPPRETT_KANDIDAT)).thenReturn(true);
+        kandidatService = new KandidatService(
+                repository,
+                eventPublisher,
+                aktørRegisterClient,
+                dateProvider,
+                veilarbArenaClient,
+                unleash
+        );
     }
 
     @Test

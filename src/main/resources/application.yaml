@@ -70,7 +70,7 @@ spring:
         value-serializer: org.apache.kafka.common.serialization.StringSerializer
 
 oppfolging-avsluttet.topic: aapen-fo-endringPaaAvsluttOppfolging-v1-q0
-oppfolging-endret.topic: aapen-fo-endringPaaOppfoelgingsBruker-v1-q1
+oppfolging-endret.topic: aapen-fo-endringPaaOppfoelgingsBruker-v1-q0
 
 database:
   navn: finn-kandidat-dev

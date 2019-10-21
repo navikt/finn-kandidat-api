@@ -9,6 +9,7 @@ import no.nav.tag.finnkandidatapi.DateProvider;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatEndret;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatOpprettet;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatSlettet;
+import no.nav.tag.finnkandidatapi.unleash.UnleashConfiguration;
 import no.nav.tag.finnkandidatapi.veilarbarena.Personinfo;
 import no.nav.tag.finnkandidatapi.veilarbarena.VeilarbArenaClient;
 import org.springframework.context.ApplicationEventPublisher;
@@ -45,6 +46,8 @@ public class KandidatService {
         if (unleash.isEnabled(HENT_PERSONINFO_OPPRETT_KANDIDAT)) {
             Personinfo personinfo = veilarbarenaClient.hentPersoninfo(fnr);
             navKontor = personinfo.getNavKontor();
+        } else {
+            log.info("Setter navkontor til null siden {} er slått av", HENT_PERSONINFO_OPPRETT_KANDIDAT);
         }
 
         Kandidat kandidatTilLagring = Kandidat.opprettKandidat(

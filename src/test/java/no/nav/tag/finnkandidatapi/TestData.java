@@ -1,7 +1,6 @@
 package no.nav.tag.finnkandidatapi;
 
 import net.minidev.json.JSONObject;
-import no.nav.tag.finnkandidatapi.kafka.HarTilretteleggingsbehov;
 import no.nav.tag.finnkandidatapi.kandidat.Kandidat;
 import no.nav.tag.finnkandidatapi.kandidat.Kandidatendring;
 import no.nav.tag.finnkandidatapi.kandidat.Veileder;
@@ -9,10 +8,9 @@ import no.nav.tag.finnkandidatapi.logging.LoggEvent;
 import no.nav.tag.finnkandidatapi.tilbakemelding.Behov;
 import no.nav.tag.finnkandidatapi.tilbakemelding.Tilbakemelding;
 import no.nav.tag.finnkandidatapi.sts.STSToken;
-import no.nav.tag.finnkandidatapi.veilarbarena.Personinfo;
+import no.nav.tag.finnkandidatapi.veilarbarena.Oppfølgingsbruker;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
@@ -54,8 +52,8 @@ public class TestData {
         return "0325";
     }
 
-    public static Personinfo personinfo() {
-        return Personinfo.builder().navKontor(etNavKontor()).build();
+    public static Oppfølgingsbruker personinfo() {
+        return Oppfølgingsbruker.builder().navKontor(etNavKontor()).build();
     }
 
     public static Kandidat enKandidat(String aktørId) {

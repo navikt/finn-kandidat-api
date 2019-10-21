@@ -35,14 +35,14 @@ public class VeilarbArenaClientTest {
     @Test
     public void hentPersonInfo__skal_hente_personinfo() {
         Kandidat kandidat = enKandidat();
-        Personinfo personinfo = personinfo();
+        Oppfølgingsbruker oppfølgingsbruker = personinfo();
 
-        when(restTemplate.exchange(anyString(), any(), any(), eq(Personinfo.class)))
-                .thenReturn(new ResponseEntity<>(personinfo, HttpStatus.OK));
+        when(restTemplate.exchange(anyString(), any(), any(), eq(Oppfølgingsbruker.class)))
+                .thenReturn(new ResponseEntity<>(oppfølgingsbruker, HttpStatus.OK));
         when(tokenUtils.hentOidcToken()).thenReturn("123");
 
-        Personinfo hentetPersoninfo = veilarbArenaClient.hentPersoninfo(kandidat.getFnr());
+        Oppfølgingsbruker hentetOppfølgingsbruker = veilarbArenaClient.hentPersoninfo(kandidat.getFnr());
 
-        assertThat(hentetPersoninfo).isEqualTo(personinfo);
+        assertThat(hentetOppfølgingsbruker).isEqualTo(oppfølgingsbruker);
     }
 }

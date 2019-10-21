@@ -29,16 +29,16 @@ public class VeilarbArenaClient {
         this.tokenUtils = tokenUtils;
     }
 
-    public Personinfo hentPersoninfo(String fnr) {
+    public Oppfølgingsbruker hentPersoninfo(String fnr) {
         String uri = UriComponentsBuilder.fromHttpUrl(veilarbarenaUrl)
                 .path("/oppfolgingsbruker/" + fnr)
                 .toUriString();
 
-        ResponseEntity<Personinfo> respons = restTemplate.exchange(
+        ResponseEntity<Oppfølgingsbruker> respons = restTemplate.exchange(
                 uri,
                 HttpMethod.GET,
                 httpHeadere(),
-                Personinfo.class
+                Oppfølgingsbruker.class
         );
 
         return respons.getBody();

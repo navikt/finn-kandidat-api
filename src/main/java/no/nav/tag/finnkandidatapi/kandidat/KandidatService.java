@@ -8,7 +8,7 @@ import no.nav.tag.finnkandidatapi.DateProvider;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatEndret;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatOpprettet;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatSlettet;
-import no.nav.tag.finnkandidatapi.veilarbarena.Personinfo;
+import no.nav.tag.finnkandidatapi.veilarbarena.Oppfølgingsbruker;
 import no.nav.tag.finnkandidatapi.veilarbarena.VeilarbArenaClient;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -38,8 +38,8 @@ public class KandidatService {
     }
 
     public Optional<Kandidat> opprettKandidat(Kandidat kandidat, Veileder innloggetVeileder) {
-        Personinfo personinfo = veilarbarenaClient.hentPersoninfo(kandidat.getFnr());
-        kandidat.setNavKontor(personinfo.getNavKontor());
+        Oppfølgingsbruker oppfølgingsbruker = veilarbarenaClient.hentPersoninfo(kandidat.getFnr());
+        kandidat.setNavKontor(oppfølgingsbruker.getNavKontor());
 
         Optional<Kandidat> lagretKandidat = oppdaterSistEndretFelterOgLagreKandidat(kandidat, innloggetVeileder);
 
@@ -85,6 +85,10 @@ public class KandidatService {
             eventPublisher.publishEvent(new KandidatSlettet(slettetKey.get(), oppfølgingAvsluttetMelding.getAktørId(), Brukertype.SYSTEM, dateProvider.now()));
             log.info("Slettet kandidat med id {} pga. avsluttet oppfølging", slettetKey.get());
         }
+    }
+
+    public void behandleOppfølgingEndret(Oppfølgingsbruker oppfølgingEndretMelding) {
+        // TODO: Hvordan skal kandidatene oppdateres? Denne kommer til å kjøres 2-3 millioner ganger i løpet av kort tid.
     }
 
     public String hentAktørId(String fnr) {

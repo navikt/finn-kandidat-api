@@ -1,10 +1,12 @@
 package no.nav.tag.finnkandidatapi.kandidat;
 
+import no.finn.unleash.Unleash;
 import no.nav.tag.finnkandidatapi.DateProvider;
 import no.nav.tag.finnkandidatapi.aktørregister.AktørRegisterClient;
 import no.nav.tag.finnkandidatapi.kafka.oppfølgingAvsluttet.OppfølgingAvsluttetMelding;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatEndret;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatOpprettet;
+import no.nav.tag.finnkandidatapi.veilarbarena.VeilarbArenaClient;
 import org.junit.Before;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatSlettet;
 import org.junit.Test;
@@ -19,6 +21,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static no.nav.tag.finnkandidatapi.TestData.*;
+import static no.nav.tag.finnkandidatapi.unleash.UnleashConfiguration.HENT_PERSONINFO_OPPRETT_KANDIDAT;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -42,9 +45,23 @@ public class KandidatServiceTest {
     @Mock
     private AktørRegisterClient aktørRegisterClient;
 
+    @Mock
+    private VeilarbArenaClient veilarbArenaClient;
+
+    @Mock
+    private Unleash unleash;
+
     @Before
     public void setUp() {
-        kandidatService = new KandidatService(repository, eventPublisher, aktørRegisterClient, dateProvider);
+        when(unleash.isEnabled(HENT_PERSONINFO_OPPRETT_KANDIDAT)).thenReturn(true);
+        kandidatService = new KandidatService(
+                repository,
+                eventPublisher,
+                aktørRegisterClient,
+                dateProvider,
+                veilarbArenaClient,
+                unleash
+        );
     }
 
     @Test
@@ -69,57 +86,106 @@ public class KandidatServiceTest {
     }
 
     @Test
-    public void opprettKandidat__skal_endre_sistEndretAv_og_sistEndret_med_innlogget_veileder() {
+    public void opprettKandidat__skal_opprette_kandidat_med_riktige_felter() {
         Kandidat kandidat = enKandidat();
+        KandidatDto kandidatDto = enKandidatDto(kandidat);
         Veileder veileder = enVeileder();
-        LocalDateTime datetime = LocalDateTime.now();
+        kandidat.setSistEndretAv(veileder.getNavIdent());
 
-        when(dateProvider.now()).thenReturn(datetime);
-        when(repository.lagreKandidat(any(Kandidat.class))).thenReturn(1);
-        when(repository.hentKandidat(1)).thenReturn(Optional.of(kandidat));
+        Kandidat kandidatTilOpprettelse = Kandidat.opprettKandidat(
+                kandidat.getFnr(),
+                kandidatDto,
+                veileder,
+                kandidat.getSistEndret(),
+                etNavKontor()
+        );
 
-        kandidatService.opprettKandidat(kandidat, veileder);
+        when(dateProvider.now()).thenReturn(kandidat.getSistEndret());
+        when(veilarbArenaClient.hentPersoninfo(kandidat.getFnr())).thenReturn(personinfo());
+        when(repository.lagreKandidat(kandidat)).thenReturn(1);
+        when(repository.hentKandidat(1)).thenReturn(Optional.of(kandidatTilOpprettelse));
 
-        assertThat(kandidat.getSistEndretAv()).isEqualTo(veileder.getNavIdent());
-        assertThat(kandidat.getSistEndret()).isEqualTo(datetime);
+        Kandidat opprettetKandidat = kandidatService.opprettKandidat(kandidat.getFnr(), kandidatDto, veileder).get();
+
+        verify(repository).lagreKandidat(opprettetKandidat);
+    }
+
+    @Test
+    public void opprettKandidat__skal_returnere_empty_hvis_kandidat_ikke_ble_lagret() {
+        Kandidat kandidat = enKandidat();
+        KandidatDto kandidatDto = enKandidatDto(kandidat);
+        Veileder veileder = enVeileder();
+        kandidat.setSistEndretAv(veileder.getNavIdent());
+
+        when(dateProvider.now()).thenReturn(kandidat.getSistEndret());
+        when(veilarbArenaClient.hentPersoninfo(kandidat.getFnr())).thenReturn(personinfo());
+        when(repository.lagreKandidat(kandidat)).thenReturn(1);
+        when(repository.hentKandidat(1)).thenReturn(Optional.empty());
+
+        Optional<Kandidat> empty = kandidatService.opprettKandidat(kandidat.getFnr(), kandidatDto, veileder);
+
+        assertThat(empty).isEmpty();
     }
 
     @Test
     public void opprettKandidat__skal_publisere_KandidatOpprettet_event() {
         Kandidat kandidat = enKandidat();
-        when(repository.lagreKandidat(kandidat)).thenReturn(1);
-        when(repository.hentKandidat(1)).thenReturn(Optional.of(kandidat));
+        KandidatDto kandidatDto = enKandidatDto(kandidat);
+        Integer kandidatId = 1;
 
-        kandidatService.opprettKandidat(kandidat, enVeileder());
+        when(dateProvider.now()).thenReturn(kandidat.getSistEndret());
+        when(repository.lagreKandidat(any(Kandidat.class))).thenReturn(kandidatId);
+        when(repository.hentKandidat(kandidatId)).thenReturn(Optional.of(kandidat));
+        when(veilarbArenaClient.hentPersoninfo(kandidat.getFnr())).thenReturn(personinfo());
 
+        kandidatService.opprettKandidat(kandidat.getFnr(), kandidatDto, enVeileder());
         verify(eventPublisher).publishEvent(new KandidatOpprettet(kandidat));
     }
 
     @Test
-    public void endreKandidat__skal_endre_sistEndretAv_og_sistEndret_med_innlogget_veileder() {
+    public void endreKandidat__skal_endre_kandidatens_felter() {
         Kandidat kandidat = enKandidat();
+        KandidatDto kandidatDto = enKandidatDto();
         Veileder veileder = enVeileder();
         LocalDateTime datetime = LocalDateTime.now();
-
         when(dateProvider.now()).thenReturn(datetime);
+        Kandidat kandidatTilLagring = Kandidat.endreKandidat(kandidat, kandidatDto, veileder, dateProvider.now());
+
+        when(repository.hentNyesteKandidat(kandidat.getAktørId())).thenReturn(Optional.of(kandidat));
         when(repository.lagreKandidat(any(Kandidat.class))).thenReturn(1);
-        when(repository.hentKandidat(1)).thenReturn(Optional.of(kandidat));
+        when(repository.hentKandidat(1)).thenReturn(Optional.of(kandidatTilLagring));
 
-        kandidatService.endreKandidat(kandidat, veileder);
+        Kandidat endretKandidat = kandidatService.endreKandidat(kandidatDto, veileder).get();
 
-        assertThat(kandidat.getSistEndretAv()).isEqualTo(veileder.getNavIdent());
-        assertThat(kandidat.getSistEndret()).isEqualTo(datetime);
+        verify(repository).lagreKandidat(endretKandidat);
+    }
+
+    @Test
+    public void endreKandidat__skal_returnere_empty_hvis_ingen_kandidat() {
+        KandidatDto kandidatDto = enKandidatDto();
+        when(repository.hentNyesteKandidat(kandidatDto.getAktørId())).thenReturn(Optional.empty());
+        Optional<Kandidat> endretKandidat = kandidatService.endreKandidat(kandidatDto, enVeileder());
+        assertThat(endretKandidat).isEmpty();
+    }
+
+    @Test
+    public void endreKandidat__skal_returnere_empty_hvis_man_ikke_kunne_lagre_kandidat() {
+        KandidatDto kandidatDto = enKandidatDto();
+        when(repository.hentNyesteKandidat(kandidatDto.getAktørId())).thenReturn(Optional.empty());
+        Optional<Kandidat> endretKandidat = kandidatService.endreKandidat(enKandidatDto(), enVeileder());
+        assertThat(endretKandidat).isEmpty();
     }
 
     @Test
     public void endreKandidat__skal_publisere_Kandidatoppdatering_event() {
         Kandidat kandidat = enKandidat();
-        when(repository.lagreKandidat(kandidat)).thenReturn(1);
+        when(repository.hentNyesteKandidat(kandidat.getAktørId())).thenReturn(Optional.of(kandidat));
+        when(repository.lagreKandidat(any(Kandidat.class))).thenReturn(1);
         when(repository.hentKandidat(1)).thenReturn(Optional.of(kandidat));
 
-        kandidatService.endreKandidat(kandidat, enVeileder());
+        Kandidat endretKandidat = kandidatService.endreKandidat(enKandidatDto(), enVeileder()).get();
 
-        verify(eventPublisher).publishEvent(new KandidatEndret(kandidat));
+        verify(eventPublisher).publishEvent(new KandidatEndret(endretKandidat));
     }
 
     @Test

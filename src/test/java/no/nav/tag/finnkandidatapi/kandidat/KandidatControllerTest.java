@@ -36,11 +36,13 @@ public class KandidatControllerTest {
     public void opprettKandidat__skal_sjekke_skrivetilgang() {
         Veileder veileder = enVeileder();
         Kandidat kandidat = enKandidat();
-        værInnloggetSom(veileder);
-        when(service.hentFnr(anyString())).thenReturn("123123123");
-        when(service.opprettKandidat(kandidat, veileder)).thenReturn(Optional.of(kandidat));
+        KandidatDto kandidatDto = enKandidatDto(kandidat);
 
-        controller.opprettKandidat(kandidat);
+        værInnloggetSom(veileder);
+        when(service.hentFnr(kandidatDto.getAktørId())).thenReturn(kandidat.getFnr());
+        when(service.opprettKandidat(kandidat.getFnr(), kandidatDto, veileder)).thenReturn(Optional.of(kandidat));
+
+        controller.opprettKandidat(kandidatDto);
 
         verify(tilgangskontroll, times(1)).sjekkSkrivetilgangTilKandidat(kandidat.getAktørId());
     }
@@ -50,11 +52,12 @@ public class KandidatControllerTest {
         Veileder veileder = enVeileder();
         værInnloggetSom(veileder);
         Kandidat kandidat = enKandidat();
+        KandidatDto kandidatDto = enKandidatDto(kandidat);
 
-        when(service.hentFnr(anyString())).thenReturn("123123123");
-        when(service.opprettKandidat(kandidat, veileder)).thenReturn(Optional.of(kandidat));
+        when(service.hentFnr(kandidatDto.getAktørId())).thenReturn(kandidat.getFnr());
+        when(service.opprettKandidat(kandidat.getFnr(), kandidatDto, veileder)).thenReturn(Optional.of(kandidat));
 
-        ResponseEntity<Kandidat> respons = controller.opprettKandidat(kandidat);
+        ResponseEntity<Kandidat> respons = controller.opprettKandidat(kandidatDto);
         Kandidat hentetKandidat = respons.getBody();
 
         assertThat(respons.getStatusCode()).isEqualTo(HttpStatus.CREATED);
@@ -64,50 +67,53 @@ public class KandidatControllerTest {
     @Test
     public void opprettKandidat__skal_kalle_kandidat_service_med_riktige_parameter() {
         Kandidat kandidat = enKandidat();
+        KandidatDto kandidatDto = enKandidatDto(kandidat);
         Veileder veileder = enVeileder();
         værInnloggetSom(veileder);
 
-        when(service.hentFnr(anyString())).thenReturn("123123123");
-        when(service.opprettKandidat(kandidat, veileder)).thenReturn(Optional.of(kandidat));
+        when(service.hentFnr(kandidatDto.getAktørId())).thenReturn(kandidat.getFnr());
+        when(service.opprettKandidat(kandidat.getFnr(), kandidatDto, veileder)).thenReturn(Optional.of(kandidat));
 
-        controller.opprettKandidat(kandidat);
+        controller.opprettKandidat(kandidatDto);
 
-        verify(service).opprettKandidat(kandidat, veileder);
+        verify(service).opprettKandidat(kandidat.getFnr(), kandidatDto, veileder);
     }
 
     @Test(expected = FinnKandidatException.class)
     public void opprettKandidat__skal_kaste_FinnKandidatException_hvis_kandidat_ikke_ble_lagret() {
         Kandidat kandidat = enKandidat();
+        KandidatDto kandidatDto = enKandidatDto(kandidat);
         Veileder veileder = enVeileder();
         værInnloggetSom(veileder);
 
-        when(service.hentFnr(anyString())).thenReturn("123123123");
-        when(service.opprettKandidat(kandidat, veileder)).thenReturn(Optional.empty());
-        controller.opprettKandidat(kandidat);
+        when(service.hentFnr(kandidat.getAktørId())).thenReturn(kandidat.getFnr());
+        when(service.opprettKandidat(kandidat.getFnr(), kandidatDto, veileder)).thenReturn(Optional.empty());
+
+        controller.opprettKandidat(kandidatDto);
     }
 
     @Test
     public void opprettKandidat__skal_returnere_conflict_hvis_kandidat_eksisterer() {
-        Kandidat kandidat = enKandidat();
+        KandidatDto kandidatDto = enKandidatDto();
         Veileder veileder = enVeileder();
         værInnloggetSom(veileder);
 
-        when(service.kandidatEksisterer(kandidat.getAktørId())).thenReturn(true);
+        when(service.kandidatEksisterer(kandidatDto.getAktørId())).thenReturn(true);
 
-        ResponseEntity<Kandidat> respons = controller.opprettKandidat(kandidat);
+        ResponseEntity<Kandidat> respons = controller.opprettKandidat(kandidatDto);
         assertThat(respons.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
     }
 
     @Test
     public void endreKandidat__skal_sjekke_skrivetilgang() {
         værInnloggetSom(enVeileder());
-        Kandidat kandidat = enKandidat();
+        KandidatDto kandidatDto = enKandidatDto();
 
         try {
-            controller.endreKandidat(kandidat);
+            controller.endreKandidat(kandidatDto);
         } catch (Exception ignored) {}
 
-        verify(tilgangskontroll, times(1)).sjekkSkrivetilgangTilKandidat(kandidat.getAktørId());
+        verify(tilgangskontroll, times(1)).sjekkSkrivetilgangTilKandidat(kandidatDto.getAktørId());
     }
 
     @Test
@@ -115,10 +121,11 @@ public class KandidatControllerTest {
         Veileder veileder = enVeileder();
         værInnloggetSom(veileder);
         Kandidat kandidat = enKandidat();
+        KandidatDto kandidatDto = enKandidatDto();
 
-        when(service.endreKandidat(kandidat, veileder)).thenReturn(Optional.of(kandidat));
+        when(service.endreKandidat(kandidatDto, veileder)).thenReturn(Optional.of(kandidat));
 
-        ResponseEntity<Kandidat> respons = controller.endreKandidat(kandidat);
+        ResponseEntity<Kandidat> respons = controller.endreKandidat(kandidatDto);
         Kandidat hentetKandidat = respons.getBody();
 
         assertThat(respons.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -128,24 +135,26 @@ public class KandidatControllerTest {
     @Test
     public void endreKandidat__skal_kalle_kandidat_service_med_riktige_parameter() {
         Kandidat kandidat = enKandidat();
+        KandidatDto kandidatDto = enKandidatDto();
         Veileder veileder = enVeileder();
         værInnloggetSom(veileder);
 
-        when(service.endreKandidat(kandidat, veileder)).thenReturn(Optional.of(kandidat));
+        when(service.endreKandidat(kandidatDto, veileder)).thenReturn(Optional.of(kandidat));
 
-        controller.endreKandidat(kandidat);
+        controller.endreKandidat(kandidatDto);
 
-        verify(service).endreKandidat(kandidat, veileder);
+        verify(service).endreKandidat(kandidatDto, veileder);
     }
 
     @Test(expected = FinnKandidatException.class)
     public void endreKandidat__skal_kaste_FinnKandidatException_hvis_kandidat_ikke_fins() {
-        Kandidat kandidat = enKandidat();
+        KandidatDto kandidatDto = enKandidatDto();
         Veileder veileder = enVeileder();
         værInnloggetSom(veileder);
 
-        when(service.endreKandidat(kandidat, veileder)).thenReturn(Optional.empty());
-        controller.endreKandidat(kandidat);
+        when(service.endreKandidat(kandidatDto, veileder)).thenReturn(Optional.empty());
+
+        controller.endreKandidat(kandidatDto);
     }
 
     @Test

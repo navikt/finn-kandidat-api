@@ -31,7 +31,8 @@ public class MockServer implements DisposableBean {
             @Value("${mock.port}") Integer port,
             @Value("${sts.url}") String stsUrl,
             @Value("${veilarbabac.url}") String veilarbabacUrl,
-            @Value("${aktørregister.url}") String aktørregisterUrl
+            @Value("${aktørregister.url}") String aktørregisterUrl,
+            @Value("${veilarbarena.url}") String veilarbarenaUrl
     ) {
         log.info("Starter mockserver");
 
@@ -40,11 +41,12 @@ public class MockServer implements DisposableBean {
         mockKall(veilarbabacUrl + "/person", PERMIT_RESPONSE);
         mockKall(stsUrl + "/sts/token", new STSToken("fdg", "asfsdg", 325));
         mockAktørregister(aktørregisterUrl);
+        mockVeilarbarena(veilarbarenaUrl);
 
         server.start();
     }
 
-    private void mockAktørregister(@Value("${aktørregister.url}") String aktørregisterUrl) {
+    private void mockAktørregister(String aktørregisterUrl) {
         Map<String, StringValuePattern> aktørId = new HashMap<>();
         aktørId.put("identgruppe", WireMock.equalTo("AktoerId"));
         mockKall(aktørregisterUrl + "/identer" + "?identgruppe=AktoerId&gjeldende=true",
@@ -78,6 +80,40 @@ public class MockServer implements DisposableBean {
                 "   \"feilmelding\": null\n" +
                 " }\n" +
                 "}");
+    }
+
+    private void mockVeilarbarena(String veilarbarenaUrl) {
+        String body = (
+            "{\n" +
+                "\"aktoerid\": null," +
+                "\"fodselsnr\": \"01065500791\"," +
+                "\"formidlingsgruppekode\": \"ARBS\"," +
+                "\"iserv_fra_dato\": null," +
+                "\"etternavn\": null," +
+                "\"fornavn\": null," +
+                "\"nav_kontor\": \"0101\"," +
+                "\"kvalifiseringsgruppekode\": \"BFORM\"," +
+                "\"rettighetsgruppekode\": \"DAGP\"," +
+                "\"hovedmaalkode\": \"SKAFFEA\"," +
+                "\"sikkerhetstiltak_type_kode\": null," +
+                "\"fr_kode\": null," +
+                "\"har_oppfolgingssak\": true," +
+                "\"sperret_ansatt\": false," +
+                "\"er_doed\": false," +
+                "\"doed_fra_dato\": null," +
+                "\"endret_dato\": null" +
+            "}"
+        );
+
+        String path = getPath(veilarbarenaUrl + "/oppfolgingsbruker");
+        server.stubFor(
+                WireMock.get(WireMock.urlPathMatching(path + "/[0-9]+")).willReturn(WireMock.aResponse()
+                        .withHeader("Content-Type", "application/json")
+                        .withStatus(HttpStatus.OK.value())
+                        .withBody(body)
+                )
+        );
+
     }
 
     @SneakyThrows

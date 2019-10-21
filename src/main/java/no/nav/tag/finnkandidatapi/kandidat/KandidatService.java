@@ -2,18 +2,24 @@ package no.nav.tag.finnkandidatapi.kandidat;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import no.finn.unleash.Unleash;
 import no.nav.tag.finnkandidatapi.aktørregister.AktørRegisterClient;
 import no.nav.tag.finnkandidatapi.kafka.oppfølgingAvsluttet.OppfølgingAvsluttetMelding;
 import no.nav.tag.finnkandidatapi.DateProvider;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatEndret;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatOpprettet;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatSlettet;
+import no.nav.tag.finnkandidatapi.unleash.UnleashConfiguration;
+import no.nav.tag.finnkandidatapi.veilarbarena.Personinfo;
+import no.nav.tag.finnkandidatapi.veilarbarena.VeilarbArenaClient;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+
+import static no.nav.tag.finnkandidatapi.unleash.UnleashConfiguration.HENT_PERSONINFO_OPPRETT_KANDIDAT;
 
 @Slf4j
 @Service
@@ -24,6 +30,8 @@ public class KandidatService {
     private final ApplicationEventPublisher eventPublisher;
     private final AktørRegisterClient aktørRegisterClient;
     private final DateProvider dateProvider;
+    private final VeilarbArenaClient veilarbarenaClient;
+    private final Unleash unleash;
 
     public Optional<Kandidat> hentNyesteKandidat(String aktørId) {
         return kandidatRepository.hentNyesteKandidat(aktørId);
@@ -33,31 +41,46 @@ public class KandidatService {
         return kandidatRepository.hentKandidater();
     }
 
-    public Optional<Kandidat> opprettKandidat(Kandidat kandidat, Veileder innloggetVeileder) {
-        Optional<Kandidat> lagretKandidat = oppdaterSistEndretFelterOgLagreKandidat(kandidat, innloggetVeileder);
+    public Optional<Kandidat> opprettKandidat(String fnr, KandidatDto kandidat, Veileder innloggetVeileder) {
+        String navKontor = null;
+        if (unleash.isEnabled(HENT_PERSONINFO_OPPRETT_KANDIDAT)) {
+            Personinfo personinfo = veilarbarenaClient.hentPersoninfo(fnr);
+            navKontor = personinfo.getNavKontor();
+        } else {
+            log.info("Setter navkontor til null siden {} er slått av", HENT_PERSONINFO_OPPRETT_KANDIDAT);
+        }
 
-        lagretKandidat.ifPresent(value -> {
-            eventPublisher.publishEvent(new KandidatOpprettet(value));
-        });
+        Kandidat kandidatTilLagring = Kandidat.opprettKandidat(
+                fnr,
+                kandidat,
+                innloggetVeileder,
+                dateProvider.now(),
+                navKontor
+        );
+
+        Integer databaseId = kandidatRepository.lagreKandidat(kandidatTilLagring);
+        Optional<Kandidat> lagretKandidat = kandidatRepository.hentKandidat(databaseId);
+        lagretKandidat.ifPresent(value -> eventPublisher.publishEvent(new KandidatOpprettet(value)));
 
         return lagretKandidat;
     }
 
-    public Optional<Kandidat> endreKandidat(Kandidat kandidat, Veileder innloggetVeileder) {
-        Optional<Kandidat> lagretKandidat = oppdaterSistEndretFelterOgLagreKandidat(kandidat, innloggetVeileder);
+    public Optional<Kandidat> endreKandidat(KandidatDto kandidatDto, Veileder innloggetVeileder) {
+        Optional<Kandidat> nyesteKandidat = hentNyesteKandidat(kandidatDto.getAktørId());
+        if (nyesteKandidat.isEmpty()) return Optional.empty();
+
+        Kandidat endretkandidat = Kandidat.endreKandidat(
+                nyesteKandidat.get(),
+                kandidatDto,
+                innloggetVeileder,
+                dateProvider.now()
+        );
+
+        Integer id = kandidatRepository.lagreKandidat(endretkandidat);
+        Optional<Kandidat> lagretKandidat = kandidatRepository.hentKandidat(id);
         lagretKandidat.ifPresent(value -> eventPublisher.publishEvent(new KandidatEndret(value)));
+
         return lagretKandidat;
-    }
-
-    private Optional<Kandidat> oppdaterSistEndretFelterOgLagreKandidat(Kandidat kandidat, Veileder innloggetVeileder) {
-        this.oppdaterSistEndretFelter(kandidat, innloggetVeileder);
-        Integer id = kandidatRepository.lagreKandidat(kandidat);
-        return kandidatRepository.hentKandidat(id);
-    }
-
-    private void oppdaterSistEndretFelter(Kandidat kandidat, Veileder innloggetVeileder) {
-        kandidat.setSistEndretAv(innloggetVeileder.getNavIdent());
-        kandidat.setSistEndret(dateProvider.now());
     }
 
     public void behandleOppfølgingAvsluttet(OppfølgingAvsluttetMelding oppfølgingAvsluttetMelding) {

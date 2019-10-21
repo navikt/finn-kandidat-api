@@ -18,4 +18,45 @@ public class Kandidat {
     private Set<FysiskBehov> fysiskeBehov;
     private Set<ArbeidsmiljøBehov> arbeidsmiljøBehov;
     private Set<GrunnleggendeBehov> grunnleggendeBehov;
+    private String navKontor;
+
+    public static Kandidat opprettKandidat(
+            String fnr,
+            KandidatDto kandidat,
+            Veileder veileder,
+            LocalDateTime sistEndret,
+            String navKontor
+    ) {
+        return Kandidat.builder()
+                .fnr(fnr)
+                .aktørId(kandidat.getAktørId())
+                .sistEndretAv(veileder.getNavIdent())
+                .sistEndret(sistEndret)
+                .arbeidstidBehov(kandidat.getArbeidstidBehov())
+                .fysiskeBehov(kandidat.getFysiskeBehov())
+                .arbeidsmiljøBehov(kandidat.getArbeidsmiljøBehov())
+                .grunnleggendeBehov(kandidat.getGrunnleggendeBehov())
+                .navKontor(navKontor)
+                .build();
+    }
+
+    public static Kandidat endreKandidat(
+            Kandidat kandidat,
+            KandidatDto kandidatDto,
+            Veileder veileder,
+            LocalDateTime sistEndret
+    ) {
+        return Kandidat.builder()
+                .id(kandidat.getId())
+                .fnr(kandidat.getFnr())
+                .aktørId(kandidat.getAktørId())
+                .sistEndret(sistEndret)
+                .sistEndretAv(veileder.getNavIdent())
+                .arbeidstidBehov(kandidatDto.getArbeidstidBehov())
+                .fysiskeBehov(kandidatDto.getFysiskeBehov())
+                .arbeidsmiljøBehov(kandidatDto.getArbeidsmiljøBehov())
+                .grunnleggendeBehov(kandidatDto.getGrunnleggendeBehov())
+                .navKontor(kandidat.getNavKontor())
+                .build();
+    }
 }

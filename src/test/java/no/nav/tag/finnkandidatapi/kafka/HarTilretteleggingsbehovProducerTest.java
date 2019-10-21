@@ -65,7 +65,7 @@ public class HarTilretteleggingsbehovProducerTest {
     }
 
     @After
-    public void rivNed() {
+    public void tearDown() {
         embeddedKafka.destroy();
     }
 }

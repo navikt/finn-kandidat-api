@@ -1,5 +1,6 @@
 package no.nav.tag.finnkandidatapi.veilarbarena;
 
+import no.nav.tag.finnkandidatapi.kandidat.FinnKandidatException;
 import no.nav.tag.finnkandidatapi.kandidat.Kandidat;
 import no.nav.tag.finnkandidatapi.tilgangskontroll.TokenUtils;
 import org.junit.Before;
@@ -9,6 +10,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 
 import static no.nav.tag.finnkandidatapi.TestData.enKandidat;
@@ -44,5 +46,12 @@ public class VeilarbArenaClientTest {
         Personinfo hentetPersoninfo = veilarbArenaClient.hentPersoninfo(kandidat.getFnr());
 
         assertThat(hentetPersoninfo).isEqualTo(personinfo);
+    }
+
+    @Test(expected = FinnKandidatException.class)
+    public void hentPersonInfo__skal_kaste_FinnKandidatException_hvis_feil() {
+        when(restTemplate.exchange(anyString(), any(), any(), eq(Personinfo.class)))
+                .thenThrow(RestClientResponseException.class);
+        veilarbArenaClient.hentPersoninfo("123");
     }
 }

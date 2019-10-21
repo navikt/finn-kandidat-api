@@ -1,6 +1,8 @@
 package no.nav.tag.finnkandidatapi.veilarbarena;
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.tag.finnkandidatapi.kandidat.FinnKandidatException;
+import no.nav.tag.finnkandidatapi.tilgangskontroll.TilgangskontrollException;
 import no.nav.tag.finnkandidatapi.tilgangskontroll.TokenUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -8,6 +10,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -34,14 +38,19 @@ public class VeilarbArenaClient {
                 .path("/oppfolgingsbruker/" + fnr)
                 .toUriString();
 
-        ResponseEntity<Personinfo> respons = restTemplate.exchange(
-                uri,
-                HttpMethod.GET,
-                httpHeadere(),
-                Personinfo.class
-        );
+        try {
+            ResponseEntity<Personinfo> respons = restTemplate.exchange(
+                    uri,
+                    HttpMethod.GET,
+                    httpHeadere(),
+                    Personinfo.class
+            );
+            return respons.getBody();
 
-        return respons.getBody();
+        } catch (RestClientResponseException exception) {
+            log.error("Kunne ikke hente personinfo fra veilarbarena", exception);
+            throw new FinnKandidatException("Kunne ikke hente personinfo fra veilarbarena");
+        }
     }
 
     private HttpEntity httpHeadere() {

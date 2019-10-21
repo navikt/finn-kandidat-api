@@ -6,8 +6,10 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.finnkandidatapi.kafka.oppfølgingAvsluttet.ConsumerProps;
 import no.nav.tag.finnkandidatapi.kafka.oppfølgingAvsluttet.OppfølgingAvsluttetMelding;
+import no.nav.tag.finnkandidatapi.kafka.oppfølgingEndret.OppfolgingEndretConfig;
 import no.nav.tag.finnkandidatapi.kandidat.Kandidat;
 import no.nav.tag.finnkandidatapi.kandidat.KandidatRepository;
+import no.nav.tag.finnkandidatapi.veilarbarena.Oppfølgingsbruker;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -50,10 +52,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Slf4j
 public class OppfølgingEndretConsumerTest {
 
-    private static final String AKTØR_ID = "1856024171652";
+    private static final String FNR = "01234567890";
 
     @Autowired
-    private ConsumerProps consumerTopicProps;
+    private OppfolgingEndretConfig config;
 
     @Autowired
     private EnKafkaMockServer embeddedKafka;
@@ -95,7 +97,7 @@ public class OppfølgingEndretConsumerTest {
         retryTemplate.setBackOffPolicy(backOffPolicy);
         factory.setRetryTemplate(retryTemplate);
 
-        container = factory.createContainer(consumerTopicProps.getTopic());
+        container = factory.createContainer(config.getTopic());
         container.setupMessageListener((MessageListener<String, String>) record -> {
             log.info("KafkaMessage: {}", record);
         });
@@ -106,31 +108,34 @@ public class OppfølgingEndretConsumerTest {
 
     @Test(timeout = 2000)
     @SneakyThrows
-    public void skal_slette_kandidat_ved_mottatt_oppfølging_avsluttet_kafka_melding() {
-        Kandidat kandidatSomSkalSlettes = enKandidat();
-        kandidatSomSkalSlettes.setAktørId(AKTØR_ID);
-        repository.lagreKandidat(kandidatSomSkalSlettes);
+    public void skal_oppdatere_nav_kontor_ved_mottatt_oppfolging_endret_melding() {
+        Kandidat kandidat = enKandidat();
+        kandidat.setFnr(FNR);
+        repository.lagreKandidat(kandidat);
         sendOppFølgingAvsluttetMelding();
 
-        boolean kandidatErslettet = false;
-        while(!kandidatErslettet) {
+        boolean kandidatErEndret = false;
+        while(!kandidatErEndret) {
             Thread.sleep(10);
-            kandidatErslettet = repository.hentNyesteKandidat(kandidatSomSkalSlettes.getAktørId()).isEmpty();
+            Kandidat endretKandidat = repository.hentNyesteKandidat(kandidat.getAktørId()).get();
+            kandidatErEndret = endretKandidat.getNavKontor().equals("1337");
         }
-        assertThat(kandidatErslettet).isTrue();
+
+        assertThat(kandidatErEndret).isTrue();
     }
 
     private void sendOppFølgingAvsluttetMelding() throws JsonProcessingException {
-        String melding = lagOppfølgingAvsluttetMelding(AKTØR_ID);
-        producer.send(new ProducerRecord<>(consumerTopicProps.getTopic(), "123", melding));
+        String melding = lagOppfølgingsbruker(FNR, "1337");
+        producer.send(new ProducerRecord<>(config.getTopic(), "123", melding));
     }
 
-    private String lagOppfølgingAvsluttetMelding(String aktørId) throws JsonProcessingException {
-        OppfølgingAvsluttetMelding oppfølgingAvsluttetMelding = OppfølgingAvsluttetMelding.builder()
-                .aktørId(aktørId)
-                .sluttdato(new Date()).build();
+    private String lagOppfølgingsbruker(String fnr, String navKontor) throws JsonProcessingException {
+        Oppfølgingsbruker oppfølgingsbruker = Oppfølgingsbruker.builder()
+                .fnr(fnr)
+                .navKontor(navKontor)
+                .build();
         ObjectMapper objectMapper = new ObjectMapper();
-        return objectMapper.writeValueAsString(oppfølgingAvsluttetMelding);
+        return objectMapper.writeValueAsString(oppfølgingsbruker);
     }
 
     @After

@@ -41,7 +41,7 @@ public class UnleashConfiguration {
     public Unleash unleashMock() {
         FakeUnleash fakeUnleash = new FakeUnleash();
         fakeUnleash.enable(HAR_TILRETTELEGGINGSBEHOV_PRODUCER_FEATURE);
-        fakeUnleash.enable(HENT_PERSONINFO_OPPRETT_KANDIDAT);
+        fakeUnleash.disable(HENT_PERSONINFO_OPPRETT_KANDIDAT);
         return fakeUnleash;
     }
 }

@@ -64,7 +64,7 @@ public class KandidatController {
     }
 
     @PostMapping
-    public ResponseEntity<Kandidat> opprettKandidat(@RequestBody Kandidat kandidat) {
+    public ResponseEntity<Kandidat> opprettKandidat(@RequestBody KandidatDto kandidat) {
         loggBrukAvEndepunkt("opprettKandidat");
         tilgangskontroll.sjekkSkrivetilgangTilKandidat(kandidat.getAktørId());
 
@@ -76,24 +76,20 @@ public class KandidatController {
         }
 
         String fnr = kandidatService.hentFnr(kandidat.getAktørId());
-        if (!fnr.equals(kandidat.getFnr())) {
-            log.warn("Fnr fra frontend og fnr fra aktørregister er forskjellig");
-        }
-        kandidat.setFnr(fnr);
-
         Veileder veileder = tilgangskontroll.hentInnloggetVeileder();
-        Kandidat opprettetKandidat = kandidatService.opprettKandidat(kandidat, veileder).orElseThrow(FinnKandidatException::new);
+        Kandidat opprettetKandidat = kandidatService.opprettKandidat(fnr, kandidat, veileder)
+                .orElseThrow(FinnKandidatException::new);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(opprettetKandidat);
     }
 
     @PutMapping
-    public ResponseEntity<Kandidat> endreKandidat(@RequestBody Kandidatendring kandidatendring) {
+    public ResponseEntity<Kandidat> endreKandidat(@RequestBody KandidatDto kandidatDto) {
         loggBrukAvEndepunkt("endreKandidat");
-        tilgangskontroll.sjekkSkrivetilgangTilKandidat(kandidatendring.getAktørId());
+        tilgangskontroll.sjekkSkrivetilgangTilKandidat(kandidatDto.getAktørId());
         Veileder veileder = tilgangskontroll.hentInnloggetVeileder();
-        Kandidat endretKandidat = kandidatService.endreKandidat(kandidatendring, veileder)
+        Kandidat endretKandidat = kandidatService.endreKandidat(kandidatDto, veileder)
                 .orElseThrow(FinnKandidatException::new);
         return ResponseEntity.ok(endretKandidat);
     }

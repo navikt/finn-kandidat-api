@@ -1,9 +1,8 @@
 package no.nav.tag.finnkandidatapi;
 
 import net.minidev.json.JSONObject;
-import no.nav.tag.finnkandidatapi.kafka.HarTilretteleggingsbehov;
 import no.nav.tag.finnkandidatapi.kandidat.Kandidat;
-import no.nav.tag.finnkandidatapi.kandidat.Kandidatendring;
+import no.nav.tag.finnkandidatapi.kandidat.KandidatDto;
 import no.nav.tag.finnkandidatapi.kandidat.Veileder;
 import no.nav.tag.finnkandidatapi.logging.LoggEvent;
 import no.nav.tag.finnkandidatapi.tilbakemelding.Behov;
@@ -12,7 +11,6 @@ import no.nav.tag.finnkandidatapi.sts.STSToken;
 import no.nav.tag.finnkandidatapi.veilarbarena.Personinfo;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
@@ -30,7 +28,7 @@ public class TestData {
         return Kandidat.builder()
                 .sistEndret(LocalDateTime.now())
                 .sistEndretAv(enNavIdent())
-                .fnr("12345678901")
+                .fnr(etFnr())
                 .aktørId("1000000000001")
                 .arbeidstidBehov(KAN_IKKE_JOBBE)
                 .fysiskeBehov(Set.of(ARBEIDSSTILLING, ERGONOMI))
@@ -40,8 +38,18 @@ public class TestData {
                 .build();
     }
 
-    public static Kandidatendring enKandidatendring() {
-        return Kandidatendring.builder()
+    public static KandidatDto enKandidatDto(Kandidat kandidat) {
+        return KandidatDto.builder()
+                .aktørId(kandidat.getAktørId())
+                .arbeidstidBehov(kandidat.getArbeidstidBehov())
+                .fysiskeBehov(kandidat.getFysiskeBehov())
+                .arbeidsmiljøBehov(kandidat.getArbeidsmiljøBehov())
+                .grunnleggendeBehov(kandidat.getGrunnleggendeBehov())
+                .build();
+    }
+
+    public static KandidatDto enKandidatDto() {
+        return KandidatDto.builder()
                 .aktørId("1000000000001")
                 .arbeidstidBehov(HELTID)
                 .fysiskeBehov(Set.of(ARBEIDSSTILLING))
@@ -55,7 +63,7 @@ public class TestData {
     }
 
     public static Personinfo personinfo() {
-        return Personinfo.builder().navKontor(etNavKontor()).build();
+        return new Personinfo(etNavKontor());
     }
 
     public static Kandidat enKandidat(String aktørId) {
@@ -84,6 +92,10 @@ public class TestData {
 
     public static String enAktørId() {
         return "123";
+    }
+
+    public static String etFnr() {
+        return "29089686189";
     }
 
     public static Kandidat enKandidatMedNullOgTommeSet() {

@@ -7,7 +7,7 @@ import java.util.Set;
 
 @Data
 @Builder
-public class Kandidatendring {
+public class KandidatDto {
     private String aktørId;
     private ArbeidstidBehov arbeidstidBehov;
     private Set<FysiskBehov> fysiskeBehov;

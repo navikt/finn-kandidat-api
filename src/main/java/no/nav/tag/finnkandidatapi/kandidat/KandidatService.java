@@ -40,28 +40,35 @@ public class KandidatService {
         return kandidatRepository.hentKandidater();
     }
 
-    public Optional<Kandidat> opprettKandidat(Kandidat kandidat, Veileder innloggetVeileder) {
+    public Optional<Kandidat> opprettKandidat(String fnr, KandidatDto kandidat, Veileder innloggetVeileder) {
+        String navKontor = null;
         if (unleash.isEnabled(HENT_PERSONINFO_OPPRETT_KANDIDAT)) {
-            Personinfo personinfo = veilarbarenaClient.hentPersoninfo(kandidat.getFnr());
-            kandidat.setNavKontor(personinfo.getNavKontor());
+            Personinfo personinfo = veilarbarenaClient.hentPersoninfo(fnr);
+            navKontor = personinfo.getNavKontor();
         }
 
-        Optional<Kandidat> lagretKandidat = oppdaterSistEndretFelterOgLagreKandidat(kandidat, innloggetVeileder);
+        Kandidat kandidatTilLagring = Kandidat.opprettKandidat(
+                fnr,
+                kandidat,
+                innloggetVeileder,
+                dateProvider.now(),
+                navKontor
+        );
 
-        lagretKandidat.ifPresent(value -> {
-            eventPublisher.publishEvent(new KandidatOpprettet(value));
-        });
+        Integer databaseId = kandidatRepository.lagreKandidat(kandidatTilLagring);
+        Optional<Kandidat> lagretKandidat = kandidatRepository.hentKandidat(databaseId);
+        lagretKandidat.ifPresent(value -> eventPublisher.publishEvent(new KandidatOpprettet(value)));
 
         return lagretKandidat;
     }
 
-    public Optional<Kandidat> endreKandidat(Kandidatendring kandidatendring, Veileder innloggetVeileder) {
-        Optional<Kandidat> nyesteKandidat = hentNyesteKandidat(kandidatendring.getAktørId());
+    public Optional<Kandidat> endreKandidat(KandidatDto kandidatDto, Veileder innloggetVeileder) {
+        Optional<Kandidat> nyesteKandidat = hentNyesteKandidat(kandidatDto.getAktørId());
         if (nyesteKandidat.isEmpty()) return Optional.empty();
 
         Kandidat endretkandidat = Kandidat.endreKandidat(
                 nyesteKandidat.get(),
-                kandidatendring,
+                kandidatDto,
                 innloggetVeileder,
                 dateProvider.now()
         );
@@ -71,17 +78,6 @@ public class KandidatService {
         lagretKandidat.ifPresent(value -> eventPublisher.publishEvent(new KandidatEndret(value)));
 
         return lagretKandidat;
-    }
-
-    private Optional<Kandidat> oppdaterSistEndretFelterOgLagreKandidat(Kandidat kandidat, Veileder innloggetVeileder) {
-        this.oppdaterSistEndretFelter(kandidat, innloggetVeileder);
-        Integer id = kandidatRepository.lagreKandidat(kandidat);
-        return kandidatRepository.hentKandidat(id);
-    }
-
-    private void oppdaterSistEndretFelter(Kandidat kandidat, Veileder innloggetVeileder) {
-        kandidat.setSistEndretAv(innloggetVeileder.getNavIdent());
-        kandidat.setSistEndret(dateProvider.now());
     }
 
     public void behandleOppfølgingAvsluttet(OppfølgingAvsluttetMelding oppfølgingAvsluttetMelding) {

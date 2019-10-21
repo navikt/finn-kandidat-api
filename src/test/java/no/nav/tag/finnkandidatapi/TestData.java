@@ -63,7 +63,7 @@ public class TestData {
     }
 
     public static Oppfølgingsbruker personinfo() {
-        return new Oppfølgingsbruker(etNavKontor());
+        return new Oppfølgingsbruker(etFnr(), etNavKontor());
     }
 
     public static Kandidat enKandidat(String aktørId) {

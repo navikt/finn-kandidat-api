@@ -83,7 +83,10 @@ public class KandidatService {
     }
 
     public void behandleOppfølgingEndret(Oppfølgingsbruker oppfølgingEndretMelding) {
-        // TODO: Endre kandidat i repository. Denne vil kjøre 2-3 millioner ganger.
+        int antallOppdaterteRader = kandidatRepository.oppdaterNavKontor(oppfølgingEndretMelding.getFnr(), oppfølgingEndretMelding.getNavKontor());
+        if (antallOppdaterteRader > 0) {
+            log.info("Oppdaterte NAV-kontor på {} rader.", antallOppdaterteRader);
+        }
     }
 
     public void behandleOppfølgingAvsluttet(OppfølgingAvsluttetMelding oppfølgingAvsluttetMelding) {

@@ -18,30 +18,22 @@ public class OppfølgingEndretConsumer {
 
     private KandidatService kandidatService;
     @SuppressWarnings({"unused", "FieldCanBeLocal"})
-    private ConsumerProps consumerProps;
+    private OppfølgingEndretConfig oppfølgingEndretConfig;
     private MeterRegistry meterRegistry;
 
     public OppfølgingEndretConsumer(
             KandidatService kandidatService,
-            ConsumerProps consumerProps,
+            OppfølgingEndretConfig oppfølgingEndretConfig,
             MeterRegistry meterRegistry
     ) {
         this.kandidatService = kandidatService;
-        this.consumerProps = consumerProps;
+        this.oppfølgingEndretConfig = oppfølgingEndretConfig;
         this.meterRegistry = meterRegistry;
         meterRegistry.counter(ENDRET_OPPFØLGING_FEILET);
     }
 
     @KafkaListener(topics = "#{consumerProps.getTopic()}", groupId = "finn-kandidat")
     public void konsumerMelding(ConsumerRecord<String, String> melding) {
-        // TODO: Fjern logging av hver eneste konsumerte melding?
-        log.info(
-                "Konsumerer endret oppfølging-melding for id {}, offset: {}, partition: {}",
-                melding.key(),
-                melding.offset(),
-                melding.partition()
-        );
-
         try {
             Oppfølgingsbruker oppfølgingEndretMelding = deserialiserMelding(melding.value());
             kandidatService.behandleOppfølgingEndret(oppfølgingEndretMelding);

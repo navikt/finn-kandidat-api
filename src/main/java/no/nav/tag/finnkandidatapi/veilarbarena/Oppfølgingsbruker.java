@@ -10,7 +10,10 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Personinfo {
+public class Oppfølgingsbruker {
+
+    @JsonProperty("fodselsnr")
+    public String fnr;
 
     @JsonProperty("nav_kontor")
     public String navKontor;

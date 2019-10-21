@@ -2,7 +2,6 @@ package no.nav.tag.finnkandidatapi.veilarbarena;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.finnkandidatapi.kandidat.FinnKandidatException;
-import no.nav.tag.finnkandidatapi.tilgangskontroll.TilgangskontrollException;
 import no.nav.tag.finnkandidatapi.tilgangskontroll.TokenUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -10,7 +9,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -33,17 +31,17 @@ public class VeilarbArenaClient {
         this.tokenUtils = tokenUtils;
     }
 
-    public Personinfo hentPersoninfo(String fnr) {
+    public Oppfølgingsbruker hentPersoninfo(String fnr) {
         String uri = UriComponentsBuilder.fromHttpUrl(veilarbarenaUrl)
                 .path("/oppfolgingsbruker/" + fnr)
                 .toUriString();
 
         try {
-            ResponseEntity<Personinfo> respons = restTemplate.exchange(
+            ResponseEntity<Oppfølgingsbruker> respons = restTemplate.exchange(
                     uri,
                     HttpMethod.GET,
                     httpHeadere(),
-                    Personinfo.class
+                    Oppfølgingsbruker.class
             );
             return respons.getBody();
 

@@ -9,8 +9,7 @@ import no.nav.tag.finnkandidatapi.DateProvider;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatEndret;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatOpprettet;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatSlettet;
-import no.nav.tag.finnkandidatapi.unleash.UnleashConfiguration;
-import no.nav.tag.finnkandidatapi.veilarbarena.Personinfo;
+import no.nav.tag.finnkandidatapi.veilarbarena.Oppfølgingsbruker;
 import no.nav.tag.finnkandidatapi.veilarbarena.VeilarbArenaClient;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -44,8 +43,8 @@ public class KandidatService {
     public Optional<Kandidat> opprettKandidat(String fnr, KandidatDto kandidat, Veileder innloggetVeileder) {
         String navKontor = null;
         if (unleash.isEnabled(HENT_PERSONINFO_OPPRETT_KANDIDAT)) {
-            Personinfo personinfo = veilarbarenaClient.hentPersoninfo(fnr);
-            navKontor = personinfo.getNavKontor();
+            Oppfølgingsbruker oppfølgingsbruker = veilarbarenaClient.hentPersoninfo(fnr);
+            navKontor = oppfølgingsbruker.getNavKontor();
         } else {
             log.info("Setter navkontor til null siden {} er slått av", HENT_PERSONINFO_OPPRETT_KANDIDAT);
         }
@@ -81,6 +80,10 @@ public class KandidatService {
         lagretKandidat.ifPresent(value -> eventPublisher.publishEvent(new KandidatEndret(value)));
 
         return lagretKandidat;
+    }
+
+    public void behandleOppfølgingEndret(Oppfølgingsbruker oppfølgingEndretMelding) {
+        // TODO: Endre kandidat i repository. Denne vil kjøre 2-3 millioner ganger.
     }
 
     public void behandleOppfølgingAvsluttet(OppfølgingAvsluttetMelding oppfølgingAvsluttetMelding) {

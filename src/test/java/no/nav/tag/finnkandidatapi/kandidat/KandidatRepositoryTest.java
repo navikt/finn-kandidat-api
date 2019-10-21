@@ -293,4 +293,17 @@ public class KandidatRepositoryTest {
         Optional<Integer> id = repository.slettKandidat(kandidat.getAktørId(), enVeileder(), now());
         assertThat(id).isEmpty();
     }
+
+    @Test
+    public void oppdaterNavKontor__skal_oppdatere_nav_kontor_på_alle_rader() {
+        Kandidat kandidat = enKandidat();
+        repository.lagreKandidat(kandidat);
+
+        int antallOppdaterteRader = repository.oppdaterNavKontor(kandidat.getFnr(), "1337");
+        Kandidat kandidatMedNyttKontor = repository.hentNyesteKandidat(kandidat.getAktørId()).get();
+
+        assertThat(antallOppdaterteRader).isEqualTo(1);
+        assertThat(kandidatMedNyttKontor.getNavKontor()).isEqualTo("1337");
+        assertThat(kandidatMedNyttKontor).isEqualToIgnoringGivenFields(kandidat,"id", "navKontor");
+    }
 }

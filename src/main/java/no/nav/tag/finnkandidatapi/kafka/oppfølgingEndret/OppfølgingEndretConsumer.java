@@ -18,21 +18,21 @@ public class OppfølgingEndretConsumer {
 
     private KandidatService kandidatService;
     @SuppressWarnings({"unused", "FieldCanBeLocal"})
-    private OppfølgingEndretConfig oppfølgingEndretConfig;
+    private OppfolgingEndretConfig oppfolgingEndretConfig;
     private MeterRegistry meterRegistry;
 
     public OppfølgingEndretConsumer(
             KandidatService kandidatService,
-            OppfølgingEndretConfig oppfølgingEndretConfig,
+            OppfolgingEndretConfig oppfolgingEndretConfig,
             MeterRegistry meterRegistry
     ) {
         this.kandidatService = kandidatService;
-        this.oppfølgingEndretConfig = oppfølgingEndretConfig;
+        this.oppfolgingEndretConfig = oppfolgingEndretConfig;
         this.meterRegistry = meterRegistry;
         meterRegistry.counter(ENDRET_OPPFØLGING_FEILET);
     }
 
-    @KafkaListener(topics = "#{consumerProps.getTopic()}", groupId = "finn-kandidat")
+    @KafkaListener(topics = "#{oppfolgingEndretConfig.getTopic()}", groupId = "finn-kandidat")
     public void konsumerMelding(ConsumerRecord<String, String> melding) {
         try {
             Oppfølgingsbruker oppfølgingEndretMelding = deserialiserMelding(melding.value());

@@ -7,6 +7,6 @@ import org.springframework.stereotype.Component;
 @Data
 @Component
 @ConfigurationProperties(prefix = "oppfolging-endret")
-public class OppfølgingEndretConfig {
+public class OppfolgingEndretConfig {
     private String topic;
 }

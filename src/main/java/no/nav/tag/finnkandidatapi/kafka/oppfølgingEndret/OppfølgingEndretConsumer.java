@@ -32,7 +32,7 @@ public class OppfølgingEndretConsumer {
         meterRegistry.counter(ENDRET_OPPFØLGING_FEILET);
     }
 
-    @KafkaListener(topics = "#{oppfolgingEndretConfig.getTopic()}", groupId = "babooom")
+    @KafkaListener(topics = "#{oppfolgingEndretConfig.getTopic()}", groupId = "finn-kandidat-oppfolging-endret")
     public void konsumerMelding(ConsumerRecord<String, String> melding) {
         try {
             Oppfølgingsbruker oppfølgingEndretMelding = deserialiserMelding(melding.value());

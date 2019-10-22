@@ -1,6 +1,6 @@
 package no.nav.tag.finnkandidatapi.kandidat;
 
-import no.nav.tag.finnkandidatapi.kafka.HarTilretteleggingsbehov;
+import no.nav.tag.finnkandidatapi.kafka.harTilretteleggingsbehov.HarTilretteleggingsbehov;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 

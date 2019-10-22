@@ -1,4 +1,4 @@
-package no.nav.tag.finnkandidatapi.kafka;
+package no.nav.tag.finnkandidatapi.kafka.harTilretteleggingsbehov;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

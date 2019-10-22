@@ -1,7 +1,6 @@
 package no.nav.tag.finnkandidatapi.kandidat;
 
-import lombok.extern.slf4j.Slf4j;
-import no.nav.tag.finnkandidatapi.kafka.HarTilretteleggingsbehov;
+import no.nav.tag.finnkandidatapi.kafka.harTilretteleggingsbehov.HarTilretteleggingsbehov;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;

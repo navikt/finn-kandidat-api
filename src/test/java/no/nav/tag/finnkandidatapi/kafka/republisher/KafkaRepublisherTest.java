@@ -1,7 +1,7 @@
 package no.nav.tag.finnkandidatapi.kafka.republisher;
 
-import no.nav.tag.finnkandidatapi.kafka.HarTilretteleggingsbehov;
-import no.nav.tag.finnkandidatapi.kafka.HarTilretteleggingsbehovProducer;
+import no.nav.tag.finnkandidatapi.kafka.harTilretteleggingsbehov.HarTilretteleggingsbehov;
+import no.nav.tag.finnkandidatapi.kafka.harTilretteleggingsbehov.HarTilretteleggingsbehovProducer;
 import no.nav.tag.finnkandidatapi.kandidat.KandidatRepository;
 import no.nav.tag.finnkandidatapi.kandidat.Veileder;
 import no.nav.tag.finnkandidatapi.tilgangskontroll.TilgangskontrollException;
@@ -14,7 +14,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import static no.nav.tag.finnkandidatapi.TestData.enAktørId;
 import static org.assertj.core.api.Assertions.assertThat;
-import org.slf4j.Logger;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 

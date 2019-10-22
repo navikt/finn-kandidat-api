@@ -1,6 +1,6 @@
 package no.nav.tag.finnkandidatapi.kandidat;
 
-import no.nav.tag.finnkandidatapi.kafka.HarTilretteleggingsbehov;
+import no.nav.tag.finnkandidatapi.kafka.harTilretteleggingsbehov.HarTilretteleggingsbehov;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

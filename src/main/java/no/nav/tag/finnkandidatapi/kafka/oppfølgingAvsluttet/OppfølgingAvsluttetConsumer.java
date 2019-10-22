@@ -17,21 +17,21 @@ public class OppfølgingAvsluttetConsumer {
 
     private KandidatService kandidatService;
     @SuppressWarnings({"unused", "FieldCanBeLocal"})
-    private ConsumerProps consumerProps;
+    private OppfolgingAvsluttetConfig oppfolgingAvsluttetConfig;
     private MeterRegistry meterRegistry;
 
     public OppfølgingAvsluttetConsumer(
             KandidatService kandidatService,
-            ConsumerProps consumerProps,
+            OppfolgingAvsluttetConfig oppfolgingAvsluttetConfig,
             MeterRegistry meterRegistry
     ) {
         this.kandidatService = kandidatService;
-        this.consumerProps = consumerProps;
+        this.oppfolgingAvsluttetConfig = oppfolgingAvsluttetConfig;
         this.meterRegistry = meterRegistry;
         meterRegistry.counter(AVSLUTTET_OPPFØLGING_FEILET);
     }
 
-    @KafkaListener(topics = "#{consumerProps.getTopic()}", groupId = "finn-kandidat-oppfolging-avsluttet")
+    @KafkaListener(topics = "#{oppfolgingAvsluttetConfig.getTopic()}", groupId = "finn-kandidat-oppfolging-avsluttet")
     public void konsumerMelding(ConsumerRecord<String, String> melding) {
         log.info(
                 "Konsumerer avsluttet oppfølging melding for id {}, offset: {}, partition: {}",

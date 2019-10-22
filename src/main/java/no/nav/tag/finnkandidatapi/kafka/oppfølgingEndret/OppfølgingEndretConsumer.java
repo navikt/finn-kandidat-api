@@ -34,6 +34,13 @@ public class OppfølgingEndretConsumer {
 
     @KafkaListener(topics = "#{oppfolgingEndretConfig.getTopic()}", groupId = "finn-kandidat-oppfolging-endret")
     public void konsumerMelding(ConsumerRecord<String, String> melding) {
+        log.info(
+                "Konsumerer oppfølging endret melding for id {}, offset: {}, partition: {}",
+                melding.key(),
+                melding.offset(),
+                melding.partition()
+        );
+
         try {
             Oppfølgingsbruker oppfølgingEndretMelding = deserialiserMelding(melding.value());
             kandidatService.behandleOppfølgingEndret(oppfølgingEndretMelding);

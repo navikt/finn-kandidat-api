@@ -7,6 +7,6 @@ import org.springframework.stereotype.Component;
 @Data
 @Component
 @ConfigurationProperties(prefix = "oppfolging-avsluttet")
-public class ConsumerProps {
+public class OppfolgingAvsluttetConfig {
     private String topic;
 }

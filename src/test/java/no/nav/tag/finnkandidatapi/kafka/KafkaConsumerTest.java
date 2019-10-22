@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.tag.finnkandidatapi.kafka.oppfølgingAvsluttet.ConsumerProps;
+import no.nav.tag.finnkandidatapi.kafka.oppfølgingAvsluttet.OppfolgingAvsluttetConfig;
 import no.nav.tag.finnkandidatapi.kafka.oppfølgingAvsluttet.OppfølgingAvsluttetMelding;
 import no.nav.tag.finnkandidatapi.kafka.oppfølgingEndret.OppfolgingEndretConfig;
 import no.nav.tag.finnkandidatapi.kandidat.Kandidat;
@@ -30,7 +30,6 @@ import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
 import org.springframework.kafka.listener.MessageListener;
 import org.springframework.kafka.listener.SeekToCurrentErrorHandler;
-import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.kafka.test.utils.ContainerTestUtils;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.retry.backoff.ExponentialBackOffPolicy;
@@ -60,7 +59,7 @@ public class KafkaConsumerTest {
     private OppfolgingEndretConfig config;
 
     @Autowired
-    private ConsumerProps consumerTopicProps;
+    private OppfolgingAvsluttetConfig consumerTopicProps;
 
     @Autowired
     private EnKafkaMockServer embeddedKafka;

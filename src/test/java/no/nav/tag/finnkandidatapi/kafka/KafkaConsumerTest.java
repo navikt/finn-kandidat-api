@@ -51,7 +51,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ActiveProfiles({"local", "mock"})
 @DirtiesContext
 @Slf4j
-public class OppfølgingAvsluttetConsumerTest {
+public class KafkaConsumerTest {
 
     private static final String AKTØR_ID = "1856024171652";
     private static final String FNR = "01234567890";
@@ -75,7 +75,7 @@ public class OppfølgingAvsluttetConsumerTest {
     @Before
     public void setUp() {
         // Config kopiert fra KafkaConfig
-        Map<String, Object> consumerProps = KafkaTestUtils.consumerProps("babooom", "true", embeddedKafka.getEmbeddedKafka());
+        Map<String, Object> consumerProps = KafkaTestUtils.consumerProps("testGroup", "true", embeddedKafka.getEmbeddedKafka());
         consumerProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         consumerProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         ConsumerFactory<String, String> cf = new DefaultKafkaConsumerFactory<>(consumerProps);

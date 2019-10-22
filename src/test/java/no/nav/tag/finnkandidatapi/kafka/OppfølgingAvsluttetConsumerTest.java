@@ -30,6 +30,7 @@ import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
 import org.springframework.kafka.listener.MessageListener;
 import org.springframework.kafka.listener.SeekToCurrentErrorHandler;
+import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.kafka.test.utils.ContainerTestUtils;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.retry.backoff.ExponentialBackOffPolicy;
@@ -74,7 +75,7 @@ public class OppfølgingAvsluttetConsumerTest {
     @Before
     public void setUp() {
         // Config kopiert fra KafkaConfig
-        Map<String, Object> consumerProps = KafkaTestUtils.consumerProps("testGroup", "true", embeddedKafka.getEmbeddedKafka());
+        Map<String, Object> consumerProps = KafkaTestUtils.consumerProps("babooom", "true", embeddedKafka.getEmbeddedKafka());
         consumerProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         consumerProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         ConsumerFactory<String, String> cf = new DefaultKafkaConsumerFactory<>(consumerProps);
@@ -101,7 +102,7 @@ public class OppfølgingAvsluttetConsumerTest {
         retryTemplate.setBackOffPolicy(backOffPolicy);
         factory.setRetryTemplate(retryTemplate);
 
-        container = factory.createContainer(consumerTopicProps.getTopic(), config.getTopic());
+        container = factory.createContainer(consumerTopicProps.getTopic());
         container.setupMessageListener((MessageListener<String, String>) record -> {
             log.info("KafkaMessage: {}", record);
         });
@@ -110,7 +111,7 @@ public class OppfølgingAvsluttetConsumerTest {
         ContainerTestUtils.waitForAssignment(container, embeddedKafka.getEmbeddedKafka().getPartitionsPerTopic());
     }
 
-    @Test(timeout = 2000)
+    @Test(timeout = 10000)
     @SneakyThrows
     public void skal_slette_kandidat_ved_mottatt_oppfølging_avsluttet_kafka_melding() {
         Kandidat kandidatSomSkalSlettes = enKandidat();
@@ -139,7 +140,7 @@ public class OppfølgingAvsluttetConsumerTest {
         return objectMapper.writeValueAsString(oppfølgingAvsluttetMelding);
     }
 
-    @Test(timeout = 2000)
+    @Test(timeout = 10000)
     @SneakyThrows
     public void skal_oppdatere_nav_kontor_ved_mottatt_oppfolging_endret_melding() {
         Kandidat kandidat = enKandidat();

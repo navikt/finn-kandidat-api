@@ -111,7 +111,7 @@ public class KafkaConsumerTest {
         ContainerTestUtils.waitForAssignment(container, embeddedKafka.getEmbeddedKafka().getPartitionsPerTopic());
     }
 
-    @Test(timeout = 10000)
+    @Test(timeout = 1000)
     @SneakyThrows
     public void skal_slette_kandidat_ved_mottatt_oppfølging_avsluttet_kafka_melding() {
         Kandidat kandidatSomSkalSlettes = enKandidat();
@@ -140,7 +140,7 @@ public class KafkaConsumerTest {
         return objectMapper.writeValueAsString(oppfølgingAvsluttetMelding);
     }
 
-    @Test(timeout = 10000)
+    @Test(timeout = 1000)
     @SneakyThrows
     public void skal_oppdatere_nav_kontor_ved_mottatt_oppfolging_endret_melding() {
         Kandidat kandidat = enKandidat();

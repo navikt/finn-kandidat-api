@@ -86,6 +86,8 @@ public class KandidatService {
         int antallOppdaterteRader = kandidatRepository.oppdaterNavKontor(oppfølgingEndretMelding.getFnr(), oppfølgingEndretMelding.getNavKontor());
         if (antallOppdaterteRader > 0) {
             log.info("Oppdaterte NAV-kontor på {} rader.", antallOppdaterteRader);
+        } else {
+            log.info("Oppfølging endret-melding gjaldt ingen av systemets kandidater. Ignorerer.");
         }
     }
 

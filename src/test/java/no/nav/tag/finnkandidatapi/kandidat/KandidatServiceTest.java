@@ -106,7 +106,7 @@ public class KandidatServiceTest {
         );
 
         when(dateProvider.now()).thenReturn(kandidat.getSistEndret());
-        when(veilarbArenaClient.hentPersoninfo(kandidat.getFnr())).thenReturn(personinfo());
+        when(veilarbArenaClient.hentPersoninfo(kandidat.getFnr(), kandidat.getAktørId())).thenReturn(personinfo());
         when(repository.lagreKandidat(kandidat)).thenReturn(1);
         when(repository.hentKandidat(1)).thenReturn(Optional.of(kandidatTilOpprettelse));
 
@@ -123,7 +123,7 @@ public class KandidatServiceTest {
         kandidat.setSistEndretAv(veileder.getNavIdent());
 
         when(dateProvider.now()).thenReturn(kandidat.getSistEndret());
-        when(veilarbArenaClient.hentPersoninfo(kandidat.getFnr())).thenReturn(personinfo());
+        when(veilarbArenaClient.hentPersoninfo(kandidat.getFnr(), kandidat.getAktørId())).thenReturn(personinfo());
         when(repository.lagreKandidat(kandidat)).thenReturn(1);
         when(repository.hentKandidat(1)).thenReturn(Optional.empty());
 
@@ -141,7 +141,7 @@ public class KandidatServiceTest {
         when(dateProvider.now()).thenReturn(kandidat.getSistEndret());
         when(repository.lagreKandidat(any(Kandidat.class))).thenReturn(kandidatId);
         when(repository.hentKandidat(kandidatId)).thenReturn(Optional.of(kandidat));
-        when(veilarbArenaClient.hentPersoninfo(kandidat.getFnr())).thenReturn(personinfo());
+        when(veilarbArenaClient.hentPersoninfo(kandidat.getFnr(), kandidat.getAktørId())).thenReturn(personinfo());
 
         kandidatService.opprettKandidat(kandidat.getFnr(), kandidatDto, enVeileder());
         verify(eventPublisher).publishEvent(new KandidatOpprettet(kandidat));

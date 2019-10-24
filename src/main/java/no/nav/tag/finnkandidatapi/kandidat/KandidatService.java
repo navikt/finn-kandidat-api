@@ -47,7 +47,7 @@ public class KandidatService {
     public Optional<Kandidat> opprettKandidat(String fnr, KandidatDto kandidat, Veileder innloggetVeileder) {
         String navKontor = null;
         if (unleash.isEnabled(HENT_PERSONINFO_OPPRETT_KANDIDAT)) {
-            Oppfølgingsbruker oppfølgingsbruker = veilarbarenaClient.hentPersoninfo(fnr);
+            Oppfølgingsbruker oppfølgingsbruker = veilarbarenaClient.hentPersoninfo(fnr, kandidat.getAktørId());
             navKontor = oppfølgingsbruker.getNavKontor();
         } else {
             log.info("Setter navkontor til null siden {} er slått av", HENT_PERSONINFO_OPPRETT_KANDIDAT);

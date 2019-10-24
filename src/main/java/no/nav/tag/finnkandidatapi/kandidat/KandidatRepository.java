@@ -1,5 +1,6 @@
 package no.nav.tag.finnkandidatapi.kandidat;
 
+import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.finnkandidatapi.kafka.harTilretteleggingsbehov.HarTilretteleggingsbehov;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -13,6 +14,7 @@ import java.util.*;
 
 import static no.nav.tag.finnkandidatapi.kandidat.KandidatMapper.*;
 
+@Slf4j
 @Repository
 public class KandidatRepository {
 
@@ -173,10 +175,15 @@ public class KandidatRepository {
     }
 
     public int oppdaterNavKontor(String fnr, String navKontor) {
-        try {
-            return jdbcTemplate.update("UPDATE kandidat SET nav_kontor = ? WHERE fnr = ?", navKontor, fnr);
-        } catch (DataAccessException e) {
-            throw new FinnKandidatException("Klarte ikke å oppdatere rad med NAV-kontor");
+        if (fnr == null) {
+            log.warn("Prøvde å oppdatere navkontor, men fnr er null");
+            return 0;
+        } else {
+            try {
+                return jdbcTemplate.update("UPDATE kandidat SET nav_kontor = ? WHERE fnr = ?", navKontor, fnr);
+            } catch (DataAccessException e) {
+                throw new FinnKandidatException("Klarte ikke å oppdatere rad med NAV-kontor");
+            }
         }
     }
 }

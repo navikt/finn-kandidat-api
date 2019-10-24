@@ -307,4 +307,14 @@ public class KandidatRepositoryTest {
         assertThat(kandidatMedNyttKontor.getNavKontor()).isEqualTo("1337");
         assertThat(kandidatMedNyttKontor).isEqualToIgnoringGivenFields(kandidat, "id", "navKontor");
     }
+
+    @Test
+    public void oppdaterNavKontor__skal_ikke_oppdatere_navKontor_hvis_fnr_er_null() {
+        Kandidat kandidat = enKandidat();
+        kandidat.setFnr(null);
+        repository.lagreKandidat(kandidat);
+
+        int antallOppdaterteRader = repository.oppdaterNavKontor(null, "1337");
+        assertThat(antallOppdaterteRader).isEqualTo(0);
+    }
 }

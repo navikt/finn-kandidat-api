@@ -39,6 +39,6 @@ public class OppfølgingAvsluttetUtilsTest {
     public void deserialiserMelding__skal_deserialisere_gyldig_melding() {
         OppfølgingAvsluttetMelding gyldigMelding = new OppfølgingAvsluttetMelding(enAktørId(), new Date());
         OppfølgingAvsluttetMelding deserialisertMelding = OppfølgingAvsluttetUtils.deserialiserMelding(objectMapper.writeValueAsString(gyldigMelding));
-        assertThat(gyldigMelding).isEqualTo(deserialisertMelding);
+        assertThat(deserialisertMelding).isEqualTo(gyldigMelding);
     }
 }

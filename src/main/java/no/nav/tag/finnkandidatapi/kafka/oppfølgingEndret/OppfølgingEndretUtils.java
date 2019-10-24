@@ -11,7 +11,7 @@ public class OppfølgingEndretUtils {
             ObjectMapper mapper = new ObjectMapper();
             Oppfølgingsbruker oppfølgingEndretMelding = mapper.readValue(melding, Oppfølgingsbruker.class);
 
-            if (oppfølgingEndretMelding.getNavKontor() == null ||oppfølgingEndretMelding.getFnr() == null) {
+            if (oppfølgingEndretMelding.getFnr() == null) {
                 throw new RuntimeException("Kunne ikke deserialisere Oppfølgingsbruker, melding: " + oppfølgingEndretMelding);
             }
 

@@ -1,7 +1,6 @@
 package no.nav.tag.finnkandidatapi.kandidat;
 
 import io.micrometer.core.instrument.MeterRegistry;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.finn.unleash.Unleash;
 import no.nav.tag.finnkandidatapi.aktørregister.AktørRegisterClient;
@@ -23,7 +22,6 @@ import static no.nav.tag.finnkandidatapi.unleash.UnleashConfiguration.HENT_PERSO
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class KandidatService {
 
     private static final String ENDRET_OPPFØLGING_OPPDATERTE_NAVKONTOR = "finnkandidat.endretoppfolging.oppdaterte.navkontor";
@@ -35,6 +33,25 @@ public class KandidatService {
     private final VeilarbArenaClient veilarbarenaClient;
     private final Unleash unleash;
     private final MeterRegistry meterRegistry;
+
+    public KandidatService(
+            KandidatRepository kandidatRepository,
+            ApplicationEventPublisher eventPublisher,
+            AktørRegisterClient aktørRegisterClient,
+            DateProvider dateProvider,
+            VeilarbArenaClient veilarbarenaClient,
+            Unleash unleash,
+            MeterRegistry meterRegistry
+    ) {
+        this.kandidatRepository = kandidatRepository;
+        this.eventPublisher = eventPublisher;
+        this.aktørRegisterClient = aktørRegisterClient;
+        this.dateProvider = dateProvider;
+        this.veilarbarenaClient = veilarbarenaClient;
+        this.unleash = unleash;
+        this.meterRegistry = meterRegistry;
+        meterRegistry.counter(ENDRET_OPPFØLGING_OPPDATERTE_NAVKONTOR);
+    }
 
     public Optional<Kandidat> hentNyesteKandidat(String aktørId) {
         return kandidatRepository.hentNyesteKandidat(aktørId);

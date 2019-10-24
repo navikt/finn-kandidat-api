@@ -173,6 +173,9 @@ public class KandidatRepository {
     }
 
     public int oppdaterNavKontor(String fnr, String navKontor) {
+        if (fnr == null) {
+            throw new FinnKandidatException("Klarte ikke å oppdatere rad med NAV-kontor");
+        }
         try {
             return jdbcTemplate.update("UPDATE kandidat SET nav_kontor = ? WHERE fnr = ?", navKontor, fnr);
         } catch (DataAccessException e) {

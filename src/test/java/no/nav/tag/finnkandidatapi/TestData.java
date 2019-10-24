@@ -62,7 +62,7 @@ public class TestData {
         return "0325";
     }
 
-    public static Oppfølgingsbruker personinfo() {
+    public static Oppfølgingsbruker enOppfølgingsbruker() {
         return new Oppfølgingsbruker(etFnr(), etNavKontor());
     }
 

@@ -40,33 +40,33 @@ public class VeilarbArenaClientTest {
     }
 
     @Test
-    public void hentPersonInfo__skal_hente_personinfo() {
+    public void hentOppfølgingsbruker__skal_hente_oppfølgingsbruker() {
         Kandidat kandidat = enKandidat();
-        Oppfølgingsbruker oppfølgingsbruker = personinfo();
+        Oppfølgingsbruker oppfølgingsbruker = enOppfølgingsbruker();
 
         when(restTemplate.exchange(anyString(), any(), any(), eq(Oppfølgingsbruker.class)))
                 .thenReturn(new ResponseEntity<>(oppfølgingsbruker, HttpStatus.OK));
         when(tokenUtils.hentOidcToken()).thenReturn("123");
 
-        Oppfølgingsbruker hentetOppfølgingsbruker = veilarbArenaClient.hentPersoninfo(kandidat.getFnr(), kandidat.getAktørId());
+        Oppfølgingsbruker hentetOppfølgingsbruker = veilarbArenaClient.hentOppfølgingsbruker(kandidat.getFnr(), kandidat.getAktørId());
 
         assertThat(hentetOppfølgingsbruker).isEqualTo(oppfølgingsbruker);
     }
 
     @Test(expected = FinnKandidatException.class)
-    public void hentPersonInfo__skal_kaste_FinnKandidatException_hvis_feil() {
+    public void hentOppfølgingsbruker__skal_kaste_FinnKandidatException_hvis_feil() {
         when(restTemplate.exchange(anyString(), any(), any(), eq(Oppfølgingsbruker.class)))
                 .thenThrow(RestClientResponseException.class);
-        veilarbArenaClient.hentPersoninfo(etFnr(), enAktørId());
+        veilarbArenaClient.hentOppfølgingsbruker(etFnr(), enAktørId());
     }
 
     @Test
-    public void hentPersonInfo__skal_returnere_Oppfølgingsbruker_med_navkontor_lik_null_hvis_no_content_fra_veilarbarena() {
+    public void hentOppfølgingsbruker__skal_returnere_Oppfølgingsbruker_med_navkontor_lik_null_hvis_no_content_fra_veilarbarena() {
         when(restTemplate.exchange(anyString(), any(), any(), eq(Oppfølgingsbruker.class)))
                 .thenReturn(ResponseEntity.noContent().build());
         when(tokenUtils.hentOidcToken()).thenReturn("123");
 
-        Oppfølgingsbruker oppfølgingsbruker = veilarbArenaClient.hentPersoninfo(etFnr(), enAktørId());
+        Oppfølgingsbruker oppfølgingsbruker = veilarbArenaClient.hentOppfølgingsbruker(etFnr(), enAktørId());
 
         assertThat(oppfølgingsbruker.getNavKontor()).isNull();
     }

@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static no.nav.tag.finnkandidatapi.TestData.*;
-import static no.nav.tag.finnkandidatapi.unleash.UnleashConfiguration.HENT_PERSONINFO_OPPRETT_KANDIDAT;
+import static no.nav.tag.finnkandidatapi.unleash.UnleashConfiguration.HENT_OPPFØLGINGSBRUKER_VED_OPPRETT_KANDIDAT;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -57,7 +57,7 @@ public class KandidatServiceTest {
 
     @Before
     public void setUp() {
-        when(unleash.isEnabled(HENT_PERSONINFO_OPPRETT_KANDIDAT)).thenReturn(true);
+        when(unleash.isEnabled(HENT_OPPFØLGINGSBRUKER_VED_OPPRETT_KANDIDAT)).thenReturn(true);
         kandidatService = new KandidatService(
                 repository,
                 eventPublisher,
@@ -106,7 +106,7 @@ public class KandidatServiceTest {
         );
 
         when(dateProvider.now()).thenReturn(kandidat.getSistEndret());
-        when(veilarbArenaClient.hentPersoninfo(kandidat.getFnr(), kandidat.getAktørId())).thenReturn(personinfo());
+        when(veilarbArenaClient.hentOppfølgingsbruker(kandidat.getFnr(), kandidat.getAktørId())).thenReturn(enOppfølgingsbruker());
         when(repository.lagreKandidat(kandidat)).thenReturn(1);
         when(repository.hentKandidat(1)).thenReturn(Optional.of(kandidatTilOpprettelse));
 
@@ -123,7 +123,7 @@ public class KandidatServiceTest {
         kandidat.setSistEndretAv(veileder.getNavIdent());
 
         when(dateProvider.now()).thenReturn(kandidat.getSistEndret());
-        when(veilarbArenaClient.hentPersoninfo(kandidat.getFnr(), kandidat.getAktørId())).thenReturn(personinfo());
+        when(veilarbArenaClient.hentOppfølgingsbruker(kandidat.getFnr(), kandidat.getAktørId())).thenReturn(enOppfølgingsbruker());
         when(repository.lagreKandidat(kandidat)).thenReturn(1);
         when(repository.hentKandidat(1)).thenReturn(Optional.empty());
 
@@ -141,7 +141,7 @@ public class KandidatServiceTest {
         when(dateProvider.now()).thenReturn(kandidat.getSistEndret());
         when(repository.lagreKandidat(any(Kandidat.class))).thenReturn(kandidatId);
         when(repository.hentKandidat(kandidatId)).thenReturn(Optional.of(kandidat));
-        when(veilarbArenaClient.hentPersoninfo(kandidat.getFnr(), kandidat.getAktørId())).thenReturn(personinfo());
+        when(veilarbArenaClient.hentOppfølgingsbruker(kandidat.getFnr(), kandidat.getAktørId())).thenReturn(enOppfølgingsbruker());
 
         kandidatService.opprettKandidat(kandidat.getFnr(), kandidatDto, enVeileder());
         verify(eventPublisher).publishEvent(new KandidatOpprettet(kandidat));

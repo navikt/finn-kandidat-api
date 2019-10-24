@@ -34,8 +34,8 @@ public class VeilarbArenaClient {
         meterRegistry.counter(IKKE_REGISTRERT_I_VEILARBARENA);
     }
 
-    public Oppfølgingsbruker hentPersoninfo(String fnr, String aktørId) {
-        log.info("Henter personinfo for aktørId {}", aktørId);
+    public Oppfølgingsbruker hentOppfølgingsbruker(String fnr, String aktørId) {
+        log.info("Henter oppfølgingsbruker for aktørId {}", aktørId);
 
         String uri = UriComponentsBuilder.fromHttpUrl(veilarbarenaUrl)
                 .path("/oppfolgingsbruker/" + fnr)
@@ -58,8 +58,8 @@ public class VeilarbArenaClient {
             }
 
         } catch (RestClientResponseException exception) {
-            log.error("Kunne ikke hente personinfo fra veilarbarena, aktørId: {}", aktørId, exception);
-            throw new FinnKandidatException("Kunne ikke hente personinfo fra veilarbarena");
+            log.error("Kunne ikke hente oppfølgingsbruker fra veilarbarena, aktørId: {}", aktørId, exception);
+            throw new FinnKandidatException("Kunne ikke hente oppfølgingsbruker fra veilarbarena");
         }
     }
 

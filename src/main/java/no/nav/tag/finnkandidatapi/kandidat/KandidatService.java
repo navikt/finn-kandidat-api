@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import static no.nav.tag.finnkandidatapi.unleash.UnleashConfiguration.HENT_PERSONINFO_OPPRETT_KANDIDAT;
+import static no.nav.tag.finnkandidatapi.unleash.UnleashConfiguration.HENT_OPPFØLGINGSBRUKER_VED_OPPRETT_KANDIDAT;
 
 @Slf4j
 @Service
@@ -63,11 +63,11 @@ public class KandidatService {
 
     public Optional<Kandidat> opprettKandidat(String fnr, KandidatDto kandidat, Veileder innloggetVeileder) {
         String navKontor = null;
-        if (unleash.isEnabled(HENT_PERSONINFO_OPPRETT_KANDIDAT)) {
-            Oppfølgingsbruker oppfølgingsbruker = veilarbarenaClient.hentPersoninfo(fnr, kandidat.getAktørId());
+        if (unleash.isEnabled(HENT_OPPFØLGINGSBRUKER_VED_OPPRETT_KANDIDAT)) {
+            Oppfølgingsbruker oppfølgingsbruker = veilarbarenaClient.hentOppfølgingsbruker(fnr, kandidat.getAktørId());
             navKontor = oppfølgingsbruker.getNavKontor();
         } else {
-            log.info("Setter navkontor til null siden {} er slått av", HENT_PERSONINFO_OPPRETT_KANDIDAT);
+            log.info("Setter navkontor til null siden {} er slått av", HENT_OPPFØLGINGSBRUKER_VED_OPPRETT_KANDIDAT);
         }
 
         Kandidat kandidatTilLagring = Kandidat.opprettKandidat(

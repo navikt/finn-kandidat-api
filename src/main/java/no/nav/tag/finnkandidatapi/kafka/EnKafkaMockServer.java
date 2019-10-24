@@ -2,7 +2,8 @@ package no.nav.tag.finnkandidatapi.kafka;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.tag.finnkandidatapi.kafka.oppfølgingAvsluttet.ConsumerProps;
+import no.nav.tag.finnkandidatapi.kafka.oppfølgingAvsluttet.OppfolgingAvsluttetConfig;
+import no.nav.tag.finnkandidatapi.kafka.oppfølgingEndret.OppfolgingEndretConfig;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.context.annotation.Profile;
 import org.springframework.kafka.test.EmbeddedKafkaBroker;
@@ -23,9 +24,16 @@ public class EnKafkaMockServer implements DisposableBean {
         Spring initialiserer komponenter i alfabetisk rekkefølge hvis
         de ikke har noen synlige avhengigheter.
      */
-    public EnKafkaMockServer(ConsumerProps consumerProps) {
+    public EnKafkaMockServer(OppfolgingAvsluttetConfig oppfolgingAvsluttetConfig, OppfolgingEndretConfig oppfolgingEndretConfig) {
         log.info("Starter embedded Kafka");
-        embeddedKafka = new EmbeddedKafkaBroker(1, true, 1, consumerProps.getTopic(), "aapen-tag-kandidatEndret-v1-default");
+        embeddedKafka = new EmbeddedKafkaBroker(
+                1,
+                true,
+                1,
+                oppfolgingAvsluttetConfig.getTopic(),
+                oppfolgingEndretConfig.getTopic(),
+                "aapen-tag-kandidatEndret-v1-default"
+        );
         embeddedKafka.afterPropertiesSet();
     }
 

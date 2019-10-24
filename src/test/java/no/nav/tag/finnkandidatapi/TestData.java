@@ -8,7 +8,7 @@ import no.nav.tag.finnkandidatapi.logging.LoggEvent;
 import no.nav.tag.finnkandidatapi.tilbakemelding.Behov;
 import no.nav.tag.finnkandidatapi.tilbakemelding.Tilbakemelding;
 import no.nav.tag.finnkandidatapi.sts.STSToken;
-import no.nav.tag.finnkandidatapi.veilarbarena.Personinfo;
+import no.nav.tag.finnkandidatapi.veilarbarena.Oppfølgingsbruker;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -62,8 +62,8 @@ public class TestData {
         return "0325";
     }
 
-    public static Personinfo personinfo() {
-        return new Personinfo(etNavKontor());
+    public static Oppfølgingsbruker enOppfølgingsbruker() {
+        return new Oppfølgingsbruker(etFnr(), etNavKontor());
     }
 
     public static Kandidat enKandidat(String aktørId) {

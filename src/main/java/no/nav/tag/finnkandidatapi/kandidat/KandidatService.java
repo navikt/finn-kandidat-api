@@ -1,6 +1,6 @@
 package no.nav.tag.finnkandidatapi.kandidat;
 
-import lombok.RequiredArgsConstructor;
+import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
 import no.finn.unleash.Unleash;
 import no.nav.tag.finnkandidatapi.aktørregister.AktørRegisterClient;
@@ -9,8 +9,7 @@ import no.nav.tag.finnkandidatapi.DateProvider;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatEndret;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatOpprettet;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatSlettet;
-import no.nav.tag.finnkandidatapi.unleash.UnleashConfiguration;
-import no.nav.tag.finnkandidatapi.veilarbarena.Personinfo;
+import no.nav.tag.finnkandidatapi.veilarbarena.Oppfølgingsbruker;
 import no.nav.tag.finnkandidatapi.veilarbarena.VeilarbArenaClient;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -19,12 +18,13 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import static no.nav.tag.finnkandidatapi.unleash.UnleashConfiguration.HENT_PERSONINFO_OPPRETT_KANDIDAT;
+import static no.nav.tag.finnkandidatapi.unleash.UnleashConfiguration.HENT_OPPFØLGINGSBRUKER_VED_OPPRETT_KANDIDAT;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class KandidatService {
+
+    private static final String ENDRET_OPPFØLGING_OPPDATERTE_NAVKONTOR = "finnkandidat.endretoppfolging.oppdaterte.navkontor";
 
     private final KandidatRepository kandidatRepository;
     private final ApplicationEventPublisher eventPublisher;
@@ -32,6 +32,26 @@ public class KandidatService {
     private final DateProvider dateProvider;
     private final VeilarbArenaClient veilarbarenaClient;
     private final Unleash unleash;
+    private final MeterRegistry meterRegistry;
+
+    public KandidatService(
+            KandidatRepository kandidatRepository,
+            ApplicationEventPublisher eventPublisher,
+            AktørRegisterClient aktørRegisterClient,
+            DateProvider dateProvider,
+            VeilarbArenaClient veilarbarenaClient,
+            Unleash unleash,
+            MeterRegistry meterRegistry
+    ) {
+        this.kandidatRepository = kandidatRepository;
+        this.eventPublisher = eventPublisher;
+        this.aktørRegisterClient = aktørRegisterClient;
+        this.dateProvider = dateProvider;
+        this.veilarbarenaClient = veilarbarenaClient;
+        this.unleash = unleash;
+        this.meterRegistry = meterRegistry;
+        meterRegistry.counter(ENDRET_OPPFØLGING_OPPDATERTE_NAVKONTOR);
+    }
 
     public Optional<Kandidat> hentNyesteKandidat(String aktørId) {
         return kandidatRepository.hentNyesteKandidat(aktørId);
@@ -43,11 +63,11 @@ public class KandidatService {
 
     public Optional<Kandidat> opprettKandidat(String fnr, KandidatDto kandidat, Veileder innloggetVeileder) {
         String navKontor = null;
-        if (unleash.isEnabled(HENT_PERSONINFO_OPPRETT_KANDIDAT)) {
-            Personinfo personinfo = veilarbarenaClient.hentPersoninfo(fnr);
-            navKontor = personinfo.getNavKontor();
+        if (unleash.isEnabled(HENT_OPPFØLGINGSBRUKER_VED_OPPRETT_KANDIDAT)) {
+            Oppfølgingsbruker oppfølgingsbruker = veilarbarenaClient.hentOppfølgingsbruker(fnr, kandidat.getAktørId());
+            navKontor = oppfølgingsbruker.getNavKontor();
         } else {
-            log.info("Setter navkontor til null siden {} er slått av", HENT_PERSONINFO_OPPRETT_KANDIDAT);
+            log.info("Setter navkontor til null siden {} er slått av", HENT_OPPFØLGINGSBRUKER_VED_OPPRETT_KANDIDAT);
         }
 
         Kandidat kandidatTilLagring = Kandidat.opprettKandidat(
@@ -81,6 +101,16 @@ public class KandidatService {
         lagretKandidat.ifPresent(value -> eventPublisher.publishEvent(new KandidatEndret(value)));
 
         return lagretKandidat;
+    }
+
+    public void behandleOppfølgingEndret(Oppfølgingsbruker oppfølgingEndretMelding) {
+        int antallOppdaterteRader = kandidatRepository.oppdaterNavKontor(oppfølgingEndretMelding.getFnr(), oppfølgingEndretMelding.getNavKontor());
+        if (antallOppdaterteRader > 0) {
+            log.info("Oppdaterte NAV-kontor på {} rader.", antallOppdaterteRader);
+            meterRegistry.counter(ENDRET_OPPFØLGING_OPPDATERTE_NAVKONTOR).increment(antallOppdaterteRader);
+        } else {
+            log.info("Oppfølging endret-melding gjaldt ingen av systemets kandidater. Ignorerer.");
+        }
     }
 
     public void behandleOppfølgingAvsluttet(OppfølgingAvsluttetMelding oppfølgingAvsluttetMelding) {

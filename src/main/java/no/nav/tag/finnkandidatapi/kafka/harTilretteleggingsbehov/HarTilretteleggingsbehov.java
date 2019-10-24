@@ -1,4 +1,4 @@
-package no.nav.tag.finnkandidatapi.kafka;
+package no.nav.tag.finnkandidatapi.kafka.harTilretteleggingsbehov;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

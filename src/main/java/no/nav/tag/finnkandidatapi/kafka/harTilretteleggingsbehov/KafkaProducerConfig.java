@@ -1,4 +1,4 @@
-package no.nav.tag.finnkandidatapi.kafka;
+package no.nav.tag.finnkandidatapi.kafka.harTilretteleggingsbehov;
 
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.context.annotation.Bean;

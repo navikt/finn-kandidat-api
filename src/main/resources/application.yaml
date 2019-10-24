@@ -11,9 +11,9 @@ spring:
     bootstrap-servers: ${spring.embedded.kafka.brokers}
     client-id: finn-kandidat-api
     consumer:
-      group-id: finn-kandidat
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      auto-offset-reset: earliest
     producer:
       retries: 25
 
@@ -50,6 +50,7 @@ SERVICEBRUKER_BRUKERNAVN: na
 SERVICEBRUKER_PASSORD: na
 
 oppfolging-avsluttet.topic: en-kafka-topic
+oppfolging-endret.topic: en-annen-kafka-topic
 
 ---
 spring:
@@ -69,6 +70,7 @@ spring:
         value-serializer: org.apache.kafka.common.serialization.StringSerializer
 
 oppfolging-avsluttet.topic: aapen-fo-endringPaaAvsluttOppfolging-v1-q0
+oppfolging-endret.topic: aapen-fo-endringPaaOppfoelgingsBruker-v1-q0
 
 database:
   navn: finn-kandidat-dev
@@ -112,6 +114,7 @@ spring:
         value-serializer: org.apache.kafka.common.serialization.StringSerializer
 
 oppfolging-avsluttet.topic: aapen-fo-endringPaaAvsluttOppfolging-v1-p
+oppfolging-endret.topic: aapen-fo-endringPaaOppfoelgingsBruker-v1-p
 
 database:
   navn: finn-kandidat-prod

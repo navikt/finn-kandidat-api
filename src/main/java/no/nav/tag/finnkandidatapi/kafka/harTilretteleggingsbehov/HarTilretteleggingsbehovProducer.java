@@ -1,4 +1,4 @@
-package no.nav.tag.finnkandidatapi.kafka;
+package no.nav.tag.finnkandidatapi.kafka.harTilretteleggingsbehov;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,6 +14,8 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Component;
 import org.springframework.util.concurrent.ListenableFuture;
+
+import java.util.Optional;
 
 @Component
 @Slf4j
@@ -67,8 +69,13 @@ public class HarTilretteleggingsbehovProducer {
                     serialisertMelding
             );
 
+
             future.addCallback(result -> {
-                log.info("Kandidats behov for tilrettelegging sendt på Kafka-topic, aktørId: {}", aktørId);
+                log.info(
+                        "Kandidats behov for tilrettelegging sendt på Kafka-topic, aktørId: {}, offset: {}",
+                        aktørId,
+                        result.getRecordMetadata().offset()
+                );
                 meterRegistry.counter(HAR_TILRETTELEGGINGSBEHOV_PRODUSENT_SUKSESS).increment();
             },
             exception -> {

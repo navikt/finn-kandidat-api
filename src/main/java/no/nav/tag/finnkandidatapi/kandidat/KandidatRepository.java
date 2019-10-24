@@ -1,7 +1,8 @@
 package no.nav.tag.finnkandidatapi.kandidat;
 
-import no.nav.tag.finnkandidatapi.kafka.HarTilretteleggingsbehov;
+import no.nav.tag.finnkandidatapi.kafka.harTilretteleggingsbehov.HarTilretteleggingsbehov;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -169,5 +170,13 @@ public class KandidatRepository {
         parameters.put(SLETTET, true);
 
         return Optional.of(jdbcInsert.executeAndReturnKey(parameters).intValue());
+    }
+
+    public int oppdaterNavKontor(String fnr, String navKontor) {
+        try {
+            return jdbcTemplate.update("UPDATE kandidat SET nav_kontor = ? WHERE fnr = ?", navKontor, fnr);
+        } catch (DataAccessException e) {
+            throw new FinnKandidatException("Klarte ikke å oppdatere rad med NAV-kontor");
+        }
     }
 }

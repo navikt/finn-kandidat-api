@@ -1,5 +1,6 @@
 package no.nav.tag.finnkandidatapi.kandidat;
 
+import io.micrometer.core.instrument.MeterRegistry;
 import no.finn.unleash.Unleash;
 import no.nav.tag.finnkandidatapi.DateProvider;
 import no.nav.tag.finnkandidatapi.aktørregister.AktørRegisterClient;
@@ -51,6 +52,9 @@ public class KandidatServiceTest {
     @Mock
     private Unleash unleash;
 
+    @Mock
+    private MeterRegistry meterRegistry;
+
     @Before
     public void setUp() {
         when(unleash.isEnabled(HENT_PERSONINFO_OPPRETT_KANDIDAT)).thenReturn(true);
@@ -60,7 +64,8 @@ public class KandidatServiceTest {
                 aktørRegisterClient,
                 dateProvider,
                 veilarbArenaClient,
-                unleash
+                unleash,
+                meterRegistry
         );
     }
 

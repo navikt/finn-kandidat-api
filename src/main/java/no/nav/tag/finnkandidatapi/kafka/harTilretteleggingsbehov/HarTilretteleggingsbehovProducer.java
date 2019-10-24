@@ -15,6 +15,8 @@ import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Component;
 import org.springframework.util.concurrent.ListenableFuture;
 
+import java.util.Optional;
+
 @Component
 @Slf4j
 public class HarTilretteleggingsbehovProducer {
@@ -67,8 +69,13 @@ public class HarTilretteleggingsbehovProducer {
                     serialisertMelding
             );
 
+
             future.addCallback(result -> {
-                log.info("Kandidats behov for tilrettelegging sendt på Kafka-topic, aktørId: {}", aktørId);
+                log.info(
+                        "Kandidats behov for tilrettelegging sendt på Kafka-topic, aktørId: {}, offset: {}",
+                        aktørId,
+                        result.getRecordMetadata().offset()
+                );
                 meterRegistry.counter(HAR_TILRETTELEGGINGSBEHOV_PRODUSENT_SUKSESS).increment();
             },
             exception -> {

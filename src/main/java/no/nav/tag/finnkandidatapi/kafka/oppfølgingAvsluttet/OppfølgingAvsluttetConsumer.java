@@ -31,7 +31,11 @@ public class OppfølgingAvsluttetConsumer {
         meterRegistry.counter(AVSLUTTET_OPPFØLGING_FEILET);
     }
 
-    @KafkaListener(topics = "#{oppfolgingAvsluttetConfig.getTopic()}", groupId = "finn-kandidat-oppfolging-avsluttet")
+    @KafkaListener(
+            topics = "#{oppfolgingAvsluttetConfig.getTopic()}",
+            groupId = "finn-kandidat-oppfolging-avsluttet",
+            clientIdPrefix = "oppfolging-avsluttet"
+    )
     public void konsumerMelding(ConsumerRecord<String, String> melding) {
         log.info(
                 "Konsumerer avsluttet oppfølging melding for id {}, offset: {}, partition: {}",

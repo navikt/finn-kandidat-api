@@ -32,7 +32,11 @@ public class OppfølgingEndretConsumer {
         meterRegistry.counter(ENDRET_OPPFØLGING_FEILET);
     }
 
-    @KafkaListener(topics = "#{oppfolgingEndretConfig.getTopic()}", groupId = "finn-kandidat-oppfolging-endret")
+    @KafkaListener(
+            topics = "#{oppfolgingEndretConfig.getTopic()}",
+            groupId = "finn-kandidat-oppfolging-endret",
+            clientIdPrefix = "oppfolging-endret"
+    )
     public void konsumerMelding(ConsumerRecord<String, String> melding) {
         log.info(
                 "Konsumerer oppfølging endret melding for id {}, offset: {}, partition: {}",

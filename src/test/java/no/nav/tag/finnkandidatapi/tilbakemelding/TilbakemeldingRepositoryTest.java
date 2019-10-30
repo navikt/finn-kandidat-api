@@ -16,7 +16,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 @ActiveProfiles(profiles = "local")
 public class TilbakemeldingRepositoryTest {
-    @Autowired private TilbakemeldingRepository repository;
+
+    @Autowired
+    private TilbakemeldingRepository repository;
 
     @Before
     public void setUp() {

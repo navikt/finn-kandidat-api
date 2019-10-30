@@ -8,6 +8,8 @@ import no.nav.tag.finnkandidatapi.sts.STSClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -32,8 +34,14 @@ public class VeilarbabacClient {
         this.veilarbabacUrl = veilarbabacUrl;
     }
 
-    public boolean sjekkTilgang(Veileder veileder, String id, TilgangskontrollAction action) {
-        String response = hentTilgang(veileder, id, action);
+    public boolean sjekkTilgang(Veileder veileder, String aktørId, TilgangskontrollAction action) {
+        String response;
+        try {
+            response = hentTilgang(veileder, aktørId, action);
+        } catch (HttpClientErrorException e) {
+            stsClient.evictToken();
+            response = hentTilgang(veileder, aktørId, action);
+        }
 
         if (PERMIT_RESPONSE.equals(response)) {
             return true;
@@ -44,10 +52,10 @@ public class VeilarbabacClient {
         throw new FinnKandidatException("Ukjent respons fra veilarbabac: " + response);
     }
 
-    private String hentTilgang(Veileder veileder, String id, TilgangskontrollAction action) {
+    private String hentTilgang(Veileder veileder, String aktørId, TilgangskontrollAction action) {
         String uriString = UriComponentsBuilder.fromHttpUrl(veilarbabacUrl)
                 .path("/person")
-                .queryParam("aktorId", id)
+                .queryParam("aktorId", aktørId)
                 .queryParam("action", action.toString())
                 .toUriString();
 

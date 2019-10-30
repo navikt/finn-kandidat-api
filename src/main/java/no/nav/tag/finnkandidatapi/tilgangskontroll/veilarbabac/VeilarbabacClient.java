@@ -6,23 +6,25 @@ import no.nav.tag.finnkandidatapi.kandidat.Veileder;
 import no.nav.tag.finnkandidatapi.tilgangskontroll.TilgangskontrollAction;
 import no.nav.tag.finnkandidatapi.sts.STSClient;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import static no.nav.tag.finnkandidatapi.config.CacheConfig.ABAC_CACHE;
 
 @Slf4j
 @Service
 public class VeilarbabacClient {
-    private final RestTemplate restTemplate;
-    private final STSClient stsClient;
-    private final String veilarbabacUrl;
-
 
     public static final String PERMIT_RESPONSE = "permit";
     public static final String DENY_RESPONSE = "deny";
+
+    private final RestTemplate restTemplate;
+    private final STSClient stsClient;
+    private final String veilarbabacUrl;
 
     public VeilarbabacClient(
             RestTemplate restTemplate,
@@ -34,6 +36,7 @@ public class VeilarbabacClient {
         this.veilarbabacUrl = veilarbabacUrl;
     }
 
+    @Cacheable(ABAC_CACHE)
     public boolean sjekkTilgang(Veileder veileder, String aktørId, TilgangskontrollAction action) {
         String response;
         try {

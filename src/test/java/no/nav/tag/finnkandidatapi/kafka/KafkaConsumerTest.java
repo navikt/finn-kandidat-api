@@ -35,6 +35,7 @@ import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.retry.backoff.ExponentialBackOffPolicy;
 import org.springframework.retry.policy.AlwaysRetryPolicy;
 import org.springframework.retry.support.RetryTemplate;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -47,6 +48,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @ActiveProfiles({"local", "mock"})
+@DirtiesContext
 @Slf4j
 public class KafkaConsumerTest {
 
@@ -108,7 +110,7 @@ public class KafkaConsumerTest {
         ContainerTestUtils.waitForAssignment(container, embeddedKafka.getEmbeddedKafka().getPartitionsPerTopic());
     }
 
-    @Test(timeout = 5000)
+    @Test(timeout = 1000)
     @SneakyThrows
     public void skal_slette_kandidat_ved_mottatt_oppfølging_avsluttet_kafka_melding() {
         Kandidat kandidatSomSkalSlettes = enKandidat();
@@ -137,7 +139,7 @@ public class KafkaConsumerTest {
         return objectMapper.writeValueAsString(oppfølgingAvsluttetMelding);
     }
 
-    @Test(timeout = 5000)
+    @Test(timeout = 1000)
     @SneakyThrows
     public void skal_oppdatere_nav_kontor_ved_mottatt_oppfolging_endret_melding() {
         Kandidat kandidat = enKandidat();

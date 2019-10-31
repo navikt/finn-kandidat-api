@@ -1,19 +1,15 @@
 version: 2.1
 orbs:
-  nais: navikt/nais-deployment@3.2.0
+  nais: navikt/nais-deployment@dev:master
 
 defaults: &defaults
   docker:
     - image: circleci/openjdk:11
 
-executors:
-  deployment-cli:
-    docker:
-      - image: navikt/deployment-cli:latest
-
 jobs:
   deploy-til-dev2:
-    executor: deployment-cli
+    docker:
+      - image: navikt/deployment-cli:latest
     steps:
       - checkout
       - run:

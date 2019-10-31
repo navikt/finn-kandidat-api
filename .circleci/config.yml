@@ -1,104 +1,121 @@
-defaults: &defaults
-    docker:
-        - image: circleci/openjdk:11
-
 version: 2.1
+orbs:
+  nais: 'navikt/nais-deployment:3.2.0'
+
+defaults: &defaults
+  docker:
+    - image: circleci/openjdk:11
+
 jobs:
-    build:
-        <<: *defaults
-        steps:
-            - checkout
-            - restore_cache:
-                  name: Hent Maven .m2-cache
-                  keys:
-                      - m2-{{ .Branch }}-{{ checksum "pom.xml" }}
-                      - m2-{{ checksum "pom.xml" }}
-                      - m2-
-            - run:
-                  name: Bygg med Maven
-                  command: mvn clean package
-            - save_cache:
-                  name: Lagre Maven .m2-cache
-                  key: m2-{{ .Branch }}-{{ checksum "pom.xml" }}
-                  paths:
-                      - ~/.m2
-            - setup_remote_docker
-            - sett-miljovariabler
-            - run:
-                  name: Bygg Docker-image
-                  command: docker build -t "$DOCKER_IMAGE_VERSIONED" -t "$DOCKER_IMAGE_UNVERSIONED" .
-            - run:
-                  name: Push Docker-image
-                  command: |
-                      docker login -u $DOCKER_USER -p $DOCKER_PASS
-                      docker push "$DOCKER_IMAGE_VERSIONED"
-                      docker push "$DOCKER_IMAGE_UNVERSIONED"
+  deploy-til-dev2:
+    steps:
+      - checkout
+      - sett-miljovariabler
+      - nais/deploy-gh-app:
+          build-and-push-docker-image: false
+          repo: navikt/finn-kandidat-api
+          image: navikt/finn-kandidat-api
+          tag: $DOCKER_IMAGE_VERSIONED
+          github-app-id: 43789
+          nais-template: nais-dev-fss.json
+          environment: dev-fss
+          team: teamtag
 
-    deploy-til-dev:
-        <<: *defaults
-        steps:
-            - deploy:
-                  miljo: 'dev-fss'
-                  nais-json: 'nais-dev-fss.json'
+  build:
+    <<: *defaults
+    steps:
+      - checkout
+      - restore_cache:
+          name: Hent Maven .m2-cache
+          keys:
+            - m2-{{ .Branch }}-{{ checksum "pom.xml" }}
+            - m2-{{ checksum "pom.xml" }}
+            - m2-
+      - run:
+          name: Bygg med Maven
+          command: mvn clean package
+      - save_cache:
+          name: Lagre Maven .m2-cache
+          key: m2-{{ .Branch }}-{{ checksum "pom.xml" }}
+          paths:
+            - ~/.m2
+      - setup_remote_docker
+      - sett-miljovariabler
+      - run:
+          name: Bygg Docker-image
+          command: docker build -t "$DOCKER_IMAGE_VERSIONED" -t "$DOCKER_IMAGE_UNVERSIONED" .
+      - run:
+          name: Push Docker-image
+          command: |
+            docker login -u $DOCKER_USER -p $DOCKER_PASS
+            docker push "$DOCKER_IMAGE_VERSIONED"
+            docker push "$DOCKER_IMAGE_UNVERSIONED"
 
-    deploy-til-prod:
-        <<: *defaults
-        steps:
-            - deploy:
-                  miljo: 'prod-fss'
-                  nais-json: 'nais-prod-fss.json'
+  deploy-til-dev:
+    <<: *defaults
+    steps:
+      - deploy:
+          miljo: 'dev-fss'
+          nais-json: 'nais-dev-fss.json'
+
+  deploy-til-prod:
+    <<: *defaults
+    steps:
+      - deploy:
+          miljo: 'prod-fss'
+          nais-json: 'nais-prod-fss.json'
 
 commands:
-    deploy:
-        description: 'Deploy til et gitt miljø'
-        parameters:
-            miljo:
-                type: string
-            nais-json:
-                type: string
-        steps:
-            - checkout
-            - sett-miljovariabler
-            - run:
-                  name: Deploy til << parameters.miljo >>
-                  command: |
-                      bash ./deploy/set-docker-image.sh << parameters.nais-json >> $DOCKER_IMAGE_VERSIONED
-                      bash ./deploy/opprett-github-deployment.sh << parameters.miljo >> << parameters.nais-json >>
+  deploy:
+    description: 'Deploy til et gitt miljø'
+    parameters:
+      miljo:
+        type: string
+      nais-json:
+        type: string
+    steps:
+      - checkout
+      - sett-miljovariabler
+      - run:
+          name: Deploy til << parameters.miljo >>
+          command: |
+            bash ./deploy/set-docker-image.sh << parameters.nais-json >> $DOCKER_IMAGE_VERSIONED
+            bash ./deploy/opprett-github-deployment.sh << parameters.miljo >> << parameters.nais-json >>
 
-    sett-miljovariabler:
-        steps:
-            - run:
-                  name: Setter miljøvariabler
-                  command: |
-                      echo 'export RELEASE_VERSION="$(git rev-list --count $CIRCLE_SHA1)"' >> $BASH_ENV
-                      echo 'export BRANCH_PREFIX=`[ $CIRCLE_BRANCH == "master" ] && echo "" || echo $CIRCLE_BRANCH\_`' >> $BASH_ENV
-                      echo 'export DOCKER_IMAGE_VERSIONED="$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME:$BRANCH_PREFIX$RELEASE_VERSION"' >> $BASH_ENV
-                      echo 'export DOCKER_IMAGE_UNVERSIONED="$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME"' >> $BASH_ENV
+  sett-miljovariabler:
+    steps:
+      - run:
+          name: Setter miljøvariabler
+          command: |
+            echo 'export RELEASE_VERSION="$(git rev-list --count $CIRCLE_SHA1)"' >> $BASH_ENV
+            echo 'export BRANCH_PREFIX=`[ $CIRCLE_BRANCH == "master" ] && echo "" || echo $CIRCLE_BRANCH\_`' >> $BASH_ENV
+            echo 'export DOCKER_IMAGE_VERSIONED="$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME:$BRANCH_PREFIX$RELEASE_VERSION"' >> $BASH_ENV
+            echo 'export DOCKER_IMAGE_UNVERSIONED="$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME"' >> $BASH_ENV
 
 workflows:
-    version: 2.1
-    bygg_og_deploy:
-        jobs:
+  version: 2.1
+  bygg_og_deploy:
+    jobs:
+      - build
+      - deploy-til-dev2:
+          requires:
             - build
-            - deploy-til-dev:
-                  requires:
-                      - build
-                  filters:
-                      branches:
-                          only:
-                              - master
-            - godkjenn-til-prod:
-                  type: approval
-                  requires:
-                      - build
-                  filters:
-                      branches:
-                          only:
-                              - master
-            - deploy-til-prod:
-                  requires:
-                      - godkjenn-til-prod
-                  filters:
-                      branches:
-                          only:
-                              - master
+#          filters:
+#            branches:
+#              only:
+#                - master
+#      - godkjenn-til-prod:
+#          type: approval
+#          requires:
+#            - build
+#          filters:
+#            branches:
+#              only:
+#                - master
+#      - deploy-til-prod:
+#          requires:
+#            - godkjenn-til-prod
+#          filters:
+#            branches:
+#              only:
+#                - master

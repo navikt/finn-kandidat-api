@@ -13,8 +13,7 @@ jobs:
     steps:
       - checkout
       - sett-miljovariabler
-      - nais/deploy-gh-app:
-          build-and-push-docker-image: false
+      - nais/deploy-with-gh-app:
           repo: navikt/finn-kandidat-api
           image: navikt/finn-kandidat-api
           tag: $DOCKER_IMAGE_VERSIONED

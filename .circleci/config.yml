@@ -25,7 +25,6 @@ jobs:
           key: m2-{{ .Branch }}-{{ checksum "pom.xml" }}
           paths:
             - ~/.m2
-      - setup_remote_docker
       - sett-miljovariabler
       - nais/docker:
           image: navikt/finn-kandidat-api

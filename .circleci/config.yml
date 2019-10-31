@@ -22,10 +22,8 @@ jobs:
           key: m2-{{ .Branch }}-{{ checksum "pom.xml" }}
           paths:
             - ~/.m2
-      - sett-miljovariabler
       - nais/docker:
           image: navikt/finn-kandidat-api
-          tag: $VERSION
 
   deploy-til-dev:
     docker:
@@ -35,11 +33,9 @@ jobs:
       - run:
           name: Unpack Private Key
           command: echo $GITHUB_PRIVATE_KEY | base64 -d > .circleci/github.key.pem
-      - sett-miljovariabler
       - nais/deploy-with-gh-app:
           repo: navikt/finn-kandidat-api
           image: navikt/finn-kandidat-api
-          tag: $VERSION
           github-app-id: 43789
           nais-template: nais-dev-fss.yaml
           environment: dev-fss
@@ -53,25 +49,13 @@ jobs:
       - run:
           name: Unpack Private Key
           command: echo $GITHUB_PRIVATE_KEY | base64 -d > .circleci/github.key.pem
-      - sett-miljovariabler
       - nais/deploy-with-gh-app:
           repo: navikt/finn-kandidat-api
           image: navikt/finn-kandidat-api
-          tag: $VERSION
           github-app-id: 43789
           nais-template: nais-prod-fss.yaml
           environment: prod-fss
           team: teamtag
-
-commands:
-  sett-miljovariabler:
-    steps:
-      - run:
-          name: Setter miljøvariabler
-          command: |
-            echo 'export RELEASE_VERSION="$(git rev-list --count $CIRCLE_SHA1)"' >> $BASH_ENV
-            echo 'export BRANCH_PREFIX=`[ $CIRCLE_BRANCH == "master" ] && echo "" || echo $CIRCLE_BRANCH\_`' >> $BASH_ENV
-            echo 'export VERSION="$BRANCH_PREFIX$RELEASE_VERSION"' >> $BASH_ENV
 
 workflows:
   version: 2.1

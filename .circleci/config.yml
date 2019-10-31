@@ -2,13 +2,10 @@ version: 2.1
 orbs:
   nais: navikt/nais-deployment@dev:master
 
-defaults: &defaults
-  docker:
-    - image: circleci/openjdk:11
-
 jobs:
   build:
-    <<: *defaults
+    docker:
+      - image: circleci/openjdk:11
     steps:
       - checkout
       - restore_cache:
@@ -49,28 +46,22 @@ jobs:
           team: teamtag
 
   deploy-til-prod:
-    <<: *defaults
-    steps:
-      - deploy:
-          miljo: 'prod-fss'
-          nais-json: 'nais-prod-fss.json'
-
-commands:
-  deploy:
-    description: 'Deploy til et gitt miljø'
-    parameters:
-      miljo:
-        type: string
-      nais-json:
-        type: string
+    docker:
+      - image: navikt/deployment-cli:latest
     steps:
       - checkout
-      - sett-miljovariabler
       - run:
-          name: Deploy til << parameters.miljo >>
-          command: |
-            bash ./deploy/set-docker-image.sh << parameters.nais-json >> $DOCKER_IMAGE_VERSIONED
-            bash ./deploy/opprett-github-deployment.sh << parameters.miljo >> << parameters.nais-json >>
+          name: Unpack Private Key
+          command: echo $GITHUB_PRIVATE_KEY | base64 -d > .circleci/github.key.pem
+      - sett-miljovariabler
+      - nais/deploy-with-gh-app:
+          repo: navikt/finn-kandidat-api
+          image: navikt/finn-kandidat-api
+          tag: $VERSION
+          github-app-id: 43789
+          nais-template: nais-prod-fss.yaml
+          environment: prod-fss
+          team: teamtag
 
   sett-miljovariabler:
     steps:
@@ -80,8 +71,6 @@ commands:
             echo 'export RELEASE_VERSION="$(git rev-list --count $CIRCLE_SHA1)"' >> $BASH_ENV
             echo 'export BRANCH_PREFIX=`[ $CIRCLE_BRANCH == "master" ] && echo "" || echo $CIRCLE_BRANCH\_`' >> $BASH_ENV
             echo 'export VERSION="$BRANCH_PREFIX$RELEASE_VERSION"' >> $BASH_ENV
-            echo 'export DOCKER_IMAGE_VERSIONED="$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME:$BRANCH_PREFIX$RELEASE_VERSION"' >> $BASH_ENV
-            echo 'export DOCKER_IMAGE_UNVERSIONED="$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME"' >> $BASH_ENV
 
 workflows:
   version: 2.1

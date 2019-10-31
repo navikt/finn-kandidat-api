@@ -63,6 +63,7 @@ jobs:
           environment: prod-fss
           team: teamtag
 
+commands:
   sett-miljovariabler:
     steps:
       - run:

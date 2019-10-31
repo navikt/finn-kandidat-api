@@ -21,7 +21,7 @@ jobs:
           image: navikt/finn-kandidat-api
           tag: $DOCKER_IMAGE_VERSIONED
           github-app-id: 43789
-          nais-template: nais-dev-fss.json
+          nais-template: nais-dev-fss.yaml
           environment: dev-fss
           team: teamtag
 

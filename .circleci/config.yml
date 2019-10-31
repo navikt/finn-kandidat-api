@@ -19,7 +19,7 @@ jobs:
       - nais/deploy-with-gh-app:
           repo: navikt/finn-kandidat-api
           image: navikt/finn-kandidat-api
-          tag: $DOCKER_IMAGE_VERSIONED
+          tag: $VERSION
           github-app-id: 43789
           nais-template: nais-dev-fss.yaml
           environment: dev-fss
@@ -93,6 +93,7 @@ commands:
           command: |
             echo 'export RELEASE_VERSION="$(git rev-list --count $CIRCLE_SHA1)"' >> $BASH_ENV
             echo 'export BRANCH_PREFIX=`[ $CIRCLE_BRANCH == "master" ] && echo "" || echo $CIRCLE_BRANCH\_`' >> $BASH_ENV
+            echo 'export VERSION="$BRANCH_PREFIX$RELEASE_VERSION"' >> $BASH_ENV
             echo 'export DOCKER_IMAGE_VERSIONED="$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME:$BRANCH_PREFIX$RELEASE_VERSION"' >> $BASH_ENV
             echo 'export DOCKER_IMAGE_UNVERSIONED="$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME"' >> $BASH_ENV
 

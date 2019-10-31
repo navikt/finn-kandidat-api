@@ -7,24 +7,6 @@ defaults: &defaults
     - image: circleci/openjdk:11
 
 jobs:
-  deploy-til-dev2:
-    docker:
-      - image: navikt/deployment-cli:latest
-    steps:
-      - checkout
-      - run:
-          name: Unpack Private Key
-          command: echo $GITHUB_PRIVATE_KEY | base64 -d > .circleci/github.key.pem
-      - sett-miljovariabler
-      - nais/deploy-with-gh-app:
-          repo: navikt/finn-kandidat-api
-          image: navikt/finn-kandidat-api
-          tag: $VERSION
-          github-app-id: 43789
-          nais-template: nais-dev-fss.yaml
-          environment: dev-fss
-          team: teamtag
-
   build:
     <<: *defaults
     steps:
@@ -45,22 +27,27 @@ jobs:
             - ~/.m2
       - setup_remote_docker
       - sett-miljovariabler
-      - run:
-          name: Bygg Docker-image
-          command: docker build -t "$DOCKER_IMAGE_VERSIONED" -t "$DOCKER_IMAGE_UNVERSIONED" .
-      - run:
-          name: Push Docker-image
-          command: |
-            docker login -u $DOCKER_USER -p $DOCKER_PASS
-            docker push "$DOCKER_IMAGE_VERSIONED"
-            docker push "$DOCKER_IMAGE_UNVERSIONED"
+      - nais/docker:
+          image: navikt/finn-kandidat-api
+          tag: $VERSION
 
   deploy-til-dev:
-    <<: *defaults
+    docker:
+      - image: navikt/deployment-cli:latest
     steps:
-      - deploy:
-          miljo: 'dev-fss'
-          nais-json: 'nais-dev-fss.json'
+      - checkout
+      - run:
+          name: Unpack Private Key
+          command: echo $GITHUB_PRIVATE_KEY | base64 -d > .circleci/github.key.pem
+      - sett-miljovariabler
+      - nais/deploy-with-gh-app:
+          repo: navikt/finn-kandidat-api
+          image: navikt/finn-kandidat-api
+          tag: $VERSION
+          github-app-id: 43789
+          nais-template: nais-dev-fss.yaml
+          environment: dev-fss
+          team: teamtag
 
   deploy-til-prod:
     <<: *defaults
@@ -102,7 +89,7 @@ workflows:
   bygg_og_deploy:
     jobs:
       - build
-      - deploy-til-dev2:
+      - deploy-til-dev:
           context: tag-ci
           requires:
             - build

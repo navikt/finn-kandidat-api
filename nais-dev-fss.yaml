@@ -1,0 +1,28 @@
+apiVersion: nais.io/v1alpha1
+kind: Application
+metadata:
+  name: finn-kandidat-api
+  namespace: default
+  labels:
+    team: {{team}}
+spec:
+  image: navikt/finn-kandidat-api:{{version}}
+  team: {{team}}
+  port: 8080
+  ingresses:
+  - https://arbeidsgiver.nais.preprod.local/finn-kandidat-api/
+  liveness:
+    path: /finn-kandidat-api/internal/actuator/info
+    initialDelay: 30
+  readiness:
+    path: /finn-kandidat-api/internal/actuator/info
+    initialDelay: 30
+  vault:
+    enabled: true
+  webproxy: false
+  prometheus:
+    enabled: true
+    path: /finn-kandidat-api/internal/actuator/prometheus
+  env:
+  - name: SPRING_PROFILES_ACTIVE
+    value: dev

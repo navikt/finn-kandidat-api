@@ -4,6 +4,7 @@ import no.finn.unleash.DefaultUnleash;
 import no.finn.unleash.FakeUnleash;
 import no.finn.unleash.Unleash;
 import no.finn.unleash.util.UnleashConfig;
+import no.nav.tag.finnkandidatapi.unleash.enhet.ByEnhetStrategy;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,6 +27,7 @@ public class UnleashConfiguration {
     @Bean
     public Unleash unleash(
             ByClusterStrategy byClusterStrategy,
+            ByEnhetStrategy byEnhetStrategy,
             @Value("${unleash.url}") String unleashUrl,
             @Value("${spring.profiles.active}") String profile
     ) {
@@ -35,7 +37,11 @@ public class UnleashConfiguration {
                 .unleashAPI(unleashUrl)
                 .build();
 
-        return new DefaultUnleash(config, byClusterStrategy);
+        return new DefaultUnleash(
+                config,
+                byClusterStrategy,
+                byEnhetStrategy
+        );
     }
 
     @Profile({"local", "mock"})

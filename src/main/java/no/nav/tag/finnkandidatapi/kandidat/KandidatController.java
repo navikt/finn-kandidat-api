@@ -28,6 +28,7 @@ public class KandidatController {
     @GetMapping("/{aktørId}")
     public ResponseEntity<Kandidat> hentKandidat(@PathVariable("aktørId") String aktørId) {
         loggBrukAvEndepunkt("hentKandidat");
+        tilgangskontroll.sjekkPilotTilgang();
         tilgangskontroll.sjekkLesetilgangTilKandidat(aktørId);
         Kandidat kandidat = kandidatService.hentNyesteKandidat(aktørId).orElseThrow(NotFoundException::new);
         return ResponseEntity.ok(kandidat);
@@ -36,6 +37,7 @@ public class KandidatController {
     @GetMapping("/{fnr}/aktorId")
     public ResponseEntity<String> hentAktørId(@PathVariable("fnr") String fnr) {
         loggBrukAvEndepunkt("hentAktørId");
+        tilgangskontroll.sjekkPilotTilgang();
 
         boolean gyldigFnr = isValid(fnr);
         if (!gyldigFnr) {
@@ -49,6 +51,7 @@ public class KandidatController {
     @GetMapping("/{aktørId}/fnr")
     public ResponseEntity<String> hentFnr(@PathVariable("aktørId") String aktørId) {
         loggBrukAvEndepunkt("hentFnr");
+        tilgangskontroll.sjekkPilotTilgang();
         String fnr = kandidatService.hentFnr(aktørId);
         return ResponseEntity.ok(fnr);
     }
@@ -56,6 +59,7 @@ public class KandidatController {
     @GetMapping
     public ResponseEntity<List<Kandidat>> hentKandidater() {
         loggBrukAvEndepunkt("hentKandidater");
+        tilgangskontroll.sjekkPilotTilgang();
         List<Kandidat> kandidater =
                 kandidatService.hentKandidater().stream()
                 .filter(kandidat -> tilgangskontroll.harLesetilgangTilKandidat(kandidat.getAktørId()))
@@ -66,6 +70,7 @@ public class KandidatController {
     @PostMapping
     public ResponseEntity<Kandidat> opprettKandidat(@RequestBody KandidatDto kandidat) {
         loggBrukAvEndepunkt("opprettKandidat");
+        tilgangskontroll.sjekkPilotTilgang();
         tilgangskontroll.sjekkSkrivetilgangTilKandidat(kandidat.getAktørId());
 
         boolean kandidatEksisterer = kandidatService.kandidatEksisterer(kandidat.getAktørId());
@@ -87,6 +92,7 @@ public class KandidatController {
     @PutMapping
     public ResponseEntity<Kandidat> endreKandidat(@RequestBody KandidatDto kandidatDto) {
         loggBrukAvEndepunkt("endreKandidat");
+        tilgangskontroll.sjekkPilotTilgang();
         tilgangskontroll.sjekkSkrivetilgangTilKandidat(kandidatDto.getAktørId());
         Veileder veileder = tilgangskontroll.hentInnloggetVeileder();
         Kandidat endretKandidat = kandidatService.endreKandidat(kandidatDto, veileder)
@@ -97,6 +103,7 @@ public class KandidatController {
     @GetMapping("/{aktørId}/skrivetilgang")
     public ResponseEntity hentSkrivetilgang(@PathVariable("aktørId") String aktørId) {
         loggBrukAvEndepunkt("hentSkrivetilgang");
+        tilgangskontroll.sjekkPilotTilgang();
         tilgangskontroll.sjekkSkrivetilgangTilKandidat(aktørId);
         return ResponseEntity.ok().build();
     }
@@ -104,6 +111,7 @@ public class KandidatController {
     @DeleteMapping("/{aktørId}")
     public ResponseEntity slettKandidat(@PathVariable("aktørId") String aktørId) {
         loggBrukAvEndepunkt("slettKandidat");
+        tilgangskontroll.sjekkPilotTilgang();
         tilgangskontroll.sjekkSkrivetilgangTilKandidat(aktørId);
 
         Optional<Integer> id = kandidatService.slettKandidat(aktørId, tilgangskontroll.hentInnloggetVeileder());

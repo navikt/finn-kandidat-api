@@ -2,6 +2,7 @@ package no.nav.tag.finnkandidatapi.kafka;
 
 import no.nav.tag.finnkandidatapi.kafka.harTilretteleggingsbehov.HarTilretteleggingsbehov;
 import no.nav.tag.finnkandidatapi.kafka.harTilretteleggingsbehov.HarTilretteleggingsbehovProducer;
+import no.nav.tag.finnkandidatapi.tilgangskontroll.TokenUtils;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -14,6 +15,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
@@ -24,7 +26,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.util.Map;
 
 import static no.nav.tag.finnkandidatapi.TestData.enAktørId;
+import static no.nav.tag.finnkandidatapi.TestData.enVeileder;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -38,6 +42,9 @@ public class HarTilretteleggingsbehovProducerTest {
     @Autowired
     private HarTilretteleggingsbehovProducer harTilretteleggingsbehovProducer;
 
+    @MockBean
+    private TokenUtils tokenUtils;
+
     private Consumer<String, String> consumer;
 
     @Before
@@ -49,6 +56,8 @@ public class HarTilretteleggingsbehovProducerTest {
         ConsumerFactory<String, String> cf = new DefaultKafkaConsumerFactory<>(consumerProps);
         consumer = cf.createConsumer();
         embeddedKafka.getEmbeddedKafka().consumeFromAnEmbeddedTopic(consumer, "aapen-tag-kandidatEndret-v1-default");
+
+        when(tokenUtils.hentInnloggetVeileder()).thenReturn(enVeileder());
     }
 
     @Test
@@ -62,10 +71,5 @@ public class HarTilretteleggingsbehovProducerTest {
         assertThat(melding.key()).isEqualTo(harTilretteleggingsbehov.getAktoerId());
         assertThat(json.get("aktoerId")).isEqualTo(harTilretteleggingsbehov.getAktoerId());
         assertThat(json.get("harTilretteleggingsbehov")).isEqualTo(harTilretteleggingsbehov.isHarTilretteleggingsbehov());
-    }
-
-    @After
-    public void tearDown() {
-        embeddedKafka.destroy();
     }
 }

@@ -7,7 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import no.finn.unleash.Unleash;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatOpprettet;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatSlettet;
-import no.nav.tag.finnkandidatapi.unleash.UnleashConfiguration;
+import no.nav.tag.finnkandidatapi.unleash.FeatureToggleService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.EventListener;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -15,7 +15,7 @@ import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Component;
 import org.springframework.util.concurrent.ListenableFuture;
 
-import java.util.Optional;
+import static no.nav.tag.finnkandidatapi.unleash.UnleashConfiguration.HAR_TILRETTELEGGINGSBEHOV_PRODUCER_FEATURE;
 
 @Component
 @Slf4j
@@ -27,17 +27,17 @@ public class HarTilretteleggingsbehovProducer {
     private KafkaTemplate<String, String> kafkaTemplate;
     private String topic;
     private MeterRegistry meterRegistry;
-    private Unleash unleash;
+    private FeatureToggleService featureToggleService;
 
     public HarTilretteleggingsbehovProducer(
             KafkaTemplate<String, String> kafkaTemplate,
             @Value("${kandidat-endret.topic}") String topic,
             MeterRegistry meterRegistry,
-            Unleash unleash) {
+            Unleash unleash, FeatureToggleService featureToggleService) {
         this.kafkaTemplate = kafkaTemplate;
         this.topic = topic;
         this.meterRegistry = meterRegistry;
-        this.unleash = unleash;
+        this.featureToggleService = featureToggleService;
         meterRegistry.counter(HAR_TILRETTELEGGINGSBEHOV_PRODUSENT_SUKSESS);
         meterRegistry.counter(HAR_TILRETTELEGGINGSBEHOV_PRODUSENT_FEILET);
     }
@@ -53,7 +53,7 @@ public class HarTilretteleggingsbehovProducer {
     }
 
     public void sendKafkamelding(String aktørId, Boolean harTilretteleggingsbehov) {
-        if (!unleash.isEnabled(UnleashConfiguration.HAR_TILRETTELEGGINGSBEHOV_PRODUCER_FEATURE)) {
+        if (!featureToggleService.isEnabled(HAR_TILRETTELEGGINGSBEHOV_PRODUCER_FEATURE)) {
             log.info("Har tilretteleggingsbehov produsent er slått av, skulle publisere aktørId: {}", aktørId);
             return;
         }

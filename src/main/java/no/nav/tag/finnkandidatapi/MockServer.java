@@ -24,6 +24,7 @@ import static no.nav.tag.finnkandidatapi.tilgangskontroll.veilarbabac.Veilarbaba
 @Component
 @Slf4j
 public class MockServer implements DisposableBean {
+
     private final WireMockServer server;
 
     @Autowired
@@ -32,7 +33,8 @@ public class MockServer implements DisposableBean {
             @Value("${sts.url}") String stsUrl,
             @Value("${veilarbabac.url}") String veilarbabacUrl,
             @Value("${aktørregister.url}") String aktørregisterUrl,
-            @Value("${veilarbarena.url}") String veilarbarenaUrl
+            @Value("${veilarbarena.url}") String veilarbarenaUrl,
+            @Value("${axsys.url}") String axsysUrl
     ) {
         log.info("Starter mockserver");
 
@@ -42,6 +44,7 @@ public class MockServer implements DisposableBean {
         mockKall(stsUrl + "/sts/token", new STSToken("fdg", "asfsdg", 325));
         mockAktørregister(aktørregisterUrl);
         mockVeilarbarena(veilarbarenaUrl);
+        mockAxsys(axsysUrl);
 
         server.start();
     }
@@ -49,6 +52,7 @@ public class MockServer implements DisposableBean {
     private void mockAktørregister(String aktørregisterUrl) {
         Map<String, StringValuePattern> aktørId = new HashMap<>();
         aktørId.put("identgruppe", WireMock.equalTo("AktoerId"));
+
         mockKall(aktørregisterUrl + "/identer" + "?identgruppe=AktoerId&gjeldende=true",
                 aktørId,
                 "{\n" +
@@ -114,6 +118,16 @@ public class MockServer implements DisposableBean {
                 )
         );
 
+    }
+
+    private void mockAxsys(String axsysUrl) {
+        server.stubFor(
+                WireMock.get(WireMock.urlPathMatching(getPath(axsysUrl) + "/[A-Z][0-9]{6}")).willReturn(WireMock.aResponse()
+                        .withHeader("Content-Type", "application/json")
+                        .withStatus(HttpStatus.OK.value())
+                        .withBody("{\"enheter\":[{\"enhetId\":\"0213\",\"fagomrader\":[\"ABC\",\"DEF\",\"GHI\",\"JKL\",\"MNO\",\"PQR\",\"STU\",\"WXY\"],\"navn\":\"NAV Ski\"},{\"enhetId\":\"0315\",\"fagomrader\":[\"ABC\",\"DEF\",\"GHI\",\"JKL\",\"MNO\",\"PQR\",\"STU\",\"WXY\"],\"navn\":\"NAV Grünerløkka\"}]}")
+                )
+        );
     }
 
     @SneakyThrows

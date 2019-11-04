@@ -4,10 +4,13 @@ import no.finn.unleash.DefaultUnleash;
 import no.finn.unleash.FakeUnleash;
 import no.finn.unleash.Unleash;
 import no.finn.unleash.util.UnleashConfig;
+import no.nav.tag.finnkandidatapi.unleash.enhet.ByEnhetStrategy;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+
+import static no.nav.tag.finnkandidatapi.tilgangskontroll.TilgangskontrollService.FINN_KANDIDAT_PILOTTILGANG_KONTOR;
 
 @Configuration
 public class UnleashConfiguration {
@@ -24,6 +27,7 @@ public class UnleashConfiguration {
     @Bean
     public Unleash unleash(
             ByClusterStrategy byClusterStrategy,
+            ByEnhetStrategy byEnhetStrategy,
             @Value("${unleash.url}") String unleashUrl,
             @Value("${spring.profiles.active}") String profile
     ) {
@@ -33,7 +37,11 @@ public class UnleashConfiguration {
                 .unleashAPI(unleashUrl)
                 .build();
 
-        return new DefaultUnleash(config, byClusterStrategy);
+        return new DefaultUnleash(
+                config,
+                byClusterStrategy,
+                byEnhetStrategy
+        );
     }
 
     @Profile({"local", "mock"})
@@ -42,6 +50,7 @@ public class UnleashConfiguration {
         FakeUnleash fakeUnleash = new FakeUnleash();
         fakeUnleash.enable(HAR_TILRETTELEGGINGSBEHOV_PRODUCER_FEATURE);
         fakeUnleash.enable(HENT_OPPFØLGINGSBRUKER_VED_OPPRETT_KANDIDAT);
+        fakeUnleash.enable(FINN_KANDIDAT_PILOTTILGANG_KONTOR);
         return fakeUnleash;
     }
 }

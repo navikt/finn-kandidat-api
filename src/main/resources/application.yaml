@@ -47,6 +47,7 @@ veilarbabac.url: ${mock.baseUrl}/veilarbabac
 abac.url: ${mock.baseUrl}/abac
 aktørregister.url: ${mock.baseUrl}/aktoerregister/api/v1
 veilarbarena.url: ${mock.baseUrl}/veilarbarena/api
+axsys.url: ${mock.baseUrl}/axsys
 
 SERVICEBRUKER_BRUKERNAVN: na
 SERVICEBRUKER_PASSORD: na
@@ -94,6 +95,7 @@ abac.url: https://wasapp-q1.adeo.no/asm-pdp/authorize
 aktørregister.url: https://app-q0.adeo.no/aktoerregister/api/v1
 unleash.url: https://unleash.nais.adeo.no/api/
 veilarbarena.url: https://veilarbarena-q0.nais.preprod.local/veilarbarena/api
+axsys.url: https://axsys.nais.preprod.local/api/v1/tilgang
 
 ---
 spring:
@@ -135,3 +137,4 @@ abac.url: https://wasapp.adeo.no/asm-pdp/authorize
 aktørregister.url: https://app.adeo.no/aktoerregister/api/v1
 unleash.url: https://unleash.nais.adeo.no/api/
 veilarbarena.url: https://veilarbarena.nais.adeo.no/veilarbarena/api
+axsys.url: https://axsys.nais.adeo.no/api/v1/tilgang

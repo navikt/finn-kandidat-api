@@ -9,6 +9,7 @@ import no.nav.tag.finnkandidatapi.DateProvider;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatEndret;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatOpprettet;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatSlettet;
+import no.nav.tag.finnkandidatapi.unleash.FeatureToggleService;
 import no.nav.tag.finnkandidatapi.veilarbarena.Oppfølgingsbruker;
 import no.nav.tag.finnkandidatapi.veilarbarena.VeilarbArenaClient;
 import org.springframework.context.ApplicationEventPublisher;
@@ -31,7 +32,7 @@ public class KandidatService {
     private final AktørRegisterClient aktørRegisterClient;
     private final DateProvider dateProvider;
     private final VeilarbArenaClient veilarbarenaClient;
-    private final Unleash unleash;
+    private final FeatureToggleService featureToggleService;
     private final MeterRegistry meterRegistry;
 
     public KandidatService(
@@ -40,15 +41,14 @@ public class KandidatService {
             AktørRegisterClient aktørRegisterClient,
             DateProvider dateProvider,
             VeilarbArenaClient veilarbarenaClient,
-            Unleash unleash,
-            MeterRegistry meterRegistry
+            FeatureToggleService featureToggleService, MeterRegistry meterRegistry
     ) {
         this.kandidatRepository = kandidatRepository;
         this.eventPublisher = eventPublisher;
         this.aktørRegisterClient = aktørRegisterClient;
         this.dateProvider = dateProvider;
         this.veilarbarenaClient = veilarbarenaClient;
-        this.unleash = unleash;
+        this.featureToggleService = featureToggleService;
         this.meterRegistry = meterRegistry;
         meterRegistry.counter(ENDRET_OPPFØLGING_OPPDATERTE_NAVKONTOR);
     }
@@ -63,7 +63,7 @@ public class KandidatService {
 
     public Optional<Kandidat> opprettKandidat(String fnr, KandidatDto kandidat, Veileder innloggetVeileder) {
         String navKontor = null;
-        if (unleash.isEnabled(HENT_OPPFØLGINGSBRUKER_VED_OPPRETT_KANDIDAT)) {
+        if (featureToggleService.isEnabled(HENT_OPPFØLGINGSBRUKER_VED_OPPRETT_KANDIDAT)) {
             Oppfølgingsbruker oppfølgingsbruker = veilarbarenaClient.hentOppfølgingsbruker(fnr, kandidat.getAktørId());
             navKontor = oppfølgingsbruker.getNavKontor();
         } else {

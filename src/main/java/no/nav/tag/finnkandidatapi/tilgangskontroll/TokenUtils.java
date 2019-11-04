@@ -4,6 +4,7 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import no.nav.security.oidc.context.OIDCClaims;
 import no.nav.security.oidc.context.OIDCRequestContextHolder;
 import no.nav.tag.finnkandidatapi.kandidat.Veileder;
+import org.apache.zookeeper.Op;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -50,6 +51,16 @@ public class TokenUtils {
     private Optional<JWTClaimsSet> hentClaimSet(String issuer) {
         return Optional.ofNullable(contextHolder.getOIDCValidationContext().getClaims(issuer))
                 .map(OIDCClaims::getClaimSet);
+    }
+
+    public boolean harInnloggingsContext() {
+        try {
+            contextHolder.getOIDCValidationContext();
+            return true;
+        } catch (IllegalStateException exception) {
+            // Kaster exception hvis man prøver å hente context utenfor et request initiert av en bruker
+            return false;
+        }
     }
 
     private boolean erNAVIdent(String str) {

@@ -72,9 +72,4 @@ public class HarTilretteleggingsbehovProducerTest {
         assertThat(json.get("aktoerId")).isEqualTo(harTilretteleggingsbehov.getAktoerId());
         assertThat(json.get("harTilretteleggingsbehov")).isEqualTo(harTilretteleggingsbehov.isHarTilretteleggingsbehov());
     }
-
-    @After
-    public void tearDown() {
-        embeddedKafka.destroy();
-    }
 }

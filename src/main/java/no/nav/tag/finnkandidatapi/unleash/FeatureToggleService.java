@@ -3,6 +3,7 @@ package no.nav.tag.finnkandidatapi.unleash;
 import lombok.RequiredArgsConstructor;
 import no.finn.unleash.Unleash;
 import no.finn.unleash.UnleashContext;
+import no.nav.tag.finnkandidatapi.kandidat.Veileder;
 import no.nav.tag.finnkandidatapi.tilgangskontroll.TokenUtils;
 import org.springframework.stereotype.Service;
 
@@ -14,16 +15,16 @@ public class FeatureToggleService {
     private final TokenUtils tokenUtils;
 
     public boolean isEnabled(String feature) {
-        return unleash.isEnabled(feature);
-    }
-
-    public boolean isEnabledMedPilotkontor(String feature) {
         return unleash.isEnabled(feature, contextMedInnloggetBruker());
     }
 
     private UnleashContext contextMedInnloggetBruker() {
-        return UnleashContext.builder()
-                .userId(tokenUtils.hentInnloggetVeileder().getNavIdent())
-                .build();
+        UnleashContext.Builder builder = UnleashContext.builder();
+        if (tokenUtils.harInnloggingsContext()) {
+            Veileder veileder = tokenUtils.hentInnloggetVeileder();
+            builder.userId(veileder.getNavIdent());
+        }
+
+        return builder.build();
     }
 }

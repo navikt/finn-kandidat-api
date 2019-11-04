@@ -36,7 +36,7 @@ public class TokenUtilsTest {
     }
 
     @Test(expected = TilgangskontrollException.class)
-    public void hentInnloggetVeileder__skal_kaste_exception_hvis_ikke_inlogget() {
+    public void hentInnloggetVeileder__skal_kaste_exception_hvis_ikke_innlogget() {
         værUinnlogget();
         tokenUtils.hentInnloggetVeileder();
     }

@@ -57,7 +57,7 @@ public class TilgangskontrollService {
     }
 
     public void sjekkPilotTilgang() {
-        if (!featureToggleService.isEnabledMedPilotkontor(FINN_KANDIDAT_PILOTTILGANG_KONTOR)) {
+        if (!featureToggleService.isEnabled(FINN_KANDIDAT_PILOTTILGANG_KONTOR)) {
             throw new IkkeIPilotException("Innlogget bruker tilhører ikke et kontor som er i pilot");
         }
     }

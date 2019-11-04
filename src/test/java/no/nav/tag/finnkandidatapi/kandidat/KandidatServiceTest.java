@@ -1,12 +1,12 @@
 package no.nav.tag.finnkandidatapi.kandidat;
 
 import io.micrometer.core.instrument.MeterRegistry;
-import no.finn.unleash.Unleash;
 import no.nav.tag.finnkandidatapi.DateProvider;
 import no.nav.tag.finnkandidatapi.aktørregister.AktørRegisterClient;
 import no.nav.tag.finnkandidatapi.kafka.oppfølgingAvsluttet.OppfølgingAvsluttetMelding;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatEndret;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatOpprettet;
+import no.nav.tag.finnkandidatapi.unleash.FeatureToggleService;
 import no.nav.tag.finnkandidatapi.veilarbarena.VeilarbArenaClient;
 import org.junit.Before;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatSlettet;
@@ -50,21 +50,21 @@ public class KandidatServiceTest {
     private VeilarbArenaClient veilarbArenaClient;
 
     @Mock
-    private Unleash unleash;
+    private FeatureToggleService featureToggleService;
 
     @Mock
     private MeterRegistry meterRegistry;
 
     @Before
     public void setUp() {
-        when(unleash.isEnabled(HENT_OPPFØLGINGSBRUKER_VED_OPPRETT_KANDIDAT)).thenReturn(true);
+        when(featureToggleService.isEnabled(HENT_OPPFØLGINGSBRUKER_VED_OPPRETT_KANDIDAT)).thenReturn(true);
         kandidatService = new KandidatService(
                 repository,
                 eventPublisher,
                 aktørRegisterClient,
                 dateProvider,
                 veilarbArenaClient,
-                unleash,
+                featureToggleService,
                 meterRegistry
         );
     }

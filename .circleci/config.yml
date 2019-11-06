@@ -9,7 +9,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          name: Hent Maven .m2-cache
+          name: Hent Maven cache
           keys:
             - m2-{{ .Branch }}-{{ checksum "pom.xml" }}
             - m2-{{ checksum "pom.xml" }}
@@ -18,7 +18,7 @@ jobs:
           name: Bygg med Maven
           command: mvn clean package
       - save_cache:
-          name: Lagre Maven .m2-cache
+          name: Lagre Maven cache
           key: m2-{{ .Branch }}-{{ checksum "pom.xml" }}
           paths:
             - ~/.m2
@@ -27,7 +27,7 @@ jobs:
 
   deploy-til-dev:
     docker:
-      - image: navikt/deployment-cli:latest
+      - image: navikt/deployment-cli:0.4.2
     steps:
       - checkout
       - run:
@@ -43,7 +43,7 @@ jobs:
 
   deploy-til-prod:
     docker:
-      - image: navikt/deployment-cli:latest
+      - image: navikt/deployment-cli:0.4.2
     steps:
       - checkout
       - run:
@@ -67,22 +67,23 @@ workflows:
           context: tag-ci
           requires:
             - build
-#          filters:
-#            branches:
-#              only:
-#                - master
-#      - godkjenn-til-prod:
-#          type: approval
-#          requires:
-#            - build
-#          filters:
-#            branches:
-#              only:
-#                - master
-#      - deploy-til-prod:
-#          requires:
-#            - godkjenn-til-prod
-#          filters:
-#            branches:
-#              only:
-#                - master
+          filters:
+            branches:
+              only:
+                - master
+      - godkjenn-til-prod:
+          type: approval
+          requires:
+            - build
+          filters:
+            branches:
+              only:
+                - master
+      - deploy-til-prod:
+          context: tag-ci
+          requires:
+            - godkjenn-til-prod
+          filters:
+            branches:
+              only:
+                - master

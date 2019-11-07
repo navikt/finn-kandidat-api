@@ -3,7 +3,6 @@ package no.nav.tag.finnkandidatapi.metrikker;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.metrics.MetricsFactory;
 import no.nav.tag.finnkandidatapi.kandidat.Brukertype;
-import no.nav.tag.finnkandidatapi.tilbakemelding.Tilbakemelding;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
@@ -33,13 +32,5 @@ public class MetrikkRegistrering {
                     .addTagToReport("slettetAv", Brukertype.SYSTEM.name())
                     .report();
         }
-    }
-
-    @EventListener
-    public void tilbakemeldingMottatt(Tilbakemelding tilbakemelding) {
-        MetricsFactory.createEvent("finn-kandidat.tilbakemelding.mottatt")
-                .addFieldToReport("behov", tilbakemelding.getBehov())
-                .addFieldToReport("tilbakemelding", tilbakemelding.getTilbakemelding())
-                .report();
     }
 }

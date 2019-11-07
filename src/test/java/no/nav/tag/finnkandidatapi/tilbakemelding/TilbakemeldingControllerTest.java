@@ -1,7 +1,6 @@
 package no.nav.tag.finnkandidatapi.tilbakemelding;
 
 import no.nav.tag.finnkandidatapi.kandidat.Veileder;
-import no.nav.tag.finnkandidatapi.metrikker.TilbakemeldingMottatt;
 import no.nav.tag.finnkandidatapi.tilgangskontroll.TilgangskontrollException;
 import no.nav.tag.finnkandidatapi.tilgangskontroll.TilgangskontrollService;
 import org.junit.Before;
@@ -9,7 +8,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 
 import java.util.Arrays;
@@ -33,14 +31,11 @@ public class TilbakemeldingControllerTest {
     @Mock
     private TilbakemeldingConfig tilbakemeldingConfig;
 
-    @Mock
-    private ApplicationEventPublisher eventPublisher;
-
     private TilbakemeldingController tilbakemeldingController;
 
     @Before
     public void setUp() {
-        tilbakemeldingController = new TilbakemeldingController(repository, tilgangskontrollService, tilbakemeldingConfig, eventPublisher);
+        tilbakemeldingController = new TilbakemeldingController(repository, tilgangskontrollService, tilbakemeldingConfig);
     }
 
     @Test
@@ -54,13 +49,6 @@ public class TilbakemeldingControllerTest {
     public void giTilbakemelding__skal_returnere_201_created() {
         Tilbakemelding tilbakemelding = enTilbakemelding();
         assertThat(tilbakemeldingController.giTilbakemelding(tilbakemelding).getStatusCode()).isEqualTo(HttpStatus.CREATED);
-    }
-
-    @Test
-    public void giTilbakemeldinger__skal_loggføre_tilbakemeldingen() {
-        Tilbakemelding tilbakemelding = enTilbakemelding();
-        tilbakemeldingController.giTilbakemelding(tilbakemelding);
-        verify(eventPublisher, times(1)).publishEvent(new TilbakemeldingMottatt(tilbakemelding));
     }
 
     @Test

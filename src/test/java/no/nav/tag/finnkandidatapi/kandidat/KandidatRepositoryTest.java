@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import static java.time.LocalDateTime.now;
 import static no.nav.tag.finnkandidatapi.TestData.*;
 import static no.nav.tag.finnkandidatapi.kandidat.ArbeidsmiljøBehov.ANNET;
 import static no.nav.tag.finnkandidatapi.kandidat.ArbeidsmiljøBehov.MENTOR;
@@ -317,4 +316,6 @@ public class KandidatRepositoryTest {
         int antallOppdaterteRader = repository.oppdaterNavKontor(null, "1337");
         assertThat(antallOppdaterteRader).isEqualTo(0);
     }
+
+
 }

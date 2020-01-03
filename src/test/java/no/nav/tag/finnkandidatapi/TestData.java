@@ -5,12 +5,14 @@ import no.nav.tag.finnkandidatapi.kandidat.Kandidat;
 import no.nav.tag.finnkandidatapi.kandidat.KandidatDto;
 import no.nav.tag.finnkandidatapi.kandidat.Veileder;
 import no.nav.tag.finnkandidatapi.logging.LoggEvent;
+import no.nav.tag.finnkandidatapi.sts.STSToken;
 import no.nav.tag.finnkandidatapi.tilbakemelding.Behov;
 import no.nav.tag.finnkandidatapi.tilbakemelding.Tilbakemelding;
-import no.nav.tag.finnkandidatapi.sts.STSToken;
 import no.nav.tag.finnkandidatapi.veilarbarena.Oppfølgingsbruker;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
@@ -26,7 +28,7 @@ public class TestData {
 
     public static Kandidat enKandidat() {
         return Kandidat.builder()
-                .sistEndret(LocalDateTime.now())
+                .sistEndret(now())
                 .sistEndretAv(enNavIdent())
                 .fnr(etFnr())
                 .aktørId("1000000000001")
@@ -72,7 +74,7 @@ public class TestData {
 
     public static Kandidat.KandidatBuilder kandidatBuilder() {
         return Kandidat.builder()
-                .sistEndret(LocalDateTime.now())
+                .sistEndret(now())
                 .sistEndretAv(enNavIdent())
                 .fnr("12345678901")
                 .aktørId("1000000000001")
@@ -133,5 +135,31 @@ public class TestData {
         JSONObject tags = new JSONObject(Map.of("tag1", 1, "tag2", "verdi2"));
         JSONObject fields = new JSONObject(Map.of("field1", "verdi1", "field2", 2));
         return new LoggEvent(name, tags, fields);
+    }
+
+    private static final Clock milliesClock = Clock.tickMillis(ZoneId.systemDefault());
+
+
+    /**
+     * <p>
+     * Metoden gir timestamps med millisekunds presisjon hvor nanosekunder er trunkert. Nødvendig fordi ulike
+     * maskiner og operativsystemer har ulik støtte for nanoskeunders presisjon. Det har ført til at tester har vært
+     * grønne på Mac og røde på Windows. Se
+     * https://stackoverflow.com/questions/52029920/localdatetime-now-has-different-levels-of-precision-on-windows-and-mac-machine
+     * </p><p>
+     * Bruker metodenavnet now() for å gjøre det vanskeligere å bruke java.time.LocalDateTime.now() ved en feiltagelse.
+     * </p><p>
+     * Returnert timestamp vil være garantert unik også ved flere kall innenfor samme millisekund, fordi metoden pauser tråden i ett millisekund.
+     * </p>
+     *
+     * @return Et unikt tidspunkt nært nå med millisekunders presisisjon, uten nanosekunder.
+     */
+    public static LocalDateTime now() {
+        try {
+            Thread.sleep(1L); // Sikre unike millisekund timestamps
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        return LocalDateTime.now(milliesClock);
     }
 }

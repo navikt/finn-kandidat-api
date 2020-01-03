@@ -6,10 +6,10 @@ import no.nav.tag.finnkandidatapi.aktørregister.AktørRegisterClient;
 import no.nav.tag.finnkandidatapi.kafka.oppfølgingAvsluttet.OppfølgingAvsluttetMelding;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatEndret;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatOpprettet;
+import no.nav.tag.finnkandidatapi.metrikker.KandidatSlettet;
 import no.nav.tag.finnkandidatapi.unleash.FeatureToggleService;
 import no.nav.tag.finnkandidatapi.veilarbarena.VeilarbArenaClient;
 import org.junit.Before;
-import no.nav.tag.finnkandidatapi.metrikker.KandidatSlettet;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -152,7 +152,7 @@ public class KandidatServiceTest {
         Kandidat kandidat = enKandidat();
         KandidatDto kandidatDto = enKandidatDto();
         Veileder veileder = enVeileder();
-        LocalDateTime datetime = LocalDateTime.now();
+        LocalDateTime datetime = now();
         when(dateProvider.now()).thenReturn(datetime);
         Kandidat kandidatTilLagring = Kandidat.endreKandidat(kandidat, kandidatDto, veileder, dateProvider.now());
 
@@ -197,7 +197,7 @@ public class KandidatServiceTest {
     public void slettKandidat_skal_slette_kandidat_med_riktig_aktør_id_veilder_og_tidspunkt() {
         String aktørId = "1000000000001";
         Veileder veileder = enVeileder();
-        LocalDateTime datetime = LocalDateTime.now();
+        LocalDateTime datetime = now();
         when(dateProvider.now()).thenReturn(datetime);
 
         kandidatService.slettKandidat(aktørId, veileder);
@@ -209,7 +209,7 @@ public class KandidatServiceTest {
     public void slettKandidat_skal_publisere_KandidatSlettet_event() {
         String aktørId = "1000000000001";
         Veileder veileder = enVeileder();
-        LocalDateTime datetime = LocalDateTime.now();
+        LocalDateTime datetime = now();
 
         when(dateProvider.now()).thenReturn(datetime);
         Optional<Integer> slettetKey = Optional.of(4);
@@ -242,7 +242,7 @@ public class KandidatServiceTest {
     @Test
     public void behandleOppfølgingAvsluttet__skal_publisere_KandidatSlettet_event() {
         String aktørId = "1856024171652";
-        LocalDateTime datetime = LocalDateTime.now();
+        LocalDateTime datetime = now();
         when(dateProvider.now()).thenReturn(datetime);
         Optional<Integer> slettetKey = Optional.of(4);
         when(repository.slettKandidatSomMaskinbruker(aktørId, datetime)).thenReturn(slettetKey);

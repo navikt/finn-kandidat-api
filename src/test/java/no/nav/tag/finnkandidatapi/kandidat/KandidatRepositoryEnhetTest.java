@@ -12,9 +12,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 
 import java.util.Map;
 
-import static java.time.LocalDateTime.now;
-import static no.nav.tag.finnkandidatapi.TestData.enKandidat;
-import static no.nav.tag.finnkandidatapi.TestData.enVeileder;
+import static no.nav.tag.finnkandidatapi.TestData.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;

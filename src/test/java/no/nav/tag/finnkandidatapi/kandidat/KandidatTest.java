@@ -14,7 +14,7 @@ public class KandidatTest {
         Kandidat kandidat = enKandidat();
         KandidatDto kandidatDto = enKandidatDto();
         Veileder veileder = enVeileder();
-        LocalDateTime nå = LocalDateTime.now();
+        LocalDateTime nå = now();
 
         Kandidat opprettetKandidat = Kandidat.opprettKandidat(
                 kandidat.getFnr(),
@@ -43,7 +43,7 @@ public class KandidatTest {
         Kandidat kandidat = enKandidat();
         KandidatDto kandidatDto = enKandidatDto();
         Veileder veileder = enVeileder();
-        LocalDateTime nå = LocalDateTime.now();
+        LocalDateTime nå = now();
 
         Kandidat endretKandidat = Kandidat.endreKandidat(kandidat, kandidatDto, veileder, nå);
 

@@ -1,8 +1,10 @@
 package no.nav.tag.finnkandidatapi.tilbakemelding;
 
+import no.nav.metrics.MetricsFactory;
 import no.nav.security.oidc.api.Protected;
 import no.nav.tag.finnkandidatapi.tilgangskontroll.TilgangskontrollException;
 import no.nav.tag.finnkandidatapi.tilgangskontroll.TilgangskontrollService;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,6 +32,11 @@ public class TilbakemeldingController {
     @PostMapping
     public ResponseEntity giTilbakemelding(@RequestBody Tilbakemelding tilbakemelding) {
         repository.lagreTilbakemelding(tilbakemelding);
+        MetricsFactory.createEvent("finn-kandidat.tilbakemelding.mottatt")
+                .addFieldToReport("behov", tilbakemelding.getBehov())
+                .addFieldToReport("tilbakemelding", tilbakemelding.getTilbakemelding())
+                .report();
+
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 

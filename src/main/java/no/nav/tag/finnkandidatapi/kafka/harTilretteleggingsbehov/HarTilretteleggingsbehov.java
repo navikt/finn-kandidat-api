@@ -1,11 +1,28 @@
 package no.nav.tag.finnkandidatapi.kafka.harTilretteleggingsbehov;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Value;
 
-@Data
-@AllArgsConstructor
+import java.util.List;
+
+import static java.util.Arrays.asList;
+
+@Value
 public class HarTilretteleggingsbehov {
-    private String aktoerId;
-    private boolean harTilretteleggingsbehov;
+    public HarTilretteleggingsbehov(String aktoerId, boolean harTilretteleggingsbehov) {
+        this(aktoerId, harTilretteleggingsbehov, List.of());
+    }
+
+    public HarTilretteleggingsbehov(String aktoerId, boolean harTilretteleggingsbehov, String... behov) {
+        this(aktoerId, harTilretteleggingsbehov, asList(behov));
+    }
+
+    public HarTilretteleggingsbehov(String aktoerId, boolean harTilretteleggingsbehov, List<String> behov) {
+        this.aktoerId = aktoerId;
+        this.harTilretteleggingsbehov = harTilretteleggingsbehov;
+        this.behov = behov == null ? List.of() : behov;
+    }
+
+    String aktoerId;
+    boolean harTilretteleggingsbehov;
+    List<String> behov;
 }

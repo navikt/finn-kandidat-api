@@ -4,5 +4,7 @@ public enum ArbeidsmiljøBehov {
     TILRETTELAGT_OPPLÆRING,
     TILRETTELAGTE_ARBEIDSOPPGAVER,
     MENTOR,
-    ANNET
+    ANNET;
+
+    public static final String behovskategori = "arbeidsmiljø";
 }

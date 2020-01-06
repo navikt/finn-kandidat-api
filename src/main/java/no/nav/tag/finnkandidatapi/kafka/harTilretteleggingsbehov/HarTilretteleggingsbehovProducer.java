@@ -71,17 +71,17 @@ public class HarTilretteleggingsbehovProducer {
 
 
             future.addCallback(result -> {
-                log.info(
-                        "Kandidats behov for tilrettelegging sendt på Kafka-topic, aktørId: {}, offset: {}",
-                        aktørId,
-                        result.getRecordMetadata().offset()
-                );
-                meterRegistry.counter(HAR_TILRETTELEGGINGSBEHOV_PRODUSENT_SUKSESS).increment();
-            },
-            exception -> {
-                log.error("Kunne ikke sende kandidat på Kafka-topic, aktørId: {}", aktørId, exception);
-                meterRegistry.counter(HAR_TILRETTELEGGINGSBEHOV_PRODUSENT_FEILET).increment();
-            });
+                        log.info(
+                                "Kandidats behov for tilrettelegging sendt på Kafka-topic, aktørId: {}, offset: {}",
+                                aktørId,
+                                result.getRecordMetadata().offset()
+                        );
+                        meterRegistry.counter(HAR_TILRETTELEGGINGSBEHOV_PRODUSENT_SUKSESS).increment();
+                    },
+                    exception -> {
+                        log.error("Kunne ikke sende kandidat på Kafka-topic, aktørId: {}", aktørId, exception);
+                        meterRegistry.counter(HAR_TILRETTELEGGINGSBEHOV_PRODUSENT_FEILET).increment();
+                    });
 
         } catch (JsonProcessingException e) {
             log.error("Kunne ikke serialisere HarTilretteleggingsbehov", e);

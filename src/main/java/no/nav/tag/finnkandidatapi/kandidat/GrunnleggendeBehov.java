@@ -5,5 +5,7 @@ public enum GrunnleggendeBehov {
     SKRIVE_NORSK,
     LESE_NORSK,
     REGNING_OG_TALLFORSTÅELSE,
-    ANDRE_UTFORDRINGER
+    ANDRE_UTFORDRINGER;
+
+    public static final String behovskategori = "grunnleggende";
 }

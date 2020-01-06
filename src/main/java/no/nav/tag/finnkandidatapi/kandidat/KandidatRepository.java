@@ -10,9 +10,12 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
-import static no.nav.tag.finnkandidatapi.kandidat.KandidatMapper.*;
+import static no.nav.tag.finnkandidatapi.kandidat.KandidatMapper.enumSetTilString;
 
 @Slf4j
 @Repository
@@ -65,7 +68,7 @@ public class KandidatRepository {
                     "SELECT * FROM kandidat WHERE id = ?", new Object[]{id},
                     kandidatMapper
             );
-            return Optional.of(kandidat);
+            return Optional.ofNullable(kandidat);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
@@ -151,7 +154,7 @@ public class KandidatRepository {
         parameters.put(REGISTRERINGSTIDSPUNKT, slettetTidspunkt);
         parameters.put(SLETTET, true);
 
-        return Optional.of(jdbcInsert.executeAndReturnKey(parameters).intValue());
+        return Optional.ofNullable(jdbcInsert.executeAndReturnKey(parameters).intValue());
     }
 
     public Optional<Integer> slettKandidat(
@@ -171,7 +174,7 @@ public class KandidatRepository {
         parameters.put(REGISTRERINGSTIDSPUNKT, slettetTidspunkt);
         parameters.put(SLETTET, true);
 
-        return Optional.of(jdbcInsert.executeAndReturnKey(parameters).intValue());
+        return Optional.ofNullable(jdbcInsert.executeAndReturnKey(parameters).intValue());
     }
 
     public int oppdaterNavKontor(String fnr, String navKontor) {

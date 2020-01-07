@@ -72,16 +72,18 @@ public class KafkaRepublisherTest {
 
         when(tilgangskontrollService.hentInnloggetVeileder()).thenReturn(veileder);
         when(config.getNavIdenterSomKanRepublisere()).thenReturn(Arrays.asList(veileder.getNavIdent()));
+        HarTilretteleggingsbehov harTilretteleggingsbehovTrue = new HarTilretteleggingsbehov("1000000000001", true);
+        HarTilretteleggingsbehov harTilretteleggingsbehovFalse = new HarTilretteleggingsbehov("1000000000002", false);
         when(repository.hentHarTilretteleggingsbehov()).thenReturn(Arrays.asList(
-            new HarTilretteleggingsbehov("1000000000001", true),
-            new HarTilretteleggingsbehov("1000000000002", false)
+                harTilretteleggingsbehovTrue,
+                harTilretteleggingsbehovFalse
         ));
 
         kafkaRepublisher.republiserAlleKandidater();
 
-        verify(producer, times(2)).sendKafkamelding(any(), any());
-        verify(producer).sendKafkamelding("1000000000001", true);
-        verify(producer).sendKafkamelding("1000000000002", false);
+        verify(producer, times(2)).sendKafkamelding(any());
+        verify(producer).sendKafkamelding(harTilretteleggingsbehovTrue);
+        verify(producer).sendKafkamelding(harTilretteleggingsbehovFalse);
     }
 
     @Test(expected = TilgangskontrollException.class)
@@ -129,12 +131,13 @@ public class KafkaRepublisherTest {
 
         when(tilgangskontrollService.hentInnloggetVeileder()).thenReturn(veileder);
         when(config.getNavIdenterSomKanRepublisere()).thenReturn(Arrays.asList(veileder.getNavIdent()));
+        HarTilretteleggingsbehov harTilretteleggingsbehov = new HarTilretteleggingsbehov(aktørId, true);
         when(repository.hentHarTilretteleggingsbehov(aktørId)).thenReturn(
-                Optional.of(new HarTilretteleggingsbehov(aktørId, true))
+                Optional.of(harTilretteleggingsbehov)
         );
 
         kafkaRepublisher.republiserKandidat(aktørId);
 
-        verify(producer).sendKafkamelding(aktørId, true);
+        verify(producer).sendKafkamelding(harTilretteleggingsbehov);
     }
 }

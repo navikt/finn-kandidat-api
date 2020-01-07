@@ -86,6 +86,8 @@ public class OpprettKandidatTest {
                 FysiskBehov.behovskategori,
                 GrunnleggendeBehov.behovskategori
         );
+        assertThat(actualTilretteleggingsbehov.getAktoerId()).isEqualTo(dto.getAktørId());
+        assertThat(actualTilretteleggingsbehov.isHarTilretteleggingsbehov()).isTrue();
         assertThat(actualBehov).containsAll(expectedBehov);
         assertThat(actualBehov).hasSameSizeAs(expectedBehov);
     }

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
 import no.finn.unleash.Unleash;
+import no.nav.tag.finnkandidatapi.kandidat.Kandidat;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatOpprettet;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatSlettet;
 import no.nav.tag.finnkandidatapi.unleash.FeatureToggleService;
@@ -44,48 +45,47 @@ public class HarTilretteleggingsbehovProducer {
 
     @EventListener
     public void kandidatOpprettet(KandidatOpprettet event) {
-        sendKafkamelding(event.getKandidat().getAktørId(), true);
+        Kandidat kandidat = event.getKandidat();
+        HarTilretteleggingsbehov melding = new HarTilretteleggingsbehov(kandidat.getAktørId(), true);
+        sendKafkamelding(melding);
+    }
+
+    public void sendKafkamelding(HarTilretteleggingsbehov melding) {
+        String payload;
+        try {
+            payload = new ObjectMapper().writeValueAsString(melding);
+        } catch (JsonProcessingException e) {
+            log.error("Kunne ikke serialisere HarTilretteleggingsbehov", e);
+            meterRegistry.counter(HAR_TILRETTELEGGINGSBEHOV_PRODUSENT_FEILET).increment();
+            return;
+        }
+        send(melding.getAktoerId(), payload);
     }
 
     @EventListener
     public void kandidatSlettet(KandidatSlettet event) {
-        sendKafkamelding(event.getAktørId(), false);
+        HarTilretteleggingsbehov melding = new HarTilretteleggingsbehov(event.getAktørId(), false);
+        sendKafkamelding(melding);
     }
 
-    public void sendKafkamelding(String aktørId, Boolean harTilretteleggingsbehov) {
+    private void send(String key, String payload) {
         if (!featureToggleService.isEnabled(HAR_TILRETTELEGGINGSBEHOV_PRODUCER_FEATURE)) {
-            log.info("Har tilretteleggingsbehov produsent er slått av, skulle publisere aktørId: {}", aktørId);
+            log.info("Har tilretteleggingsbehov produsent er slått av, skulle publisere aktørId: {}", key);
             return;
         }
 
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            HarTilretteleggingsbehov melding = new HarTilretteleggingsbehov(aktørId, harTilretteleggingsbehov);
-            String serialisertMelding = mapper.writeValueAsString(melding);
-
-            ListenableFuture<SendResult<String, String>> future = kafkaTemplate.send(
-                    topic,
-                    aktørId,
-                    serialisertMelding
-            );
-
-
-            future.addCallback(result -> {
-                        log.info(
-                                "Kandidats behov for tilrettelegging sendt på Kafka-topic, aktørId: {}, offset: {}",
-                                aktørId,
-                                result.getRecordMetadata().offset()
-                        );
-                        meterRegistry.counter(HAR_TILRETTELEGGINGSBEHOV_PRODUSENT_SUKSESS).increment();
-                    },
-                    exception -> {
-                        log.error("Kunne ikke sende kandidat på Kafka-topic, aktørId: {}", aktørId, exception);
-                        meterRegistry.counter(HAR_TILRETTELEGGINGSBEHOV_PRODUSENT_FEILET).increment();
-                    });
-
-        } catch (JsonProcessingException e) {
-            log.error("Kunne ikke serialisere HarTilretteleggingsbehov", e);
-            meterRegistry.counter(HAR_TILRETTELEGGINGSBEHOV_PRODUSENT_FEILET).increment();
-        }
+        ListenableFuture<SendResult<String, String>> future = kafkaTemplate.send(topic, key, payload);
+        future.addCallback(result -> {
+                    log.info(
+                            "Kandidats behov for tilrettelegging sendt på Kafka-topic, aktørId: {}, offset: {}",
+                            key,
+                            result.getRecordMetadata().offset()
+                    );
+                    meterRegistry.counter(HAR_TILRETTELEGGINGSBEHOV_PRODUSENT_SUKSESS).increment();
+                },
+                exception -> {
+                    log.error("Kunne ikke sende kandidat på Kafka-topic, aktørId: {}", key, exception);
+                    meterRegistry.counter(HAR_TILRETTELEGGINGSBEHOV_PRODUSENT_FEILET).increment();
+                });
     }
 }

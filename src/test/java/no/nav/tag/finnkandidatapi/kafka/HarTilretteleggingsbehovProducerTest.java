@@ -63,7 +63,7 @@ public class HarTilretteleggingsbehovProducerTest {
     @Test
     public void kandidatOppdatert__skal_sende_melding_på_kafka_topic() throws JSONException {
         HarTilretteleggingsbehov harTilretteleggingsbehov = new HarTilretteleggingsbehov(enAktørId(), true);
-        harTilretteleggingsbehovProducer.sendKafkamelding(harTilretteleggingsbehov.getAktoerId(), harTilretteleggingsbehov.isHarTilretteleggingsbehov());
+        harTilretteleggingsbehovProducer.sendKafkamelding(harTilretteleggingsbehov);
 
         ConsumerRecord<String, String> melding = KafkaTestUtils.getSingleRecord(consumer, "aapen-tag-kandidatEndret-v1-default");
 

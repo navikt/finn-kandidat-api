@@ -3,8 +3,6 @@ package no.nav.tag.finnkandidatapi.kafka;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import no.nav.tag.finnkandidatapi.kafka.harTilretteleggingsbehov.HarTilretteleggingsbehov;
-import no.nav.tag.finnkandidatapi.kandidat.FysiskBehov;
-import no.nav.tag.finnkandidatapi.kandidat.GrunnleggendeBehov;
 import no.nav.tag.finnkandidatapi.kandidat.KandidatDto;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -28,7 +26,6 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import static no.nav.tag.finnkandidatapi.TestData.enKandidatDto;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -37,7 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles({"local", "mock"})
 @DirtiesContext
-public class EndreKandidatTest {
+public class SlettKandidatTest {
     @Autowired
     private EnKafkaMockServer embeddedKafka;
 
@@ -70,30 +67,23 @@ public class EndreKandidatTest {
     @Test
     public void nårMottarHttpRequest_skalSendeKafkaMelding() throws JsonProcessingException {
         // Given
-        URI uri = URI.create(localBaseUrl() + "/kandidater");
+        URI opprettUri = URI.create(localBaseUrl() + "/kandidater");
         KandidatDto dto = enKandidatDto();
         dto.setAktørId("1856024171652");
-        restTemplate.postForEntity(uri, dto, String.class); // Opprett kandidat
+        restTemplate.postForEntity(opprettUri, dto, String.class); // Opprett kandidat
 
         // When
-        assertThat(dto.getArbeidsmiljøBehov()).isNotEmpty();
-        dto.setArbeidsmiljøBehov(Set.of());
-        restTemplate.put(uri, dto);
+        URI deleteUri = URI.create(opprettUri.toString() + "/" + dto.getAktørId());
+        restTemplate.delete(deleteUri);
 
         // Then
         List<ConsumerRecord<String, String>> consumerRecords = new ArrayList<>();
         KafkaTestUtils.getRecords(consumer, 2000L).records("aapen-tag-kandidatEndret-v1-default").forEach(consumerRecords::add);
         assertThat(consumerRecords).isNotEmpty();
-        assertThat(consumerRecords.size()).isEqualTo(List.of("opprett", "endre").size());
+        assertThat(consumerRecords.size()).isEqualTo(List.of("opprett", "slett").size());
         HarTilretteleggingsbehov actualTilretteleggingsbehov = new ObjectMapper().readValue(consumerRecords.get(1).value(), HarTilretteleggingsbehov.class);
-        List<String> actualBehov = actualTilretteleggingsbehov.getBehov();
-        final Set<String> expectedBehov = Set.of(
-                FysiskBehov.behovskategori,
-                GrunnleggendeBehov.behovskategori
-        );
         assertThat(actualTilretteleggingsbehov.getAktoerId()).isEqualTo(dto.getAktørId());
-        assertThat(actualTilretteleggingsbehov.isHarTilretteleggingsbehov()).isTrue();
-        assertThat(actualBehov).containsAll(expectedBehov);
-        assertThat(actualBehov).hasSameSizeAs(expectedBehov);
+        assertThat(actualTilretteleggingsbehov.isHarTilretteleggingsbehov()).isFalse();
+        assertThat(actualTilretteleggingsbehov.getBehov()).isEmpty();
     }
 }

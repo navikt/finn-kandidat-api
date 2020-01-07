@@ -6,6 +6,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
 import no.finn.unleash.Unleash;
 import no.nav.tag.finnkandidatapi.kandidat.*;
+import no.nav.tag.finnkandidatapi.metrikker.KandidatEndret;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatOpprettet;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatSlettet;
 import no.nav.tag.finnkandidatapi.unleash.FeatureToggleService;
@@ -16,7 +17,10 @@ import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Component;
 import org.springframework.util.concurrent.ListenableFuture;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 import static no.nav.tag.finnkandidatapi.unleash.UnleashConfiguration.HAR_TILRETTELEGGINGSBEHOV_PRODUCER_FEATURE;
 
@@ -50,6 +54,15 @@ public class HarTilretteleggingsbehovProducer {
         Kandidat kandidat = event.getKandidat();
         List<String> kategorier = kategorier(kandidat);
         HarTilretteleggingsbehov melding = new HarTilretteleggingsbehov(kandidat.getAktørId(), true, kategorier);
+        sendKafkamelding(melding);
+    }
+
+    @EventListener
+    public void kandidatOpprettet(KandidatEndret event) {
+        Kandidat kandidat = event.getKandidat();
+        List<String> kategorier = kategorier(kandidat);
+        boolean harBehov = !kategorier.isEmpty();
+        HarTilretteleggingsbehov melding = new HarTilretteleggingsbehov(kandidat.getAktørId(), harBehov, kategorier);
         sendKafkamelding(melding);
     }
 

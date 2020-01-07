@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
 import no.finn.unleash.Unleash;
-import no.nav.tag.finnkandidatapi.kandidat.Kandidat;
+import no.nav.tag.finnkandidatapi.kandidat.*;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatOpprettet;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatSlettet;
 import no.nav.tag.finnkandidatapi.unleash.FeatureToggleService;
@@ -15,6 +15,8 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Component;
 import org.springframework.util.concurrent.ListenableFuture;
+
+import java.util.*;
 
 import static no.nav.tag.finnkandidatapi.unleash.UnleashConfiguration.HAR_TILRETTELEGGINGSBEHOV_PRODUCER_FEATURE;
 
@@ -46,8 +48,35 @@ public class HarTilretteleggingsbehovProducer {
     @EventListener
     public void kandidatOpprettet(KandidatOpprettet event) {
         Kandidat kandidat = event.getKandidat();
-        HarTilretteleggingsbehov melding = new HarTilretteleggingsbehov(kandidat.getAktørId(), true);
+        List<String> kategorier = kategorier(kandidat);
+        HarTilretteleggingsbehov melding = new HarTilretteleggingsbehov(kandidat.getAktørId(), true, kategorier);
         sendKafkamelding(melding);
+    }
+
+    private List<String> kategorier(Kandidat kandidat) {
+        ArrayList<String> kategorier = new ArrayList<>();
+        ArbeidstidBehov arbeidstidBehov = kandidat.getArbeidstidBehov();
+        Set<FysiskBehov> fysiskeBehov = kandidat.getFysiskeBehov();
+        Set<ArbeidsmiljøBehov> arbeidsmiljøBehov = kandidat.getArbeidsmiljøBehov();
+        Set<GrunnleggendeBehov> grunnleggendeBehov = kandidat.getGrunnleggendeBehov();
+
+        if (arbeidstidBehov != null && !arbeidstidBehov.equals(ArbeidstidBehov.HELTID)) {
+            kategorier.add(ArbeidstidBehov.behovskategori);
+        }
+
+        if (fysiskeBehov != null && !fysiskeBehov.isEmpty()) {
+            kategorier.add(FysiskBehov.behovskategori);
+        }
+
+        if (arbeidsmiljøBehov != null && !arbeidsmiljøBehov.isEmpty()) {
+            kategorier.add(ArbeidsmiljøBehov.behovskategori);
+        }
+
+        if (grunnleggendeBehov != null && !grunnleggendeBehov.isEmpty()) {
+            kategorier.add(GrunnleggendeBehov.behovskategori);
+        }
+
+        return Collections.unmodifiableList(kategorier);
     }
 
     public void sendKafkamelding(HarTilretteleggingsbehov melding) {

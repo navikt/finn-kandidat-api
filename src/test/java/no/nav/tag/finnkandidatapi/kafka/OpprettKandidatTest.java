@@ -76,12 +76,10 @@ public class OpprettKandidatTest {
 
         // Then
         ConsumerRecord<String, String> melding = KafkaTestUtils.getSingleRecord(consumer, "aapen-tag-kandidatEndret-v1-default", 1000L);
-        System.out.println(melding.value()); // TODO Are: Slett
         HarTilretteleggingsbehov actualTilretteleggingsbehov = new ObjectMapper().readValue(melding.value(), HarTilretteleggingsbehov.class);
 
         List<String> actualBehov = actualTilretteleggingsbehov.getBehov();
         final Set<String> expectedBehov = Set.of(
-                ArbeidstidBehov.behovskategori,
                 ArbeidsmiljøBehov.behovskategori,
                 FysiskBehov.behovskategori,
                 GrunnleggendeBehov.behovskategori

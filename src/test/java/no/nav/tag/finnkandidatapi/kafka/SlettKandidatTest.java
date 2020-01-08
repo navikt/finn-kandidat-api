@@ -5,10 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import no.nav.tag.finnkandidatapi.kafka.harTilretteleggingsbehov.HarTilretteleggingsbehov;
 import no.nav.tag.finnkandidatapi.kandidat.KandidatDto;
 import no.nav.tag.finnkandidatapi.kandidat.KandidatRepository;
-import org.apache.kafka.clients.consumer.Consumer;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.apache.kafka.common.serialization.StringDeserializer;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,17 +13,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.kafka.core.ConsumerFactory;
-import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
-import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.net.URI;
-import java.util.Map;
+import java.util.List;
 
 import static no.nav.tag.finnkandidatapi.TestData.enKandidatDto;
+import static no.nav.tag.finnkandidatapi.kafka.KafkaTestUtil.readKafkaMessages;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
@@ -37,8 +31,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class SlettKandidatTest {
     @Autowired
     private EnKafkaMockServer embeddedKafka;
-
-    private Consumer<String, String> consumer;
 
     private TestRestTemplate restTemplate = new TestRestTemplate(TestRestTemplate.HttpClientOption.ENABLE_COOKIES);
 
@@ -54,14 +46,6 @@ public class SlettKandidatTest {
 
     @Before
     public void setUp() {
-        Map<String, Object> consumerProps = KafkaTestUtils.consumerProps("testGroup", "true", embeddedKafka.getEmbeddedKafka());
-        consumerProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        consumerProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-
-        ConsumerFactory<String, String> cf = new DefaultKafkaConsumerFactory<>(consumerProps);
-        consumer = cf.createConsumer();
-        embeddedKafka.getEmbeddedKafka().consumeFromAnEmbeddedTopic(consumer, "aapen-tag-kandidatEndret-v1-default");
-
         String loginUrl = localBaseUrl() + "/local/isso-login";
         restTemplate.getForObject(loginUrl, String.class);
     }
@@ -79,9 +63,10 @@ public class SlettKandidatTest {
         restTemplate.delete(deleteUri);
 
         // Then
-        KafkaTestUtils.getSingleRecord(consumer, "aapen-tag-kandidatEndret-v1-default", 2000L);
-        ConsumerRecord<String, String> slettMelding = KafkaTestUtils.getSingleRecord(consumer, "aapen-tag-kandidatEndret-v1-default", 2000L);
-        HarTilretteleggingsbehov actualTilretteleggingsbehov = new ObjectMapper().readValue(slettMelding.value(), HarTilretteleggingsbehov.class);
+        final List<String> receivedMessages = readKafkaMessages(embeddedKafka, 2);
+        assertThat(receivedMessages).isNotEmpty();
+        assertThat(receivedMessages.size()).isEqualTo(List.of("opprett", "slett").size());
+        HarTilretteleggingsbehov actualTilretteleggingsbehov = new ObjectMapper().readValue(receivedMessages.get(1), HarTilretteleggingsbehov.class);
         assertThat(actualTilretteleggingsbehov.getAktoerId()).isEqualTo(dto.getAktørId());
         assertThat(actualTilretteleggingsbehov.isHarTilretteleggingsbehov()).isFalse();
         assertThat(actualTilretteleggingsbehov.getBehov()).isEmpty();

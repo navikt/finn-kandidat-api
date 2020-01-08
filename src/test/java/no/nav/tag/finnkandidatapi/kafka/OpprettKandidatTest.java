@@ -8,6 +8,7 @@ import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,6 +24,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.net.URI;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -41,6 +43,9 @@ public class OpprettKandidatTest {
     private Consumer<String, String> consumer;
 
     private TestRestTemplate restTemplate = new TestRestTemplate(TestRestTemplate.HttpClientOption.ENABLE_COOKIES);
+
+    @Autowired
+    private KandidatRepository repository;
 
     @LocalServerPort
     private int port;
@@ -87,5 +92,10 @@ public class OpprettKandidatTest {
         assertThat(actualTilretteleggingsbehov.isHarTilretteleggingsbehov()).isTrue();
         assertThat(actualBehov).containsAll(expectedBehov);
         assertThat(actualBehov).hasSameSizeAs(expectedBehov);
+    }
+
+    @After
+    public void tearDown() {
+        repository.slettAlleKandidater();
     }
 }

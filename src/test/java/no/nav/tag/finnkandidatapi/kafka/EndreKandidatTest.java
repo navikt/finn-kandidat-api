@@ -6,10 +6,12 @@ import no.nav.tag.finnkandidatapi.kafka.harTilretteleggingsbehov.HarTilrettelegg
 import no.nav.tag.finnkandidatapi.kandidat.FysiskBehov;
 import no.nav.tag.finnkandidatapi.kandidat.GrunnleggendeBehov;
 import no.nav.tag.finnkandidatapi.kandidat.KandidatDto;
+import no.nav.tag.finnkandidatapi.kandidat.KandidatRepository;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,7 +27,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -38,12 +39,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ActiveProfiles({"local", "mock"})
 @DirtiesContext
 public class EndreKandidatTest {
+
     @Autowired
     private EnKafkaMockServer embeddedKafka;
 
     private Consumer<String, String> consumer;
 
     private TestRestTemplate restTemplate = new TestRestTemplate(TestRestTemplate.HttpClientOption.ENABLE_COOKIES);
+
+    @Autowired
+    private KandidatRepository repository;
 
     @LocalServerPort
     private int port;
@@ -64,7 +69,6 @@ public class EndreKandidatTest {
 
         String loginUrl = localBaseUrl() + "/local/isso-login";
         restTemplate.getForObject(loginUrl, String.class);
-
     }
 
     @Test
@@ -81,11 +85,9 @@ public class EndreKandidatTest {
         restTemplate.put(uri, dto);
 
         // Then
-        List<ConsumerRecord<String, String>> consumerRecords = new ArrayList<>();
-        KafkaTestUtils.getRecords(consumer, 2000L).records("aapen-tag-kandidatEndret-v1-default").forEach(consumerRecords::add);
-        assertThat(consumerRecords).isNotEmpty();
-        assertThat(consumerRecords.size()).isEqualTo(List.of("opprett", "endre").size());
-        HarTilretteleggingsbehov actualTilretteleggingsbehov = new ObjectMapper().readValue(consumerRecords.get(1).value(), HarTilretteleggingsbehov.class);
+        KafkaTestUtils.getSingleRecord(consumer, "aapen-tag-kandidatEndret-v1-default", 2000L);
+        ConsumerRecord<String, String> endreMelding = KafkaTestUtils.getSingleRecord(consumer, "aapen-tag-kandidatEndret-v1-default", 2000L);
+        HarTilretteleggingsbehov actualTilretteleggingsbehov = new ObjectMapper().readValue(endreMelding.value(), HarTilretteleggingsbehov.class);
         List<String> actualBehov = actualTilretteleggingsbehov.getBehov();
         final Set<String> expectedBehov = Set.of(
                 FysiskBehov.behovskategori,
@@ -95,5 +97,10 @@ public class EndreKandidatTest {
         assertThat(actualTilretteleggingsbehov.isHarTilretteleggingsbehov()).isTrue();
         assertThat(actualBehov).containsAll(expectedBehov);
         assertThat(actualBehov).hasSameSizeAs(expectedBehov);
+    }
+
+    @After
+    public void tearDown() {
+        repository.slettAlleKandidater();
     }
 }

@@ -4,10 +4,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import no.nav.tag.finnkandidatapi.kafka.harTilretteleggingsbehov.HarTilretteleggingsbehov;
 import no.nav.tag.finnkandidatapi.kandidat.KandidatDto;
+import no.nav.tag.finnkandidatapi.kandidat.KandidatRepository;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,8 +25,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import static no.nav.tag.finnkandidatapi.TestData.enKandidatDto;
@@ -41,6 +41,9 @@ public class SlettKandidatTest {
     private Consumer<String, String> consumer;
 
     private TestRestTemplate restTemplate = new TestRestTemplate(TestRestTemplate.HttpClientOption.ENABLE_COOKIES);
+
+    @Autowired
+    private KandidatRepository repository;
 
     @LocalServerPort
     private int port;
@@ -61,7 +64,6 @@ public class SlettKandidatTest {
 
         String loginUrl = localBaseUrl() + "/local/isso-login";
         restTemplate.getForObject(loginUrl, String.class);
-
     }
 
     @Test
@@ -77,13 +79,16 @@ public class SlettKandidatTest {
         restTemplate.delete(deleteUri);
 
         // Then
-        List<ConsumerRecord<String, String>> consumerRecords = new ArrayList<>();
-        KafkaTestUtils.getRecords(consumer, 2000L).records("aapen-tag-kandidatEndret-v1-default").forEach(consumerRecords::add);
-        assertThat(consumerRecords).isNotEmpty();
-        assertThat(consumerRecords.size()).isEqualTo(List.of("opprett", "slett").size());
-        HarTilretteleggingsbehov actualTilretteleggingsbehov = new ObjectMapper().readValue(consumerRecords.get(1).value(), HarTilretteleggingsbehov.class);
+        KafkaTestUtils.getSingleRecord(consumer, "aapen-tag-kandidatEndret-v1-default", 2000L);
+        ConsumerRecord<String, String> slettMelding = KafkaTestUtils.getSingleRecord(consumer, "aapen-tag-kandidatEndret-v1-default", 2000L);
+        HarTilretteleggingsbehov actualTilretteleggingsbehov = new ObjectMapper().readValue(slettMelding.value(), HarTilretteleggingsbehov.class);
         assertThat(actualTilretteleggingsbehov.getAktoerId()).isEqualTo(dto.getAktørId());
         assertThat(actualTilretteleggingsbehov.isHarTilretteleggingsbehov()).isFalse();
         assertThat(actualTilretteleggingsbehov.getBehov()).isEmpty();
+    }
+
+    @After
+    public void tearDown() {
+        repository.slettAlleKandidater();
     }
 }

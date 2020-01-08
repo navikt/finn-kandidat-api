@@ -58,11 +58,17 @@ public class HarTilretteleggingsbehovProducer {
     }
 
     @EventListener
-    public void kandidatOpprettet(KandidatEndret event) {
+    public void kandidatEndret(KandidatEndret event) {
         Kandidat kandidat = event.getKandidat();
         List<String> kategorier = kategorier(kandidat);
         boolean harBehov = !kategorier.isEmpty();
         HarTilretteleggingsbehov melding = new HarTilretteleggingsbehov(kandidat.getAktørId(), harBehov, kategorier);
+        sendKafkamelding(melding);
+    }
+
+    @EventListener
+    public void kandidatSlettet(KandidatSlettet event) {
+        HarTilretteleggingsbehov melding = new HarTilretteleggingsbehov(event.getAktørId(), false);
         sendKafkamelding(melding);
     }
 
@@ -102,12 +108,6 @@ public class HarTilretteleggingsbehovProducer {
             return;
         }
         send(melding.getAktoerId(), payload);
-    }
-
-    @EventListener
-    public void kandidatSlettet(KandidatSlettet event) {
-        HarTilretteleggingsbehov melding = new HarTilretteleggingsbehov(event.getAktørId(), false);
-        sendKafkamelding(melding);
     }
 
     private void send(String key, String payload) {

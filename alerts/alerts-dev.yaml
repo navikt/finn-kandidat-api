@@ -7,7 +7,7 @@ metadata:
 spec:
   receivers:
     slack:
-      channel: 'tag-notifications-test'
+      channel: 'arbeidsgiver-inkludering-alerts-dev'
   alerts:
     - alert: (finn-kandidat-api) Konsumering av avsluttet oppfølging-melding feilet
       expr: sum(increase(finnkandidat_avsluttetoppfolging_feilet_total[5m])) > 0

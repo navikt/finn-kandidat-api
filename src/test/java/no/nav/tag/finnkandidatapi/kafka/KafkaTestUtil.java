@@ -62,4 +62,47 @@ class KafkaTestUtil {
             return Collections.unmodifiableList(receivedMessages);
         }
     }
+
+    static KafkaConsumer<Integer, String> kafkaConsumer(final EnKafkaMockServer embeddedKafka) {
+        Map<String, Object> consumerProps = KafkaTestUtils.consumerProps("testGroup", "true", embeddedKafka.getEmbeddedKafka());
+        consumerProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        consumerProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        consumerProps.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, OffsetResetStrategy.EARLIEST.toString().toLowerCase());
+        final KafkaConsumer<Integer, String> kafkaConsumer = new KafkaConsumer<>(consumerProps);
+        kafkaConsumer.subscribe(Collections.singletonList(embeddedKafka.topicName));
+        return kafkaConsumer;
+    }
+
+    static List<String> readKafkaMessages(final KafkaConsumer<Integer, String> kafkaConsumer, final int minExpectedMsgs) {
+        return readKafkaMessages(kafkaConsumer, minExpectedMsgs, Duration.ofSeconds(10));
+    }
+
+    static List<String> readKafkaMessages(final KafkaConsumer<Integer, String> kafkaConsumer, final int minExpectedMsgs, final Duration maxWaitDuration) {
+        final List<String> receivedMessages = new ArrayList<>();
+        final CountDownLatch latch = new CountDownLatch(minExpectedMsgs);
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        executorService.execute(() -> {
+            while (true) {
+                ConsumerRecords<Integer, String> records = kafkaConsumer.poll(Duration.ofMillis(100L));
+                records.iterator().forEachRemaining(record -> {
+                    receivedMessages.add(record.value());
+                    latch.countDown();
+                });
+            }
+        });
+
+        final long maxWaitSeconds = maxWaitDuration.toSeconds() <= 0 ? 1 : maxWaitDuration.toSeconds();
+        final boolean waitTimeIsExhausted;
+        try {
+            waitTimeIsExhausted = !latch.await(maxWaitSeconds, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        if (waitTimeIsExhausted) {
+            String msg = "Only " + receivedMessages.size() + " of expected " + minExpectedMsgs + " messages received within the given duration of " + maxWaitSeconds + " seconds.";
+            throw new AssertionError(msg);
+        } else {
+            return Collections.unmodifiableList(receivedMessages);
+        }
+    }
 }

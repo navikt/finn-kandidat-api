@@ -71,6 +71,7 @@ workflows:
             branches:
               only:
                 - master
+                - fiks-sporadiske-tester
       - godkjenn-til-prod:
           type: approval
           requires:

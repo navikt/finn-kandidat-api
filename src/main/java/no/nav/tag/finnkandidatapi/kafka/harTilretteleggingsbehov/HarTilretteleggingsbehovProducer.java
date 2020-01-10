@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
 import no.finn.unleash.Unleash;
+import no.nav.tag.finnkandidatapi.kandidat.*;
+import no.nav.tag.finnkandidatapi.metrikker.KandidatEndret;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatOpprettet;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatSlettet;
 import no.nav.tag.finnkandidatapi.unleash.FeatureToggleService;
@@ -14,6 +16,11 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Component;
 import org.springframework.util.concurrent.ListenableFuture;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 import static no.nav.tag.finnkandidatapi.unleash.UnleashConfiguration.HAR_TILRETTELEGGINGSBEHOV_PRODUCER_FEATURE;
 
@@ -44,48 +51,83 @@ public class HarTilretteleggingsbehovProducer {
 
     @EventListener
     public void kandidatOpprettet(KandidatOpprettet event) {
-        sendKafkamelding(event.getKandidat().getAktørId(), true);
+        Kandidat kandidat = event.getKandidat();
+        List<String> kategorier = kategorier(kandidat);
+        HarTilretteleggingsbehov melding = new HarTilretteleggingsbehov(kandidat.getAktørId(), true, kategorier);
+        sendKafkamelding(melding);
+    }
+
+    @EventListener
+    public void kandidatEndret(KandidatEndret event) {
+        Kandidat kandidat = event.getKandidat();
+        List<String> kategorier = kategorier(kandidat);
+        boolean harBehov = !kategorier.isEmpty();
+        HarTilretteleggingsbehov melding = new HarTilretteleggingsbehov(kandidat.getAktørId(), harBehov, kategorier);
+        sendKafkamelding(melding);
     }
 
     @EventListener
     public void kandidatSlettet(KandidatSlettet event) {
-        sendKafkamelding(event.getAktørId(), false);
+        HarTilretteleggingsbehov melding = new HarTilretteleggingsbehov(event.getAktørId(), false);
+        sendKafkamelding(melding);
     }
 
-    public void sendKafkamelding(String aktørId, Boolean harTilretteleggingsbehov) {
-        if (!featureToggleService.isEnabled(HAR_TILRETTELEGGINGSBEHOV_PRODUCER_FEATURE)) {
-            log.info("Har tilretteleggingsbehov produsent er slått av, skulle publisere aktørId: {}", aktørId);
-            return;
+    private List<String> kategorier(Kandidat kandidat) {
+        ArrayList<String> kategorier = new ArrayList<>();
+        ArbeidstidBehov arbeidstidBehov = kandidat.getArbeidstidBehov();
+        Set<FysiskBehov> fysiskeBehov = kandidat.getFysiskeBehov();
+        Set<ArbeidsmiljøBehov> arbeidsmiljøBehov = kandidat.getArbeidsmiljøBehov();
+        Set<GrunnleggendeBehov> grunnleggendeBehov = kandidat.getGrunnleggendeBehov();
+
+        if (arbeidstidBehov != null && !arbeidstidBehov.equals(ArbeidstidBehov.HELTID)) {
+            kategorier.add(ArbeidstidBehov.behovskategori);
         }
 
+        if (fysiskeBehov != null && !fysiskeBehov.isEmpty()) {
+            kategorier.add(FysiskBehov.behovskategori);
+        }
+
+        if (arbeidsmiljøBehov != null && !arbeidsmiljøBehov.isEmpty()) {
+            kategorier.add(ArbeidsmiljøBehov.behovskategori);
+        }
+
+        if (grunnleggendeBehov != null && !grunnleggendeBehov.isEmpty()) {
+            kategorier.add(GrunnleggendeBehov.behovskategori);
+        }
+
+        return Collections.unmodifiableList(kategorier);
+    }
+
+    public void sendKafkamelding(HarTilretteleggingsbehov melding) {
+        String payload;
         try {
-            ObjectMapper mapper = new ObjectMapper();
-            HarTilretteleggingsbehov melding = new HarTilretteleggingsbehov(aktørId, harTilretteleggingsbehov);
-            String serialisertMelding = mapper.writeValueAsString(melding);
-
-            ListenableFuture<SendResult<String, String>> future = kafkaTemplate.send(
-                    topic,
-                    aktørId,
-                    serialisertMelding
-            );
-
-
-            future.addCallback(result -> {
-                log.info(
-                        "Kandidats behov for tilrettelegging sendt på Kafka-topic, aktørId: {}, offset: {}",
-                        aktørId,
-                        result.getRecordMetadata().offset()
-                );
-                meterRegistry.counter(HAR_TILRETTELEGGINGSBEHOV_PRODUSENT_SUKSESS).increment();
-            },
-            exception -> {
-                log.error("Kunne ikke sende kandidat på Kafka-topic, aktørId: {}", aktørId, exception);
-                meterRegistry.counter(HAR_TILRETTELEGGINGSBEHOV_PRODUSENT_FEILET).increment();
-            });
-
+            payload = new ObjectMapper().writeValueAsString(melding);
         } catch (JsonProcessingException e) {
             log.error("Kunne ikke serialisere HarTilretteleggingsbehov", e);
             meterRegistry.counter(HAR_TILRETTELEGGINGSBEHOV_PRODUSENT_FEILET).increment();
+            return;
         }
+        send(melding.getAktoerId(), payload);
+    }
+
+    private void send(String key, String payload) {
+        if (!featureToggleService.isEnabled(HAR_TILRETTELEGGINGSBEHOV_PRODUCER_FEATURE)) {
+            log.info("Har tilretteleggingsbehov produsent er slått av, skulle publisere aktørId: {}", key);
+            return;
+        }
+
+        ListenableFuture<SendResult<String, String>> future = kafkaTemplate.send(topic, key, payload);
+        future.addCallback(result -> {
+                    log.info(
+                            "Kandidats behov for tilrettelegging sendt på Kafka-topic, aktørId: {}, offset: {}",
+                            key,
+                            result.getRecordMetadata().offset()
+                    );
+                    meterRegistry.counter(HAR_TILRETTELEGGINGSBEHOV_PRODUSENT_SUKSESS).increment();
+                },
+                exception -> {
+                    log.error("Kunne ikke sende kandidat på Kafka-topic, aktørId: {}", key, exception);
+                    meterRegistry.counter(HAR_TILRETTELEGGINGSBEHOV_PRODUSENT_FEILET).increment();
+                });
     }
 }

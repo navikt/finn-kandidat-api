@@ -53,7 +53,7 @@ public class KafkaRepublisher {
 
         log.warn("Bruker med ident {} republiserer alle {} kandidater!", ident, kandidatoppdateringer.size());
         kandidatoppdateringer.forEach(oppdatering -> {
-            harTilretteleggingsbehovProducer.sendKafkamelding(oppdatering.getAktoerId(), oppdatering.isHarTilretteleggingsbehov());
+            harTilretteleggingsbehovProducer.sendKafkamelding(oppdatering);
         });
 
         return ResponseEntity.ok().build();
@@ -73,10 +73,7 @@ public class KafkaRepublisher {
         }
 
         log.warn("Bruker med ident {} republiserer kandidat med aktørId {}.", ident, aktørId);
-        harTilretteleggingsbehovProducer.sendKafkamelding(
-                aktørId,
-                harTilretteleggingsbehov.get().isHarTilretteleggingsbehov()
-        );
+        harTilretteleggingsbehovProducer.sendKafkamelding(harTilretteleggingsbehov.get());
 
         return ResponseEntity.ok().build();
     }

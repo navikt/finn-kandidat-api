@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Getter
 public class EnKafkaMockServer implements DisposableBean {
+    public final String topicName = "aapen-tag-kandidatEndret-v1-default";
 
     private final EmbeddedKafkaBroker embeddedKafka;
 
@@ -32,7 +33,7 @@ public class EnKafkaMockServer implements DisposableBean {
                 1,
                 oppfolgingAvsluttetConfig.getTopic(),
                 oppfolgingEndretConfig.getTopic(),
-                "aapen-tag-kandidatEndret-v1-default"
+                topicName
         );
         embeddedKafka.afterPropertiesSet();
     }

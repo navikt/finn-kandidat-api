@@ -6,5 +6,5 @@ public enum ArbeidsmiljøBehov {
     MENTOR,
     ANNET;
 
-    public static final String behovskategori = "arbeidsmiljø";
+    public static final String behovskategori = "arbeidsmiljo";
 }

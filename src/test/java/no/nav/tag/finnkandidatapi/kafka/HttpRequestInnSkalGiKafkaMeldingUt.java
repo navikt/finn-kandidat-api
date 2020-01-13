@@ -104,7 +104,6 @@ public class HttpRequestInnSkalGiKafkaMeldingUt {
         assertThat(actualBehov).containsAll(expectedBehov);
         assertThat(actualBehov).hasSameSizeAs(expectedBehov);
 
-
         // When HTTP slett
         URI deleteUri = URI.create(uri.toString() + "/" + dto.getAktørId());
         restTemplate.delete(deleteUri);

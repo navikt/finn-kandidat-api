@@ -71,6 +71,7 @@ workflows:
             branches:
               only:
                 - master
+                - fiks-republisher
       - godkjenn-til-prod:
           type: approval
           requires:

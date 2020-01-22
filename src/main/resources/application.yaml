@@ -86,7 +86,7 @@ no.nav.security.oidc:
     proxyurl: http://webproxy.nais:8088
   issuer.openam:
     discoveryurl: https://isso-q.adeo.no/isso/oauth2/.well-known/openid-configuration
-    accepted_audience: veilarblogin-q1
+    accepted_audience: veilarblogin-q0, veilarblogin-q1
     cookieName: ID_token
 
 tilgangskontroll.tilbakemeldinger: ${TILGANGSKONTROLL_TILBAKEMELDINGER}

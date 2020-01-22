@@ -1,6 +1,6 @@
 version: 2.1
 orbs:
-  nais: navikt/nais-deployment@dev:master
+  nais: navikt/nais-deployment@3.2.1
 
 jobs:
   build:
@@ -71,6 +71,7 @@ workflows:
             branches:
               only:
                 - master
+                - fiks-republisher
       - godkjenn-til-prod:
           type: approval
           requires:

@@ -1,7 +1,11 @@
 package no.nav.tag.finnkandidatapi.kafka;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import no.nav.tag.finnkandidatapi.kafka.harTilretteleggingsbehov.HarTilretteleggingsbehov;
 import no.nav.tag.finnkandidatapi.kafka.harTilretteleggingsbehov.HarTilretteleggingsbehovProducer;
+import no.nav.tag.finnkandidatapi.kandidat.FysiskBehov;
+import no.nav.tag.finnkandidatapi.kandidat.GrunnleggendeBehov;
 import no.nav.tag.finnkandidatapi.tilgangskontroll.TokenUtils;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -9,7 +13,6 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,6 +26,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.List;
 import java.util.Map;
 
 import static no.nav.tag.finnkandidatapi.TestData.enAktørId;
@@ -61,8 +65,9 @@ public class HarTilretteleggingsbehovProducerTest {
     }
 
     @Test
-    public void kandidatOppdatert__skal_sende_melding_på_kafka_topic() throws JSONException {
-        HarTilretteleggingsbehov harTilretteleggingsbehov = new HarTilretteleggingsbehov(enAktørId(), true);
+    public void kandidatOppdatert__skal_sende_melding_på_kafka_topic() throws JSONException, JsonProcessingException {
+        List<String> kategorier = List.of(FysiskBehov.behovskategori, GrunnleggendeBehov.behovskategori);
+        HarTilretteleggingsbehov harTilretteleggingsbehov = new HarTilretteleggingsbehov(enAktørId(), true, kategorier);
         harTilretteleggingsbehovProducer.sendKafkamelding(harTilretteleggingsbehov);
 
         ConsumerRecord<String, String> melding = KafkaTestUtils.getSingleRecord(consumer, "aapen-tag-kandidatEndret-v1-default");
@@ -71,5 +76,6 @@ public class HarTilretteleggingsbehovProducerTest {
         assertThat(melding.key()).isEqualTo(harTilretteleggingsbehov.getAktoerId());
         assertThat(json.get("aktoerId")).isEqualTo(harTilretteleggingsbehov.getAktoerId());
         assertThat(json.get("harTilretteleggingsbehov")).isEqualTo(harTilretteleggingsbehov.isHarTilretteleggingsbehov());
+        assertThat(new ObjectMapper().readValue(json.getString("behov"), List.class)).isEqualTo(kategorier);
     }
 }

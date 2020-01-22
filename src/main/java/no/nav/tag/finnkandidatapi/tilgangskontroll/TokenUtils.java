@@ -4,7 +4,6 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import no.nav.security.oidc.context.OIDCClaims;
 import no.nav.security.oidc.context.OIDCRequestContextHolder;
 import no.nav.tag.finnkandidatapi.kandidat.Veileder;
-import org.apache.zookeeper.Op;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -14,7 +13,7 @@ import java.util.Optional;
 public class TokenUtils {
 
     final static String ISSUER_ISSO = "isso";
-    final static String ISSUER_ISSO_OPENAM = "isso-openam";
+    final static String ISSUER_OPENAM = "openam";
 
     private final OIDCRequestContextHolder contextHolder;
 
@@ -24,7 +23,10 @@ public class TokenUtils {
     }
 
     public String hentOidcToken() {
-        return contextHolder.getOIDCValidationContext().getToken(ISSUER_ISSO).getIdToken();
+        if (erInnloggetNavAnsattMedAzureADToken()) {
+            return contextHolder.getOIDCValidationContext().getToken(ISSUER_ISSO).getIdToken();
+        }
+        return contextHolder.getOIDCValidationContext().getToken(ISSUER_OPENAM).getIdToken();
     }
 
     public Veileder hentInnloggetVeileder() {
@@ -33,7 +35,7 @@ public class TokenUtils {
                     .orElseThrow(() -> new TilgangskontrollException("Innlogget bruker er ikke veileder."));
             return new Veileder(navIdent);
         } else if (erInnloggetNavAnsattMedOpenAMToken()) {
-            String navIdent = contextHolder.getOIDCValidationContext().getClaims(ISSUER_ISSO_OPENAM).getSubject();
+            String navIdent = contextHolder.getOIDCValidationContext().getClaims(ISSUER_OPENAM).getSubject();
             return new Veileder(navIdent);
         } else {
             throw new TilgangskontrollException("Bruker er ikke innlogget.");
@@ -48,7 +50,7 @@ public class TokenUtils {
     }
 
     private boolean erInnloggetNavAnsattMedOpenAMToken() {
-        OIDCClaims claims = contextHolder.getOIDCValidationContext().getClaims(ISSUER_ISSO_OPENAM);
+        OIDCClaims claims = contextHolder.getOIDCValidationContext().getClaims(ISSUER_OPENAM);
         if (claims == null) {
             return false;
         }

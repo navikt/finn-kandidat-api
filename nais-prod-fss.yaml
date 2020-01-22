@@ -11,6 +11,7 @@ spec:
   port: 8080
   ingresses:
   - https://arbeidsgiver.nais.adeo.no/finn-kandidat-api/
+  - https://app.adeo.no/finn-kandidat-api/
   liveness:
     path: /finn-kandidat-api/internal/actuator/info
     initialDelay: 30

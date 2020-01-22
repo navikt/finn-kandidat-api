@@ -14,8 +14,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import static no.nav.tag.finnkandidatapi.TestData.*;
-import static no.nav.tag.finnkandidatapi.kandidat.ArbeidsmiljøBehov.ANNET;
-import static no.nav.tag.finnkandidatapi.kandidat.ArbeidsmiljøBehov.MENTOR;
+import static no.nav.tag.finnkandidatapi.kandidat.ArbeidsmiljøBehov.*;
 import static no.nav.tag.finnkandidatapi.kandidat.FysiskBehov.ARBEIDSSTILLING;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -194,7 +193,15 @@ public class KandidatRepositoryTest {
         List<HarTilretteleggingsbehov> kandidater = repository.hentHarTilretteleggingsbehov();
 
         assertThat(kandidater.size()).isEqualTo(2);
+        assertThat(kandidater.get(0).isHarTilretteleggingsbehov()).isTrue();
+        assertThat(kandidater.get(0).getBehov()).containsExactlyInAnyOrder(
+                ArbeidstidBehov.behovskategori,
+                FysiskBehov.behovskategori,
+                ArbeidsmiljøBehov.behovskategori,
+                GrunnleggendeBehov.behovskategori
+        );
         assertThat(kandidater.get(1).isHarTilretteleggingsbehov()).isFalse();
+        assertThat(kandidater.get(1).getBehov()).isEmpty();
     }
 
     @Test
@@ -216,6 +223,12 @@ public class KandidatRepositoryTest {
         assertThat(kandidater.size()).isEqualTo(1);
         assertThat(kandidater.get(0).getAktoerId()).isEqualTo(sisteKandidat.getAktørId());
         assertThat(kandidater.get(0).isHarTilretteleggingsbehov()).isTrue();
+        assertThat(kandidater.get(0).getBehov()).containsExactlyInAnyOrder(
+                ArbeidstidBehov.behovskategori,
+                FysiskBehov.behovskategori,
+                ArbeidsmiljøBehov.behovskategori,
+                GrunnleggendeBehov.behovskategori
+        );
     }
 
     @Test
@@ -254,6 +267,12 @@ public class KandidatRepositoryTest {
                 repository.hentHarTilretteleggingsbehov(kandidatUtenTilretteleggingsbehov.getAktørId());
 
         assertThat(harTilretteleggingsbehov.get().isHarTilretteleggingsbehov()).isTrue();
+        assertThat(harTilretteleggingsbehov.get().getBehov()).containsExactlyInAnyOrder(
+                ArbeidstidBehov.behovskategori,
+                FysiskBehov.behovskategori,
+                ArbeidsmiljøBehov.behovskategori,
+                GrunnleggendeBehov.behovskategori
+        );
         assertThat(harIkkeTilretteleggingsbehov.get().isHarTilretteleggingsbehov()).isFalse();
     }
 

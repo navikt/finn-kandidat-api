@@ -52,7 +52,7 @@ public class HarTilretteleggingsbehovProducer {
     @EventListener
     public void kandidatOpprettet(KandidatOpprettet event) {
         Kandidat kandidat = event.getKandidat();
-        List<String> kategorier = kategorier(kandidat);
+        List<String> kategorier = kandidat.kategorier();
         HarTilretteleggingsbehov melding = new HarTilretteleggingsbehov(kandidat.getAktørId(), true, kategorier);
         sendKafkamelding(melding);
     }
@@ -60,7 +60,7 @@ public class HarTilretteleggingsbehovProducer {
     @EventListener
     public void kandidatEndret(KandidatEndret event) {
         Kandidat kandidat = event.getKandidat();
-        List<String> kategorier = kategorier(kandidat);
+        List<String> kategorier = kandidat.kategorier();
         boolean harBehov = !kategorier.isEmpty();
         HarTilretteleggingsbehov melding = new HarTilretteleggingsbehov(kandidat.getAktørId(), harBehov, kategorier);
         sendKafkamelding(melding);
@@ -68,34 +68,8 @@ public class HarTilretteleggingsbehovProducer {
 
     @EventListener
     public void kandidatSlettet(KandidatSlettet event) {
-        HarTilretteleggingsbehov melding = new HarTilretteleggingsbehov(event.getAktørId(), false);
+        HarTilretteleggingsbehov melding = new HarTilretteleggingsbehov(event.getAktørId(), false, List.of());
         sendKafkamelding(melding);
-    }
-
-    private List<String> kategorier(Kandidat kandidat) {
-        ArrayList<String> kategorier = new ArrayList<>();
-        ArbeidstidBehov arbeidstidBehov = kandidat.getArbeidstidBehov();
-        Set<FysiskBehov> fysiskeBehov = kandidat.getFysiskeBehov();
-        Set<ArbeidsmiljøBehov> arbeidsmiljøBehov = kandidat.getArbeidsmiljøBehov();
-        Set<GrunnleggendeBehov> grunnleggendeBehov = kandidat.getGrunnleggendeBehov();
-
-        if (arbeidstidBehov != null && !arbeidstidBehov.equals(ArbeidstidBehov.HELTID)) {
-            kategorier.add(ArbeidstidBehov.behovskategori);
-        }
-
-        if (fysiskeBehov != null && !fysiskeBehov.isEmpty()) {
-            kategorier.add(FysiskBehov.behovskategori);
-        }
-
-        if (arbeidsmiljøBehov != null && !arbeidsmiljøBehov.isEmpty()) {
-            kategorier.add(ArbeidsmiljøBehov.behovskategori);
-        }
-
-        if (grunnleggendeBehov != null && !grunnleggendeBehov.isEmpty()) {
-            kategorier.add(GrunnleggendeBehov.behovskategori);
-        }
-
-        return Collections.unmodifiableList(kategorier);
     }
 
     public void sendKafkamelding(HarTilretteleggingsbehov melding) {

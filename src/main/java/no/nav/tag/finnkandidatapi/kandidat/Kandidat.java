@@ -4,11 +4,15 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 @Data
 @Builder
 public class Kandidat {
+
     private Integer id;
     private String fnr;
     private String aktørId;
@@ -58,5 +62,31 @@ public class Kandidat {
                 .grunnleggendeBehov(kandidatDto.getGrunnleggendeBehov())
                 .navKontor(kandidat.getNavKontor())
                 .build();
+    }
+
+    public List<String> kategorier() {
+        ArrayList<String> kategorier = new ArrayList<>();
+        ArbeidstidBehov arbeidstidBehov = this.getArbeidstidBehov();
+        Set<FysiskBehov> fysiskeBehov = this.getFysiskeBehov();
+        Set<ArbeidsmiljøBehov> arbeidsmiljøBehov = this.getArbeidsmiljøBehov();
+        Set<GrunnleggendeBehov> grunnleggendeBehov = this.getGrunnleggendeBehov();
+
+        if (arbeidstidBehov != null && !arbeidstidBehov.equals(ArbeidstidBehov.HELTID)) {
+            kategorier.add(ArbeidstidBehov.behovskategori);
+        }
+
+        if (fysiskeBehov != null && !fysiskeBehov.isEmpty()) {
+            kategorier.add(FysiskBehov.behovskategori);
+        }
+
+        if (arbeidsmiljøBehov != null && !arbeidsmiljøBehov.isEmpty()) {
+            kategorier.add(ArbeidsmiljøBehov.behovskategori);
+        }
+
+        if (grunnleggendeBehov != null && !grunnleggendeBehov.isEmpty()) {
+            kategorier.add(GrunnleggendeBehov.behovskategori);
+        }
+
+        return Collections.unmodifiableList(kategorier);
     }
 }

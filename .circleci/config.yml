@@ -1,7 +1,10 @@
 version: 2.1
 orbs:
   nais: navikt/nais-deployment@3.2.1
+<<<<<<< HEAD
 
+=======
+>>>>>>> master
 
 jobs:
   build:

@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
+import static no.nav.tag.finnkandidatapi.tilgangskontroll.PilottilgangController.REGISTRER_TILRETTELEGGINGSBEHOV;
 import static no.nav.tag.finnkandidatapi.tilgangskontroll.TilgangskontrollService.FINN_KANDIDAT_PILOTTILGANG_KONTOR;
 
 @Configuration
@@ -51,6 +52,7 @@ public class UnleashConfiguration {
         fakeUnleash.enable(HAR_TILRETTELEGGINGSBEHOV_PRODUCER_FEATURE);
         fakeUnleash.enable(HENT_OPPFØLGINGSBRUKER_VED_OPPRETT_KANDIDAT);
         fakeUnleash.enable(FINN_KANDIDAT_PILOTTILGANG_KONTOR);
+        fakeUnleash.enable(REGISTRER_TILRETTELEGGINGSBEHOV);
         return fakeUnleash;
     }
 }

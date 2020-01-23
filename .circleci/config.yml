@@ -71,7 +71,7 @@ workflows:
             branches:
               only:
                 - master
-                - fiks-republisher
+                - valider-openam-tokens
       - godkjenn-til-prod:
           type: approval
           requires:

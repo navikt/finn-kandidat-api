@@ -23,10 +23,8 @@ public class TokenUtils {
     }
 
     public String hentOidcToken() {
-        if (erInnloggetNavAnsattMedAzureADToken()) {
-            return contextHolder.getOIDCValidationContext().getToken(ISSUER_ISSO).getIdToken();
-        }
-        return contextHolder.getOIDCValidationContext().getToken(ISSUER_OPENAM).getIdToken();
+        String issuer = erInnloggetNavAnsattMedAzureADToken() ? ISSUER_ISSO : ISSUER_OPENAM;
+        return contextHolder.getOIDCValidationContext().getToken(issuer).getIdToken();
     }
 
     public Veileder hentInnloggetVeileder() {

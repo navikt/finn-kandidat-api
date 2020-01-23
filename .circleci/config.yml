@@ -71,7 +71,7 @@ workflows:
             branches:
               only:
                 - master
-                - valider-openam-tokens
+                - feature-toggle-endepunkt
       - godkjenn-til-prod:
           type: approval
           requires:

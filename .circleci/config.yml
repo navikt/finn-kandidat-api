@@ -71,7 +71,6 @@ workflows:
             branches:
               only:
                 - master
-                - feature-toggle-endepunkt
       - godkjenn-til-prod:
           type: approval
           requires:

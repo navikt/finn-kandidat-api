@@ -17,7 +17,7 @@ public class PilottilgangController {
     private final FeatureToggleService featureToggleService;
 
     @GetMapping("/pilottilgang")
-    public ResponseEntity<PilottilgangRespons> hentFeature() {
+    public ResponseEntity<PilottilgangRespons> harPilottilgang() {
         boolean harTilgang = featureToggleService.isEnabled(FINN_KANDIDAT_PILOTTILGANG_KONTOR);
         PilottilgangRespons respons = new PilottilgangRespons(harTilgang);
         return ResponseEntity.ok(respons);

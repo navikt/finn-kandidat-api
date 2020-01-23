@@ -23,16 +23,16 @@ public class TokenUtils {
     }
 
     public String hentOidcToken() {
-        String issuer = erInnloggetNavAnsattMedAzureADToken() ? ISSUER_ISSO : ISSUER_OPENAM;
+        String issuer = erInnloggetMedAzureAD() ? ISSUER_ISSO : ISSUER_OPENAM;
         return contextHolder.getOIDCValidationContext().getToken(issuer).getIdToken();
     }
 
     public Veileder hentInnloggetVeileder() {
-        if (erInnloggetNavAnsattMedAzureADToken()) {
+        if (erInnloggetMedAzureAD()) {
             String navIdent = hentClaim(ISSUER_ISSO, "NAVident")
                     .orElseThrow(() -> new TilgangskontrollException("Innlogget bruker er ikke veileder."));
             return new Veileder(navIdent);
-        } else if (erInnloggetNavAnsattMedOpenAMToken()) {
+        } else if (erInnloggetMedOpenAM()) {
             String navIdent = contextHolder.getOIDCValidationContext().getClaims(ISSUER_OPENAM).getSubject();
             return new Veileder(navIdent);
         } else {
@@ -40,14 +40,14 @@ public class TokenUtils {
         }
     }
 
-    private boolean erInnloggetNavAnsattMedAzureADToken() {
+    private boolean erInnloggetMedAzureAD() {
         Optional<String> navIdent = hentClaimSet(ISSUER_ISSO)
                 .map(jwtClaimsSet -> (String) jwtClaimsSet.getClaims().get("NAVident"))
                 .filter(this::erNAVIdent);
         return navIdent.isPresent();
     }
 
-    private boolean erInnloggetNavAnsattMedOpenAMToken() {
+    private boolean erInnloggetMedOpenAM() {
         OIDCClaims claims = contextHolder.getOIDCValidationContext().getClaims(ISSUER_OPENAM);
         if (claims == null) {
             return false;

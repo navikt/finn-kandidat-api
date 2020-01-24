@@ -71,6 +71,7 @@ workflows:
             branches:
               only:
                 - master
+                - hent-kandidat-med-fnr
       - godkjenn-til-prod:
           type: approval
           requires:

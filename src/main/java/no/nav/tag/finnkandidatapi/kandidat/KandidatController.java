@@ -25,6 +25,13 @@ public class KandidatController {
     private final KandidatService kandidatService;
     private final TilgangskontrollService tilgangskontroll;
 
+    @GetMapping("/fnr/{fnr}")
+    public ResponseEntity<Kandidat> hentKandidatMedFnr(@PathVariable("fnr") String fnr) {
+        loggBrukAvEndepunkt("hentKandidat");
+        String aktørId = kandidatService.hentAktørId(fnr);
+        return hentKandidat(aktørId);
+    }
+
     @GetMapping("/{aktørId}")
     public ResponseEntity<Kandidat> hentKandidat(@PathVariable("aktørId") String aktørId) {
         loggBrukAvEndepunkt("hentKandidat");

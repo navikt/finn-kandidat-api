@@ -200,6 +200,20 @@ public class KandidatControllerTest {
     }
 
     @Test
+    public void hentKandidatMedFnr__skal_returnere_ok_med_kandidat() {
+        værInnloggetSom(enVeileder());
+        Kandidat kandidat = enKandidat();
+
+        when(service.hentAktørId(kandidat.getFnr())).thenReturn(kandidat.getAktørId());
+        when(service.hentNyesteKandidat(kandidat.getAktørId())).thenReturn(Optional.of(kandidat));
+
+        ResponseEntity<Kandidat> respons = controller.hentKandidatMedFnr(kandidat.getFnr());
+
+        assertThat(respons.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(respons.getBody()).isEqualTo(kandidat);
+    }
+
+    @Test
     public void hentKandidat__skal_returnere_ok_med_kandidat() {
         værInnloggetSom(enVeileder());
         Kandidat kandidat = enKandidat();

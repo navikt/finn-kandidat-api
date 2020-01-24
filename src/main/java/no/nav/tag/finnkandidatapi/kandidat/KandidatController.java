@@ -27,7 +27,6 @@ public class KandidatController {
 
     @GetMapping("/fnr/{fnr}")
     public ResponseEntity<Kandidat> hentKandidatMedFnr(@PathVariable("fnr") String fnr) {
-        loggBrukAvEndepunkt("hentKandidat");
         String aktørId = kandidatService.hentAktørId(fnr);
         return hentKandidat(aktørId);
     }

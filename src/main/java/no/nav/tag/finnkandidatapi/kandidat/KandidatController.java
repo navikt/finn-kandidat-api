@@ -25,17 +25,16 @@ public class KandidatController {
     private final KandidatService kandidatService;
     private final TilgangskontrollService tilgangskontroll;
 
-    @GetMapping("/fnr/{fnr}")
-    public ResponseEntity<Kandidat> hentKandidatMedFnr(@PathVariable("fnr") String fnr) {
-        String aktørId = kandidatService.hentAktørId(fnr);
-        return hentKandidat(aktørId);
-    }
-
-    @GetMapping("/{aktørId}")
-    public ResponseEntity<Kandidat> hentKandidat(@PathVariable("aktørId") String aktørId) {
+    @GetMapping("/{fnrEllerAktørId}")
+    public ResponseEntity<Kandidat> hentKandidat(@PathVariable("fnrEllerAktørId") String fnrEllerAktørId) {
         loggBrukAvEndepunkt("hentKandidat");
+
+        boolean erFnr = isValid(fnrEllerAktørId);
+        String aktørId = erFnr ? kandidatService.hentAktørId(fnrEllerAktørId) : fnrEllerAktørId;
+
         tilgangskontroll.sjekkPilotTilgang();
         tilgangskontroll.sjekkLesetilgangTilKandidat(aktørId);
+
         Kandidat kandidat = kandidatService.hentNyesteKandidat(aktørId).orElseThrow(NotFoundException::new);
         return ResponseEntity.ok(kandidat);
     }
@@ -76,7 +75,19 @@ public class KandidatController {
     @PostMapping
     public ResponseEntity<Kandidat> opprettKandidat(@RequestBody KandidatDto kandidat) {
         loggBrukAvEndepunkt("opprettKandidat");
+
         tilgangskontroll.sjekkPilotTilgang();
+
+        if (kandidat.getAktørId() == null && kandidat.getFnr() != null) {
+            String aktørId = kandidatService.hentAktørId(kandidat.getFnr());
+            kandidat.setAktørId(aktørId);
+        } else if (kandidat.getFnr() == null && kandidat.getAktørId() != null) {
+            String fnr = kandidatService.hentFnr(kandidat.getAktørId());
+            kandidat.setFnr(fnr);
+        } else if (kandidat.getFnr() == null && kandidat.getAktørId() == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+
         tilgangskontroll.sjekkSkrivetilgangTilKandidat(kandidat.getAktørId());
 
         boolean kandidatEksisterer = kandidatService.kandidatEksisterer(kandidat.getAktørId());
@@ -86,9 +97,8 @@ public class KandidatController {
                     .build();
         }
 
-        String fnr = kandidatService.hentFnr(kandidat.getAktørId());
         Veileder veileder = tilgangskontroll.hentInnloggetVeileder();
-        Kandidat opprettetKandidat = kandidatService.opprettKandidat(fnr, kandidat, veileder)
+        Kandidat opprettetKandidat = kandidatService.opprettKandidat(kandidat, veileder)
                 .orElseThrow(FinnKandidatException::new);
         return ResponseEntity
                 .status(HttpStatus.CREATED)

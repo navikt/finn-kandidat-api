@@ -39,8 +39,7 @@ public class KandidatControllerTest {
         KandidatDto kandidatDto = enKandidatDto(kandidat);
 
         værInnloggetSom(veileder);
-        when(service.hentFnr(kandidatDto.getAktørId())).thenReturn(kandidat.getFnr());
-        when(service.opprettKandidat(kandidat.getFnr(), kandidatDto, veileder)).thenReturn(Optional.of(kandidat));
+        when(service.opprettKandidat(kandidatDto, veileder)).thenReturn(Optional.of(kandidat));
 
         controller.opprettKandidat(kandidatDto);
 
@@ -54,8 +53,45 @@ public class KandidatControllerTest {
         Kandidat kandidat = enKandidat();
         KandidatDto kandidatDto = enKandidatDto(kandidat);
 
+        when(service.opprettKandidat(kandidatDto, veileder)).thenReturn(Optional.of(kandidat));
+
+        ResponseEntity<Kandidat> respons = controller.opprettKandidat(kandidatDto);
+        Kandidat hentetKandidat = respons.getBody();
+
+        assertThat(respons.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        assertThat(hentetKandidat).isEqualTo(kandidat);
+    }
+
+    @Test
+    public void opprettKandidat__skal_fungere_uten_aktørId() {
+        Veileder veileder = enVeileder();
+        værInnloggetSom(veileder);
+        Kandidat kandidat = enKandidat();
+        KandidatDto kandidatDto = enKandidatDto(kandidat);
+
+        kandidatDto.setAktørId(null);
+
+        when(service.hentAktørId(kandidatDto.getFnr())).thenReturn(kandidat.getAktørId());
+        when(service.opprettKandidat(kandidatDto, veileder)).thenReturn(Optional.of(kandidat));
+
+        ResponseEntity<Kandidat> respons = controller.opprettKandidat(kandidatDto);
+        Kandidat hentetKandidat = respons.getBody();
+
+        assertThat(respons.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        assertThat(hentetKandidat).isEqualTo(kandidat);
+    }
+
+    @Test
+    public void opprettKandidat__skal_fungere_uten_fnr() {
+        Veileder veileder = enVeileder();
+        værInnloggetSom(veileder);
+        Kandidat kandidat = enKandidat();
+        KandidatDto kandidatDto = enKandidatDto(kandidat);
+
+        kandidatDto.setFnr(null);
+
         when(service.hentFnr(kandidatDto.getAktørId())).thenReturn(kandidat.getFnr());
-        when(service.opprettKandidat(kandidat.getFnr(), kandidatDto, veileder)).thenReturn(Optional.of(kandidat));
+        when(service.opprettKandidat(kandidatDto, veileder)).thenReturn(Optional.of(kandidat));
 
         ResponseEntity<Kandidat> respons = controller.opprettKandidat(kandidatDto);
         Kandidat hentetKandidat = respons.getBody();
@@ -71,12 +107,11 @@ public class KandidatControllerTest {
         Veileder veileder = enVeileder();
         værInnloggetSom(veileder);
 
-        when(service.hentFnr(kandidatDto.getAktørId())).thenReturn(kandidat.getFnr());
-        when(service.opprettKandidat(kandidat.getFnr(), kandidatDto, veileder)).thenReturn(Optional.of(kandidat));
+        when(service.opprettKandidat(kandidatDto, veileder)).thenReturn(Optional.of(kandidat));
 
         controller.opprettKandidat(kandidatDto);
 
-        verify(service).opprettKandidat(kandidat.getFnr(), kandidatDto, veileder);
+        verify(service).opprettKandidat(kandidatDto, veileder);
     }
 
     @Test(expected = FinnKandidatException.class)
@@ -86,8 +121,7 @@ public class KandidatControllerTest {
         Veileder veileder = enVeileder();
         værInnloggetSom(veileder);
 
-        when(service.hentFnr(kandidat.getAktørId())).thenReturn(kandidat.getFnr());
-        when(service.opprettKandidat(kandidat.getFnr(), kandidatDto, veileder)).thenReturn(Optional.empty());
+        when(service.opprettKandidat(kandidatDto, veileder)).thenReturn(Optional.empty());
 
         controller.opprettKandidat(kandidatDto);
     }
@@ -199,15 +233,16 @@ public class KandidatControllerTest {
         controller.hentKandidat(aktørId);
     }
 
+
     @Test
-    public void hentKandidatMedFnr__skal_returnere_ok_med_kandidat() {
+    public void hentKandidat__med_fnr_skal_returnere_ok_med_kandidat() {
         værInnloggetSom(enVeileder());
         Kandidat kandidat = enKandidat();
 
         when(service.hentAktørId(kandidat.getFnr())).thenReturn(kandidat.getAktørId());
         when(service.hentNyesteKandidat(kandidat.getAktørId())).thenReturn(Optional.of(kandidat));
 
-        ResponseEntity<Kandidat> respons = controller.hentKandidatMedFnr(kandidat.getFnr());
+        ResponseEntity<Kandidat> respons = controller.hentKandidat(kandidat.getFnr());
 
         assertThat(respons.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(respons.getBody()).isEqualTo(kandidat);

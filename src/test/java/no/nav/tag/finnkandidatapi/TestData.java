@@ -42,6 +42,7 @@ public class TestData {
 
     public static KandidatDto enKandidatDto(Kandidat kandidat) {
         return KandidatDto.builder()
+                .fnr(kandidat.getFnr())
                 .aktørId(kandidat.getAktørId())
                 .arbeidstidBehov(kandidat.getArbeidstidBehov())
                 .fysiskeBehov(kandidat.getFysiskeBehov())
@@ -52,6 +53,7 @@ public class TestData {
 
     public static KandidatDto enKandidatDto() {
         return KandidatDto.builder()
+                .fnr(etFnr())
                 .aktørId("1000000000001")
                 .arbeidstidBehov(HELTID)
                 .fysiskeBehov(Set.of(ARBEIDSSTILLING))
@@ -97,7 +99,7 @@ public class TestData {
     }
 
     public static String etFnr() {
-        return "29089686189";
+        return "28037639429";
     }
 
     public static Kandidat enKandidatMedNullOgTommeSet() {

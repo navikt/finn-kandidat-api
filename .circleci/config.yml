@@ -63,6 +63,21 @@ workflows:
     jobs:
       - build:
           context: NAIS deployment
+
+      - godkjenn-til-dev:
+          type: approval
+          requires:
+            - build
+          filters:
+            branches:
+              ignore:
+                - master
+
+      - deploy-til-dev:
+          context: tag-ci
+          requires:
+            - godkjenn-til-dev
+
       - deploy-til-dev:
           context: tag-ci
           requires:
@@ -71,7 +86,7 @@ workflows:
             branches:
               only:
                 - master
-                - hent-kandidat-med-fnr
+
       - godkjenn-til-prod:
           type: approval
           requires:

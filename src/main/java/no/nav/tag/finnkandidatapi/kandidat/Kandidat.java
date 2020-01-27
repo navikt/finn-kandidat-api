@@ -25,14 +25,13 @@ public class Kandidat {
     private String navKontor;
 
     public static Kandidat opprettKandidat(
-            String fnr,
             KandidatDto kandidat,
             Veileder veileder,
             LocalDateTime sistEndret,
             String navKontor
     ) {
         return Kandidat.builder()
-                .fnr(fnr)
+                .fnr(kandidat.getFnr())
                 .aktørId(kandidat.getAktørId())
                 .sistEndretAv(veileder.getNavIdent())
                 .sistEndret(sistEndret)

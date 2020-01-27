@@ -53,7 +53,6 @@ public class KandidatControllerTest {
         Kandidat kandidat = enKandidat();
         KandidatDto kandidatDto = enKandidatDto(kandidat);
 
-        when(service.hentFnr(kandidatDto.getAktørId())).thenReturn(kandidat.getFnr());
         when(service.opprettKandidat(kandidatDto, veileder)).thenReturn(Optional.of(kandidat));
 
         ResponseEntity<Kandidat> respons = controller.opprettKandidat(kandidatDto);
@@ -72,7 +71,26 @@ public class KandidatControllerTest {
 
         kandidatDto.setAktørId(null);
 
-        when(service.hentAktørId(kandidatDto.getAktørId())).thenReturn(kandidat.getAktørId());
+        when(service.hentAktørId(kandidatDto.getFnr())).thenReturn(kandidat.getAktørId());
+        when(service.opprettKandidat(kandidatDto, veileder)).thenReturn(Optional.of(kandidat));
+
+        ResponseEntity<Kandidat> respons = controller.opprettKandidat(kandidatDto);
+        Kandidat hentetKandidat = respons.getBody();
+
+        assertThat(respons.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        assertThat(hentetKandidat).isEqualTo(kandidat);
+    }
+
+    @Test
+    public void opprettKandidat__skal_fungere_uten_fnr() {
+        Veileder veileder = enVeileder();
+        værInnloggetSom(veileder);
+        Kandidat kandidat = enKandidat();
+        KandidatDto kandidatDto = enKandidatDto(kandidat);
+
+        kandidatDto.setFnr(null);
+
+        when(service.hentFnr(kandidatDto.getAktørId())).thenReturn(kandidat.getFnr());
         when(service.opprettKandidat(kandidatDto, veileder)).thenReturn(Optional.of(kandidat));
 
         ResponseEntity<Kandidat> respons = controller.opprettKandidat(kandidatDto);
@@ -89,7 +107,6 @@ public class KandidatControllerTest {
         Veileder veileder = enVeileder();
         værInnloggetSom(veileder);
 
-        when(service.hentFnr(kandidatDto.getAktørId())).thenReturn(kandidat.getFnr());
         when(service.opprettKandidat(kandidatDto, veileder)).thenReturn(Optional.of(kandidat));
 
         controller.opprettKandidat(kandidatDto);

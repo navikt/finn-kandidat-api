@@ -97,7 +97,7 @@ public class TestData {
     }
 
     public static String etFnr() {
-        return "29089686189";
+        return "28037639429";
     }
 
     public static Kandidat enKandidatMedNullOgTommeSet() {

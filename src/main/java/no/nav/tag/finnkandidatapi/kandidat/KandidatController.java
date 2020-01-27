@@ -25,17 +25,16 @@ public class KandidatController {
     private final KandidatService kandidatService;
     private final TilgangskontrollService tilgangskontroll;
 
-    @GetMapping("/fnr/{fnr}")
-    public ResponseEntity<Kandidat> hentKandidatMedFnr(@PathVariable("fnr") String fnr) {
-        String aktørId = kandidatService.hentAktørId(fnr);
-        return hentKandidat(aktørId);
-    }
-
-    @GetMapping("/{aktørId}")
-    public ResponseEntity<Kandidat> hentKandidat(@PathVariable("aktørId") String aktørId) {
+    @GetMapping("/{fnrEllerAktørId}")
+    public ResponseEntity<Kandidat> hentKandidat(@PathVariable("fnrEllerAktørId") String fnrEllerAktørId) {
         loggBrukAvEndepunkt("hentKandidat");
+
+        boolean erFnr = isValid(fnrEllerAktørId);
+        String aktørId = erFnr ? kandidatService.hentAktørId(fnrEllerAktørId) : fnrEllerAktørId;
+
         tilgangskontroll.sjekkPilotTilgang();
         tilgangskontroll.sjekkLesetilgangTilKandidat(aktørId);
+
         Kandidat kandidat = kandidatService.hentNyesteKandidat(aktørId).orElseThrow(NotFoundException::new);
         return ResponseEntity.ok(kandidat);
     }

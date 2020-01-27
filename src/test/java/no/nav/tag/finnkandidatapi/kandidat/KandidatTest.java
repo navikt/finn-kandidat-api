@@ -17,7 +17,6 @@ public class KandidatTest {
         LocalDateTime nå = now();
 
         Kandidat opprettetKandidat = Kandidat.opprettKandidat(
-                kandidat.getFnr(),
                 kandidatDto,
                 veileder,
                 nå,

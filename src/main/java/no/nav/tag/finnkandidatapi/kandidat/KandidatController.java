@@ -75,7 +75,19 @@ public class KandidatController {
     @PostMapping
     public ResponseEntity<Kandidat> opprettKandidat(@RequestBody KandidatDto kandidat) {
         loggBrukAvEndepunkt("opprettKandidat");
+
         tilgangskontroll.sjekkPilotTilgang();
+
+        if (kandidat.getAktørId() == null && kandidat.getFnr() != null) {
+            String aktørId = kandidatService.hentAktørId(kandidat.getFnr());
+            kandidat.setAktørId(aktørId);
+        } else if (kandidat.getFnr() == null && kandidat.getAktørId() != null) {
+            String fnr = kandidatService.hentFnr(kandidat.getAktørId());
+            kandidat.setFnr(fnr);
+        } else if (kandidat.getFnr() == null && kandidat.getAktørId() == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+
         tilgangskontroll.sjekkSkrivetilgangTilKandidat(kandidat.getAktørId());
 
         boolean kandidatEksisterer = kandidatService.kandidatEksisterer(kandidat.getAktørId());
@@ -85,9 +97,8 @@ public class KandidatController {
                     .build();
         }
 
-        String fnr = kandidatService.hentFnr(kandidat.getAktørId());
         Veileder veileder = tilgangskontroll.hentInnloggetVeileder();
-        Kandidat opprettetKandidat = kandidatService.opprettKandidat(fnr, kandidat, veileder)
+        Kandidat opprettetKandidat = kandidatService.opprettKandidat(kandidat, veileder)
                 .orElseThrow(FinnKandidatException::new);
         return ResponseEntity
                 .status(HttpStatus.CREATED)

@@ -98,7 +98,6 @@ public class KandidatServiceTest {
         kandidat.setSistEndretAv(veileder.getNavIdent());
 
         Kandidat kandidatTilOpprettelse = Kandidat.opprettKandidat(
-                kandidat.getFnr(),
                 kandidatDto,
                 veileder,
                 kandidat.getSistEndret(),
@@ -110,7 +109,7 @@ public class KandidatServiceTest {
         when(repository.lagreKandidat(kandidat)).thenReturn(1);
         when(repository.hentKandidat(1)).thenReturn(Optional.of(kandidatTilOpprettelse));
 
-        Kandidat opprettetKandidat = kandidatService.opprettKandidat(kandidat.getFnr(), kandidatDto, veileder).get();
+        Kandidat opprettetKandidat = kandidatService.opprettKandidat(kandidatDto, veileder).get();
 
         verify(repository).lagreKandidat(opprettetKandidat);
     }
@@ -127,7 +126,7 @@ public class KandidatServiceTest {
         when(repository.lagreKandidat(kandidat)).thenReturn(1);
         when(repository.hentKandidat(1)).thenReturn(Optional.empty());
 
-        Optional<Kandidat> empty = kandidatService.opprettKandidat(kandidat.getFnr(), kandidatDto, veileder);
+        Optional<Kandidat> empty = kandidatService.opprettKandidat(kandidatDto, veileder);
 
         assertThat(empty).isEmpty();
     }
@@ -143,7 +142,7 @@ public class KandidatServiceTest {
         when(repository.hentKandidat(kandidatId)).thenReturn(Optional.of(kandidat));
         when(veilarbArenaClient.hentOppfølgingsbruker(kandidat.getFnr(), kandidat.getAktørId())).thenReturn(enOppfølgingsbruker());
 
-        kandidatService.opprettKandidat(kandidat.getFnr(), kandidatDto, enVeileder());
+        kandidatService.opprettKandidat(kandidatDto, enVeileder());
         verify(eventPublisher).publishEvent(new KandidatOpprettet(kandidat));
     }
 

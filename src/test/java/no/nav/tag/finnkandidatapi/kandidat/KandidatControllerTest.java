@@ -192,6 +192,25 @@ public class KandidatControllerTest {
     }
 
     @Test
+    public void endreKandidat__skal_fungere_med_kun_fnr() {
+        Veileder veileder = enVeileder();
+        værInnloggetSom(veileder);
+        Kandidat kandidat = enKandidat();
+        KandidatDto kandidatDto = KandidatDto.builder()
+                .fnr(etFnr())
+                .build();
+
+        when(service.endreKandidat(kandidatDto, veileder)).thenReturn(Optional.of(kandidat));
+
+        ResponseEntity<Kandidat> respons = controller.endreKandidat(kandidatDto);
+
+        verify(service).endreKandidat(kandidatDto, veileder);
+
+        assertThat(respons.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(respons.getBody()).isEqualTo(kandidat);
+    }
+
+    @Test
     public void hentKandidater__skal_returnere_ok_med_kandidater() {
         værInnloggetSom(enVeileder());
 

@@ -109,7 +109,16 @@ public class KandidatController {
     public ResponseEntity<Kandidat> endreKandidat(@RequestBody KandidatDto kandidatDto) {
         loggBrukAvEndepunkt("endreKandidat");
         tilgangskontroll.sjekkPilotTilgang();
+
+        if (kandidatDto.getAktørId() == null && kandidatDto.getFnr() != null) {
+            String aktørId = kandidatService.hentAktørId(kandidatDto.getFnr());
+            kandidatDto.setAktørId(aktørId);
+        } else if (kandidatDto.getAktørId() == null && kandidatDto.getFnr() == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+
         tilgangskontroll.sjekkSkrivetilgangTilKandidat(kandidatDto.getAktørId());
+
         Veileder veileder = tilgangskontroll.hentInnloggetVeileder();
         Kandidat endretKandidat = kandidatService.endreKandidat(kandidatDto, veileder)
                 .orElseThrow(FinnKandidatException::new);

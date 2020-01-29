@@ -27,7 +27,6 @@ public class KandidatMapper implements RowMapper<Kandidat> {
 
     public static Kandidat mapKandidat(ResultSet rs, int i) throws SQLException {
         LocalDateTime sistEndret = rs.getTimestamp(REGISTRERINGSTIDSPUNKT) == null ? null : rs.getTimestamp(REGISTRERINGSTIDSPUNKT).toLocalDateTime();
-        ArbeidstidBehov arbeidstidBehov = rs.getString(ARBEIDSTID_BEHOV) == null ? null : ArbeidstidBehov.valueOf(rs.getString(ARBEIDSTID_BEHOV));
 
         return Kandidat.builder()
                 .id(rs.getInt(ID))
@@ -35,7 +34,7 @@ public class KandidatMapper implements RowMapper<Kandidat> {
                 .aktørId(rs.getString(AKTØR_ID))
                 .sistEndretAv(rs.getString(REGISTRERT_AV))
                 .sistEndret(sistEndret)
-                .arbeidstidBehov(arbeidstidBehov)
+                .arbeidstidBehov(stringTilEnumSet(rs.getString(ARBEIDSTID_BEHOV), ArbeidstidBehov.class))
                 .fysiskeBehov(stringTilEnumSet(rs.getString(FYSISKE_BEHOV), FysiskBehov.class))
                 .arbeidsmiljøBehov(stringTilEnumSet(rs.getString(ARBEIDSMILJØ_BEHOV), ArbeidsmiljøBehov.class))
                 .grunnleggendeBehov(stringTilEnumSet(rs.getString(GRUNNLEGGENDE_BEHOV), GrunnleggendeBehov.class))

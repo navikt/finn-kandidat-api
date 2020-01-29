@@ -133,9 +133,13 @@ public class KandidatController {
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/{aktørId}")
-    public ResponseEntity slettKandidat(@PathVariable("aktørId") String aktørId) {
+    @DeleteMapping("/{fnrEllerAktørId}")
+    public ResponseEntity slettKandidat(@PathVariable("fnrEllerAktørId") String fnrEllerAktørId) {
         loggBrukAvEndepunkt("slettKandidat");
+
+        boolean erFnr = isValid(fnrEllerAktørId);
+        String aktørId = erFnr ? kandidatService.hentAktørId(fnrEllerAktørId) : fnrEllerAktørId;
+
         tilgangskontroll.sjekkPilotTilgang();
         tilgangskontroll.sjekkSkrivetilgangTilKandidat(aktørId);
 

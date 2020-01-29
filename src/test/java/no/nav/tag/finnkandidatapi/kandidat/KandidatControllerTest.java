@@ -366,6 +366,22 @@ public class KandidatControllerTest {
     }
 
     @Test
+    public void slettKandidat__skal_fungere_med_kun_fnr() {
+        Veileder veileder = enVeileder();
+        værInnloggetSom(veileder);
+        String fnr = etFnr();
+        String aktørId = enAktørId();
+
+        when(service.hentAktørId(fnr)).thenReturn(aktørId);
+        when(service.slettKandidat(aktørId, veileder)).thenReturn(Optional.of(1));
+
+        ResponseEntity respons = controller.slettKandidat(fnr);
+        verify(service).slettKandidat(aktørId, veileder);
+
+        assertThat(respons.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
     public void slettKandidat__skal_kaste_NotFoundException_hvis_kandidat_ikke_finnes() {
         værInnloggetSom(enVeileder());
         String uregistrertAktørId = "1000000000001";

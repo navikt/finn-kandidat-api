@@ -32,7 +32,7 @@ public class TestData {
                 .sistEndretAv(enNavIdent())
                 .fnr(etFnr())
                 .aktørId("1000000000001")
-                .arbeidstidBehov(KAN_IKKE_JOBBE)
+                .arbeidstidBehov(Set.of(KAN_IKKE_JOBBE))
                 .fysiskeBehov(Set.of(ARBEIDSSTILLING, ERGONOMI))
                 .arbeidsmiljøBehov(Set.of(MENTOR, TILRETTELAGTE_ARBEIDSOPPGAVER))
                 .grunnleggendeBehov(Set.of(SNAKKE_NORSK, SKRIVE_NORSK, LESE_NORSK))
@@ -55,7 +55,7 @@ public class TestData {
         return KandidatDto.builder()
                 .fnr(etFnr())
                 .aktørId("1000000000001")
-                .arbeidstidBehov(HELTID)
+                .arbeidstidBehov(Set.of(HELTID))
                 .fysiskeBehov(Set.of(ARBEIDSSTILLING))
                 .arbeidsmiljøBehov(Set.of(MENTOR, TILRETTELAGTE_ARBEIDSOPPGAVER, ANNET))
                 .grunnleggendeBehov(Set.of(SNAKKE_NORSK, LESE_NORSK))
@@ -80,7 +80,7 @@ public class TestData {
                 .sistEndretAv(enNavIdent())
                 .fnr("12345678901")
                 .aktørId("1000000000001")
-                .arbeidstidBehov(KAN_IKKE_JOBBE)
+                .arbeidstidBehov(Set.of(KAN_IKKE_JOBBE))
                 .fysiskeBehov(Set.of(ARBEIDSSTILLING, ERGONOMI))
                 .arbeidsmiljøBehov(Set.of(MENTOR, TILRETTELAGTE_ARBEIDSOPPGAVER))
                 .grunnleggendeBehov(Set.of(SNAKKE_NORSK, SKRIVE_NORSK, LESE_NORSK));
@@ -104,6 +104,7 @@ public class TestData {
 
     public static Kandidat enKandidatMedNullOgTommeSet() {
         return Kandidat.builder()
+                .arbeidstidBehov(Collections.emptySet())
                 .fysiskeBehov(Collections.emptySet())
                 .arbeidsmiljøBehov(Collections.emptySet())
                 .grunnleggendeBehov(Collections.emptySet())

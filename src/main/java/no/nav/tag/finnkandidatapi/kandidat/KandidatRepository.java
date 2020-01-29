@@ -128,7 +128,7 @@ public class KandidatRepository {
         parameters.put(REGISTRERT_AV, kandidat.getSistEndretAv());
         parameters.put(REGISTRERT_AV_BRUKERTYPE, Brukertype.VEILEDER.name());
         parameters.put(REGISTRERINGSTIDSPUNKT, kandidat.getSistEndret());
-        parameters.put(ARBEIDSTID_BEHOV, kandidat.getArbeidstidBehov() == null ? null : kandidat.getArbeidstidBehov().name());
+        parameters.put(ARBEIDSTID_BEHOV, enumSetTilString(kandidat.getArbeidstidBehov()));
         parameters.put(FYSISKE_BEHOV, enumSetTilString(kandidat.getFysiskeBehov()));
         parameters.put(ARBEIDSMILJØ_BEHOV, enumSetTilString(kandidat.getArbeidsmiljøBehov()));
         parameters.put(GRUNNLEGGENDE_BEHOV, enumSetTilString(kandidat.getGrunnleggendeBehov()));

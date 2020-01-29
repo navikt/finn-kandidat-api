@@ -18,7 +18,7 @@ public class Kandidat {
     private String aktørId;
     private String sistEndretAv;
     private LocalDateTime sistEndret;
-    private ArbeidstidBehov arbeidstidBehov;
+    private Set<ArbeidstidBehov> arbeidstidBehov;
     private Set<FysiskBehov> fysiskeBehov;
     private Set<ArbeidsmiljøBehov> arbeidsmiljøBehov;
     private Set<GrunnleggendeBehov> grunnleggendeBehov;
@@ -65,12 +65,16 @@ public class Kandidat {
 
     public List<String> kategorier() {
         ArrayList<String> kategorier = new ArrayList<>();
-        ArbeidstidBehov arbeidstidBehov = this.getArbeidstidBehov();
+        Set<ArbeidstidBehov> arbeidstidBehov = this.getArbeidstidBehov();
         Set<FysiskBehov> fysiskeBehov = this.getFysiskeBehov();
         Set<ArbeidsmiljøBehov> arbeidsmiljøBehov = this.getArbeidsmiljøBehov();
         Set<GrunnleggendeBehov> grunnleggendeBehov = this.getGrunnleggendeBehov();
 
-        if (arbeidstidBehov != null && !arbeidstidBehov.equals(ArbeidstidBehov.HELTID)) {
+        boolean arbeidstidInneholderKunHeltid =
+                        arbeidstidBehov.size() == 1 &&
+                        arbeidstidBehov.contains(ArbeidstidBehov.HELTID);
+
+        if (!arbeidstidBehov.isEmpty() && !arbeidstidInneholderKunHeltid) {
             kategorier.add(ArbeidstidBehov.behovskategori);
         }
 

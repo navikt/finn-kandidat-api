@@ -134,7 +134,7 @@ no.nav.security.oidc:
     proxyurl: http://webproxy.nais:8088
   issuer.openam:
     discoveryurl: https://isso.adeo.no/isso/oauth2/.well-known/openid-configuration
-    accepted_audience: veilarblogin-p
+    accepted_audience: veilarblogin-p, modiabrukerdialog-p, fpsak-frontend-p
     cookieName: ID_token
 
 tilgangskontroll.tilbakemeldinger: ${TILGANGSKONTROLL_TILBAKEMELDINGER}

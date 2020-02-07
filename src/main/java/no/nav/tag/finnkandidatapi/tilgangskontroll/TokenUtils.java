@@ -46,6 +46,10 @@ public class TokenUtils {
                 .orElseThrow(() -> new TilgangskontrollException("Bruker er ikke innlogget"));
     }
 
+    public String hentOidcTokenSelvbetjening() {
+        return contextHolder.getOIDCValidationContext().getToken(ISSUER_SELVBETJENING).getIdToken();
+    }
+
     private boolean erInnloggetMedAzureAD() {
         Optional<String> navIdent = hentClaimSet(ISSUER_ISSO)
                 .map(jwtClaimsSet -> (String) jwtClaimsSet.getClaims().get("NAVident"))

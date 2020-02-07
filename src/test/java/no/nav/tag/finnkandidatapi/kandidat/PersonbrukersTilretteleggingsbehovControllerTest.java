@@ -26,13 +26,16 @@ public class PersonbrukersTilretteleggingsbehovControllerTest {
     @Mock
     private TokenUtils tokenUtils;
 
+    @Mock
+    private VeilarbOppfolgingClient veilarbOppfolgingClient;
+
     @Before
     public void setUp() {
-        controller = new PersonbrukersTilretteleggingsbehovController(service, tokenUtils);
+        controller = new PersonbrukersTilretteleggingsbehovController(service, tokenUtils, veilarbOppfolgingClient);
     }
 
     @Test
-    public void skalReturnereMineTilretteleggingsbehov() {
+    public void hentTilretteleggingsbehov__skal_returnere_mine_tilretteleggingsbehov() {
         Kandidat kandidat = enKandidat();
 
         when(tokenUtils.hentInnloggetBruker()).thenReturn(enKandidat().getFnr());
@@ -43,5 +46,16 @@ public class PersonbrukersTilretteleggingsbehovControllerTest {
 
         assertThat(respons.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(respons.getBody()).isEqualTo(kandidat);
+    }
+
+    @Test
+    public void hentOppfølgingsstatus__skal_returnere_oppfølgingsstatus() {
+        Oppfølgingsstatus oppfølgingsstatus = Oppfølgingsstatus.builder().underOppfolging(true).build();
+        when(veilarbOppfolgingClient.hentOppfølgingsstatus()).thenReturn(oppfølgingsstatus);
+
+        ResponseEntity<Oppfølgingsstatus> respons = controller.hentOppfølgingsstatus();
+
+        assertThat(respons.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(respons.getBody()).isEqualTo(oppfølgingsstatus);
     }
 }

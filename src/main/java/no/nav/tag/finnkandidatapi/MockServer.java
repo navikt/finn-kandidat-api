@@ -6,6 +6,7 @@ import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.matching.StringValuePattern;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.tag.finnkandidatapi.kandidat.Oppfølgingsstatus;
 import no.nav.tag.finnkandidatapi.sts.STSToken;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static no.nav.tag.finnkandidatapi.tilgangskontroll.veilarbabac.VeilarbabacClient.PERMIT_RESPONSE;
 
 @Profile("mock")
@@ -34,7 +36,8 @@ public class MockServer implements DisposableBean {
             @Value("${veilarbabac.url}") String veilarbabacUrl,
             @Value("${aktørregister.url}") String aktørregisterUrl,
             @Value("${veilarbarena.url}") String veilarbarenaUrl,
-            @Value("${axsys.url}") String axsysUrl
+            @Value("${axsys.url}") String axsysUrl,
+            @Value("${veilarboppfolging.url}") String veilarboppfølgingUrl
     ) {
         log.info("Starter mockserver");
 
@@ -45,6 +48,7 @@ public class MockServer implements DisposableBean {
         mockAktørregister(aktørregisterUrl);
         mockVeilarbarena(veilarbarenaUrl);
         mockAxsys(axsysUrl);
+        mockKall(veilarboppfølgingUrl + "/underoppfolging", Oppfølgingsstatus.builder().underOppfolging(true).build());
 
         server.start();
     }
@@ -111,7 +115,7 @@ public class MockServer implements DisposableBean {
 
         String path = getPath(veilarbarenaUrl + "/oppfolgingsbruker");
         server.stubFor(
-                WireMock.get(WireMock.urlPathMatching(path + "/[0-9]+")).willReturn(WireMock.aResponse()
+                get(WireMock.urlPathMatching(path + "/[0-9]+")).willReturn(WireMock.aResponse()
                         .withHeader("Content-Type", "application/json")
                         .withStatus(HttpStatus.OK.value())
                         .withBody(body)
@@ -122,7 +126,7 @@ public class MockServer implements DisposableBean {
 
     private void mockAxsys(String axsysUrl) {
         server.stubFor(
-                WireMock.get(WireMock.urlPathMatching(getPath(axsysUrl) + "/[A-Z][0-9]{6}")).willReturn(WireMock.aResponse()
+                get(WireMock.urlPathMatching(getPath(axsysUrl) + "/[A-Z][0-9]{6}")).willReturn(WireMock.aResponse()
                         .withHeader("Content-Type", "application/json")
                         .withStatus(HttpStatus.OK.value())
                         .withBody("{\"enheter\":[{\"enhetId\":\"0213\",\"fagomrader\":[\"ABC\",\"DEF\",\"GHI\",\"JKL\",\"MNO\",\"PQR\",\"STU\",\"WXY\"],\"navn\":\"NAV Ski\"},{\"enhetId\":\"0315\",\"fagomrader\":[\"ABC\",\"DEF\",\"GHI\",\"JKL\",\"MNO\",\"PQR\",\"STU\",\"WXY\"],\"navn\":\"NAV Grünerløkka\"}]}")
@@ -139,7 +143,7 @@ public class MockServer implements DisposableBean {
     private void mockKall(String url, String body) {
         String path = getPath(url);
         server.stubFor(
-                WireMock.get(WireMock.urlPathEqualTo(path)).willReturn(WireMock.aResponse()
+                get(WireMock.urlPathEqualTo(path)).willReturn(WireMock.aResponse()
                         .withHeader("Content-Type", "application/json")
                         .withStatus(HttpStatus.OK.value())
                         .withBody(body)
@@ -150,7 +154,7 @@ public class MockServer implements DisposableBean {
     private void mockKall(String url, Map<String, StringValuePattern> params, String body) {
         String path = getPath(url);
         server.stubFor(
-                WireMock.get(WireMock.urlPathEqualTo(path)).withQueryParams(params).willReturn(WireMock.aResponse()
+                get(WireMock.urlPathEqualTo(path)).withQueryParams(params).willReturn(WireMock.aResponse()
                         .withHeader("Content-Type", "application/json")
                         .withStatus(HttpStatus.OK.value())
                         .withBody(body)

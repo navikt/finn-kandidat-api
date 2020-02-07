@@ -5,6 +5,7 @@ import no.nav.security.oidc.context.OIDCRequestContextHolder;
 import no.nav.security.oidc.context.OIDCValidationContext;
 import no.nav.security.oidc.context.TokenContext;
 import no.nav.tag.finnkandidatapi.kandidat.Veileder;
+import no.nav.tag.finnkandidatapi.tilbakemelding.Tilbakemelding;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -16,6 +17,7 @@ import java.util.Map;
 
 import static no.nav.security.oidc.test.support.JwtTokenGenerator.createSignedJWT;
 import static no.nav.tag.finnkandidatapi.TestData.enVeileder;
+import static no.nav.tag.finnkandidatapi.TestData.etFnr;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
@@ -39,6 +41,29 @@ public class TokenUtilsTest {
     public void hentInnloggetVeileder__skal_kaste_exception_hvis_ikke_innlogget() {
         værUinnlogget();
         tokenUtils.hentInnloggetVeileder();
+    }
+
+    @Test
+    public void hentInnloggetBruker__skal_returnere_riktig_bruker() {
+        String fnr = etFnr();
+        værInnloggetMedSelvBetjening(fnr);
+        assertThat(tokenUtils.hentInnloggetBruker()).isEqualTo(fnr);
+    }
+
+    @Test(expected = TilgangskontrollException.class)
+    public void hentInnloggetBruker__skal_kaste_exception_hvis_ikke_innlogget() {
+        værUinnlogget();
+        tokenUtils.hentInnloggetBruker();
+    }
+
+    private void værInnloggetMedSelvBetjening(String fnr) {
+        Map<String, Object> claims = Map.of("sub", fnr);
+        OIDCValidationContext context = new OIDCValidationContext();
+        TokenContext tokenContext = new TokenContext(TokenUtils.ISSUER_SELVBETJENING, "");
+        OIDCClaims oidcClaims = new OIDCClaims(createSignedJWT("blablabla", 0, claims, TokenUtils.ISSUER_SELVBETJENING, "aud-selvbetjening"));
+        context.addValidatedToken(TokenUtils.ISSUER_SELVBETJENING, tokenContext, oidcClaims);
+
+        when(contextHolder.getOIDCValidationContext()).thenReturn(context);
     }
 
     private void værInnloggetMedAzureAD(Veileder veileder) {

@@ -14,6 +14,7 @@ public class TokenUtils {
 
     final static String ISSUER_ISSO = "isso";
     final static String ISSUER_OPENAM = "openam";
+    final static String ISSUER_SELVBETJENING = "selvbetjening";
 
     private final OIDCRequestContextHolder contextHolder;
 
@@ -38,6 +39,11 @@ public class TokenUtils {
         } else {
             throw new TilgangskontrollException("Bruker er ikke innlogget.");
         }
+    }
+
+    public String hentInnloggetBruker() {
+        return hentClaim(ISSUER_SELVBETJENING, "sub")
+                .orElseThrow(() -> new TilgangskontrollException("Bruker er ikke innlogget"));
     }
 
     private boolean erInnloggetMedAzureAD() {

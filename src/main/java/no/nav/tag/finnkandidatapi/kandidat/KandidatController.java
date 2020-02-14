@@ -3,7 +3,7 @@ package no.nav.tag.finnkandidatapi.kandidat;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.security.oidc.api.Protected;
+import no.nav.security.token.support.core.api.Protected;
 import no.nav.tag.finnkandidatapi.tilgangskontroll.TilgangskontrollService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

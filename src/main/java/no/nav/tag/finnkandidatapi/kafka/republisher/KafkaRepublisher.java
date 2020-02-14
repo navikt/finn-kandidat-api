@@ -1,7 +1,7 @@
 package no.nav.tag.finnkandidatapi.kafka.republisher;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.security.oidc.api.Protected;
+import no.nav.security.token.support.core.api.Protected;
 import no.nav.tag.finnkandidatapi.kafka.harTilretteleggingsbehov.HarTilretteleggingsbehov;
 import no.nav.tag.finnkandidatapi.kafka.harTilretteleggingsbehov.HarTilretteleggingsbehovProducer;
 import no.nav.tag.finnkandidatapi.kandidat.KandidatRepository;

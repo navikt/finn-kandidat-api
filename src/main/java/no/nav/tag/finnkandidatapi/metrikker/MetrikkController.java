@@ -1,7 +1,7 @@
 package no.nav.tag.finnkandidatapi.metrikker;
 
 import lombok.RequiredArgsConstructor;
-import no.nav.security.oidc.api.Protected;
+import no.nav.security.token.support.core.api.Protected;
 import no.nav.tag.finnkandidatapi.kandidat.Kandidat;
 import no.nav.tag.finnkandidatapi.kandidat.KandidatRepository;
 import org.springframework.http.ResponseEntity;

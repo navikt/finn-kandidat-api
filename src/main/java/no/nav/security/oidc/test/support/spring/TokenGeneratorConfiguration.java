@@ -1,8 +1,8 @@
 package no.nav.security.oidc.test.support.spring;
 
-import no.nav.security.oidc.configuration.OIDCResourceRetriever;
 import no.nav.security.oidc.test.support.FileResourceRetriever;
 import no.nav.security.oidc.test.support.JwkGenerator;
+import no.nav.security.token.support.core.configuration.ProxyAwareResourceRetriever;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -18,7 +18,7 @@ public class TokenGeneratorConfiguration implements WebMvcConfigurer {
      */
     @Bean
     @Primary
-    OIDCResourceRetriever overrideOidcResourceRetriever() {
+    ProxyAwareResourceRetriever overrideOidcResourceRetriever() {
         return new FileResourceRetriever("/local-login/metadata-selvbetjening.json", "/local-login/metadata-isso.json", "/local-login/jwkset.json");
     }
 

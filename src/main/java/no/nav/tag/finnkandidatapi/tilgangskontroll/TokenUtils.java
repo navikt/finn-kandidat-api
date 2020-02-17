@@ -7,12 +7,16 @@ import no.nav.tag.finnkandidatapi.kandidat.Veileder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+
 @Component
 public class TokenUtils {
 
     final static String ISSUER_ISSO = "isso";
     final static String ISSUER_OPENAM = "openam";
     final static String ISSUER_SELVBETJENING = "selvbetjening";
+
+    final static String NAVIDENT_CLAIM = "NAVident";
 
     private final TokenValidationContextHolder contextHolder;
 
@@ -28,7 +32,7 @@ public class TokenUtils {
 
     public Veileder hentInnloggetVeileder() {
         if (erInnloggetMedAzureAD()) {
-            String navIdent = contextHolder.getTokenValidationContext().getClaims(ISSUER_ISSO).get("NAVident").toString();
+            String navIdent = contextHolder.getTokenValidationContext().getClaims(ISSUER_ISSO).get(NAVIDENT_CLAIM).toString();
             return new Veileder(navIdent);
         } else if (erInnloggetMedOpenAM()) {
             String navIdent = contextHolder.getTokenValidationContext().getClaims(ISSUER_OPENAM).getSubject();
@@ -49,13 +53,17 @@ public class TokenUtils {
     }
 
     private boolean erInnloggetMedAzureAD() {
-        String navIdent = contextHolder.getTokenValidationContext().getClaims(ISSUER_ISSO).get("NAVident").toString();
-        return erNAVIdent(navIdent);
+        Optional<String> navIdent = Optional.ofNullable(contextHolder.getTokenValidationContext().getClaims(ISSUER_ISSO))
+                .map(claims -> claims.get(NAVIDENT_CLAIM).toString())
+                .filter(this::erNAVIdent);
+        return navIdent.isPresent();
     }
 
     private boolean erInnloggetMedOpenAM() {
-        JwtTokenClaims claims = contextHolder.getTokenValidationContext().getClaims(ISSUER_OPENAM);
-        return erNAVIdent(claims.getSubject());
+        Optional<String> navIdent = Optional.ofNullable(contextHolder.getTokenValidationContext().getClaims(ISSUER_OPENAM))
+                .map(JwtTokenClaims::getSubject)
+                .filter(this::erNAVIdent);
+        return navIdent.isPresent();
     }
 
     public boolean harInnloggingsContext() {

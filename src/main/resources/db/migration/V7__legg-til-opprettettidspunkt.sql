@@ -1,0 +1,1 @@
+ALTER TABLE kandidat ADD COLUMN opprettet TIMESTAMP(6) DEFAULT current_timestamp;

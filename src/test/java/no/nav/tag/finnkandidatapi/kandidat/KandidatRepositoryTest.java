@@ -124,28 +124,42 @@ public class KandidatRepositoryTest {
     }
 
     @Test
-    public void hentKandidater__skal_returnere_siste_kandidat_etter_lagret_flere_kandidater_med_samme_aktør_id() {
-        Kandidat kandidat = kandidatBuilder()
-                .aktørId("1000000000001")
+    public void hentKandidater__skal_returnere_nyeste_versjon_av_hver_kandidat_etter_flere_endringer() {
+        Kandidat kandidat1 = kandidatBuilder()
+                .aktørId("kand111")
                 .sistEndret(now())
                 .build();
-        Kandidat nyereKandidat = kandidatBuilder()
-                .aktørId("1000000000001")
+        repository.lagreKandidat(kandidat1);
+
+        Kandidat kandidat2 = kandidatBuilder()
+                .aktørId("kand222")
+                .sistEndret(now())
+                .build();
+        repository.lagreKandidat(kandidat2);
+
+        Kandidat kandidat1Endring1 = kandidatBuilder()
+                .aktørId(kandidat1.getAktørId())
                 .sistEndret(now().plusMinutes(1))
                 .build();
-        Kandidat sisteKandidat = kandidatBuilder()
-                .aktørId("1000000000001")
+        repository.lagreKandidat(kandidat1Endring1);
+
+        Kandidat kandidat2Endring1 = kandidatBuilder()
+                .aktørId(kandidat2.getAktørId())
+                .sistEndret(now().plusMinutes(1))
+                .build();
+        repository.lagreKandidat(kandidat2Endring1);
+
+        Kandidat kandidat1Endring2 = kandidatBuilder()
+                .aktørId(kandidat1.getAktørId())
                 .sistEndret(now().plusMinutes(2))
                 .build();
-
-        repository.lagreKandidat(kandidat);
-        repository.lagreKandidat(nyereKandidat);
-        repository.lagreKandidat(sisteKandidat);
+        repository.lagreKandidat(kandidat1Endring2);
 
         List<Kandidat> kandidater = repository.hentKandidater();
 
-        assertThat(kandidater.size()).isEqualTo(1);
-        assertThat(kandidater.get(0)).isEqualToIgnoringGivenFields(sisteKandidat, "id");
+        assertThat(kandidater.size()).isEqualTo(2);
+        assertThat(kandidater.get(0)).isEqualToIgnoringGivenFields(kandidat2Endring1, "id");
+        assertThat(kandidater.get(1)).isEqualToIgnoringGivenFields(kandidat1Endring2, "id");
     }
 
     @Test
@@ -187,6 +201,7 @@ public class KandidatRepositoryTest {
         List<Kandidat> kandidater = repository.hentKandidater();
 
         assertThat(kandidater.size()).isEqualTo(1);
+        assertThat(kandidater.get(0)).isEqualToIgnoringGivenFields(kandidat2, "id");
     }
 
     @Test

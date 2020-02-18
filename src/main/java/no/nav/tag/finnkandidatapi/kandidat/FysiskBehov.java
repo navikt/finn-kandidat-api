@@ -6,7 +6,8 @@ public enum FysiskBehov {
     TUNGE_LØFT,
     HØRSEL,
     SYN,
-    ANNET;
+    ANNET,
+    UNIVERSELL_UTFORMING;
 
     public static final String behovskategori = "fysisk";
 }

@@ -1,9 +1,9 @@
 package no.nav.tag.finnkandidatapi.kandidat;
 
 public enum GrunnleggendeBehov {
-    SNAKKE_NORSK,
-    SKRIVE_NORSK,
-    LESE_NORSK,
+    SNAKKE_NORSK, SNAKKE,
+    SKRIVE_NORSK, SKRIVE,
+    LESE_NORSK, LESE,
     REGNING_OG_TALLFORSTÅELSE,
     ANDRE_UTFORDRINGER;
 

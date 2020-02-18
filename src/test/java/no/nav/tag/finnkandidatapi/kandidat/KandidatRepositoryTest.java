@@ -14,8 +14,8 @@ import java.util.Optional;
 import java.util.Set;
 
 import static no.nav.tag.finnkandidatapi.TestData.*;
-import static no.nav.tag.finnkandidatapi.kandidat.ArbeidsmiljøBehov.*;
 import static no.nav.tag.finnkandidatapi.kandidat.FysiskBehov.ARBEIDSSTILLING;
+import static no.nav.tag.finnkandidatapi.kandidat.FysiskBehov.ERGONOMI;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
@@ -63,16 +63,25 @@ public class KandidatRepositoryTest {
 
     @Test
     public void hentNyesteKandidat__skal_returnere_nyeste_versjon_av_tilretteleggingsbehov_for_en_kandidat() {
-        Kandidat kandidat = enKandidat();
-        kandidat.setFysiskeBehov(Set.of(ARBEIDSSTILLING));
-        Kandidat kandidatEndring = enKandidat();
-        kandidatEndring.setArbeidsmiljøBehov(Set.of(MENTOR, ANNET));
+        Kandidat kandidat1 = enKandidat("kandidat1");
+        kandidat1.setFysiskeBehov(Set.of(ARBEIDSSTILLING));
+        repository.lagreKandidat(kandidat1);
 
-        repository.lagreKandidat(kandidat);
-        repository.lagreKandidat(kandidatEndring);
-        Kandidat sisteKandidat = repository.hentNyesteKandidat(kandidat.getAktørId()).get();
+        Kandidat kandidat2 = enKandidat("kandidat2");
+        kandidat1.setArbeidstidBehov(Set.of(ArbeidstidBehov.FLEKSIBEL));
+        repository.lagreKandidat(kandidat2);
 
-        assertThat(sisteKandidat).isEqualToIgnoringGivenFields(kandidatEndring, "id");
+        Kandidat kandidat1Endring = enKandidat(kandidat1.getAktørId());
+        kandidat1Endring.setFysiskeBehov(Set.of(ERGONOMI));
+        repository.lagreKandidat(kandidat1Endring);
+
+        Kandidat kandidat2Endring = enKandidat(kandidat2.getAktørId());
+        kandidat2Endring.setArbeidstidBehov(Set.of(ArbeidstidBehov.BORTE_FASTE_DAGER_ELLER_TIDER));
+        repository.lagreKandidat(kandidat2Endring);
+
+        Kandidat nyesteForKandidat1 = repository.hentNyesteKandidat(kandidat1.getAktørId()).get();
+
+        assertThat(nyesteForKandidat1).isEqualToIgnoringGivenFields(kandidat1Endring, "id", "sistEndret");
     }
 
     @Test

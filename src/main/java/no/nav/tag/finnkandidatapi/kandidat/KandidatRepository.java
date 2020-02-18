@@ -53,7 +53,7 @@ public class KandidatRepository {
     public Optional<Kandidat> hentNyesteKandidat(String aktørId) {
         try {
             Kandidat kandidat = jdbcTemplate.queryForObject(
-                    "SELECT * FROM kandidat WHERE (aktor_id = ?) ORDER BY registreringstidspunkt DESC LIMIT 1", new Object[]{aktørId},
+                    "SELECT * FROM kandidat WHERE (aktor_id = ?) ORDER BY id DESC LIMIT 1", new Object[]{aktørId},
                     kandidatMapper
             );
             return Optional.ofNullable(kandidat);

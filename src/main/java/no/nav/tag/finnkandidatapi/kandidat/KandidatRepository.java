@@ -98,15 +98,17 @@ public class KandidatRepository {
     }
 
     private String lagKandidatQuery(boolean inkluderSlettedeKandidater) {
+
+
         return (
                 "SELECT k.* " +
                         "FROM kandidat k " +
                         "INNER JOIN " +
-                        "(SELECT aktor_id, MAX(registreringstidspunkt) AS sisteRegistrert " +
+                        "(SELECT aktor_id, MAX(id) AS nyesteId " +
                         "FROM kandidat " +
                         "GROUP BY aktor_id) gruppertKandidat " +
                         "ON k.aktor_id = gruppertKandidat.aktor_id " +
-                        "AND k.registreringstidspunkt = gruppertKandidat.sisteRegistrert " +
+                        "AND k.id = gruppertKandidat.nyesteId " +
                         (inkluderSlettedeKandidater ? "" : "WHERE slettet = false ") +
                         "ORDER BY k.registreringstidspunkt"
         );
@@ -117,16 +119,21 @@ public class KandidatRepository {
     }
 
     public Integer lagreKandidat(Kandidat kandidat) {
-        Map<String, Object> parameters = lagInsertParameter(kandidat);
+        Map<String, Object> parameters = lagInsertParameter(kandidat, Brukertype.VEILEDER);
         return jdbcInsert.executeAndReturnKey(parameters).intValue();
     }
 
-    private Map<String, Object> lagInsertParameter(Kandidat kandidat) {
+    public Integer lagreKandidat(Kandidat kandidat, Brukertype brukertype) {
+        Map<String, Object> parameters = lagInsertParameter(kandidat, brukertype);
+        return jdbcInsert.executeAndReturnKey(parameters).intValue();
+    }
+
+    private Map<String, Object> lagInsertParameter(Kandidat kandidat, Brukertype brukertype) {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put(FNR, kandidat.getFnr());
         parameters.put(AKTØR_ID, kandidat.getAktørId());
         parameters.put(REGISTRERT_AV, kandidat.getSistEndretAv());
-        parameters.put(REGISTRERT_AV_BRUKERTYPE, Brukertype.VEILEDER.name());
+        parameters.put(REGISTRERT_AV_BRUKERTYPE, brukertype.name());
         parameters.put(REGISTRERINGSTIDSPUNKT, kandidat.getSistEndret());
         parameters.put(ARBEIDSTID_BEHOV, enumSetTilString(kandidat.getArbeidstidBehov()));
         parameters.put(FYSISKE_BEHOV, enumSetTilString(kandidat.getFysiskeBehov()));

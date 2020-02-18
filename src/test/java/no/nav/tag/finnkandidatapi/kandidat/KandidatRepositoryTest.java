@@ -62,17 +62,17 @@ public class KandidatRepositoryTest {
     }
 
     @Test
-    public void hentNyesteKandidat__skal_returnere_siste_registrerte_kandidat() {
-        Kandidat kandidat1 = enKandidat();
-        kandidat1.setFysiskeBehov(Set.of(ARBEIDSSTILLING));
-        Kandidat kandidat2 = enKandidat();
-        kandidat2.setArbeidsmiljøBehov(Set.of(MENTOR, ANNET));
+    public void hentNyesteKandidat__skal_returnere_nyeste_versjon_av_tilretteleggingsbehov_for_en_kandidat() {
+        Kandidat kandidat = enKandidat();
+        kandidat.setFysiskeBehov(Set.of(ARBEIDSSTILLING));
+        Kandidat kandidatEndring = enKandidat();
+        kandidatEndring.setArbeidsmiljøBehov(Set.of(MENTOR, ANNET));
 
-        repository.lagreKandidat(kandidat1);
-        repository.lagreKandidat(kandidat2);
-        Kandidat sisteKandidat = repository.hentNyesteKandidat(kandidat1.getAktørId()).get();
+        repository.lagreKandidat(kandidat);
+        repository.lagreKandidat(kandidatEndring);
+        Kandidat sisteKandidat = repository.hentNyesteKandidat(kandidat.getAktørId()).get();
 
-        assertThat(sisteKandidat).isEqualToIgnoringGivenFields(kandidat2, "id");
+        assertThat(sisteKandidat).isEqualToIgnoringGivenFields(kandidatEndring, "id");
     }
 
     @Test

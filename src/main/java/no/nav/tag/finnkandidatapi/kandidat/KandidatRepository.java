@@ -87,7 +87,7 @@ public class KandidatRepository {
     public Optional<HarTilretteleggingsbehov> hentHarTilretteleggingsbehov(String aktørId) {
         try {
             HarTilretteleggingsbehov harTilretteleggingsbehov = jdbcTemplate.queryForObject(
-                    "SELECT * FROM kandidat WHERE (aktor_id = ?) ORDER BY registreringstidspunkt DESC LIMIT 1", new Object[]{aktørId},
+                    "SELECT * FROM kandidat WHERE (aktor_id = ?) ORDER BY id DESC LIMIT 1", new Object[]{aktørId},
                     harTilretteleggingsbehovMapper
             );
 

@@ -2,6 +2,7 @@ package no.nav.tag.finnkandidatapi.kandidat;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.finnkandidatapi.kafka.harTilretteleggingsbehov.HarTilretteleggingsbehov;
+import org.apache.tomcat.jni.Local;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -33,6 +34,7 @@ public class KandidatRepository {
     static final String ARBEIDSMILJØ_BEHOV = "arbeidsmiljø_behov";
     static final String GRUNNLEGGENDE_BEHOV = "grunnleggende_behov";
     static final String SLETTET = "slettet";
+    static final String OPPRETTET = "opprettet";
     static final String NAV_KONTOR = "nav_kontor";
 
     private JdbcTemplate jdbcTemplate;
@@ -140,6 +142,8 @@ public class KandidatRepository {
         parameters.put(GRUNNLEGGENDE_BEHOV, enumSetTilString(kandidat.getGrunnleggendeBehov()));
         parameters.put(NAV_KONTOR, kandidat.getNavKontor());
         parameters.put(SLETTET, false);
+        parameters.put(OPPRETTET, LocalDateTime.now());
+
         return parameters;
     }
 
@@ -158,6 +162,7 @@ public class KandidatRepository {
         parameters.put(REGISTRERT_AV, Brukertype.SYSTEM.name());
         parameters.put(REGISTRERT_AV_BRUKERTYPE, Brukertype.SYSTEM.name());
         parameters.put(REGISTRERINGSTIDSPUNKT, slettetTidspunkt);
+        parameters.put(OPPRETTET, LocalDateTime.now());
         parameters.put(SLETTET, true);
 
         return Optional.ofNullable(jdbcInsert.executeAndReturnKey(parameters).intValue());
@@ -178,6 +183,7 @@ public class KandidatRepository {
         parameters.put(REGISTRERT_AV, slettetAv.getNavIdent());
         parameters.put(REGISTRERT_AV_BRUKERTYPE, Brukertype.VEILEDER.name());
         parameters.put(REGISTRERINGSTIDSPUNKT, slettetTidspunkt);
+        parameters.put(OPPRETTET, LocalDateTime.now());
         parameters.put(SLETTET, true);
 
         return Optional.ofNullable(jdbcInsert.executeAndReturnKey(parameters).intValue());

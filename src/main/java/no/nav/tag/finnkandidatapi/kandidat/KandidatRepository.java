@@ -118,9 +118,8 @@ public class KandidatRepository {
         jdbcTemplate.execute("DELETE FROM kandidat");
     }
 
-    public Integer lagreKandidat(Kandidat kandidat) {
-        Map<String, Object> parameters = lagInsertParameter(kandidat, Brukertype.VEILEDER);
-        return jdbcInsert.executeAndReturnKey(parameters).intValue();
+    public Integer lagreKandidatSomVeileder(Kandidat kandidat) {
+        return lagreKandidat(kandidat, Brukertype.VEILEDER);
     }
 
     public Integer lagreKandidat(Kandidat kandidat, Brukertype brukertype) {

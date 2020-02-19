@@ -3,10 +3,7 @@ package no.nav.tag.finnkandidatapi.kafka;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import no.nav.tag.finnkandidatapi.kafka.harTilretteleggingsbehov.HarTilretteleggingsbehov;
-import no.nav.tag.finnkandidatapi.kandidat.ArbeidsmiljøBehov;
-import no.nav.tag.finnkandidatapi.kandidat.FysiskBehov;
-import no.nav.tag.finnkandidatapi.kandidat.GrunnleggendeBehov;
-import no.nav.tag.finnkandidatapi.kandidat.KandidatDto;
+import no.nav.tag.finnkandidatapi.kandidat.*;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.junit.After;
@@ -75,6 +72,7 @@ public class HttpRequestInnSkalGiKafkaMeldingUt {
         HarTilretteleggingsbehov actualTilretteleggingsbehov = new ObjectMapper().readValue(opprettMsgs.get(0), HarTilretteleggingsbehov.class);
         List<String> actualBehov = actualTilretteleggingsbehov.getBehov();
         Set<String> expectedBehov = Set.of(
+                ArbeidstidBehov.behovskategori,
                 ArbeidsmiljøBehov.behovskategori,
                 FysiskBehov.behovskategori,
                 GrunnleggendeBehov.behovskategori
@@ -96,6 +94,7 @@ public class HttpRequestInnSkalGiKafkaMeldingUt {
         actualTilretteleggingsbehov = new ObjectMapper().readValue(endreMsgs.get(0), HarTilretteleggingsbehov.class);
         actualBehov = actualTilretteleggingsbehov.getBehov();
         expectedBehov = Set.of(
+                ArbeidstidBehov.behovskategori,
                 FysiskBehov.behovskategori,
                 GrunnleggendeBehov.behovskategori
         );

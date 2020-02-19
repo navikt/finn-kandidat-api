@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -24,22 +23,8 @@ public class MigreringController {
 
     @GetMapping
     public ResponseEntity kjørMigrering() {
-        // TODO: Tilgang kun til oss
-
-        /*
-         * For kun siste hendelse av alle kandidater som ikke er slettet
-         *   Hvis den inneholder et av behovene som skal fjernes
-         *     Fjern det
-         *   Hvis den inneholder et behov som skal endres
-         *     Fjern det
-         *     Legg til det nye
-         *   Hvis en av de to over skjedde
-         *     Lagre ny rad
-         */
-
         List<Kandidat> kandidater = repository.hentKandidater();
         kandidater.forEach(this::migrer);
-
         return ResponseEntity.ok().build();
     }
 

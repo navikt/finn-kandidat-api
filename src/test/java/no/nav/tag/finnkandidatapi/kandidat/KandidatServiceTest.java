@@ -201,7 +201,7 @@ public class KandidatServiceTest {
 
         kandidatService.slettKandidat(aktørId, veileder);
 
-        verify(repository).slettKandidat(aktørId, veileder, datetime);
+        verify(repository).slettKandidatSomVeileder(aktørId, veileder, datetime);
     }
 
     @Test
@@ -212,7 +212,7 @@ public class KandidatServiceTest {
 
         when(dateProvider.now()).thenReturn(datetime);
         Optional<Integer> slettetKey = Optional.of(4);
-        when(repository.slettKandidat(aktørId, veileder, datetime)).thenReturn(slettetKey);
+        when(repository.slettKandidatSomVeileder(aktørId, veileder, datetime)).thenReturn(slettetKey);
 
         kandidatService.slettKandidat(aktørId, veileder);
 
@@ -224,7 +224,7 @@ public class KandidatServiceTest {
         String aktørId = "1000000000001";
         Veileder veileder = enVeileder();
 
-        when(repository.slettKandidat(eq(aktørId), eq(veileder), any())).thenReturn(Optional.of(4));
+        when(repository.slettKandidatSomVeileder(eq(aktørId), eq(veileder), any())).thenReturn(Optional.of(4));
 
         assertThat(kandidatService.slettKandidat(aktørId, veileder).get()).isEqualTo(4);
     }

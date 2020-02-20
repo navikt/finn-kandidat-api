@@ -2,7 +2,6 @@ package no.nav.tag.finnkandidatapi.kandidat;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.finnkandidatapi.kafka.harTilretteleggingsbehov.HarTilretteleggingsbehov;
-import org.apache.tomcat.jni.Local;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -31,8 +30,8 @@ public class KandidatRepository {
     static final String REGISTRERINGSTIDSPUNKT = "registreringstidspunkt";
     static final String ARBEIDSTID_BEHOV = "arbeidstid_behov";
     static final String FYSISKE_BEHOV = "fysiske_behov";
-    static final String ARBEIDSMILJØ_BEHOV = "arbeidsmiljø_behov";
-    static final String GRUNNLEGGENDE_BEHOV = "grunnleggende_behov";
+    static final String ARBEIDSHVERDAGEN_BEHOV = "arbeidshverdagen_behov";
+    static final String UTFORDRINGERMEDNORSK_BEHOV = "utfordringerMedNorsk_behov";
     static final String SLETTET = "slettet";
     static final String OPPRETTET = "opprettet";
     static final String NAV_KONTOR = "nav_kontor";
@@ -138,8 +137,8 @@ public class KandidatRepository {
         parameters.put(REGISTRERINGSTIDSPUNKT, kandidat.getSistEndret());
         parameters.put(ARBEIDSTID_BEHOV, enumSetTilString(kandidat.getArbeidstidBehov()));
         parameters.put(FYSISKE_BEHOV, enumSetTilString(kandidat.getFysiskeBehov()));
-        parameters.put(ARBEIDSMILJØ_BEHOV, enumSetTilString(kandidat.getArbeidsmiljøBehov()));
-        parameters.put(GRUNNLEGGENDE_BEHOV, enumSetTilString(kandidat.getGrunnleggendeBehov()));
+        parameters.put(ARBEIDSHVERDAGEN_BEHOV, enumSetTilString(kandidat.getArbeidsmiljøBehov()));
+        parameters.put(UTFORDRINGERMEDNORSK_BEHOV, enumSetTilString(kandidat.getGrunnleggendeBehov()));
         parameters.put(NAV_KONTOR, kandidat.getNavKontor());
         parameters.put(SLETTET, false);
         parameters.put(OPPRETTET, LocalDateTime.now());
@@ -147,47 +146,36 @@ public class KandidatRepository {
         return parameters;
     }
 
-    public Optional<Integer> slettKandidatSomMaskinbruker(
-            String aktørId,
-            LocalDateTime slettetTidspunkt
-    ) {
-
-        Optional<Kandidat> kandidat = hentNyesteKandidat(aktørId);
-        if (kandidat.isEmpty()) {
-            return Optional.empty();
-        }
-
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put(AKTØR_ID, aktørId);
-        parameters.put(REGISTRERT_AV, Brukertype.SYSTEM.name());
-        parameters.put(REGISTRERT_AV_BRUKERTYPE, Brukertype.SYSTEM.name());
-        parameters.put(REGISTRERINGSTIDSPUNKT, slettetTidspunkt);
-        parameters.put(OPPRETTET, LocalDateTime.now());
-        parameters.put(SLETTET, true);
-
-        return Optional.ofNullable(jdbcInsert.executeAndReturnKey(parameters).intValue());
-    }
-
-    public Optional<Integer> slettKandidat(
+    public Optional<Integer> slettKandidatSomVeileder(
             String aktørId,
             Veileder slettetAv,
-            LocalDateTime slettetTidspunkt
+            LocalDateTime registrertAvVeileder
     ) {
-        Optional<Kandidat> kandidat = hentNyesteKandidat(aktørId);
-        if (kandidat.isEmpty()) {
-            return Optional.empty();
-        }
-
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put(AKTØR_ID, aktørId);
-        parameters.put(REGISTRERT_AV, slettetAv.getNavIdent());
-        parameters.put(REGISTRERT_AV_BRUKERTYPE, Brukertype.VEILEDER.name());
-        parameters.put(REGISTRERINGSTIDSPUNKT, slettetTidspunkt);
-        parameters.put(OPPRETTET, LocalDateTime.now());
-        parameters.put(SLETTET, true);
-
-        return Optional.ofNullable(jdbcInsert.executeAndReturnKey(parameters).intValue());
+        return slettKandidat(aktørId, registrertAvVeileder, slettetAv.getNavIdent(), Brukertype.VEILEDER);
     }
+
+    public Optional<Integer> slettKandidatSomMaskinbruker(
+            String aktørId,
+            LocalDateTime registrertAvVeileder
+    ) {
+        return slettKandidat(aktørId, registrertAvVeileder, Brukertype.SYSTEM.name(), Brukertype.SYSTEM);
+    }
+
+    private Optional<Integer> slettKandidat(String aktørId, LocalDateTime registrertAvVeileder, String registrertAv, Brukertype registrertAvBrukertype) {
+        if (hentNyesteKandidat(aktørId).isEmpty()) {
+            return Optional.empty();
+        } else {
+            Map<String, Object> parameters = new HashMap<>();
+            parameters.put(AKTØR_ID, aktørId);
+            parameters.put(REGISTRERT_AV, registrertAv);
+            parameters.put(REGISTRERT_AV_BRUKERTYPE, registrertAvBrukertype.name());
+            parameters.put(REGISTRERINGSTIDSPUNKT, registrertAvVeileder);
+            parameters.put(OPPRETTET, LocalDateTime.now());
+            parameters.put(SLETTET, true);
+            return Optional.ofNullable(jdbcInsert.executeAndReturnKey(parameters).intValue());
+        }
+    }
+
 
     public int oppdaterNavKontor(String fnr, String navKontor) {
         if (fnr == null) {

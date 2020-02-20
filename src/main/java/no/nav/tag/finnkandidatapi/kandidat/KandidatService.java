@@ -2,9 +2,9 @@ package no.nav.tag.finnkandidatapi.kandidat;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.tag.finnkandidatapi.DateProvider;
 import no.nav.tag.finnkandidatapi.aktørregister.AktørRegisterClient;
 import no.nav.tag.finnkandidatapi.kafka.oppfølgingAvsluttet.OppfølgingAvsluttetMelding;
-import no.nav.tag.finnkandidatapi.DateProvider;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatEndret;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatOpprettet;
 import no.nav.tag.finnkandidatapi.metrikker.KandidatSlettet;
@@ -129,12 +129,11 @@ public class KandidatService {
 
     Optional<Integer> slettKandidat(String aktørId, Veileder innloggetVeileder) {
         LocalDateTime slettetTidspunkt = dateProvider.now();
-        Optional<Integer> optionalId = kandidatRepository.slettKandidat(aktørId, innloggetVeileder, slettetTidspunkt);
+        Optional<Integer> optionalId = kandidatRepository.slettKandidatSomVeileder(aktørId, innloggetVeileder, slettetTidspunkt);
 
         optionalId.ifPresent(id -> {
-            eventPublisher.publishEvent(
-                    new KandidatSlettet(id, aktørId, Brukertype.VEILEDER, slettetTidspunkt)
-            );
+            KandidatSlettet event = new KandidatSlettet(id, aktørId, Brukertype.VEILEDER, slettetTidspunkt);
+            eventPublisher.publishEvent(event);
         });
 
         return optionalId;

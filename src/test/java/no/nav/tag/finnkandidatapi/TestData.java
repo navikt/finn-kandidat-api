@@ -17,24 +17,24 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
-import static no.nav.tag.finnkandidatapi.kandidat.ArbeidsmiljøBehov.*;
-import static no.nav.tag.finnkandidatapi.kandidat.ArbeidstidBehov.*;
-import static no.nav.tag.finnkandidatapi.kandidat.FysiskBehov.ARBEIDSSTILLING;
-import static no.nav.tag.finnkandidatapi.kandidat.FysiskBehov.ERGONOMI;
-import static no.nav.tag.finnkandidatapi.kandidat.GrunnleggendeBehov.*;
+import static no.nav.tag.finnkandidatapi.kandidat.Arbeidshverdagen.*;
+import static no.nav.tag.finnkandidatapi.kandidat.Arbeidstid.*;
+import static no.nav.tag.finnkandidatapi.kandidat.Fysisk.ARBEIDSSTILLING;
+import static no.nav.tag.finnkandidatapi.kandidat.Fysisk.ERGONOMI;
+import static no.nav.tag.finnkandidatapi.kandidat.UtfordringerMedNorsk.*;
 
 public class TestData {
 
     public static Kandidat enKandidat() {
         return Kandidat.builder()
-                .sistEndret(now())
+                .sistEndretAvVeileder(now())
                 .sistEndretAv(enNavIdent())
                 .fnr(etFnr())
                 .aktørId("1000000000001")
-                .arbeidstidBehov(Set.of(KAN_IKKE_JOBBE))
-                .fysiskeBehov(Set.of(ARBEIDSSTILLING, ERGONOMI))
-                .arbeidsmiljøBehov(Set.of(MENTOR, TILRETTELAGTE_ARBEIDSOPPGAVER))
-                .grunnleggendeBehov(Set.of(SNAKKE_NORSK, SKRIVE_NORSK, LESE_NORSK))
+                .arbeidstid(Set.of(KAN_IKKE_JOBBE))
+                .fysisk(Set.of(ARBEIDSSTILLING, ERGONOMI))
+                .arbeidshverdagen(Set.of(MENTOR, TILRETTELAGTE_ARBEIDSOPPGAVER))
+                .utfordringerMedNorsk(Set.of(SNAKKE_NORSK, SKRIVE_NORSK, LESE_NORSK))
                 .navKontor(etNavKontor())
                 .build();
     }
@@ -43,10 +43,10 @@ public class TestData {
         return KandidatDto.builder()
                 .fnr(kandidat.getFnr())
                 .aktørId(kandidat.getAktørId())
-                .arbeidstidBehov(kandidat.getArbeidstidBehov())
-                .fysiskeBehov(kandidat.getFysiskeBehov())
-                .arbeidsmiljøBehov(kandidat.getArbeidsmiljøBehov())
-                .grunnleggendeBehov(kandidat.getGrunnleggendeBehov())
+                .arbeidstid(kandidat.getArbeidstid())
+                .fysisk(kandidat.getFysisk())
+                .arbeidshverdagen(kandidat.getArbeidshverdagen())
+                .utfordringerMedNorsk(kandidat.getUtfordringerMedNorsk())
                 .build();
     }
 
@@ -54,10 +54,10 @@ public class TestData {
         return KandidatDto.builder()
                 .fnr(etFnr())
                 .aktørId("1000000000001")
-                .arbeidstidBehov(Set.of(GRADVIS_ØKNING))
-                .fysiskeBehov(Set.of(ARBEIDSSTILLING))
-                .arbeidsmiljøBehov(Set.of(MENTOR, TILRETTELAGTE_ARBEIDSOPPGAVER, ANNET))
-                .grunnleggendeBehov(Set.of(SNAKKE_NORSK, LESE_NORSK))
+                .arbeidstid(Set.of(GRADVIS_ØKNING))
+                .fysisk(Set.of(ARBEIDSSTILLING))
+                .arbeidshverdagen(Set.of(MENTOR, TILRETTELAGTE_ARBEIDSOPPGAVER, ANNET))
+                .utfordringerMedNorsk(Set.of(SNAKKE_NORSK, LESE_NORSK))
                 .build();
     }
 
@@ -75,14 +75,14 @@ public class TestData {
 
     public static Kandidat.KandidatBuilder kandidatBuilder() {
         return Kandidat.builder()
-                .sistEndret(now())
+                .sistEndretAvVeileder(now())
                 .sistEndretAv(enNavIdent())
                 .fnr("12345678901")
                 .aktørId("1000000000001")
-                .arbeidstidBehov(Set.of(KAN_IKKE_JOBBE))
-                .fysiskeBehov(Set.of(ARBEIDSSTILLING, ERGONOMI))
-                .arbeidsmiljøBehov(Set.of(MENTOR, TILRETTELAGTE_ARBEIDSOPPGAVER))
-                .grunnleggendeBehov(Set.of(SNAKKE_NORSK, SKRIVE_NORSK, LESE_NORSK));
+                .arbeidstid(Set.of(KAN_IKKE_JOBBE))
+                .fysisk(Set.of(ARBEIDSSTILLING, ERGONOMI))
+                .arbeidshverdagen(Set.of(MENTOR, TILRETTELAGTE_ARBEIDSOPPGAVER))
+                .utfordringerMedNorsk(Set.of(SNAKKE_NORSK, SKRIVE_NORSK, LESE_NORSK));
     }
 
     public static Veileder enVeileder() {
@@ -103,10 +103,10 @@ public class TestData {
 
     public static Kandidat enKandidatMedNullOgTommeSet() {
         return Kandidat.builder()
-                .arbeidstidBehov(Collections.emptySet())
-                .fysiskeBehov(Collections.emptySet())
-                .arbeidsmiljøBehov(Collections.emptySet())
-                .grunnleggendeBehov(Collections.emptySet())
+                .arbeidstid(Collections.emptySet())
+                .fysisk(Collections.emptySet())
+                .arbeidshverdagen(Collections.emptySet())
+                .utfordringerMedNorsk(Collections.emptySet())
                 .build();
     }
 

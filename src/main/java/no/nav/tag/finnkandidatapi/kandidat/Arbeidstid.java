@@ -1,6 +1,6 @@
 package no.nav.tag.finnkandidatapi.kandidat;
 
-public enum ArbeidstidBehov {
+public enum Arbeidstid {
     KAN_IKKE_JOBBE,
     HELTID,
     IKKE_HELE_DAGER,

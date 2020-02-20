@@ -4,7 +4,6 @@ import no.nav.metrics.MetricsFactory;
 import no.nav.security.oidc.api.Protected;
 import no.nav.tag.finnkandidatapi.tilgangskontroll.TilgangskontrollException;
 import no.nav.tag.finnkandidatapi.tilgangskontroll.TilgangskontrollService;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

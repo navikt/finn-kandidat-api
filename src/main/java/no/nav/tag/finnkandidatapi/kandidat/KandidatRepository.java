@@ -134,11 +134,11 @@ public class KandidatRepository {
         parameters.put(AKTØR_ID, kandidat.getAktørId());
         parameters.put(REGISTRERT_AV, kandidat.getSistEndretAv());
         parameters.put(REGISTRERT_AV_BRUKERTYPE, brukertype.name());
-        parameters.put(REGISTRERINGSTIDSPUNKT, kandidat.getSistEndret());
-        parameters.put(ARBEIDSTID_BEHOV, enumSetTilString(kandidat.getArbeidstidBehov()));
-        parameters.put(FYSISKE_BEHOV, enumSetTilString(kandidat.getFysiskeBehov()));
-        parameters.put(ARBEIDSHVERDAGEN_BEHOV, enumSetTilString(kandidat.getArbeidsmiljøBehov()));
-        parameters.put(UTFORDRINGERMEDNORSK_BEHOV, enumSetTilString(kandidat.getGrunnleggendeBehov()));
+        parameters.put(REGISTRERINGSTIDSPUNKT, kandidat.getSistEndretAvVeileder());
+        parameters.put(ARBEIDSTID_BEHOV, enumSetTilString(kandidat.getArbeidstid()));
+        parameters.put(FYSISKE_BEHOV, enumSetTilString(kandidat.getFysisk()));
+        parameters.put(ARBEIDSHVERDAGEN_BEHOV, enumSetTilString(kandidat.getArbeidshverdagen()));
+        parameters.put(UTFORDRINGERMEDNORSK_BEHOV, enumSetTilString(kandidat.getUtfordringerMedNorsk()));
         parameters.put(NAV_KONTOR, kandidat.getNavKontor());
         parameters.put(SLETTET, false);
         parameters.put(OPPRETTET, LocalDateTime.now());

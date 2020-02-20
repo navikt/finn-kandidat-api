@@ -4,8 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import no.nav.tag.finnkandidatapi.kafka.harTilretteleggingsbehov.HarTilretteleggingsbehov;
 import no.nav.tag.finnkandidatapi.kafka.harTilretteleggingsbehov.HarTilretteleggingsbehovProducer;
-import no.nav.tag.finnkandidatapi.kandidat.FysiskBehov;
-import no.nav.tag.finnkandidatapi.kandidat.GrunnleggendeBehov;
+import no.nav.tag.finnkandidatapi.kandidat.Fysisk;
+import no.nav.tag.finnkandidatapi.kandidat.UtfordringerMedNorsk;
 import no.nav.tag.finnkandidatapi.tilgangskontroll.TokenUtils;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -66,7 +66,7 @@ public class HarTilretteleggingsbehovProducerTest {
 
     @Test
     public void kandidatOppdatert__skal_sende_melding_på_kafka_topic() throws JSONException, JsonProcessingException {
-        List<String> kategorier = List.of(FysiskBehov.behovskategori, GrunnleggendeBehov.behovskategori);
+        List<String> kategorier = List.of(Fysisk.behovskategori, UtfordringerMedNorsk.behovskategori);
         HarTilretteleggingsbehov harTilretteleggingsbehov = new HarTilretteleggingsbehov(enAktørId(), true, kategorier);
         harTilretteleggingsbehovProducer.sendKafkamelding(harTilretteleggingsbehov);
 

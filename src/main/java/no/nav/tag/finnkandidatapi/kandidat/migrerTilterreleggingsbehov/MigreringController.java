@@ -31,45 +31,45 @@ public class MigreringController {
     }
 
     private void migrer(Kandidat kandidat) {
-        Set<ArbeidstidBehov> arbeidstid = kandidat.getArbeidstidBehov();
-        boolean arbeidstidSlettet = arbeidstid.removeAll(List.of(ArbeidstidBehov.KAN_IKKE_JOBBE, ArbeidstidBehov.HELTID));
+        Set<Arbeidstid> arbeidstid = kandidat.getArbeidstid();
+        boolean arbeidstidSlettet = arbeidstid.removeAll(List.of(Arbeidstid.KAN_IKKE_JOBBE, Arbeidstid.HELTID));
 
-        Set<FysiskBehov> fysisk = kandidat.getFysiskeBehov();
-        boolean fysiskSlettet = fysisk.removeAll(List.of(FysiskBehov.SYN, FysiskBehov.HØRSEL, FysiskBehov.ANNET));
+        Set<Fysisk> fysisk = kandidat.getFysisk();
+        boolean fysiskSlettet = fysisk.removeAll(List.of(Fysisk.SYN, Fysisk.HØRSEL, Fysisk.ANNET));
 
-        Set<ArbeidsmiljøBehov> arbeidsmiljø = kandidat.getArbeidsmiljøBehov();
-        boolean arbeidsmiljøSlettet = arbeidsmiljø.remove(ArbeidsmiljøBehov.ANNET);
+        Set<Arbeidshverdagen> arbeidshverdagen = kandidat.getArbeidshverdagen();
+        boolean arbeidshverdagenSlettet = arbeidshverdagen.remove(Arbeidshverdagen.ANNET);
 
-        Set<GrunnleggendeBehov> grunnleggende = kandidat.getGrunnleggendeBehov();
-        boolean grunnleggendeSlettet = grunnleggende.removeAll(List.of(GrunnleggendeBehov.REGNING_OG_TALLFORSTÅELSE, GrunnleggendeBehov.ANDRE_UTFORDRINGER));
+        Set<UtfordringerMedNorsk> utfordringerMedNorsk = kandidat.getUtfordringerMedNorsk();
+        boolean utfordringerMedNorskSlettet = utfordringerMedNorsk.removeAll(List.of(UtfordringerMedNorsk.REGNING_OG_TALLFORSTÅELSE, UtfordringerMedNorsk.ANDRE_UTFORDRINGER));
 
-        boolean harSlettetBehov = arbeidstidSlettet || fysiskSlettet || arbeidsmiljøSlettet || grunnleggendeSlettet;
+        boolean harSlettetBehov = arbeidstidSlettet || fysiskSlettet || arbeidshverdagenSlettet || utfordringerMedNorskSlettet;
 
 
-        boolean inneholderOpplæring = arbeidsmiljø.remove(ArbeidsmiljøBehov.TILRETTELAGT_OPPLÆRING);
+        boolean inneholderOpplæring = arbeidshverdagen.remove(Arbeidshverdagen.TILRETTELAGT_OPPLÆRING);
         if (inneholderOpplæring) {
-            arbeidsmiljø.add(ArbeidsmiljøBehov.OPPLÆRING);
+            arbeidshverdagen.add(Arbeidshverdagen.OPPLÆRING);
         }
-        boolean inneholderArbeidsoppgaver = arbeidsmiljø.remove(ArbeidsmiljøBehov.TILRETTELAGTE_ARBEIDSOPPGAVER);
+        boolean inneholderArbeidsoppgaver = arbeidshverdagen.remove(Arbeidshverdagen.TILRETTELAGTE_ARBEIDSOPPGAVER);
         if (inneholderArbeidsoppgaver) {
-            arbeidsmiljø.add(ArbeidsmiljøBehov.OPPGAVER);
+            arbeidshverdagen.add(Arbeidshverdagen.OPPGAVER);
         }
-        boolean inneholderMentor = arbeidsmiljø.remove(ArbeidsmiljøBehov.MENTOR);
+        boolean inneholderMentor = arbeidshverdagen.remove(Arbeidshverdagen.MENTOR);
         if (inneholderMentor) {
-            arbeidsmiljø.add(ArbeidsmiljøBehov.TETT_OPPFØLGING);
+            arbeidshverdagen.add(Arbeidshverdagen.TETT_OPPFØLGING);
         }
 
-        boolean inneholderSnakke = grunnleggende.remove(GrunnleggendeBehov.SNAKKE_NORSK);
+        boolean inneholderSnakke = utfordringerMedNorsk.remove(UtfordringerMedNorsk.SNAKKE_NORSK);
         if (inneholderSnakke) {
-            grunnleggende.add(GrunnleggendeBehov.SNAKKE);
+            utfordringerMedNorsk.add(UtfordringerMedNorsk.SNAKKE);
         }
-        boolean inneholderSkrive = grunnleggende.remove(GrunnleggendeBehov.SKRIVE_NORSK);
+        boolean inneholderSkrive = utfordringerMedNorsk.remove(UtfordringerMedNorsk.SKRIVE_NORSK);
         if (inneholderSkrive) {
-            grunnleggende.add(GrunnleggendeBehov.SKRIVE);
+            utfordringerMedNorsk.add(UtfordringerMedNorsk.SKRIVE);
         }
-        boolean inneholderLese = grunnleggende.remove(GrunnleggendeBehov.LESE_NORSK);
+        boolean inneholderLese = utfordringerMedNorsk.remove(UtfordringerMedNorsk.LESE_NORSK);
         if (inneholderLese) {
-            grunnleggende.add(GrunnleggendeBehov.LESE);
+            utfordringerMedNorsk.add(UtfordringerMedNorsk.LESE);
         }
 
         boolean harEndretBehov = inneholderOpplæring || inneholderArbeidsoppgaver || inneholderMentor || inneholderSnakke || inneholderSkrive || inneholderLese;

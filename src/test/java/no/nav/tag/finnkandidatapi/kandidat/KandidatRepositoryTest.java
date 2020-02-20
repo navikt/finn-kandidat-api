@@ -14,8 +14,8 @@ import java.util.Optional;
 import java.util.Set;
 
 import static no.nav.tag.finnkandidatapi.TestData.*;
-import static no.nav.tag.finnkandidatapi.kandidat.FysiskBehov.ARBEIDSSTILLING;
-import static no.nav.tag.finnkandidatapi.kandidat.FysiskBehov.ERGONOMI;
+import static no.nav.tag.finnkandidatapi.kandidat.Fysisk.ARBEIDSSTILLING;
+import static no.nav.tag.finnkandidatapi.kandidat.Fysisk.ERGONOMI;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
@@ -64,19 +64,19 @@ public class KandidatRepositoryTest {
     @Test
     public void hentNyesteKandidat__skal_returnere_nyeste_versjon_av_tilretteleggingsbehov_for_en_kandidat() {
         Kandidat kandidat1 = enKandidat("kandidat1");
-        kandidat1.setFysiskeBehov(Set.of(ARBEIDSSTILLING));
+        kandidat1.setFysisk(Set.of(ARBEIDSSTILLING));
         repository.lagreKandidatSomVeileder(kandidat1);
 
         Kandidat kandidat2 = enKandidat("kandidat2");
-        kandidat1.setArbeidstidBehov(Set.of(ArbeidstidBehov.FLEKSIBEL));
+        kandidat1.setArbeidstid(Set.of(Arbeidstid.FLEKSIBEL));
         repository.lagreKandidatSomVeileder(kandidat2);
 
         Kandidat kandidat1Endring = enKandidat(kandidat1.getAktørId());
-        kandidat1Endring.setFysiskeBehov(Set.of(ERGONOMI));
+        kandidat1Endring.setFysisk(Set.of(ERGONOMI));
         repository.lagreKandidatSomVeileder(kandidat1Endring);
 
         Kandidat kandidat2Endring = enKandidat(kandidat2.getAktørId());
-        kandidat2Endring.setArbeidstidBehov(Set.of(ArbeidstidBehov.BORTE_FASTE_DAGER_ELLER_TIDER));
+        kandidat2Endring.setArbeidstid(Set.of(Arbeidstid.BORTE_FASTE_DAGER_ELLER_TIDER));
         repository.lagreKandidatSomVeileder(kandidat2Endring);
 
         Kandidat nyesteForKandidat1 = repository.hentNyesteKandidat(kandidat1.getAktørId()).get();
@@ -127,31 +127,31 @@ public class KandidatRepositoryTest {
     public void hentKandidater__skal_returnere_nyeste_versjon_av_hver_kandidat_etter_flere_endringer() {
         Kandidat kandidat1 = kandidatBuilder()
                 .aktørId("kand111")
-                .sistEndret(now())
+                .sistEndretAvVeileder(now())
                 .build();
         repository.lagreKandidatSomVeileder(kandidat1);
 
         Kandidat kandidat2 = kandidatBuilder()
                 .aktørId("kand222")
-                .sistEndret(now())
+                .sistEndretAvVeileder(now())
                 .build();
         repository.lagreKandidatSomVeileder(kandidat2);
 
         Kandidat kandidat1Endring1 = kandidatBuilder()
                 .aktørId(kandidat1.getAktørId())
-                .sistEndret(now().plusMinutes(1))
+                .sistEndretAvVeileder(now().plusMinutes(1))
                 .build();
         repository.lagreKandidatSomVeileder(kandidat1Endring1);
 
         Kandidat kandidat2Endring1 = kandidatBuilder()
                 .aktørId(kandidat2.getAktørId())
-                .sistEndret(now().plusMinutes(1))
+                .sistEndretAvVeileder(now().plusMinutes(1))
                 .build();
         repository.lagreKandidatSomVeileder(kandidat2Endring1);
 
         Kandidat kandidat1Endring2 = kandidatBuilder()
                 .aktørId(kandidat1.getAktørId())
-                .sistEndret(now().plusMinutes(2))
+                .sistEndretAvVeileder(now().plusMinutes(2))
                 .build();
         repository.lagreKandidatSomVeileder(kandidat1Endring2);
 
@@ -166,12 +166,12 @@ public class KandidatRepositoryTest {
     public void hentKandidater__skal_returnere_kandidater_sortert_på_sist_endret_tidspunkt() {
         Kandidat kandidat1 = kandidatBuilder()
                 .aktørId("1000000000001")
-                .sistEndret(now().plusMinutes(1))
+                .sistEndretAvVeileder(now().plusMinutes(1))
                 .build();
 
         Kandidat kandidat2 = kandidatBuilder()
                 .aktørId("1000000000002")
-                .sistEndret(now())
+                .sistEndretAvVeileder(now())
                 .build();
 
         repository.lagreKandidatSomVeileder(kandidat1);
@@ -219,10 +219,10 @@ public class KandidatRepositoryTest {
         assertThat(kandidater.size()).isEqualTo(2);
         assertThat(kandidater.get(0).isHarTilretteleggingsbehov()).isTrue();
         assertThat(kandidater.get(0).getBehov()).containsExactlyInAnyOrder(
-                ArbeidstidBehov.behovskategori,
-                FysiskBehov.behovskategori,
-                ArbeidsmiljøBehov.behovskategori,
-                GrunnleggendeBehov.behovskategori
+                Arbeidstid.behovskategori,
+                Fysisk.behovskategori,
+                Arbeidshverdagen.behovskategori,
+                UtfordringerMedNorsk.behovskategori
         );
         assertThat(kandidater.get(1).isHarTilretteleggingsbehov()).isFalse();
         assertThat(kandidater.get(1).getBehov()).isEmpty();
@@ -232,11 +232,11 @@ public class KandidatRepositoryTest {
     public void hentHarTilretteleggingsbehov__skal_returnere_om_den_siste_registrerte_kandidaten_har_tilretteleggingsbehov() {
         Kandidat kandidat = kandidatBuilder()
                 .aktørId("1000000000001")
-                .sistEndret(now())
+                .sistEndretAvVeileder(now())
                 .build();
         Kandidat sisteKandidat = kandidatBuilder()
                 .aktørId("1000000000001")
-                .sistEndret(now().plusMinutes(2))
+                .sistEndretAvVeileder(now().plusMinutes(2))
                 .build();
 
         repository.lagreKandidatSomVeileder(kandidat);
@@ -248,10 +248,10 @@ public class KandidatRepositoryTest {
         assertThat(kandidater.get(0).getAktoerId()).isEqualTo(sisteKandidat.getAktørId());
         assertThat(kandidater.get(0).isHarTilretteleggingsbehov()).isTrue();
         assertThat(kandidater.get(0).getBehov()).containsExactlyInAnyOrder(
-                ArbeidstidBehov.behovskategori,
-                FysiskBehov.behovskategori,
-                ArbeidsmiljøBehov.behovskategori,
-                GrunnleggendeBehov.behovskategori
+                Arbeidstid.behovskategori,
+                Fysisk.behovskategori,
+                Arbeidshverdagen.behovskategori,
+                UtfordringerMedNorsk.behovskategori
         );
     }
 
@@ -259,7 +259,7 @@ public class KandidatRepositoryTest {
     public void hentHarTilretteleggingsbehov__skal_returnere_den_nyeste_kandidatoppdateringen() {
         Kandidat kandidat = kandidatBuilder()
                 .aktørId("1000000000001")
-                .sistEndret(now())
+                .sistEndretAvVeileder(now())
                 .build();
 
         repository.lagreKandidatSomVeileder(kandidat);
@@ -292,10 +292,10 @@ public class KandidatRepositoryTest {
 
         assertThat(harTilretteleggingsbehov.get().isHarTilretteleggingsbehov()).isTrue();
         assertThat(harTilretteleggingsbehov.get().getBehov()).containsExactlyInAnyOrder(
-                ArbeidstidBehov.behovskategori,
-                FysiskBehov.behovskategori,
-                ArbeidsmiljøBehov.behovskategori,
-                GrunnleggendeBehov.behovskategori
+                Arbeidstid.behovskategori,
+                Fysisk.behovskategori,
+                Arbeidshverdagen.behovskategori,
+                UtfordringerMedNorsk.behovskategori
         );
         assertThat(harIkkeTilretteleggingsbehov.get().isHarTilretteleggingsbehov()).isFalse();
     }

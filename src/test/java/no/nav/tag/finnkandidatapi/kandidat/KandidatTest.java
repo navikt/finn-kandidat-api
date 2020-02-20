@@ -28,11 +28,11 @@ public class KandidatTest {
             softly.assertThat(opprettetKandidat.getFnr()).isEqualTo(kandidat.getFnr());
             softly.assertThat(opprettetKandidat.getAktørId()).isEqualTo(kandidat.getAktørId());
             softly.assertThat(opprettetKandidat.getSistEndretAv()).isEqualTo(veileder.getNavIdent());
-            softly.assertThat(opprettetKandidat.getSistEndret()).isEqualTo(nå);
-            softly.assertThat(opprettetKandidat.getArbeidstidBehov()).isEqualTo(kandidatDto.getArbeidstidBehov());
-            softly.assertThat(opprettetKandidat.getFysiskeBehov()).isEqualTo(kandidatDto.getFysiskeBehov());
-            softly.assertThat(opprettetKandidat.getArbeidsmiljøBehov()).isEqualTo(kandidatDto.getArbeidsmiljøBehov());
-            softly.assertThat(opprettetKandidat.getGrunnleggendeBehov()).isEqualTo(kandidatDto.getGrunnleggendeBehov());
+            softly.assertThat(opprettetKandidat.getSistEndretAvVeileder()).isEqualTo(nå);
+            softly.assertThat(opprettetKandidat.getArbeidstid()).isEqualTo(kandidatDto.getArbeidstid());
+            softly.assertThat(opprettetKandidat.getFysisk()).isEqualTo(kandidatDto.getFysisk());
+            softly.assertThat(opprettetKandidat.getArbeidshverdagen()).isEqualTo(kandidatDto.getArbeidshverdagen());
+            softly.assertThat(opprettetKandidat.getUtfordringerMedNorsk()).isEqualTo(kandidatDto.getUtfordringerMedNorsk());
             softly.assertThat(opprettetKandidat.getNavKontor()).isEqualTo(kandidat.getNavKontor());
         });
     }
@@ -51,11 +51,11 @@ public class KandidatTest {
             softly.assertThat(endretKandidat.getFnr()).isEqualTo(kandidat.getFnr());
             softly.assertThat(endretKandidat.getAktørId()).isEqualTo(kandidat.getAktørId());
             softly.assertThat(endretKandidat.getSistEndretAv()).isEqualTo(veileder.getNavIdent());
-            softly.assertThat(endretKandidat.getSistEndret()).isEqualTo(nå);
-            softly.assertThat(endretKandidat.getArbeidstidBehov()).isEqualTo(kandidatDto.getArbeidstidBehov());
-            softly.assertThat(endretKandidat.getFysiskeBehov()).isEqualTo(kandidatDto.getFysiskeBehov());
-            softly.assertThat(endretKandidat.getArbeidsmiljøBehov()).isEqualTo(kandidatDto.getArbeidsmiljøBehov());
-            softly.assertThat(endretKandidat.getGrunnleggendeBehov()).isEqualTo(kandidatDto.getGrunnleggendeBehov());
+            softly.assertThat(endretKandidat.getSistEndretAvVeileder()).isEqualTo(nå);
+            softly.assertThat(endretKandidat.getArbeidstid()).isEqualTo(kandidatDto.getArbeidstid());
+            softly.assertThat(endretKandidat.getFysisk()).isEqualTo(kandidatDto.getFysisk());
+            softly.assertThat(endretKandidat.getArbeidshverdagen()).isEqualTo(kandidatDto.getArbeidshverdagen());
+            softly.assertThat(endretKandidat.getUtfordringerMedNorsk()).isEqualTo(kandidatDto.getUtfordringerMedNorsk());
             softly.assertThat(endretKandidat.getNavKontor()).isEqualTo(kandidat.getNavKontor());
         });
     }

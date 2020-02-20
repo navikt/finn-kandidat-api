@@ -5,14 +5,12 @@ import no.nav.security.oidc.context.OIDCRequestContextHolder;
 import no.nav.security.oidc.context.OIDCValidationContext;
 import no.nav.security.oidc.context.TokenContext;
 import no.nav.tag.finnkandidatapi.kandidat.Veileder;
-import no.nav.tag.finnkandidatapi.tilbakemelding.Tilbakemelding;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import static no.nav.security.oidc.test.support.JwtTokenGenerator.createSignedJWT;

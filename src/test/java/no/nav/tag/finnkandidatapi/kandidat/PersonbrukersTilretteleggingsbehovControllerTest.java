@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.Optional;
 
-import static no.nav.tag.finnkandidatapi.TestData.*;
+import static no.nav.tag.finnkandidatapi.TestData.enKandidat;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 

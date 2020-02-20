@@ -18,7 +18,8 @@ import java.util.Map;
 import java.util.Set;
 
 import static no.nav.tag.finnkandidatapi.kandidat.Arbeidshverdagen.*;
-import static no.nav.tag.finnkandidatapi.kandidat.Arbeidstid.*;
+import static no.nav.tag.finnkandidatapi.kandidat.Arbeidstid.GRADVIS_ØKNING;
+import static no.nav.tag.finnkandidatapi.kandidat.Arbeidstid.KAN_IKKE_JOBBE;
 import static no.nav.tag.finnkandidatapi.kandidat.Fysisk.ARBEIDSSTILLING;
 import static no.nav.tag.finnkandidatapi.kandidat.Fysisk.ERGONOMI;
 import static no.nav.tag.finnkandidatapi.kandidat.UtfordringerMedNorsk.*;

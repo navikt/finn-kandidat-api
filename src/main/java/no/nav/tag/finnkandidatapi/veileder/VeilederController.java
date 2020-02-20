@@ -10,6 +10,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * @deprecated finn-kandidat frontend er slått av så endepunktet blir ikke brukt lengre
+ */
 @Deprecated
 @Slf4j
 @Protected

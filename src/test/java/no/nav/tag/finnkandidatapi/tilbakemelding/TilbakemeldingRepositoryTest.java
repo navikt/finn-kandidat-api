@@ -27,7 +27,7 @@ public class TilbakemeldingRepositoryTest {
 
     @Test
     public void skal_kunne_lagre_tilbakemelding_i_repo() {
-        Tilbakemelding tilbakemelding = new Tilbakemelding(Behov.ARBEIDSMILJØ, "Min tilbakemelding");
+        Tilbakemelding tilbakemelding = new Tilbakemelding(Behov.ARBEIDSHVERDAGEN, "Min tilbakemelding");
         repository.lagreTilbakemelding(tilbakemelding);
     }
 
@@ -35,15 +35,15 @@ public class TilbakemeldingRepositoryTest {
     public void skal_kunne_hente_ut_alle_tilbakemeldinger() {
 
         Arrays.asList(
-                new Tilbakemelding(Behov.ARBEIDSMILJØ, "Min tilbakemelding"),
+                new Tilbakemelding(Behov.ARBEIDSHVERDAGEN, "Min tilbakemelding"),
                 new Tilbakemelding(Behov.ARBEIDSTID, "Min tilbakemelding2"),
-                new Tilbakemelding(Behov.ARBEIDSMILJØ, "Min tilbakemelding3")
+                new Tilbakemelding(Behov.ARBEIDSHVERDAGEN, "Min tilbakemelding3")
         ).forEach(repository::lagreTilbakemelding);
 
         assertThat(repository.hentAlleTilbakemeldinger()).containsExactly(
-                new Tilbakemelding(Behov.ARBEIDSMILJØ, "Min tilbakemelding"),
+                new Tilbakemelding(Behov.ARBEIDSHVERDAGEN, "Min tilbakemelding"),
                 new Tilbakemelding(Behov.ARBEIDSTID, "Min tilbakemelding2"),
-                new Tilbakemelding(Behov.ARBEIDSMILJØ, "Min tilbakemelding3")
+                new Tilbakemelding(Behov.ARBEIDSHVERDAGEN, "Min tilbakemelding3")
         );
     }
 

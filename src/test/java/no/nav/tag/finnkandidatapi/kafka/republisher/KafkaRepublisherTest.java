@@ -2,7 +2,7 @@ package no.nav.tag.finnkandidatapi.kafka.republisher;
 
 import no.nav.tag.finnkandidatapi.kafka.harTilretteleggingsbehov.HarTilretteleggingsbehov;
 import no.nav.tag.finnkandidatapi.kafka.harTilretteleggingsbehov.HarTilretteleggingsbehovProducer;
-import no.nav.tag.finnkandidatapi.kandidat.FysiskBehov;
+import no.nav.tag.finnkandidatapi.kandidat.Fysisk;
 import no.nav.tag.finnkandidatapi.kandidat.KandidatRepository;
 import no.nav.tag.finnkandidatapi.kandidat.Veileder;
 import no.nav.tag.finnkandidatapi.tilgangskontroll.TilgangskontrollException;
@@ -74,7 +74,7 @@ public class KafkaRepublisherTest {
 
         when(tilgangskontrollService.hentInnloggetVeileder()).thenReturn(veileder);
         when(config.getNavIdenterSomKanRepublisere()).thenReturn(Arrays.asList(veileder.getNavIdent()));
-        HarTilretteleggingsbehov harTilretteleggingsbehovTrue = new HarTilretteleggingsbehov("1000000000001", true, List.of(FysiskBehov.behovskategori));
+        HarTilretteleggingsbehov harTilretteleggingsbehovTrue = new HarTilretteleggingsbehov("1000000000001", true, List.of(Fysisk.behovskategori));
         HarTilretteleggingsbehov harTilretteleggingsbehovFalse = new HarTilretteleggingsbehov("1000000000002", false, List.of());
         when(repository.hentHarTilretteleggingsbehov()).thenReturn(Arrays.asList(
                 harTilretteleggingsbehovTrue,
@@ -119,7 +119,7 @@ public class KafkaRepublisherTest {
         when(tilgangskontrollService.hentInnloggetVeileder()).thenReturn(veileder);
         when(config.getNavIdenterSomKanRepublisere()).thenReturn(Arrays.asList(veileder.getNavIdent()));
         when(repository.hentHarTilretteleggingsbehov(enAktørId())).thenReturn(
-                Optional.of(new HarTilretteleggingsbehov(aktørId, true, List.of(FysiskBehov.behovskategori)))
+                Optional.of(new HarTilretteleggingsbehov(aktørId, true, List.of(Fysisk.behovskategori)))
         );
 
         ResponseEntity response = kafkaRepublisher.republiserKandidat(aktørId);
@@ -133,7 +133,7 @@ public class KafkaRepublisherTest {
 
         when(tilgangskontrollService.hentInnloggetVeileder()).thenReturn(veileder);
         when(config.getNavIdenterSomKanRepublisere()).thenReturn(Arrays.asList(veileder.getNavIdent()));
-        HarTilretteleggingsbehov harTilretteleggingsbehov = new HarTilretteleggingsbehov(aktørId, true, List.of(FysiskBehov.behovskategori));
+        HarTilretteleggingsbehov harTilretteleggingsbehov = new HarTilretteleggingsbehov(aktørId, true, List.of(Fysisk.behovskategori));
         when(repository.hentHarTilretteleggingsbehov(aktørId)).thenReturn(
                 Optional.of(harTilretteleggingsbehov)
         );

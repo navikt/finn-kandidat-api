@@ -39,6 +39,10 @@ public class KandidatController {
         return ResponseEntity.ok(kandidat);
     }
 
+    /**
+     * @deprecated finn-kandidat frontend er slått av så endepunktet blir ikke brukt lengre
+     */
+    @Deprecated
     @GetMapping("/{fnr}/aktorId")
     public ResponseEntity<String> hentAktørId(@PathVariable("fnr") String fnr) {
         loggBrukAvEndepunkt("hentAktørId");
@@ -53,6 +57,10 @@ public class KandidatController {
         return ResponseEntity.ok(aktørId);
     }
 
+    /**
+     * @deprecated finn-kandidat frontend er slått av så endepunktet blir ikke brukt lengre
+     */
+    @Deprecated
     @GetMapping("/{aktørId}/fnr")
     public ResponseEntity<String> hentFnr(@PathVariable("aktørId") String aktørId) {
         loggBrukAvEndepunkt("hentFnr");
@@ -61,6 +69,10 @@ public class KandidatController {
         return ResponseEntity.ok(fnr);
     }
 
+    /**
+     * @deprecated finn-kandidat frontend er slått av så endepunktet blir ikke brukt lengre
+     */
+    @Deprecated
     @GetMapping
     public ResponseEntity<List<Kandidat>> hentKandidater() {
         loggBrukAvEndepunkt("hentKandidater");
@@ -125,6 +137,10 @@ public class KandidatController {
         return ResponseEntity.ok(endretKandidat);
     }
 
+    /**
+     * @deprecated finn-kandidat frontend er slått av så endepunktet blir ikke brukt lengre
+     */
+    @Deprecated
     @GetMapping("/{aktørId}/skrivetilgang")
     public ResponseEntity hentSkrivetilgang(@PathVariable("aktørId") String aktørId) {
         loggBrukAvEndepunkt("hentSkrivetilgang");

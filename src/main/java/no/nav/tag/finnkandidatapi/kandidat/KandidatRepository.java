@@ -2,7 +2,6 @@ package no.nav.tag.finnkandidatapi.kandidat;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.finnkandidatapi.kafka.harTilretteleggingsbehov.HarTilretteleggingsbehov;
-import org.apache.tomcat.jni.Local;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -135,11 +134,11 @@ public class KandidatRepository {
         parameters.put(AKTØR_ID, kandidat.getAktørId());
         parameters.put(REGISTRERT_AV, kandidat.getSistEndretAv());
         parameters.put(REGISTRERT_AV_BRUKERTYPE, brukertype.name());
-        parameters.put(REGISTRERINGSTIDSPUNKT, kandidat.getSistEndret());
-        parameters.put(ARBEIDSTID_BEHOV, enumSetTilString(kandidat.getArbeidstidBehov()));
-        parameters.put(FYSISKE_BEHOV, enumSetTilString(kandidat.getFysiskeBehov()));
-        parameters.put(ARBEIDSMILJØ_BEHOV, enumSetTilString(kandidat.getArbeidsmiljøBehov()));
-        parameters.put(GRUNNLEGGENDE_BEHOV, enumSetTilString(kandidat.getGrunnleggendeBehov()));
+        parameters.put(REGISTRERINGSTIDSPUNKT, kandidat.getSistEndretAvVeileder());
+        parameters.put(ARBEIDSTID_BEHOV, enumSetTilString(kandidat.getArbeidstid()));
+        parameters.put(FYSISKE_BEHOV, enumSetTilString(kandidat.getFysisk()));
+        parameters.put(ARBEIDSMILJØ_BEHOV, enumSetTilString(kandidat.getArbeidshverdagen()));
+        parameters.put(GRUNNLEGGENDE_BEHOV, enumSetTilString(kandidat.getUtfordringerMedNorsk()));
         parameters.put(NAV_KONTOR, kandidat.getNavKontor());
         parameters.put(SLETTET, false);
         parameters.put(OPPRETTET, LocalDateTime.now());

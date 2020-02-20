@@ -10,8 +10,8 @@ import java.util.Set;
 public class KandidatDto {
     private String fnr;
     private String aktørId;
-    private Set<ArbeidstidBehov> arbeidstidBehov;
-    private Set<FysiskBehov> fysiskeBehov;
-    private Set<ArbeidsmiljøBehov> arbeidsmiljøBehov;
-    private Set<GrunnleggendeBehov> grunnleggendeBehov;
+    private Set<Arbeidstid> arbeidstid;
+    private Set<Fysisk> fysisk;
+    private Set<Arbeidshverdagen> arbeidshverdagen;
+    private Set<UtfordringerMedNorsk> utfordringerMedNorsk;
 }

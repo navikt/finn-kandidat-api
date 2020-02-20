@@ -1,11 +1,11 @@
 package no.nav.tag.finnkandidatapi.kandidat;
 
-public enum GrunnleggendeBehov {
+public enum UtfordringerMedNorsk {
     SNAKKE_NORSK, SNAKKE,
     SKRIVE_NORSK, SKRIVE,
     LESE_NORSK, LESE,
     REGNING_OG_TALLFORSTÅELSE,
     ANDRE_UTFORDRINGER;
 
-    public static final String behovskategori = "grunnleggende";
+    public static final String behovskategori = "utfordringerMedNorsk";
 }

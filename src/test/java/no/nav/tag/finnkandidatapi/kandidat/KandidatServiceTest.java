@@ -100,11 +100,11 @@ public class KandidatServiceTest {
         Kandidat kandidatTilOpprettelse = Kandidat.opprettKandidat(
                 kandidatDto,
                 veileder,
-                kandidat.getSistEndret(),
+                kandidat.getSistEndretAvVeileder(),
                 etNavKontor()
         );
 
-        when(dateProvider.now()).thenReturn(kandidat.getSistEndret());
+        when(dateProvider.now()).thenReturn(kandidat.getSistEndretAvVeileder());
         when(veilarbArenaClient.hentOppfølgingsbruker(kandidat.getFnr(), kandidat.getAktørId())).thenReturn(enOppfølgingsbruker());
         when(repository.lagreKandidatSomVeileder(kandidat)).thenReturn(1);
         when(repository.hentKandidat(1)).thenReturn(Optional.of(kandidatTilOpprettelse));
@@ -121,7 +121,7 @@ public class KandidatServiceTest {
         Veileder veileder = enVeileder();
         kandidat.setSistEndretAv(veileder.getNavIdent());
 
-        when(dateProvider.now()).thenReturn(kandidat.getSistEndret());
+        when(dateProvider.now()).thenReturn(kandidat.getSistEndretAvVeileder());
         when(veilarbArenaClient.hentOppfølgingsbruker(kandidat.getFnr(), kandidat.getAktørId())).thenReturn(enOppfølgingsbruker());
         when(repository.lagreKandidatSomVeileder(kandidat)).thenReturn(1);
         when(repository.hentKandidat(1)).thenReturn(Optional.empty());
@@ -137,7 +137,7 @@ public class KandidatServiceTest {
         KandidatDto kandidatDto = enKandidatDto(kandidat);
         Integer kandidatId = 1;
 
-        when(dateProvider.now()).thenReturn(kandidat.getSistEndret());
+        when(dateProvider.now()).thenReturn(kandidat.getSistEndretAvVeileder());
         when(repository.lagreKandidatSomVeileder(any(Kandidat.class))).thenReturn(kandidatId);
         when(repository.hentKandidat(kandidatId)).thenReturn(Optional.of(kandidat));
         when(veilarbArenaClient.hentOppfølgingsbruker(kandidat.getFnr(), kandidat.getAktørId())).thenReturn(enOppfølgingsbruker());

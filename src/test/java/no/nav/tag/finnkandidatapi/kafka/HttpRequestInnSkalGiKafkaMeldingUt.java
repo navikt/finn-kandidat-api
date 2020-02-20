@@ -72,10 +72,10 @@ public class HttpRequestInnSkalGiKafkaMeldingUt {
         HarTilretteleggingsbehov actualTilretteleggingsbehov = new ObjectMapper().readValue(opprettMsgs.get(0), HarTilretteleggingsbehov.class);
         List<String> actualBehov = actualTilretteleggingsbehov.getBehov();
         Set<String> expectedBehov = Set.of(
-                ArbeidstidBehov.behovskategori,
-                ArbeidsmiljøBehov.behovskategori,
-                FysiskBehov.behovskategori,
-                GrunnleggendeBehov.behovskategori
+                Arbeidstid.behovskategori,
+                Arbeidshverdagen.behovskategori,
+                Fysisk.behovskategori,
+                UtfordringerMedNorsk.behovskategori
         );
         assertThat(actualTilretteleggingsbehov.getAktoerId()).isEqualTo(dto.getAktørId());
         assertThat(actualTilretteleggingsbehov.isHarTilretteleggingsbehov()).isTrue();
@@ -83,8 +83,8 @@ public class HttpRequestInnSkalGiKafkaMeldingUt {
         assertThat(actualBehov).hasSameSizeAs(expectedBehov);
 
         // When HTTP endre
-        assertThat(dto.getArbeidsmiljøBehov()).isNotEmpty();
-        dto.setArbeidsmiljøBehov(Set.of());
+        assertThat(dto.getArbeidshverdagen()).isNotEmpty();
+        dto.setArbeidshverdagen(Set.of());
         restTemplate.put(uri, dto);
 
         // Then Kafka endre
@@ -94,9 +94,9 @@ public class HttpRequestInnSkalGiKafkaMeldingUt {
         actualTilretteleggingsbehov = new ObjectMapper().readValue(endreMsgs.get(0), HarTilretteleggingsbehov.class);
         actualBehov = actualTilretteleggingsbehov.getBehov();
         expectedBehov = Set.of(
-                ArbeidstidBehov.behovskategori,
-                FysiskBehov.behovskategori,
-                GrunnleggendeBehov.behovskategori
+                Arbeidstid.behovskategori,
+                Fysisk.behovskategori,
+                UtfordringerMedNorsk.behovskategori
         );
         assertThat(actualTilretteleggingsbehov.getAktoerId()).isEqualTo(dto.getAktørId());
         assertThat(actualTilretteleggingsbehov.isHarTilretteleggingsbehov()).isTrue();

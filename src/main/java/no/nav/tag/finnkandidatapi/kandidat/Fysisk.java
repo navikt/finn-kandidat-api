@@ -1,6 +1,6 @@
 package no.nav.tag.finnkandidatapi.kandidat;
 
-public enum FysiskBehov {
+public enum Fysisk {
     ARBEIDSSTILLING,
     ERGONOMI,
     TUNGE_LØFT,

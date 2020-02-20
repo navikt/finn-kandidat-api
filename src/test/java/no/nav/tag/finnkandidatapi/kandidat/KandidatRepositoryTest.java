@@ -89,7 +89,7 @@ public class KandidatRepositoryTest {
         Kandidat kandidat = enKandidat();
 
         repository.lagreKandidatSomVeileder(kandidat);
-        repository.slettKandidat(kandidat.getAktørId(), enVeileder(), now());
+        repository.slettKandidatSomVeileder(kandidat.getAktørId(), enVeileder(), now());
 
         assertThat(repository.hentNyesteKandidat(kandidat.getAktørId())).isEmpty();
     }
@@ -196,7 +196,7 @@ public class KandidatRepositoryTest {
 
         repository.lagreKandidatSomVeileder(kandidat1);
         repository.lagreKandidatSomVeileder(kandidat2);
-        repository.slettKandidat(kandidat1.getAktørId(), enVeileder(), now());
+        repository.slettKandidatSomVeileder(kandidat1.getAktørId(), enVeileder(), now());
 
         List<Kandidat> kandidater = repository.hentKandidater();
 
@@ -212,7 +212,7 @@ public class KandidatRepositoryTest {
         repository.lagreKandidatSomVeileder(kandidat1);
         repository.lagreKandidatSomVeileder(kandidat2);
 
-        repository.slettKandidat(kandidat2.getAktørId(), enVeileder(), now());
+        repository.slettKandidatSomVeileder(kandidat2.getAktørId(), enVeileder(), now());
 
         List<HarTilretteleggingsbehov> kandidater = repository.hentHarTilretteleggingsbehov();
 
@@ -263,7 +263,7 @@ public class KandidatRepositoryTest {
                 .build();
 
         repository.lagreKandidatSomVeileder(kandidat);
-        repository.slettKandidat(kandidat.getAktørId(), enVeileder(), now().plusMinutes(3));
+        repository.slettKandidatSomVeileder(kandidat.getAktørId(), enVeileder(), now().plusMinutes(3));
 
         List<HarTilretteleggingsbehov> kandidatoppdateringer = repository.hentHarTilretteleggingsbehov();
 
@@ -283,7 +283,7 @@ public class KandidatRepositoryTest {
 
         repository.lagreKandidatSomVeileder(kandidat);
         repository.lagreKandidatSomVeileder(kandidatUtenTilretteleggingsbehov);
-        repository.slettKandidat(kandidatUtenTilretteleggingsbehov.getAktørId(), enVeileder(), now());
+        repository.slettKandidatSomVeileder(kandidatUtenTilretteleggingsbehov.getAktørId(), enVeileder(), now());
 
         Optional<HarTilretteleggingsbehov> harTilretteleggingsbehov =
                 repository.hentHarTilretteleggingsbehov(kandidat.getAktørId());
@@ -322,7 +322,7 @@ public class KandidatRepositoryTest {
     public void slettKandidat__skal_returnere_empty_hvis_aktør_id_ikke_finnes() {
         String uregistrertAktørId = "1000000000001";
 
-        Optional<Integer> id = repository.slettKandidat(uregistrertAktørId, enVeileder(), now());
+        Optional<Integer> id = repository.slettKandidatSomVeileder(uregistrertAktørId, enVeileder(), now());
         assertThat(id).isEmpty();
     }
 
@@ -330,9 +330,9 @@ public class KandidatRepositoryTest {
     public void slettKandidat__skal_returnere_empty_hvis_kandidat_allerede_er_slettet() {
         Kandidat kandidat = enKandidat();
         repository.lagreKandidatSomVeileder(kandidat);
-        repository.slettKandidat(kandidat.getAktørId(), enVeileder(), now());
+        repository.slettKandidatSomVeileder(kandidat.getAktørId(), enVeileder(), now());
 
-        Optional<Integer> id = repository.slettKandidat(kandidat.getAktørId(), enVeileder(), now());
+        Optional<Integer> id = repository.slettKandidatSomVeileder(kandidat.getAktørId(), enVeileder(), now());
         assertThat(id).isEmpty();
     }
 

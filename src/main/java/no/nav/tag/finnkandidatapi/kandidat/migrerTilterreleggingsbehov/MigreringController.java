@@ -1,6 +1,6 @@
 package no.nav.tag.finnkandidatapi.kandidat.migrerTilterreleggingsbehov;
 
-import no.nav.security.oidc.api.ProtectedWithClaims;
+import no.nav.security.token.support.core.api.ProtectedWithClaims;
 import no.nav.tag.finnkandidatapi.kandidat.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;

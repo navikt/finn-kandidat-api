@@ -1,9 +1,9 @@
 package no.nav.finnkandidatapi.tilbakemelding;
 
-import no.nav.metrics.MetricsFactory;
-import no.nav.security.oidc.api.Protected;
 import no.nav.finnkandidatapi.tilgangskontroll.TilgangskontrollException;
 import no.nav.finnkandidatapi.tilgangskontroll.TilgangskontrollService;
+import no.nav.metrics.MetricsFactory;
+import no.nav.security.oidc.api.Protected;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

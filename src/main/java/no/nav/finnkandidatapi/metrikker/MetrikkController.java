@@ -1,9 +1,9 @@
 package no.nav.finnkandidatapi.metrikker;
 
 import lombok.RequiredArgsConstructor;
-import no.nav.security.oidc.api.Protected;
 import no.nav.finnkandidatapi.kandidat.Kandidat;
 import no.nav.finnkandidatapi.kandidat.KandidatRepository;
+import no.nav.security.oidc.api.Protected;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;

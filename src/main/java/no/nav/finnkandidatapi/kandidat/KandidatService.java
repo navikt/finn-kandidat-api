@@ -2,15 +2,15 @@ package no.nav.finnkandidatapi.kandidat;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.finnkandidatapi.DateProvider;
 import no.nav.finnkandidatapi.aktørregister.AktørRegisterClient;
 import no.nav.finnkandidatapi.kafka.oppfølgingAvsluttet.OppfølgingAvsluttetMelding;
 import no.nav.finnkandidatapi.metrikker.KandidatEndret;
 import no.nav.finnkandidatapi.metrikker.KandidatOpprettet;
 import no.nav.finnkandidatapi.metrikker.KandidatSlettet;
+import no.nav.finnkandidatapi.unleash.FeatureToggleService;
 import no.nav.finnkandidatapi.veilarbarena.Oppfølgingsbruker;
 import no.nav.finnkandidatapi.veilarbarena.VeilarbArenaClient;
-import no.nav.finnkandidatapi.DateProvider;
-import no.nav.finnkandidatapi.unleash.FeatureToggleService;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 

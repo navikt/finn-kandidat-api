@@ -1,8 +1,8 @@
 package no.nav.finnkandidatapi.tilgangskontroll;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.finnkandidatapi.tilgangskontroll.veilarbabac.VeilarbabacClient;
 import no.nav.finnkandidatapi.kandidat.Veileder;
+import no.nav.finnkandidatapi.tilgangskontroll.veilarbabac.VeilarbabacClient;
 import no.nav.finnkandidatapi.unleash.FeatureToggleService;
 import org.springframework.stereotype.Service;
 

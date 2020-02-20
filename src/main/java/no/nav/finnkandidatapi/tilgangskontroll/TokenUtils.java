@@ -1,9 +1,9 @@
 package no.nav.finnkandidatapi.tilgangskontroll;
 
 import com.nimbusds.jwt.JWTClaimsSet;
+import no.nav.finnkandidatapi.kandidat.Veileder;
 import no.nav.security.oidc.context.OIDCClaims;
 import no.nav.security.oidc.context.OIDCRequestContextHolder;
-import no.nav.finnkandidatapi.kandidat.Veileder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

@@ -1,10 +1,10 @@
 package no.nav.finnkandidatapi.tilgangskontroll;
 
+import no.nav.finnkandidatapi.kandidat.Veileder;
 import no.nav.security.oidc.context.OIDCClaims;
 import no.nav.security.oidc.context.OIDCRequestContextHolder;
 import no.nav.security.oidc.context.OIDCValidationContext;
 import no.nav.security.oidc.context.TokenContext;
-import no.nav.finnkandidatapi.kandidat.Veileder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -13,9 +13,9 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Map;
 
-import static no.nav.security.oidc.test.support.JwtTokenGenerator.createSignedJWT;
 import static no.nav.finnkandidatapi.TestData.enVeileder;
 import static no.nav.finnkandidatapi.TestData.etFnr;
+import static no.nav.security.oidc.test.support.JwtTokenGenerator.createSignedJWT;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 

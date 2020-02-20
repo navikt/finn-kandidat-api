@@ -2,8 +2,8 @@ package no.nav.finnkandidatapi.veilarbarena;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.finnkandidatapi.tilgangskontroll.TokenUtils;
 import no.nav.finnkandidatapi.kandidat.FinnKandidatException;
+import no.nav.finnkandidatapi.tilgangskontroll.TokenUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;

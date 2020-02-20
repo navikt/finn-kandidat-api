@@ -1,8 +1,8 @@
 package no.nav.finnkandidatapi.metrikker;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.metrics.MetricsFactory;
 import no.nav.finnkandidatapi.kandidat.Brukertype;
+import no.nav.metrics.MetricsFactory;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 

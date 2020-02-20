@@ -33,11 +33,11 @@ public class KandidatMapper implements RowMapper<Kandidat> {
                 .fnr(rs.getString(FNR))
                 .aktørId(rs.getString(AKTØR_ID))
                 .sistEndretAv(rs.getString(REGISTRERT_AV))
-                .sistEndret(sistEndret)
-                .arbeidstidBehov(stringTilEnumSet(rs.getString(ARBEIDSTID_BEHOV), ArbeidstidBehov.class))
-                .fysiskeBehov(stringTilEnumSet(rs.getString(FYSISKE_BEHOV), FysiskBehov.class))
-                .arbeidsmiljøBehov(stringTilEnumSet(rs.getString(ARBEIDSMILJØ_BEHOV), ArbeidsmiljøBehov.class))
-                .grunnleggendeBehov(stringTilEnumSet(rs.getString(GRUNNLEGGENDE_BEHOV), GrunnleggendeBehov.class))
+                .sistEndretAvVeileder(sistEndret)
+                .arbeidstid(stringTilEnumSet(rs.getString(ARBEIDSTID_BEHOV), Arbeidstid.class))
+                .fysisk(stringTilEnumSet(rs.getString(FYSISKE_BEHOV), Fysisk.class))
+                .arbeidshverdagen(stringTilEnumSet(rs.getString(ARBEIDSHVERDAGEN_BEHOV), Arbeidshverdagen.class))
+                .utfordringerMedNorsk(stringTilEnumSet(rs.getString(UTFORDRINGERMEDNORSK_BEHOV), UtfordringerMedNorsk.class))
                 .navKontor(rs.getString(NAV_KONTOR))
                 .build();
     }

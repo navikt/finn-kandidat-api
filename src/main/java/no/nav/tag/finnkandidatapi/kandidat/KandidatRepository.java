@@ -30,9 +30,10 @@ public class KandidatRepository {
     static final String REGISTRERINGSTIDSPUNKT = "registreringstidspunkt";
     static final String ARBEIDSTID_BEHOV = "arbeidstid_behov";
     static final String FYSISKE_BEHOV = "fysiske_behov";
-    static final String ARBEIDSMILJØ_BEHOV = "arbeidsmiljø_behov";
-    static final String GRUNNLEGGENDE_BEHOV = "grunnleggende_behov";
+    static final String ARBEIDSHVERDAGEN_BEHOV = "arbeidshverdagen_behov";
+    static final String UTFORDRINGERMEDNORSK_BEHOV = "utfordringerMedNorsk_behov";
     static final String SLETTET = "slettet";
+    static final String OPPRETTET = "opprettet";
     static final String NAV_KONTOR = "nav_kontor";
 
     private JdbcTemplate jdbcTemplate;
@@ -53,7 +54,7 @@ public class KandidatRepository {
     public Optional<Kandidat> hentNyesteKandidat(String aktørId) {
         try {
             Kandidat kandidat = jdbcTemplate.queryForObject(
-                    "SELECT * FROM kandidat WHERE (aktor_id = ?) ORDER BY registreringstidspunkt DESC LIMIT 1", new Object[]{aktørId},
+                    "SELECT * FROM kandidat WHERE (aktor_id = ?) ORDER BY id DESC LIMIT 1", new Object[]{aktørId},
                     kandidatMapper
             );
             return Optional.ofNullable(kandidat);
@@ -87,7 +88,7 @@ public class KandidatRepository {
     public Optional<HarTilretteleggingsbehov> hentHarTilretteleggingsbehov(String aktørId) {
         try {
             HarTilretteleggingsbehov harTilretteleggingsbehov = jdbcTemplate.queryForObject(
-                    "SELECT * FROM kandidat WHERE (aktor_id = ?) ORDER BY registreringstidspunkt DESC LIMIT 1", new Object[]{aktørId},
+                    "SELECT * FROM kandidat WHERE (aktor_id = ?) ORDER BY id DESC LIMIT 1", new Object[]{aktørId},
                     harTilretteleggingsbehovMapper
             );
 
@@ -98,15 +99,17 @@ public class KandidatRepository {
     }
 
     private String lagKandidatQuery(boolean inkluderSlettedeKandidater) {
+
+
         return (
                 "SELECT k.* " +
                         "FROM kandidat k " +
                         "INNER JOIN " +
-                        "(SELECT aktor_id, MAX(registreringstidspunkt) AS sisteRegistrert " +
+                        "(SELECT aktor_id, MAX(id) AS nyesteId " +
                         "FROM kandidat " +
                         "GROUP BY aktor_id) gruppertKandidat " +
                         "ON k.aktor_id = gruppertKandidat.aktor_id " +
-                        "AND k.registreringstidspunkt = gruppertKandidat.sisteRegistrert " +
+                        "AND k.id = gruppertKandidat.nyesteId " +
                         (inkluderSlettedeKandidater ? "" : "WHERE slettet = false ") +
                         "ORDER BY k.registreringstidspunkt"
         );
@@ -116,66 +119,63 @@ public class KandidatRepository {
         jdbcTemplate.execute("DELETE FROM kandidat");
     }
 
-    public Integer lagreKandidat(Kandidat kandidat) {
-        Map<String, Object> parameters = lagInsertParameter(kandidat);
+    public Integer lagreKandidatSomVeileder(Kandidat kandidat) {
+        return lagreKandidat(kandidat, Brukertype.VEILEDER);
+    }
+
+    public Integer lagreKandidat(Kandidat kandidat, Brukertype brukertype) {
+        Map<String, Object> parameters = lagInsertParameter(kandidat, brukertype);
         return jdbcInsert.executeAndReturnKey(parameters).intValue();
     }
 
-    private Map<String, Object> lagInsertParameter(Kandidat kandidat) {
+    private Map<String, Object> lagInsertParameter(Kandidat kandidat, Brukertype brukertype) {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put(FNR, kandidat.getFnr());
         parameters.put(AKTØR_ID, kandidat.getAktørId());
         parameters.put(REGISTRERT_AV, kandidat.getSistEndretAv());
-        parameters.put(REGISTRERT_AV_BRUKERTYPE, Brukertype.VEILEDER.name());
-        parameters.put(REGISTRERINGSTIDSPUNKT, kandidat.getSistEndret());
-        parameters.put(ARBEIDSTID_BEHOV, enumSetTilString(kandidat.getArbeidstidBehov()));
-        parameters.put(FYSISKE_BEHOV, enumSetTilString(kandidat.getFysiskeBehov()));
-        parameters.put(ARBEIDSMILJØ_BEHOV, enumSetTilString(kandidat.getArbeidsmiljøBehov()));
-        parameters.put(GRUNNLEGGENDE_BEHOV, enumSetTilString(kandidat.getGrunnleggendeBehov()));
+        parameters.put(REGISTRERT_AV_BRUKERTYPE, brukertype.name());
+        parameters.put(REGISTRERINGSTIDSPUNKT, kandidat.getSistEndretAvVeileder());
+        parameters.put(ARBEIDSTID_BEHOV, enumSetTilString(kandidat.getArbeidstid()));
+        parameters.put(FYSISKE_BEHOV, enumSetTilString(kandidat.getFysisk()));
+        parameters.put(ARBEIDSHVERDAGEN_BEHOV, enumSetTilString(kandidat.getArbeidshverdagen()));
+        parameters.put(UTFORDRINGERMEDNORSK_BEHOV, enumSetTilString(kandidat.getUtfordringerMedNorsk()));
         parameters.put(NAV_KONTOR, kandidat.getNavKontor());
         parameters.put(SLETTET, false);
+        parameters.put(OPPRETTET, LocalDateTime.now());
+
         return parameters;
+    }
+
+    public Optional<Integer> slettKandidatSomVeileder(
+            String aktørId,
+            Veileder slettetAv,
+            LocalDateTime registrertAvVeileder
+    ) {
+        return slettKandidat(aktørId, registrertAvVeileder, slettetAv.getNavIdent(), Brukertype.VEILEDER);
     }
 
     public Optional<Integer> slettKandidatSomMaskinbruker(
             String aktørId,
-            LocalDateTime slettetTidspunkt
+            LocalDateTime registrertAvVeileder
     ) {
-
-        Optional<Kandidat> kandidat = hentNyesteKandidat(aktørId);
-        if (kandidat.isEmpty()) {
-            return Optional.empty();
-        }
-
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put(AKTØR_ID, aktørId);
-        parameters.put(REGISTRERT_AV, Brukertype.SYSTEM.name());
-        parameters.put(REGISTRERT_AV_BRUKERTYPE, Brukertype.SYSTEM.name());
-        parameters.put(REGISTRERINGSTIDSPUNKT, slettetTidspunkt);
-        parameters.put(SLETTET, true);
-
-        return Optional.ofNullable(jdbcInsert.executeAndReturnKey(parameters).intValue());
+        return slettKandidat(aktørId, registrertAvVeileder, Brukertype.SYSTEM.name(), Brukertype.SYSTEM);
     }
 
-    public Optional<Integer> slettKandidat(
-            String aktørId,
-            Veileder slettetAv,
-            LocalDateTime slettetTidspunkt
-    ) {
-        Optional<Kandidat> kandidat = hentNyesteKandidat(aktørId);
-        if (kandidat.isEmpty()) {
+    private Optional<Integer> slettKandidat(String aktørId, LocalDateTime registrertAvVeileder, String registrertAv, Brukertype registrertAvBrukertype) {
+        if (hentNyesteKandidat(aktørId).isEmpty()) {
             return Optional.empty();
+        } else {
+            Map<String, Object> parameters = new HashMap<>();
+            parameters.put(AKTØR_ID, aktørId);
+            parameters.put(REGISTRERT_AV, registrertAv);
+            parameters.put(REGISTRERT_AV_BRUKERTYPE, registrertAvBrukertype.name());
+            parameters.put(REGISTRERINGSTIDSPUNKT, registrertAvVeileder);
+            parameters.put(OPPRETTET, LocalDateTime.now());
+            parameters.put(SLETTET, true);
+            return Optional.ofNullable(jdbcInsert.executeAndReturnKey(parameters).intValue());
         }
-
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put(AKTØR_ID, aktørId);
-        parameters.put(REGISTRERT_AV, slettetAv.getNavIdent());
-        parameters.put(REGISTRERT_AV_BRUKERTYPE, Brukertype.VEILEDER.name());
-        parameters.put(REGISTRERINGSTIDSPUNKT, slettetTidspunkt);
-        parameters.put(SLETTET, true);
-
-        return Optional.ofNullable(jdbcInsert.executeAndReturnKey(parameters).intValue());
     }
+
 
     public int oppdaterNavKontor(String fnr, String navKontor) {
         if (fnr == null) {

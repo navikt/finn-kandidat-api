@@ -1,8 +1,8 @@
 package no.nav.tag.finnkandidatapi.tilbakemelding;
 
 public enum Behov {
-    ARBEIDSMILJØ,
+    ARBEIDSHVERDAGEN,
     ARBEIDSTID,
     FYSISK,
-    GRUNNLEGGENDE
+    UTFORDRINGER_MED_NORSK
 }

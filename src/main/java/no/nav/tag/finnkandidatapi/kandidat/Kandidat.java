@@ -17,11 +17,11 @@ public class Kandidat {
     private String fnr;
     private String aktørId;
     private String sistEndretAv;
-    private LocalDateTime sistEndret;
-    private Set<ArbeidstidBehov> arbeidstidBehov;
-    private Set<FysiskBehov> fysiskeBehov;
-    private Set<ArbeidsmiljøBehov> arbeidsmiljøBehov;
-    private Set<GrunnleggendeBehov> grunnleggendeBehov;
+    private LocalDateTime sistEndretAvVeileder;
+    private Set<Arbeidstid> arbeidstid;
+    private Set<Fysisk> fysisk;
+    private Set<Arbeidshverdagen> arbeidshverdagen;
+    private Set<UtfordringerMedNorsk> utfordringerMedNorsk;
     private String navKontor;
 
     public static Kandidat opprettKandidat(
@@ -34,11 +34,11 @@ public class Kandidat {
                 .fnr(kandidat.getFnr())
                 .aktørId(kandidat.getAktørId())
                 .sistEndretAv(veileder.getNavIdent())
-                .sistEndret(sistEndret)
-                .arbeidstidBehov(kandidat.getArbeidstidBehov())
-                .fysiskeBehov(kandidat.getFysiskeBehov())
-                .arbeidsmiljøBehov(kandidat.getArbeidsmiljøBehov())
-                .grunnleggendeBehov(kandidat.getGrunnleggendeBehov())
+                .sistEndretAvVeileder(sistEndret)
+                .arbeidstid(kandidat.getArbeidstid())
+                .fysisk(kandidat.getFysisk())
+                .arbeidshverdagen(kandidat.getArbeidshverdagen())
+                .utfordringerMedNorsk(kandidat.getUtfordringerMedNorsk())
                 .navKontor(navKontor)
                 .build();
     }
@@ -53,41 +53,37 @@ public class Kandidat {
                 .id(kandidat.getId())
                 .fnr(kandidat.getFnr())
                 .aktørId(kandidat.getAktørId())
-                .sistEndret(sistEndret)
+                .sistEndretAvVeileder(sistEndret)
                 .sistEndretAv(veileder.getNavIdent())
-                .arbeidstidBehov(kandidatDto.getArbeidstidBehov())
-                .fysiskeBehov(kandidatDto.getFysiskeBehov())
-                .arbeidsmiljøBehov(kandidatDto.getArbeidsmiljøBehov())
-                .grunnleggendeBehov(kandidatDto.getGrunnleggendeBehov())
+                .arbeidstid(kandidatDto.getArbeidstid())
+                .fysisk(kandidatDto.getFysisk())
+                .arbeidshverdagen(kandidatDto.getArbeidshverdagen())
+                .utfordringerMedNorsk(kandidatDto.getUtfordringerMedNorsk())
                 .navKontor(kandidat.getNavKontor())
                 .build();
     }
 
     public List<String> kategorier() {
         ArrayList<String> kategorier = new ArrayList<>();
-        Set<ArbeidstidBehov> arbeidstidBehov = this.getArbeidstidBehov();
-        Set<FysiskBehov> fysiskeBehov = this.getFysiskeBehov();
-        Set<ArbeidsmiljøBehov> arbeidsmiljøBehov = this.getArbeidsmiljøBehov();
-        Set<GrunnleggendeBehov> grunnleggendeBehov = this.getGrunnleggendeBehov();
+        Set<Arbeidstid> arbeidstid = this.getArbeidstid();
+        Set<Fysisk> fysisk = this.getFysisk();
+        Set<Arbeidshverdagen> arbeidshverdagen = this.getArbeidshverdagen();
+        Set<UtfordringerMedNorsk> utfordringerMedNorsk = this.getUtfordringerMedNorsk();
 
-        boolean arbeidstidInneholderKunHeltid =
-                        arbeidstidBehov.size() == 1 &&
-                        arbeidstidBehov.contains(ArbeidstidBehov.HELTID);
-
-        if (!arbeidstidBehov.isEmpty() && !arbeidstidInneholderKunHeltid) {
-            kategorier.add(ArbeidstidBehov.behovskategori);
+        if (arbeidstid != null && !arbeidstid.isEmpty()) {
+            kategorier.add(Arbeidstid.behovskategori);
         }
 
-        if (fysiskeBehov != null && !fysiskeBehov.isEmpty()) {
-            kategorier.add(FysiskBehov.behovskategori);
+        if (fysisk != null && !fysisk.isEmpty()) {
+            kategorier.add(Fysisk.behovskategori);
         }
 
-        if (arbeidsmiljøBehov != null && !arbeidsmiljøBehov.isEmpty()) {
-            kategorier.add(ArbeidsmiljøBehov.behovskategori);
+        if (arbeidshverdagen != null && !arbeidshverdagen.isEmpty()) {
+            kategorier.add(Arbeidshverdagen.behovskategori);
         }
 
-        if (grunnleggendeBehov != null && !grunnleggendeBehov.isEmpty()) {
-            kategorier.add(GrunnleggendeBehov.behovskategori);
+        if (utfordringerMedNorsk != null && !utfordringerMedNorsk.isEmpty()) {
+            kategorier.add(UtfordringerMedNorsk.behovskategori);
         }
 
         return Collections.unmodifiableList(kategorier);

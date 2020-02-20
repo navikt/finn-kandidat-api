@@ -100,18 +100,18 @@ public class KandidatServiceTest {
         Kandidat kandidatTilOpprettelse = Kandidat.opprettKandidat(
                 kandidatDto,
                 veileder,
-                kandidat.getSistEndret(),
+                kandidat.getSistEndretAvVeileder(),
                 etNavKontor()
         );
 
-        when(dateProvider.now()).thenReturn(kandidat.getSistEndret());
+        when(dateProvider.now()).thenReturn(kandidat.getSistEndretAvVeileder());
         when(veilarbArenaClient.hentOppfølgingsbruker(kandidat.getFnr(), kandidat.getAktørId())).thenReturn(enOppfølgingsbruker());
-        when(repository.lagreKandidat(kandidat)).thenReturn(1);
+        when(repository.lagreKandidatSomVeileder(kandidat)).thenReturn(1);
         when(repository.hentKandidat(1)).thenReturn(Optional.of(kandidatTilOpprettelse));
 
         Kandidat opprettetKandidat = kandidatService.opprettKandidat(kandidatDto, veileder).get();
 
-        verify(repository).lagreKandidat(opprettetKandidat);
+        verify(repository).lagreKandidatSomVeileder(opprettetKandidat);
     }
 
     @Test
@@ -121,9 +121,9 @@ public class KandidatServiceTest {
         Veileder veileder = enVeileder();
         kandidat.setSistEndretAv(veileder.getNavIdent());
 
-        when(dateProvider.now()).thenReturn(kandidat.getSistEndret());
+        when(dateProvider.now()).thenReturn(kandidat.getSistEndretAvVeileder());
         when(veilarbArenaClient.hentOppfølgingsbruker(kandidat.getFnr(), kandidat.getAktørId())).thenReturn(enOppfølgingsbruker());
-        when(repository.lagreKandidat(kandidat)).thenReturn(1);
+        when(repository.lagreKandidatSomVeileder(kandidat)).thenReturn(1);
         when(repository.hentKandidat(1)).thenReturn(Optional.empty());
 
         Optional<Kandidat> empty = kandidatService.opprettKandidat(kandidatDto, veileder);
@@ -137,8 +137,8 @@ public class KandidatServiceTest {
         KandidatDto kandidatDto = enKandidatDto(kandidat);
         Integer kandidatId = 1;
 
-        when(dateProvider.now()).thenReturn(kandidat.getSistEndret());
-        when(repository.lagreKandidat(any(Kandidat.class))).thenReturn(kandidatId);
+        when(dateProvider.now()).thenReturn(kandidat.getSistEndretAvVeileder());
+        when(repository.lagreKandidatSomVeileder(any(Kandidat.class))).thenReturn(kandidatId);
         when(repository.hentKandidat(kandidatId)).thenReturn(Optional.of(kandidat));
         when(veilarbArenaClient.hentOppfølgingsbruker(kandidat.getFnr(), kandidat.getAktørId())).thenReturn(enOppfølgingsbruker());
 
@@ -156,12 +156,12 @@ public class KandidatServiceTest {
         Kandidat kandidatTilLagring = Kandidat.endreKandidat(kandidat, kandidatDto, veileder, dateProvider.now());
 
         when(repository.hentNyesteKandidat(kandidat.getAktørId())).thenReturn(Optional.of(kandidat));
-        when(repository.lagreKandidat(any(Kandidat.class))).thenReturn(1);
+        when(repository.lagreKandidatSomVeileder(any(Kandidat.class))).thenReturn(1);
         when(repository.hentKandidat(1)).thenReturn(Optional.of(kandidatTilLagring));
 
         Kandidat endretKandidat = kandidatService.endreKandidat(kandidatDto, veileder).get();
 
-        verify(repository).lagreKandidat(endretKandidat);
+        verify(repository).lagreKandidatSomVeileder(endretKandidat);
     }
 
     @Test
@@ -184,7 +184,7 @@ public class KandidatServiceTest {
     public void endreKandidat__skal_publisere_Kandidatoppdatering_event() {
         Kandidat kandidat = enKandidat();
         when(repository.hentNyesteKandidat(kandidat.getAktørId())).thenReturn(Optional.of(kandidat));
-        when(repository.lagreKandidat(any(Kandidat.class))).thenReturn(1);
+        when(repository.lagreKandidatSomVeileder(any(Kandidat.class))).thenReturn(1);
         when(repository.hentKandidat(1)).thenReturn(Optional.of(kandidat));
 
         Kandidat endretKandidat = kandidatService.endreKandidat(enKandidatDto(), enVeileder()).get();
@@ -201,7 +201,7 @@ public class KandidatServiceTest {
 
         kandidatService.slettKandidat(aktørId, veileder);
 
-        verify(repository).slettKandidat(aktørId, veileder, datetime);
+        verify(repository).slettKandidatSomVeileder(aktørId, veileder, datetime);
     }
 
     @Test
@@ -212,7 +212,7 @@ public class KandidatServiceTest {
 
         when(dateProvider.now()).thenReturn(datetime);
         Optional<Integer> slettetKey = Optional.of(4);
-        when(repository.slettKandidat(aktørId, veileder, datetime)).thenReturn(slettetKey);
+        when(repository.slettKandidatSomVeileder(aktørId, veileder, datetime)).thenReturn(slettetKey);
 
         kandidatService.slettKandidat(aktørId, veileder);
 
@@ -224,7 +224,7 @@ public class KandidatServiceTest {
         String aktørId = "1000000000001";
         Veileder veileder = enVeileder();
 
-        when(repository.slettKandidat(eq(aktørId), eq(veileder), any())).thenReturn(Optional.of(4));
+        when(repository.slettKandidatSomVeileder(eq(aktørId), eq(veileder), any())).thenReturn(Optional.of(4));
 
         assertThat(kandidatService.slettKandidat(aktørId, veileder).get()).isEqualTo(4);
     }

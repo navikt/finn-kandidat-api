@@ -48,7 +48,7 @@ public class KandidatRepositoryEnhetTest {
 
     @Test
     public void slettKandidat__skal_sette_veileder_som_brukertype() {
-        repository.slettKandidat(enKandidat().getAktørId(), enVeileder(), now());
+        repository.slettKandidatSomVeileder(enKandidat().getAktørId(), enVeileder(), now());
         verify(jdbcInsert, times(1)).executeAndReturnKey(requestCaptor.capture());
         assertThat(requestCaptor.getValue().get("registrert_av_brukertype")).isEqualTo(Brukertype.VEILEDER.name());
     }

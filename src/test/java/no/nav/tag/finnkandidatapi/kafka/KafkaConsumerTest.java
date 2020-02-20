@@ -115,7 +115,7 @@ public class KafkaConsumerTest {
     public void skal_slette_kandidat_ved_mottatt_oppfølging_avsluttet_kafka_melding() {
         Kandidat kandidatSomSkalSlettes = enKandidat();
         kandidatSomSkalSlettes.setAktørId(AKTØR_ID);
-        repository.lagreKandidat(kandidatSomSkalSlettes);
+        repository.lagreKandidatSomVeileder(kandidatSomSkalSlettes);
         sendOppFølgingAvsluttetMelding();
 
         boolean kandidatErslettet = false;
@@ -144,7 +144,7 @@ public class KafkaConsumerTest {
     public void skal_oppdatere_nav_kontor_ved_mottatt_oppfolging_endret_melding() {
         Kandidat kandidat = enKandidat();
         kandidat.setFnr(FNR);
-        repository.lagreKandidat(kandidat);
+        repository.lagreKandidatSomVeileder(kandidat);
         sendOppfølgingsbrukerMelding();
 
         boolean kandidatErEndret = false;

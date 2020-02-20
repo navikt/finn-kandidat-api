@@ -70,11 +70,7 @@ public class Kandidat {
         Set<ArbeidsmiljøBehov> arbeidsmiljøBehov = this.getArbeidsmiljøBehov();
         Set<GrunnleggendeBehov> grunnleggendeBehov = this.getGrunnleggendeBehov();
 
-        boolean arbeidstidInneholderKunHeltid =
-                        arbeidstidBehov.size() == 1 &&
-                        arbeidstidBehov.contains(ArbeidstidBehov.HELTID);
-
-        if (!arbeidstidBehov.isEmpty() && !arbeidstidInneholderKunHeltid) {
+        if (arbeidstidBehov != null && !arbeidstidBehov.isEmpty()) {
             kategorier.add(ArbeidstidBehov.behovskategori);
         }
 

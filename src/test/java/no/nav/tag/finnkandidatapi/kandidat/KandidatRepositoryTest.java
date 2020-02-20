@@ -14,8 +14,8 @@ import java.util.Optional;
 import java.util.Set;
 
 import static no.nav.tag.finnkandidatapi.TestData.*;
-import static no.nav.tag.finnkandidatapi.kandidat.ArbeidsmiljøBehov.*;
 import static no.nav.tag.finnkandidatapi.kandidat.FysiskBehov.ARBEIDSSTILLING;
+import static no.nav.tag.finnkandidatapi.kandidat.FysiskBehov.ERGONOMI;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
@@ -35,7 +35,7 @@ public class KandidatRepositoryTest {
     public void skal_kunne_lagre_og_hente_kandidat() {
         Kandidat behovTilLagring = enKandidat();
 
-        Integer lagretId = repository.lagreKandidat(behovTilLagring);
+        Integer lagretId = repository.lagreKandidatSomVeileder(behovTilLagring);
         Kandidat uthentetBehov = repository.hentKandidat(lagretId).get();
 
         assertThat(uthentetBehov).isEqualToIgnoringGivenFields(behovTilLagring, "id");
@@ -45,7 +45,7 @@ public class KandidatRepositoryTest {
     public void skal_kunne_lagre_og_hente_ut_med_null_og_tomme_set() {
         Kandidat behovTilLagring = enKandidatMedNullOgTommeSet();
 
-        Integer lagretId = repository.lagreKandidat(behovTilLagring);
+        Integer lagretId = repository.lagreKandidatSomVeileder(behovTilLagring);
         Kandidat uthentetBehov = repository.hentKandidat(lagretId).get();
 
         assertThat(uthentetBehov).isEqualToIgnoringGivenFields(behovTilLagring, "id");
@@ -55,31 +55,40 @@ public class KandidatRepositoryTest {
     public void skal_kunne_lagre_og_hente_ut_med_null() {
         Kandidat behovTilLagring = enKandidatMedBareNull();
 
-        Integer lagretId = repository.lagreKandidat(behovTilLagring);
+        Integer lagretId = repository.lagreKandidatSomVeileder(behovTilLagring);
         Kandidat uthentetBehov = repository.hentKandidat(lagretId).get();
 
         assertThat(uthentetBehov).isEqualToIgnoringGivenFields(enKandidatMedNullOgTommeSet(), "id");
     }
 
     @Test
-    public void hentNyesteKandidat__skal_returnere_siste_registrerte_kandidat() {
-        Kandidat kandidat1 = enKandidat();
+    public void hentNyesteKandidat__skal_returnere_nyeste_versjon_av_tilretteleggingsbehov_for_en_kandidat() {
+        Kandidat kandidat1 = enKandidat("kandidat1");
         kandidat1.setFysiskeBehov(Set.of(ARBEIDSSTILLING));
-        Kandidat kandidat2 = enKandidat();
-        kandidat2.setArbeidsmiljøBehov(Set.of(MENTOR, ANNET));
+        repository.lagreKandidatSomVeileder(kandidat1);
 
-        repository.lagreKandidat(kandidat1);
-        repository.lagreKandidat(kandidat2);
-        Kandidat sisteKandidat = repository.hentNyesteKandidat(kandidat1.getAktørId()).get();
+        Kandidat kandidat2 = enKandidat("kandidat2");
+        kandidat1.setArbeidstidBehov(Set.of(ArbeidstidBehov.FLEKSIBEL));
+        repository.lagreKandidatSomVeileder(kandidat2);
 
-        assertThat(sisteKandidat).isEqualToIgnoringGivenFields(kandidat2, "id");
+        Kandidat kandidat1Endring = enKandidat(kandidat1.getAktørId());
+        kandidat1Endring.setFysiskeBehov(Set.of(ERGONOMI));
+        repository.lagreKandidatSomVeileder(kandidat1Endring);
+
+        Kandidat kandidat2Endring = enKandidat(kandidat2.getAktørId());
+        kandidat2Endring.setArbeidstidBehov(Set.of(ArbeidstidBehov.BORTE_FASTE_DAGER_ELLER_TIDER));
+        repository.lagreKandidatSomVeileder(kandidat2Endring);
+
+        Kandidat nyesteForKandidat1 = repository.hentNyesteKandidat(kandidat1.getAktørId()).get();
+
+        assertThat(nyesteForKandidat1).isEqualToIgnoringGivenFields(kandidat1Endring, "id", "sistEndret");
     }
 
     @Test
     public void hentNyesteKandidat__skal_ikke_returnere_slettede_kandidater() {
         Kandidat kandidat = enKandidat();
 
-        repository.lagreKandidat(kandidat);
+        repository.lagreKandidatSomVeileder(kandidat);
         repository.slettKandidat(kandidat.getAktørId(), enVeileder(), now());
 
         assertThat(repository.hentNyesteKandidat(kandidat.getAktørId())).isEmpty();
@@ -102,9 +111,9 @@ public class KandidatRepositoryTest {
         Kandidat kandidat1 = enKandidat("1000000000001");
         Kandidat kandidat2 = enKandidat("1000000000002");
         Kandidat kandidat3 = enKandidat("1000000000003");
-        repository.lagreKandidat(kandidat1);
-        repository.lagreKandidat(kandidat2);
-        repository.lagreKandidat(kandidat3);
+        repository.lagreKandidatSomVeileder(kandidat1);
+        repository.lagreKandidatSomVeileder(kandidat2);
+        repository.lagreKandidatSomVeileder(kandidat3);
 
         List<Kandidat> kandidater = repository.hentKandidater();
 
@@ -115,28 +124,42 @@ public class KandidatRepositoryTest {
     }
 
     @Test
-    public void hentKandidater__skal_returnere_siste_kandidat_etter_lagret_flere_kandidater_med_samme_aktør_id() {
-        Kandidat kandidat = kandidatBuilder()
-                .aktørId("1000000000001")
+    public void hentKandidater__skal_returnere_nyeste_versjon_av_hver_kandidat_etter_flere_endringer() {
+        Kandidat kandidat1 = kandidatBuilder()
+                .aktørId("kand111")
                 .sistEndret(now())
                 .build();
-        Kandidat nyereKandidat = kandidatBuilder()
-                .aktørId("1000000000001")
+        repository.lagreKandidatSomVeileder(kandidat1);
+
+        Kandidat kandidat2 = kandidatBuilder()
+                .aktørId("kand222")
+                .sistEndret(now())
+                .build();
+        repository.lagreKandidatSomVeileder(kandidat2);
+
+        Kandidat kandidat1Endring1 = kandidatBuilder()
+                .aktørId(kandidat1.getAktørId())
                 .sistEndret(now().plusMinutes(1))
                 .build();
-        Kandidat sisteKandidat = kandidatBuilder()
-                .aktørId("1000000000001")
+        repository.lagreKandidatSomVeileder(kandidat1Endring1);
+
+        Kandidat kandidat2Endring1 = kandidatBuilder()
+                .aktørId(kandidat2.getAktørId())
+                .sistEndret(now().plusMinutes(1))
+                .build();
+        repository.lagreKandidatSomVeileder(kandidat2Endring1);
+
+        Kandidat kandidat1Endring2 = kandidatBuilder()
+                .aktørId(kandidat1.getAktørId())
                 .sistEndret(now().plusMinutes(2))
                 .build();
-
-        repository.lagreKandidat(kandidat);
-        repository.lagreKandidat(nyereKandidat);
-        repository.lagreKandidat(sisteKandidat);
+        repository.lagreKandidatSomVeileder(kandidat1Endring2);
 
         List<Kandidat> kandidater = repository.hentKandidater();
 
-        assertThat(kandidater.size()).isEqualTo(1);
-        assertThat(kandidater.get(0)).isEqualToIgnoringGivenFields(sisteKandidat, "id");
+        assertThat(kandidater.size()).isEqualTo(2);
+        assertThat(kandidater.get(0)).isEqualToIgnoringGivenFields(kandidat2Endring1, "id");
+        assertThat(kandidater.get(1)).isEqualToIgnoringGivenFields(kandidat1Endring2, "id");
     }
 
     @Test
@@ -151,8 +174,8 @@ public class KandidatRepositoryTest {
                 .sistEndret(now())
                 .build();
 
-        repository.lagreKandidat(kandidat1);
-        repository.lagreKandidat(kandidat2);
+        repository.lagreKandidatSomVeileder(kandidat1);
+        repository.lagreKandidatSomVeileder(kandidat2);
 
         List<Kandidat> kandidater = repository.hentKandidater();
 
@@ -171,13 +194,14 @@ public class KandidatRepositoryTest {
         Kandidat kandidat1 = enKandidat("1000000000001");
         Kandidat kandidat2 = enKandidat("1000000000002");
 
-        repository.lagreKandidat(kandidat1);
-        repository.lagreKandidat(kandidat2);
+        repository.lagreKandidatSomVeileder(kandidat1);
+        repository.lagreKandidatSomVeileder(kandidat2);
         repository.slettKandidat(kandidat1.getAktørId(), enVeileder(), now());
 
         List<Kandidat> kandidater = repository.hentKandidater();
 
         assertThat(kandidater.size()).isEqualTo(1);
+        assertThat(kandidater.get(0)).isEqualToIgnoringGivenFields(kandidat2, "id");
     }
 
     @Test
@@ -185,8 +209,8 @@ public class KandidatRepositoryTest {
         Kandidat kandidat1 = enKandidat("1000000000001");
         Kandidat kandidat2 = enKandidat("1000000000002");
 
-        repository.lagreKandidat(kandidat1);
-        repository.lagreKandidat(kandidat2);
+        repository.lagreKandidatSomVeileder(kandidat1);
+        repository.lagreKandidatSomVeileder(kandidat2);
 
         repository.slettKandidat(kandidat2.getAktørId(), enVeileder(), now());
 
@@ -215,8 +239,8 @@ public class KandidatRepositoryTest {
                 .sistEndret(now().plusMinutes(2))
                 .build();
 
-        repository.lagreKandidat(kandidat);
-        repository.lagreKandidat(sisteKandidat);
+        repository.lagreKandidatSomVeileder(kandidat);
+        repository.lagreKandidatSomVeileder(sisteKandidat);
 
         List<HarTilretteleggingsbehov> kandidater = repository.hentHarTilretteleggingsbehov();
 
@@ -238,7 +262,7 @@ public class KandidatRepositoryTest {
                 .sistEndret(now())
                 .build();
 
-        repository.lagreKandidat(kandidat);
+        repository.lagreKandidatSomVeileder(kandidat);
         repository.slettKandidat(kandidat.getAktørId(), enVeileder(), now().plusMinutes(3));
 
         List<HarTilretteleggingsbehov> kandidatoppdateringer = repository.hentHarTilretteleggingsbehov();
@@ -257,8 +281,8 @@ public class KandidatRepositoryTest {
                 .aktørId("1000000000002")
                 .build();
 
-        repository.lagreKandidat(kandidat);
-        repository.lagreKandidat(kandidatUtenTilretteleggingsbehov);
+        repository.lagreKandidatSomVeileder(kandidat);
+        repository.lagreKandidatSomVeileder(kandidatUtenTilretteleggingsbehov);
         repository.slettKandidat(kandidatUtenTilretteleggingsbehov.getAktørId(), enVeileder(), now());
 
         Optional<HarTilretteleggingsbehov> harTilretteleggingsbehov =
@@ -279,10 +303,10 @@ public class KandidatRepositoryTest {
     @Test
     public void skal_kunne_lagre_og_hente_ut_flere_ganger() {
         Kandidat behovTilLagring1 = enKandidat();
-        Integer lagretId1 = repository.lagreKandidat(behovTilLagring1);
+        Integer lagretId1 = repository.lagreKandidatSomVeileder(behovTilLagring1);
 
         Kandidat behovTilLagring2 = enKandidat();
-        Integer lagretId2 = repository.lagreKandidat(behovTilLagring2);
+        Integer lagretId2 = repository.lagreKandidatSomVeileder(behovTilLagring2);
 
         Kandidat uthentetBehov1 = repository.hentKandidat(lagretId1).get();
         Kandidat uthentetBehov2 = repository.hentKandidat(lagretId2).get();
@@ -305,7 +329,7 @@ public class KandidatRepositoryTest {
     @Test
     public void slettKandidat__skal_returnere_empty_hvis_kandidat_allerede_er_slettet() {
         Kandidat kandidat = enKandidat();
-        repository.lagreKandidat(kandidat);
+        repository.lagreKandidatSomVeileder(kandidat);
         repository.slettKandidat(kandidat.getAktørId(), enVeileder(), now());
 
         Optional<Integer> id = repository.slettKandidat(kandidat.getAktørId(), enVeileder(), now());
@@ -315,8 +339,8 @@ public class KandidatRepositoryTest {
     @Test
     public void oppdaterNavKontor__skal_oppdatere_nav_kontor_på_alle_rader() {
         Kandidat kandidat = enKandidat();
-        repository.lagreKandidat(kandidat);
-        repository.lagreKandidat(kandidat);
+        repository.lagreKandidatSomVeileder(kandidat);
+        repository.lagreKandidatSomVeileder(kandidat);
 
         int antallOppdaterteRader = repository.oppdaterNavKontor(kandidat.getFnr(), "1337");
         Kandidat kandidatMedNyttKontor = repository.hentNyesteKandidat(kandidat.getAktørId()).get();
@@ -330,7 +354,7 @@ public class KandidatRepositoryTest {
     public void oppdaterNavKontor__skal_ikke_oppdatere_navKontor_hvis_fnr_er_null() {
         Kandidat kandidat = enKandidat();
         kandidat.setFnr(null);
-        repository.lagreKandidat(kandidat);
+        repository.lagreKandidatSomVeileder(kandidat);
 
         int antallOppdaterteRader = repository.oppdaterNavKontor(null, "1337");
         assertThat(antallOppdaterteRader).isEqualTo(0);

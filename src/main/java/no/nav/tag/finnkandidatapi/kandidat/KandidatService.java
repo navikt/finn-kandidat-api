@@ -2,7 +2,6 @@ package no.nav.tag.finnkandidatapi.kandidat;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
-import no.finn.unleash.Unleash;
 import no.nav.tag.finnkandidatapi.aktørregister.AktørRegisterClient;
 import no.nav.tag.finnkandidatapi.kafka.oppfølgingAvsluttet.OppfølgingAvsluttetMelding;
 import no.nav.tag.finnkandidatapi.DateProvider;
@@ -77,7 +76,7 @@ public class KandidatService {
                 navKontor
         );
 
-        Integer databaseId = kandidatRepository.lagreKandidat(kandidatTilLagring);
+        Integer databaseId = kandidatRepository.lagreKandidatSomVeileder(kandidatTilLagring);
         Optional<Kandidat> lagretKandidat = kandidatRepository.hentKandidat(databaseId);
         lagretKandidat.ifPresent(value -> eventPublisher.publishEvent(new KandidatOpprettet(value)));
 
@@ -95,7 +94,7 @@ public class KandidatService {
                 dateProvider.now()
         );
 
-        Integer id = kandidatRepository.lagreKandidat(endretkandidat);
+        Integer id = kandidatRepository.lagreKandidatSomVeileder(endretkandidat);
         Optional<Kandidat> lagretKandidat = kandidatRepository.hentKandidat(id);
         lagretKandidat.ifPresent(value -> eventPublisher.publishEvent(new KandidatEndret(value)));
 

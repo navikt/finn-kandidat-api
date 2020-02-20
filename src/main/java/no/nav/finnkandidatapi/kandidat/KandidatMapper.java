@@ -11,12 +11,14 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static no.nav.finnkandidatapi.kandidat.KandidatRepository.*;
+
 @Component
 public class KandidatMapper implements RowMapper<Kandidat> {
 
     @Override
     public Kandidat mapRow(ResultSet rs, int i) throws SQLException {
-        if (rs.getBoolean(KandidatRepository.SLETTET)) {
+        if (rs.getBoolean(SLETTET)) {
             return null;
         }
 
@@ -24,19 +26,19 @@ public class KandidatMapper implements RowMapper<Kandidat> {
     }
 
     public static Kandidat mapKandidat(ResultSet rs, int i) throws SQLException {
-        LocalDateTime sistEndret = rs.getTimestamp(KandidatRepository.REGISTRERINGSTIDSPUNKT) == null ? null : rs.getTimestamp(KandidatRepository.REGISTRERINGSTIDSPUNKT).toLocalDateTime();
+        LocalDateTime sistEndret = rs.getTimestamp(REGISTRERINGSTIDSPUNKT) == null ? null : rs.getTimestamp(REGISTRERINGSTIDSPUNKT).toLocalDateTime();
 
         return Kandidat.builder()
-                .id(rs.getInt(KandidatRepository.ID))
-                .fnr(rs.getString(KandidatRepository.FNR))
-                .aktørId(rs.getString(KandidatRepository.AKTØR_ID))
-                .sistEndretAv(rs.getString(KandidatRepository.REGISTRERT_AV))
+                .id(rs.getInt(ID))
+                .fnr(rs.getString(FNR))
+                .aktørId(rs.getString(AKTØR_ID))
+                .sistEndretAv(rs.getString(REGISTRERT_AV))
                 .sistEndretAvVeileder(sistEndret)
-                .arbeidstid(stringTilEnumSet(rs.getString(KandidatRepository.ARBEIDSTID_BEHOV), Arbeidstid.class))
-                .fysisk(stringTilEnumSet(rs.getString(KandidatRepository.FYSISKE_BEHOV), Fysisk.class))
-                .arbeidshverdagen(stringTilEnumSet(rs.getString(KandidatRepository.ARBEIDSHVERDAGEN_BEHOV), Arbeidshverdagen.class))
-                .utfordringerMedNorsk(stringTilEnumSet(rs.getString(KandidatRepository.UTFORDRINGERMEDNORSK_BEHOV), UtfordringerMedNorsk.class))
-                .navKontor(rs.getString(KandidatRepository.NAV_KONTOR))
+                .arbeidstid(stringTilEnumSet(rs.getString(ARBEIDSTID_BEHOV), Arbeidstid.class))
+                .fysisk(stringTilEnumSet(rs.getString(FYSISKE_BEHOV), Fysisk.class))
+                .arbeidshverdagen(stringTilEnumSet(rs.getString(ARBEIDSHVERDAGEN_BEHOV), Arbeidshverdagen.class))
+                .utfordringerMedNorsk(stringTilEnumSet(rs.getString(UTFORDRINGERMEDNORSK_BEHOV), UtfordringerMedNorsk.class))
+                .navKontor(rs.getString(NAV_KONTOR))
                 .build();
     }
 

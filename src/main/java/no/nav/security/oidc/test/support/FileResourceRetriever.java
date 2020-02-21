@@ -9,14 +9,14 @@ package no.nav.security.oidc.test.support;
 
 import com.nimbusds.jose.util.IOUtils;
 import com.nimbusds.jose.util.Resource;
-import no.nav.security.oidc.configuration.OIDCResourceRetriever;
+import no.nav.security.token.support.core.configuration.ProxyAwareResourceRetriever;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.charset.Charset;
 
-public class FileResourceRetriever extends OIDCResourceRetriever {
+public class FileResourceRetriever extends ProxyAwareResourceRetriever {
 
     private final String metadataSelvbetjeningFile;
     private final String metadataIssoFile;

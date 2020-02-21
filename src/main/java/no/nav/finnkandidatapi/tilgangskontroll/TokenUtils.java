@@ -1,9 +1,9 @@
 package no.nav.finnkandidatapi.tilgangskontroll;
 
-import com.nimbusds.jwt.JWTClaimsSet;
+import no.nav.security.token.support.core.context.TokenValidationContextHolder;
+import no.nav.security.token.support.core.jwt.JwtToken;
+import no.nav.security.token.support.core.jwt.JwtTokenClaims;
 import no.nav.finnkandidatapi.kandidat.Veileder;
-import no.nav.security.oidc.context.OIDCClaims;
-import no.nav.security.oidc.context.OIDCRequestContextHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -16,69 +16,59 @@ public class TokenUtils {
     final static String ISSUER_OPENAM = "openam";
     final static String ISSUER_SELVBETJENING = "selvbetjening";
 
-    private final OIDCRequestContextHolder contextHolder;
+    final static String NAVIDENT_CLAIM = "NAVident";
+
+    private final TokenValidationContextHolder contextHolder;
 
     @Autowired
-    public TokenUtils(OIDCRequestContextHolder contextHolder) {
+    public TokenUtils(TokenValidationContextHolder contextHolder) {
         this.contextHolder = contextHolder;
     }
 
     public String hentOidcToken() {
         String issuer = erInnloggetMedAzureAD() ? ISSUER_ISSO : ISSUER_OPENAM;
-        return contextHolder.getOIDCValidationContext().getToken(issuer).getIdToken();
+        return contextHolder.getTokenValidationContext().getJwtToken(issuer).getTokenAsString();
     }
 
     public Veileder hentInnloggetVeileder() {
         if (erInnloggetMedAzureAD()) {
-            String navIdent = hentClaim(ISSUER_ISSO, "NAVident")
-                    .orElseThrow(() -> new TilgangskontrollException("Innlogget bruker er ikke veileder."));
+            String navIdent = contextHolder.getTokenValidationContext().getClaims(ISSUER_ISSO).get(NAVIDENT_CLAIM).toString();
             return new Veileder(navIdent);
         } else if (erInnloggetMedOpenAM()) {
-            String navIdent = contextHolder.getOIDCValidationContext().getClaims(ISSUER_OPENAM).getSubject();
+            String navIdent = contextHolder.getTokenValidationContext().getClaims(ISSUER_OPENAM).getSubject();
             return new Veileder(navIdent);
         } else {
-            throw new TilgangskontrollException("Bruker er ikke innlogget.");
+            throw new TilgangskontrollException("Veileder er ikke innlogget.");
         }
     }
 
     public String hentInnloggetBruker() {
-        return hentClaim(ISSUER_SELVBETJENING, "sub")
+        return contextHolder.getTokenValidationContext().getJwtTokenAsOptional(ISSUER_SELVBETJENING)
+                .map(JwtToken::getSubject)
                 .orElseThrow(() -> new TilgangskontrollException("Bruker er ikke innlogget"));
     }
 
     public String hentOidcTokenSelvbetjening() {
-        return contextHolder.getOIDCValidationContext().getToken(ISSUER_SELVBETJENING).getIdToken();
+        return contextHolder.getTokenValidationContext().getJwtToken(ISSUER_SELVBETJENING).getTokenAsString();
     }
 
     private boolean erInnloggetMedAzureAD() {
-        Optional<String> navIdent = hentClaimSet(ISSUER_ISSO)
-                .map(jwtClaimsSet -> (String) jwtClaimsSet.getClaims().get("NAVident"))
+        Optional<String> navIdent = Optional.ofNullable(contextHolder.getTokenValidationContext().getClaims(ISSUER_ISSO))
+                .map(claims -> claims.get(NAVIDENT_CLAIM).toString())
                 .filter(this::erNAVIdent);
         return navIdent.isPresent();
     }
 
     private boolean erInnloggetMedOpenAM() {
-        OIDCClaims claims = contextHolder.getOIDCValidationContext().getClaims(ISSUER_OPENAM);
-        if (claims == null) {
-            return false;
-        }
-
-        return erNAVIdent(claims.getSubject());
-    }
-
-    private Optional<String> hentClaim(String issuer, String claim) {
-        Optional<JWTClaimsSet> claimSet = hentClaimSet(issuer);
-        return claimSet.map(jwtClaimsSet -> String.valueOf(jwtClaimsSet.getClaim(claim)));
-    }
-
-    private Optional<JWTClaimsSet> hentClaimSet(String issuer) {
-        return Optional.ofNullable(contextHolder.getOIDCValidationContext().getClaims(issuer))
-                .map(OIDCClaims::getClaimSet);
+        Optional<String> navIdent = Optional.ofNullable(contextHolder.getTokenValidationContext().getClaims(ISSUER_OPENAM))
+                .map(JwtTokenClaims::getSubject)
+                .filter(this::erNAVIdent);
+        return navIdent.isPresent();
     }
 
     public boolean harInnloggingsContext() {
         try {
-            contextHolder.getOIDCValidationContext();
+            contextHolder.getTokenValidationContext();
             return true;
         } catch (IllegalStateException exception) {
             // Kaster exception hvis man prøver å hente context utenfor et request initiert av en bruker

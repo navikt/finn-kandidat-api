@@ -1,8 +1,8 @@
 package no.nav.finnkandidatapi.tilgangskontroll;
 
 import lombok.RequiredArgsConstructor;
+import no.nav.security.token.support.core.api.Protected;
 import no.nav.finnkandidatapi.unleash.FeatureToggleService;
-import no.nav.security.oidc.api.Protected;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;

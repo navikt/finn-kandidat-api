@@ -1,18 +1,22 @@
 package no.nav.finnkandidatapi.tilgangskontroll;
 
+import com.nimbusds.jwt.JWTClaimsSet;
+import no.nav.security.token.support.core.context.TokenValidationContext;
+import no.nav.security.token.support.core.context.TokenValidationContextHolder;
+import no.nav.security.token.support.core.jwt.JwtToken;
 import no.nav.finnkandidatapi.kandidat.Veileder;
-import no.nav.security.oidc.context.OIDCClaims;
-import no.nav.security.oidc.context.OIDCRequestContextHolder;
-import no.nav.security.oidc.context.OIDCValidationContext;
-import no.nav.security.oidc.context.TokenContext;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.Collections;
 import java.util.Map;
 
+import static no.nav.finnkandidatapi.tilgangskontroll.TokenUtils.ISSUER_ISSO;
+import static no.nav.finnkandidatapi.tilgangskontroll.TokenUtils.ISSUER_SELVBETJENING;
+import static no.nav.security.token.support.test.JwtTokenGenerator.*;
 import static no.nav.finnkandidatapi.TestData.enVeileder;
 import static no.nav.finnkandidatapi.TestData.etFnr;
 import static no.nav.security.oidc.test.support.JwtTokenGenerator.createSignedJWT;
@@ -26,7 +30,7 @@ public class TokenUtilsTest {
     private TokenUtils tokenUtils;
 
     @Mock
-    private OIDCRequestContextHolder contextHolder;
+    private TokenValidationContextHolder contextHolder;
 
     @Test
     public void hentInnloggetVeileder__skal_returnere_riktig_veileder_med_azureAD_token() {
@@ -34,6 +38,7 @@ public class TokenUtilsTest {
         værInnloggetMedAzureAD(veileder);
         assertThat(tokenUtils.hentInnloggetVeileder()).isEqualTo(veileder);
     }
+
 
     @Test(expected = TilgangskontrollException.class)
     public void hentInnloggetVeileder__skal_kaste_exception_hvis_ikke_innlogget() {
@@ -55,27 +60,26 @@ public class TokenUtilsTest {
     }
 
     private void værInnloggetMedSelvBetjening(String fnr) {
-        Map<String, Object> claims = Map.of("sub", fnr);
-        OIDCValidationContext context = new OIDCValidationContext();
-        TokenContext tokenContext = new TokenContext(TokenUtils.ISSUER_SELVBETJENING, "");
-        OIDCClaims oidcClaims = new OIDCClaims(createSignedJWT("blablabla", 0, claims, TokenUtils.ISSUER_SELVBETJENING, "aud-selvbetjening"));
-        context.addValidatedToken(TokenUtils.ISSUER_SELVBETJENING, tokenContext, oidcClaims);
+        JwtToken jwtToken = new JwtToken(signedJWTAsString(fnr));
+        TokenValidationContext context = new TokenValidationContext(Map.of(ISSUER_SELVBETJENING, jwtToken));
+        contextHolder.setTokenValidationContext(context);
 
-        when(contextHolder.getOIDCValidationContext()).thenReturn(context);
+        when(contextHolder.getTokenValidationContext()).thenReturn(context);
     }
 
     private void værInnloggetMedAzureAD(Veileder veileder) {
-        Map<String, Object> claims = Map.of("NAVident", veileder.getNavIdent());
-        OIDCValidationContext context = new OIDCValidationContext();
-        TokenContext tokenContext = new TokenContext(TokenUtils.ISSUER_ISSO, "");
-        OIDCClaims oidcClaims = new OIDCClaims(createSignedJWT("blablabla", 0, claims, TokenUtils.ISSUER_ISSO, "aud-isso"));
-        context.addValidatedToken(TokenUtils.ISSUER_ISSO, tokenContext, oidcClaims);
+        JWTClaimsSet.Builder builder = new JWTClaimsSet.Builder();
+        builder.claim("NAVident", veileder.getNavIdent());
+        String encodedToken = createSignedJWT(builder.build()).serialize();
+        JwtToken jwtToken = new JwtToken(encodedToken);
+        TokenValidationContext context = new TokenValidationContext(Map.of(ISSUER_ISSO, jwtToken));
+        contextHolder.setTokenValidationContext(context);
 
-        when(contextHolder.getOIDCValidationContext()).thenReturn(context);
+        when(contextHolder.getTokenValidationContext()).thenReturn(context);
     }
 
     private void værUinnlogget() {
-        OIDCValidationContext context = new OIDCValidationContext();
-        when(contextHolder.getOIDCValidationContext()).thenReturn(context);
+        TokenValidationContext context = new TokenValidationContext(Collections.emptyMap());
+        when(contextHolder.getTokenValidationContext()).thenReturn(context);
     }
 }

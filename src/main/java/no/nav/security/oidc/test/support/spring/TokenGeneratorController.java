@@ -3,9 +3,9 @@ package no.nav.security.oidc.test.support.spring;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.util.IOUtils;
 import com.nimbusds.jwt.SignedJWT;
-import no.nav.security.oidc.api.Unprotected;
 import no.nav.security.oidc.test.support.JwkGenerator;
 import no.nav.security.oidc.test.support.JwtTokenGenerator;
+import no.nav.security.token.support.core.api.Unprotected;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.Cookie;

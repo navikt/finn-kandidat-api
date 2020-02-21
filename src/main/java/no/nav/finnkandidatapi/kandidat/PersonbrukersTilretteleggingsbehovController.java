@@ -1,7 +1,7 @@
 package no.nav.finnkandidatapi.kandidat;
 
 import no.nav.finnkandidatapi.tilgangskontroll.TokenUtils;
-import no.nav.security.oidc.api.ProtectedWithClaims;
+import no.nav.security.token.support.core.api.ProtectedWithClaims;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;

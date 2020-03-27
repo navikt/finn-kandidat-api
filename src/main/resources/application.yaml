@@ -61,6 +61,7 @@ SERVICEBRUKER_PASSORD: na
 
 oppfolging-avsluttet.topic: en-kafka-topic
 oppfolging-endret.topic: en-annen-kafka-topic
+arbeidssoker-registrert.topic: en-tredje-kafka-topic
 
 ---
 spring:
@@ -69,6 +70,7 @@ spring:
     bootstrap-servers: b27apvl00045.preprod.local:8443, b27apvl00046.preprod.local:8443, b27apvl00047.preprod.local:8443
     properties:
       security.protocol: SASL_SSL
+      schema.registry.url: http://kafka-schema-registry.tpa:8081
       sasl:
         mechanism: PLAIN
         jaas.config: org.apache.kafka.common.security.plain.PlainLoginModule required username="${SERVICEBRUKER_BRUKERNAVN}" password="${SERVICEBRUKER_PASSORD}";
@@ -78,6 +80,7 @@ spring:
 
 oppfolging-avsluttet.topic: aapen-fo-endringPaaAvsluttOppfolging-v1-q0
 oppfolging-endret.topic: aapen-fo-endringPaaOppfoelgingsBruker-v1-q0
+arbeidssoker-registrert.topic: aapen-arbeid-arbeidssoker-registrert-q
 
 database:
   navn: finn-kandidat-dev
@@ -121,6 +124,7 @@ spring:
     bootstrap-servers: a01apvl00145.adeo.no:8443, a01apvl00146.adeo.no:8443, a01apvl00147.adeo.no:8443, a01apvl00148.adeo.no:8443, a01apvl00149.adeo.no:8443, a01apvl00150.adeo.no:8443
     properties:
       security.protocol: SASL_SSL
+      schema.registry.url: http://kafka-schema-registry.tpa:8081
       sasl:
         mechanism: PLAIN
         jaas.config: org.apache.kafka.common.security.plain.PlainLoginModule required username="${SERVICEBRUKER_BRUKERNAVN}" password="${SERVICEBRUKER_PASSORD}";
@@ -130,6 +134,7 @@ spring:
 
 oppfolging-avsluttet.topic: aapen-fo-endringPaaAvsluttOppfolging-v1-p
 oppfolging-endret.topic: aapen-fo-endringPaaOppfoelgingsBruker-v1-p
+arbeidssoker-registrert.topic: aapen-arbeid-arbeidssoker-registrert-p
 
 database:
   navn: finn-kandidat-prod

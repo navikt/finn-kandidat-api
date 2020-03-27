@@ -2,6 +2,7 @@ package no.nav.finnkandidatapi.kandidat;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.arbeid.soker.registrering.ArbeidssokerRegistrertEvent;
 import no.nav.finnkandidatapi.DateProvider;
 import no.nav.finnkandidatapi.aktørregister.AktørRegisterClient;
 import no.nav.finnkandidatapi.kafka.oppfølgingAvsluttet.OppfølgingAvsluttetMelding;
@@ -142,5 +143,12 @@ public class KandidatService {
     public boolean kandidatEksisterer(String aktørId) {
         Optional<Kandidat> kandidat = kandidatRepository.hentNyesteKandidat(aktørId);
         return kandidat.isPresent();
+    }
+
+    public void behandleArbeidssøkerRegistrert(ArbeidssokerRegistrertEvent arbeidssokerRegistrert) {
+        log.debug("Har mottatt en melding fra veilarbregistrering om bruker {} som {} registrerte status {} ",
+                arbeidssokerRegistrert.getAktorid(),
+                arbeidssokerRegistrert.getRegistreringOpprettet(),
+                arbeidssokerRegistrert.getBrukersSituasjon());
     }
 }

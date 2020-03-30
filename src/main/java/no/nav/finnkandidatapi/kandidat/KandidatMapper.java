@@ -39,6 +39,7 @@ public class KandidatMapper implements RowMapper<Kandidat> {
                 .arbeidshverdagen(stringTilEnumSet(rs.getString(ARBEIDSHVERDAGEN_BEHOV), Arbeidshverdagen.class))
                 .utfordringerMedNorsk(stringTilEnumSet(rs.getString(UTFORDRINGERMEDNORSK_BEHOV), UtfordringerMedNorsk.class))
                 .navKontor(rs.getString(NAV_KONTOR))
+                .permittert(stringTilEnumSet(rs.getString(PERMITTERT), Permittert.class))
                 .build();
     }
 

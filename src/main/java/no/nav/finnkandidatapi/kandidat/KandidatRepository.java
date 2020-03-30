@@ -35,6 +35,7 @@ public class KandidatRepository {
     static final String SLETTET = "slettet";
     static final String OPPRETTET = "opprettet";
     static final String NAV_KONTOR = "nav_kontor";
+    static final String PERMITTERT = "permittert";
 
     private JdbcTemplate jdbcTemplate;
     private SimpleJdbcInsert jdbcInsert;
@@ -142,6 +143,7 @@ public class KandidatRepository {
         parameters.put(NAV_KONTOR, kandidat.getNavKontor());
         parameters.put(SLETTET, false);
         parameters.put(OPPRETTET, LocalDateTime.now());
+        parameters.put(PERMITTERT, enumSetTilString(kandidat.getPermittert()));
 
         return parameters;
     }

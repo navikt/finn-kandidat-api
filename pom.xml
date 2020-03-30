@@ -202,6 +202,11 @@
 			<id>internal-mirror-github-navikt</id>
 			<url>https://repo.adeo.no/repository/github-package-registry-navikt/</url>
 		</repository>
+		<repository>
+			<id>confluent</id>
+			<name>Maven repo i iApp-sonen (confluent)</name>
+			<url>https://repo.adeo.no/repository/confluent.io</url>
+		</repository>
 	</repositories>
 
 	<build>

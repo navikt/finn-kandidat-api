@@ -199,18 +199,8 @@
 
 	<repositories>
 		<repository>
-			<id>repo.adeo.no</id>
-			<name>Maven repo i iApp-sonen</name>
-			<url>https://repo.adeo.no/repository/maven-releases</url>
-		</repository>
-		<repository>
-			<id>internal-mirror-github-navikt</id>
-			<url>https://repo.adeo.no/repository/github-package-registry-navikt/</url>
-		</repository>
-		<repository>
-			<id>confluent</id>
-			<name>Maven repo i iApp-sonen (confluent)</name>
-			<url>https://repo.adeo.no/repository/confluent.io</url>
+			<id>external-mirror-github-navikt</id>
+			<url>https://github-package-registry-mirror.gc.nav.no/cached/maven-release</url>
 		</repository>
 	</repositories>
 
@@ -222,5 +212,35 @@
 			</plugin>
 		</plugins>
 	</build>
+
+	<profiles>
+		<profile>
+			<id>circle</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<repositories>
+				<!-- Skal brukes hvis bygget kjører utenfor NAV (f.eks. en ekstern maskin, eller Circle CI) -->
+				<repository>
+					<id>external-mirror-github-navikt</id>
+					<url>https://github-package-registry-mirror.gc.nav.no/cached/maven-release</url>
+				</repository>
+			</repositories>
+		</profile>
+		<profile>
+			<id>local</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<repositories>
+				<!-- Skal brukes hvis bygget kjører internt (f.eks. Jenkins, fra utviklerimage, eller via ScaleFT) -->
+				<repository>
+					<id>internal-mirror-github-navikt</id>
+					<url>https://repo.adeo.no/repository/github-package-registry-navikt/</url>
+				</repository>
+			</repositories>
+
+		</profile>
+	</profiles>
 
 </project>

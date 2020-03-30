@@ -3,6 +3,7 @@ package no.nav.finnkandidatapi.kafka.arbeidssøkerRegistrert;
 import io.confluent.kafka.serializers.KafkaAvroDeserializer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,6 +15,7 @@ import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
 import org.springframework.kafka.listener.SeekToCurrentErrorHandler;
+import org.springframework.kafka.support.serializer.ErrorHandlingDeserializer2;
 import org.springframework.retry.backoff.ExponentialBackOffPolicy;
 import org.springframework.retry.policy.AlwaysRetryPolicy;
 import org.springframework.retry.support.RetryTemplate;
@@ -27,7 +29,7 @@ public class KafkaAvroConsumerConfig {
 
     @Bean
     public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, String>> avroKafkaListenerContainerFactory(
-            ConsumerFactory<String, String> consumerFactory
+            @Qualifier("avroConsumerFactory") ConsumerFactory<String, String> consumerFactory
     ) {
         ConcurrentKafkaListenerContainerFactory<String, String> factory = configureFactory(consumerFactory);
         ExponentialBackOffPolicy backOffPolicy = configureBackOffPolicy();
@@ -41,7 +43,9 @@ public class KafkaAvroConsumerConfig {
     public ConsumerFactory<String, String> avroConsumerFactory(KafkaProperties properties) {
         Map<String, Object> consumerProperties = properties.buildConsumerProperties();
         consumerProperties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        consumerProperties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, KafkaAvroDeserializer.class);
+        consumerProperties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, ErrorHandlingDeserializer2.class);
+        consumerProperties.put(ErrorHandlingDeserializer2.VALUE_DESERIALIZER_CLASS, KafkaAvroDeserializer.class);
+        consumerProperties.put(ErrorHandlingDeserializer2.VALUE_FUNCTION, FaultyArbeidssokerRegistrertProvider.class);
         return new DefaultKafkaConsumerFactory<>(consumerProperties);
     }
 

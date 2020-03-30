@@ -4,20 +4,18 @@ import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.arbeid.soker.registrering.ArbeidssokerRegistrertEvent;
 import no.nav.finnkandidatapi.kandidat.KandidatService;
-import no.nav.finnkandidatapi.veilarbarena.Oppfølgingsbruker;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.context.annotation.Profile;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.support.serializer.FailedDeserializationInfo;
 import org.springframework.stereotype.Component;
-
-import static no.nav.finnkandidatapi.kafka.oppfølgingEndret.OppfølgingEndretUtils.deserialiserMelding;
 
 @Slf4j
 @Component
-@Profile("!local")
+@Profile("!local" )
 public class ArbeidssokerRegistrertConsumer {
 
-    private static final String REGISTRERT_ARBEIDSSØKER_FEILET = "finnkandidat.registrertarbeidssoker.feilet";
+    private static final String REGISTRERT_ARBEIDSSOKER_FEILET = "finnkandidat.registrertarbeidssoker.feilet";
 
     private KandidatService kandidatService;
     @SuppressWarnings({"unused", "FieldCanBeLocal"})
@@ -32,7 +30,7 @@ public class ArbeidssokerRegistrertConsumer {
         this.kandidatService = kandidatService;
         this.arbeidssokerRegistrertConfig = arbeidssokerRegistrertConfig;
         this.meterRegistry = meterRegistry;
-        meterRegistry.counter(REGISTRERT_ARBEIDSSØKER_FEILET);
+        meterRegistry.counter(REGISTRERT_ARBEIDSSOKER_FEILET);
     }
 
     @KafkaListener(
@@ -43,24 +41,25 @@ public class ArbeidssokerRegistrertConsumer {
     )
     public void konsumerMelding(ConsumerRecord<String, ArbeidssokerRegistrertEvent> melding) {
         log.info(
-                "Konsumerer oppfølging endret melding for id {}, offset: {}, partition: {}",
+                "Konsumerer registrert Arbeidssøker-melding for id {}, offset: {}, partition: {}",
                 melding.key(),
                 melding.offset(),
                 melding.partition()
         );
 
-        try {
-            ArbeidssokerRegistrertEvent arbeidssokerRegistrert = melding.value();
-            kandidatService.behandleArbeidssøkerRegistrert(arbeidssokerRegistrert);
+        ArbeidssokerRegistrertEvent arbeidssokerRegistrert = melding.value();
 
-        } catch (RuntimeException e) {
-            meterRegistry.counter(REGISTRERT_ARBEIDSSØKER_FEILET).increment();
-            log.error("Feil ved konsumering av registrert arbeidssøker-melding. id {}, offset: {}, partition: {}",
+        if (arbeidssokerRegistrert instanceof FaultyArbeidssokerRegistrert) {
+            FailedDeserializationInfo failedDeserializationInfo = ((FaultyArbeidssokerRegistrert) arbeidssokerRegistrert).getFailedDeserializationInfo();
+            meterRegistry.counter(REGISTRERT_ARBEIDSSOKER_FEILET).increment();
+            log.error("Feil ved konsumering av registrert arbeidssøker-melding. id {}, offset: {}, partition: {}, årsak: {}",
                     melding.key(),
                     melding.offset(),
-                    melding.partition()
+                    melding.partition(),
+                    failedDeserializationInfo
             );
-            throw e;
+            throw new RuntimeException("Kunne ikke deserialisere ArbeidssokerRegistrertEvent", failedDeserializationInfo.getException());
         }
+        kandidatService.behandleArbeidssøkerRegistrert(arbeidssokerRegistrert);
     }
 }

@@ -1,5 +1,6 @@
 package no.nav.finnkandidatapi.kafka.oppfølgingAvsluttet;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,7 +21,7 @@ public class KafkaConsumerConfig {
 
     @Bean
     public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, String>> kafkaListenerContainerFactory(
-            ConsumerFactory<String, String> consumerFactory
+            @Qualifier("consumerFactory") ConsumerFactory<String, String> consumerFactory
     ) {
         ConcurrentKafkaListenerContainerFactory<String, String> factory = configureFactory(consumerFactory);
         ExponentialBackOffPolicy backOffPolicy = configureBackOffPolicy();

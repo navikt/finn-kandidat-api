@@ -1,0 +1,1 @@
+ALTER TABLE kandidat ADD COLUMN permittert VARCHAR(1000);

@@ -199,6 +199,11 @@
 
 	<repositories>
 		<repository>
+			<id>repo.adeo.no</id>
+			<name>Maven repo i iApp-sonen</name>
+			<url>https://repo.adeo.no/repository/maven-releases</url>
+		</repository>
+		<repository>
 			<id>internal-mirror-github-navikt</id>
 			<url>https://repo.adeo.no/repository/github-package-registry-navikt/</url>
 		</repository>

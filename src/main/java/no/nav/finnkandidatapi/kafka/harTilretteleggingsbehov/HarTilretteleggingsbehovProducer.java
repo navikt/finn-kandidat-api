@@ -48,18 +48,19 @@ public class HarTilretteleggingsbehovProducer {
 
     @EventListener
     public void kandidatOpprettet(KandidatOpprettet event) {
-        Kandidat kandidat = event.getKandidat();
-        List<String> kategorier = kandidat.kategorier();
-        HarTilretteleggingsbehov melding = new HarTilretteleggingsbehov(kandidat.getAktørId(), true, kategorier);
-        sendKafkamelding(melding);
+        kandidatEndretEllerOpprettet(event.getKandidat());
     }
 
     @EventListener
     public void kandidatEndret(KandidatEndret event) {
-        Kandidat kandidat = event.getKandidat();
+        kandidatEndretEllerOpprettet(event.getKandidat());
+    }
+
+    private void kandidatEndretEllerOpprettet(Kandidat kandidat) {
         List<String> kategorier = kandidat.kategorier();
+        List<String> kategorierOgPermittert = kandidat.kategorierOgPermittert();
         boolean harBehov = !kategorier.isEmpty();
-        HarTilretteleggingsbehov melding = new HarTilretteleggingsbehov(kandidat.getAktørId(), harBehov, kategorier);
+        HarTilretteleggingsbehov melding = new HarTilretteleggingsbehov(kandidat.getAktørId(), harBehov, kategorierOgPermittert);
         sendKafkamelding(melding);
     }
 

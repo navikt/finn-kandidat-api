@@ -14,7 +14,6 @@ import no.nav.finnkandidatapi.veilarbarena.VeilarbArenaClient;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -127,16 +126,10 @@ public class KandidatService {
         return aktørRegisterClient.tilFnr(aktørId);
     }
 
-    Optional<Integer> slettKandidat(String aktørId, Veileder innloggetVeileder) {
-        LocalDateTime slettetTidspunkt = dateProvider.now();
-        Optional<Integer> optionalId = kandidatRepository.slettKandidatSomVeileder(aktørId, innloggetVeileder, slettetTidspunkt);
-
-        optionalId.ifPresent(id -> {
-            KandidatSlettet event = new KandidatSlettet(id, aktørId, Brukertype.VEILEDER, slettetTidspunkt);
-            eventPublisher.publishEvent(event);
-        });
-
-        return optionalId;
+    Optional<Integer> slettKandidatsTilretteleggingsbehov(String aktørId, Veileder innloggetVeileder) {
+        KandidatDto kandidatUtenTilretteleggingebehov = KandidatDto.builder().aktørId(aktørId).build();
+        Optional<Kandidat> optionalEndretKandidat = endreKandidat(kandidatUtenTilretteleggingebehov, innloggetVeileder);
+        return optionalEndretKandidat.map(kandidat -> kandidat.getId());
     }
 
     public boolean kandidatEksisterer(String aktørId) {

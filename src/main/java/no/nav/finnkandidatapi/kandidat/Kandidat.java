@@ -41,7 +41,7 @@ public class Kandidat {
                 .arbeidshverdagen(kandidat.getArbeidshverdagen())
                 .utfordringerMedNorsk(kandidat.getUtfordringerMedNorsk())
                 .navKontor(navKontor)
-                .permittert(null)
+                .permittert(Collections.emptySet())
                 .build();
     }
 
@@ -72,7 +72,6 @@ public class Kandidat {
         Set<Fysisk> fysisk = this.getFysisk();
         Set<Arbeidshverdagen> arbeidshverdagen = this.getArbeidshverdagen();
         Set<UtfordringerMedNorsk> utfordringerMedNorsk = this.getUtfordringerMedNorsk();
-        Set<Permittert> permitteringer = this.getPermittert();
 
         if (arbeidstid != null && !arbeidstid.isEmpty()) {
             kategorier.add(Arbeidstid.behovskategori);
@@ -90,10 +89,16 @@ public class Kandidat {
             kategorier.add(UtfordringerMedNorsk.behovskategori);
         }
 
-        if (permitteringer != null && !permitteringer.isEmpty()) {
-            kategorier.add(Permittert.permittertkategori);
-        }
-
         return Collections.unmodifiableList(kategorier);
+    }
+
+    public List<String> kategorierOgPermittert() {
+        List<String> kategorierOgPermittert = new ArrayList<>(kategorier());
+        Set<Permittert> permitteringer = this.getPermittert();
+
+        if( permitteringer != null && !permitteringer.isEmpty()) {
+            kategorierOgPermittert.add(Permittert.permittertkategori);
+        }
+        return kategorierOgPermittert;
     }
 }

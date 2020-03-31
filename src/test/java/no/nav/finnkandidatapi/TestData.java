@@ -37,6 +37,7 @@ public class TestData {
                 .arbeidshverdagen(Set.of(MENTOR, TILRETTELAGTE_ARBEIDSOPPGAVER))
                 .utfordringerMedNorsk(Set.of(SNAKKE_NORSK, SKRIVE_NORSK, LESE_NORSK))
                 .navKontor(etNavKontor())
+                .permittert(Collections.emptySet())
                 .build();
     }
 
@@ -83,7 +84,8 @@ public class TestData {
                 .arbeidstid(Set.of(KAN_IKKE_JOBBE))
                 .fysisk(Set.of(ARBEIDSSTILLING, ERGONOMI))
                 .arbeidshverdagen(Set.of(MENTOR, TILRETTELAGTE_ARBEIDSOPPGAVER))
-                .utfordringerMedNorsk(Set.of(SNAKKE_NORSK, SKRIVE_NORSK, LESE_NORSK));
+                .utfordringerMedNorsk(Set.of(SNAKKE_NORSK, SKRIVE_NORSK, LESE_NORSK))
+                .permittert(Collections.emptySet());
     }
 
     public static Veileder enVeileder() {
@@ -108,6 +110,7 @@ public class TestData {
                 .fysisk(Collections.emptySet())
                 .arbeidshverdagen(Collections.emptySet())
                 .utfordringerMedNorsk(Collections.emptySet())
+                .permittert(Collections.emptySet())
                 .build();
     }
 

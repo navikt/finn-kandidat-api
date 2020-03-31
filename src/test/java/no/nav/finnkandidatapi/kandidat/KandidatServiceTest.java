@@ -13,6 +13,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.context.ApplicationEventPublisher;
@@ -27,8 +28,7 @@ import static no.nav.finnkandidatapi.unleash.UnleashConfiguration.HENT_OPPFØLGI
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class KandidatServiceTest {
@@ -194,40 +194,79 @@ public class KandidatServiceTest {
     }
 
     @Test
-    public void slettKandidat_skal_slette_kandidat_med_riktig_aktør_id_veilder_og_tidspunkt() {
+    public void slettKandidatsTilretteleggingsbehov_skal_nulle_ut_kandidatens_tilretteleggingsbehov() {
         String aktørId = "1000000000001";
         Veileder veileder = enVeileder();
         LocalDateTime datetime = now();
         when(dateProvider.now()).thenReturn(datetime);
 
-        kandidatService.slettKandidat(aktørId, veileder);
+        Integer pk = 42;
+        Kandidat kandidaten = enKandidat(aktørId);
+        Kandidat tomKandidat = enKandidatMedNullOgTommeSet();
+        tomKandidat.setId(pk);
 
-        verify(repository).slettKandidatSomVeileder(aktørId, veileder, datetime);
+        when(dateProvider.now()).thenReturn(datetime);
+        when(repository.hentNyesteKandidat(aktørId)).thenReturn(Optional.of(kandidaten));
+        when(repository.lagreKandidatSomVeileder(any(Kandidat.class))).thenReturn(pk);
+        when(repository.hentKandidat(pk)).thenReturn(Optional.of(tomKandidat));
+
+        Optional<Integer> kandidatId = kandidatService.slettKandidatsTilretteleggingsbehov(aktørId, veileder);
+
+        assertThat(kandidatId.isPresent()).isTrue();
+        assertThat(kandidatId.get()).isEqualTo(pk);
+
+        verify(repository).hentNyesteKandidat(aktørId);
+        ArgumentCaptor<Kandidat> argument = ArgumentCaptor.forClass(Kandidat.class);
+        verify(repository).lagreKandidatSomVeileder(argument.capture());
+        Kandidat kandidat = argument.getValue();
+        verify(repository).hentKandidat(pk);
+        verifyNoMoreInteractions(repository);
+
+        assertThat(kandidat.kategorier()).isEmpty();
+
     }
 
     @Test
-    public void slettKandidat_skal_publisere_KandidatSlettet_event() {
+    public void slettKandidatsTilretteleggingsbehov_skal_publisere_KandidatEndret_event() {
         String aktørId = "1000000000001";
         Veileder veileder = enVeileder();
         LocalDateTime datetime = now();
 
+        Integer pk = 42;
+        Kandidat kandidaten = enKandidat(aktørId);
+        Kandidat tomKandidat = enKandidatMedNullOgTommeSet();
+        tomKandidat.setId(pk);
+
         when(dateProvider.now()).thenReturn(datetime);
-        Optional<Integer> slettetKey = Optional.of(4);
-        when(repository.slettKandidatSomVeileder(aktørId, veileder, datetime)).thenReturn(slettetKey);
+        when(repository.hentNyesteKandidat(aktørId)).thenReturn(Optional.of(kandidaten));
+        when(repository.lagreKandidatSomVeileder(any(Kandidat.class))).thenReturn(pk);
+        when(repository.hentKandidat(pk)).thenReturn(Optional.of(tomKandidat));
 
-        kandidatService.slettKandidat(aktørId, veileder);
-
-        verify(eventPublisher).publishEvent(new KandidatSlettet(slettetKey.get(), aktørId, Brukertype.VEILEDER, datetime));
+        Optional<Integer> kandidatId = kandidatService.slettKandidatsTilretteleggingsbehov(aktørId, veileder);
+        verify(eventPublisher).publishEvent(new KandidatEndret(tomKandidat));
     }
 
     @Test
-    public void slettKandidat_skal_returnere_id() {
+    public void slettKandidatsTilretteleggingsbehov_skal_returnere_id() {
         String aktørId = "1000000000001";
         Veileder veileder = enVeileder();
+        LocalDateTime datetime = now();
+        when(dateProvider.now()).thenReturn(datetime);
 
-        when(repository.slettKandidatSomVeileder(eq(aktørId), eq(veileder), any())).thenReturn(Optional.of(4));
+        Integer pk = 42;
+        Kandidat kandidaten = enKandidat(aktørId);
+        Kandidat tomKandidat = enKandidatMedNullOgTommeSet();
+        tomKandidat.setId(pk);
 
-        assertThat(kandidatService.slettKandidat(aktørId, veileder).get()).isEqualTo(4);
+        when(dateProvider.now()).thenReturn(datetime);
+        when(repository.hentNyesteKandidat(aktørId)).thenReturn(Optional.of(kandidaten));
+        when(repository.lagreKandidatSomVeileder(any(Kandidat.class))).thenReturn(pk);
+        when(repository.hentKandidat(pk)).thenReturn(Optional.of(tomKandidat));
+
+        Optional<Integer> kandidatId = kandidatService.slettKandidatsTilretteleggingsbehov(aktørId, veileder);
+
+        assertThat(kandidatId.isPresent()).isTrue();
+        assertThat(kandidatId.get()).isEqualTo(pk);
     }
 
     @Test

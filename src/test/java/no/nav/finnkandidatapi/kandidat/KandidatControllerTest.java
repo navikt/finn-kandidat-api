@@ -129,13 +129,31 @@ public class KandidatControllerTest {
     @Test
     public void opprettKandidat__skal_returnere_conflict_hvis_kandidat_eksisterer() {
         KandidatDto kandidatDto = enKandidatDto();
+        Kandidat kandidat = enKandidat();
         Veileder veileder = enVeileder();
         værInnloggetSom(veileder);
 
         when(service.kandidatEksisterer(kandidatDto.getAktørId())).thenReturn(true);
+        when(service.hentNyesteKandidat(kandidatDto.getAktørId())).thenReturn(Optional.of(kandidat));
 
         ResponseEntity<Kandidat> respons = controller.opprettKandidat(kandidatDto);
         assertThat(respons.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
+    }
+
+    @Test
+    public void opprettKandidat__skal_endre_kandidat_hvis_kandidat_uten_tilretteleggingsbehov_eksisterer() {
+        KandidatDto kandidatDto = enKandidatDto();
+        Kandidat tomKandidat = enKandidatMedNullOgTommeSet();
+        Kandidat fullKandidat = enKandidat();
+        Veileder veileder = enVeileder();
+        værInnloggetSom(veileder);
+
+        when(service.kandidatEksisterer(kandidatDto.getAktørId())).thenReturn(true);
+        when(service.hentNyesteKandidat(kandidatDto.getAktørId())).thenReturn(Optional.of(tomKandidat));
+        when(service.endreKandidat(kandidatDto, veileder)).thenReturn(Optional.of(fullKandidat));
+
+        ResponseEntity<Kandidat> respons = controller.opprettKandidat(kandidatDto);
+        assertThat(respons.getStatusCode()).isEqualTo(HttpStatus.CREATED);
     }
 
     @Test
@@ -359,7 +377,7 @@ public class KandidatControllerTest {
         værInnloggetSom(veileder);
         Kandidat kandidat = enKandidat();
 
-        when(service.slettKandidat(kandidat.getAktørId(), veileder)).thenReturn(Optional.of(1));
+        when(service.slettKandidatsTilretteleggingsbehov(kandidat.getAktørId(), veileder)).thenReturn(Optional.of(1));
         ResponseEntity respons = controller.slettKandidat(kandidat.getAktørId());
 
         assertThat(respons.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -373,10 +391,10 @@ public class KandidatControllerTest {
         String aktørId = enAktørId();
 
         when(service.hentAktørId(fnr)).thenReturn(aktørId);
-        when(service.slettKandidat(aktørId, veileder)).thenReturn(Optional.of(1));
+        when(service.slettKandidatsTilretteleggingsbehov(aktørId, veileder)).thenReturn(Optional.of(1));
 
         ResponseEntity respons = controller.slettKandidat(fnr);
-        verify(service).slettKandidat(aktørId, veileder);
+        verify(service).slettKandidatsTilretteleggingsbehov(aktørId, veileder);
 
         assertThat(respons.getStatusCode()).isEqualTo(HttpStatus.OK);
     }

@@ -36,6 +36,9 @@ public class KandidatController {
         tilgangskontroll.sjekkLesetilgangTilKandidat(aktørId);
 
         Kandidat kandidat = kandidatService.hentNyesteKandidat(aktørId).orElseThrow(NotFoundException::new);
+        if ( kandidat.kategorier() == null || kandidat.kategorier().isEmpty() ) {
+            throw new NotFoundException();
+        }
         return ResponseEntity.ok(kandidat);
     }
 
@@ -104,9 +107,19 @@ public class KandidatController {
 
         boolean kandidatEksisterer = kandidatService.kandidatEksisterer(kandidat.getAktørId());
         if (kandidatEksisterer) {
+            Optional<Kandidat> nyesteKandidat = kandidatService.hentNyesteKandidat(kandidat.getAktørId());
+            if( nyesteKandidat.isPresent() && nyesteKandidat.get().kategorier() != null && !nyesteKandidat.get().kategorier().isEmpty() ) {
+                return ResponseEntity
+                        .status(HttpStatus.CONFLICT)
+                        .build();
+            }
+
+            Veileder veileder = tilgangskontroll.hentInnloggetVeileder();
+            Kandidat endretKandidat = kandidatService.endreKandidat(kandidat, veileder)
+                    .orElseThrow(FinnKandidatException::new);
             return ResponseEntity
-                    .status(HttpStatus.CONFLICT)
-                    .build();
+                    .status(HttpStatus.CREATED)
+                    .body(endretKandidat);
         }
 
         Veileder veileder = tilgangskontroll.hentInnloggetVeileder();
@@ -159,7 +172,7 @@ public class KandidatController {
         tilgangskontroll.sjekkPilotTilgang();
         tilgangskontroll.sjekkSkrivetilgangTilKandidat(aktørId);
 
-        Optional<Integer> id = kandidatService.slettKandidat(aktørId, tilgangskontroll.hentInnloggetVeileder());
+        Optional<Integer> id = kandidatService.slettKandidatsTilretteleggingsbehov(aktørId, tilgangskontroll.hentInnloggetVeileder());
 
         if (id.isEmpty()) {
             return ResponseEntity.notFound().build();

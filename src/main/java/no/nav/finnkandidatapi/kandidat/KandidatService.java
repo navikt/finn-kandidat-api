@@ -146,8 +146,8 @@ public class KandidatService {
     }
 
     public void behandleArbeidssøkerRegistrert(ArbeidssokerRegistrertEvent arbeidssokerRegistrert) {
-        log.debug("Har mottatt en melding fra veilarbregistrering om bruker {} som {} registrerte status {} ",
-                arbeidssokerRegistrert.getAktorid(),
+        log.info("Har mottatt en melding fra veilarbregistrering om bruker {} som {} registrerte status {} ",
+                "(N/A)",
                 arbeidssokerRegistrert.getRegistreringOpprettet(),
                 arbeidssokerRegistrert.getBrukersSituasjon());
     }

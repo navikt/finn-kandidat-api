@@ -80,7 +80,7 @@ spring:
 
 oppfolging-avsluttet.topic: aapen-fo-endringPaaAvsluttOppfolging-v1-q0
 oppfolging-endret.topic: aapen-fo-endringPaaOppfoelgingsBruker-v1-q0
-arbeidssoker-registrert.topic: aapen-arbeid-arbeidssoker-registrert-q
+arbeidssoker-registrert.topic: aapen-arbeid-arbeidssoker-registrert-q0
 
 database:
   navn: finn-kandidat-dev

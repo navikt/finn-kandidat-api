@@ -270,6 +270,14 @@ public class KandidatControllerTest {
         controller.hentKandidat(aktørId);
     }
 
+    @Test(expected = NotFoundException.class)
+    public void hentKandidat__skal_kaste_NotFoundException_hvis_kandidat_fins_men_ikke_har_tilretteleggingsbehov() {
+        værInnloggetSom(enVeileder());
+        String aktørId = enKandidatUtenTilretteleggingsbehov().getAktørId();
+        when(service.hentNyesteKandidat(aktørId)).thenReturn(Optional.of(enKandidatUtenTilretteleggingsbehov()));
+        controller.hentKandidat(aktørId);
+    }
+
 
     @Test
     public void hentKandidat__med_fnr_skal_returnere_ok_med_kandidat() {

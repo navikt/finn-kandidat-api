@@ -41,6 +41,21 @@ public class TestData {
                 .build();
     }
 
+    public static Kandidat enKandidatUtenTilretteleggingsbehov() {
+        return Kandidat.builder()
+                .sistEndretAvVeileder(now())
+                .sistEndretAv(enNavIdent())
+                .fnr(etFnr())
+                .aktørId("1000000000001")
+                .arbeidstid(Collections.emptySet())
+                .fysisk(Collections.emptySet())
+                .arbeidshverdagen(Collections.emptySet())
+                .utfordringerMedNorsk(Collections.emptySet())
+                .navKontor(etNavKontor())
+                .permittert(Collections.emptySet())
+                .build();
+    }
+
     public static KandidatDto enKandidatDto(Kandidat kandidat) {
         return KandidatDto.builder()
                 .fnr(kandidat.getFnr())

@@ -33,4 +33,9 @@ public class MetrikkRegistrering {
                     .report();
         }
     }
+
+    @EventListener
+    public void PermitteringMottattUtenKandidat(PermittertArbeidssokerEndretEllerOpprettet event) {
+        //TODO
+    }
 }

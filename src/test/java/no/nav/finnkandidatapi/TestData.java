@@ -5,6 +5,8 @@ import no.nav.finnkandidatapi.kandidat.Kandidat;
 import no.nav.finnkandidatapi.kandidat.KandidatDto;
 import no.nav.finnkandidatapi.kandidat.Veileder;
 import no.nav.finnkandidatapi.logging.LoggEvent;
+import no.nav.finnkandidatapi.permittert.DinSituasjonSvarFraVeilarbReg;
+import no.nav.finnkandidatapi.permittert.PermittertArbeidssoker;
 import no.nav.finnkandidatapi.sts.STSToken;
 import no.nav.finnkandidatapi.tilbakemelding.Behov;
 import no.nav.finnkandidatapi.tilbakemelding.Tilbakemelding;
@@ -25,6 +27,20 @@ import static no.nav.finnkandidatapi.kandidat.Fysisk.ERGONOMI;
 import static no.nav.finnkandidatapi.kandidat.UtfordringerMedNorsk.*;
 
 public class TestData {
+
+    public static PermittertArbeidssoker enPermittertArbeidssoker() {
+        return PermittertArbeidssoker.builder()
+                .aktørId("1000000000001")
+                .statusFraVeilarbRegistrering(DinSituasjonSvarFraVeilarbReg.ER_PERMITTERT.name())
+                .tidspunktForStatusFraVeilarbRegistrering(LocalDateTime.now())
+                .build();
+    }
+
+    public static PermittertArbeidssoker enTomPermittertArbeidssoker() {
+        return PermittertArbeidssoker.builder()
+                .aktørId("1000000000001")
+                .build();
+    }
 
     public static Kandidat enKandidat() {
         return Kandidat.builder()

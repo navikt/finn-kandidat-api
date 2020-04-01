@@ -8,6 +8,10 @@ import no.nav.finnkandidatapi.kafka.oppfølgingAvsluttet.OppfølgingAvsluttetMel
 import no.nav.finnkandidatapi.metrikker.KandidatEndret;
 import no.nav.finnkandidatapi.metrikker.KandidatOpprettet;
 import no.nav.finnkandidatapi.metrikker.KandidatSlettet;
+import no.nav.finnkandidatapi.metrikker.PermittertArbeidssokerEndretEllerOpprettet;
+import no.nav.finnkandidatapi.permittert.ArbeidssokerRegistrertDTO;
+import no.nav.finnkandidatapi.permittert.PermittertArbeidssoker;
+import no.nav.finnkandidatapi.permittert.PermittertArbeidssokerService;
 import no.nav.finnkandidatapi.unleash.FeatureToggleService;
 import no.nav.finnkandidatapi.veilarbarena.Oppfølgingsbruker;
 import no.nav.finnkandidatapi.veilarbarena.VeilarbArenaClient;
@@ -33,6 +37,7 @@ public class KandidatService {
     private final VeilarbArenaClient veilarbarenaClient;
     private final FeatureToggleService featureToggleService;
     private final MeterRegistry meterRegistry;
+    private final PermittertArbeidssokerService permittertArbeidssokerService;
 
     public KandidatService(
             KandidatRepository kandidatRepository,
@@ -40,7 +45,9 @@ public class KandidatService {
             AktørRegisterClient aktørRegisterClient,
             DateProvider dateProvider,
             VeilarbArenaClient veilarbarenaClient,
-            FeatureToggleService featureToggleService, MeterRegistry meterRegistry
+            FeatureToggleService featureToggleService,
+            MeterRegistry meterRegistry,
+            PermittertArbeidssokerService permittertArbeidssokerService
     ) {
         this.kandidatRepository = kandidatRepository;
         this.eventPublisher = eventPublisher;
@@ -49,6 +56,7 @@ public class KandidatService {
         this.veilarbarenaClient = veilarbarenaClient;
         this.featureToggleService = featureToggleService;
         this.meterRegistry = meterRegistry;
+        this.permittertArbeidssokerService = permittertArbeidssokerService;
         meterRegistry.counter(ENDRET_OPPFØLGING_OPPDATERTE_NAVKONTOR);
     }
 
@@ -78,7 +86,10 @@ public class KandidatService {
 
         Integer databaseId = kandidatRepository.lagreKandidatSomVeileder(kandidatTilLagring);
         Optional<Kandidat> lagretKandidat = kandidatRepository.hentKandidat(databaseId);
-        lagretKandidat.ifPresent(value -> eventPublisher.publishEvent(new KandidatOpprettet(value)));
+        lagretKandidat.ifPresent(value -> {
+            Optional<PermittertArbeidssoker> permittertArbeidssoker = permittertArbeidssokerService.hentNyestePermitterteArbeidssoker(value.getAktørId());
+            eventPublisher.publishEvent(new KandidatOpprettet(value, permittertArbeidssoker));
+        });
 
         return lagretKandidat;
     }
@@ -96,7 +107,10 @@ public class KandidatService {
 
         Integer id = kandidatRepository.lagreKandidatSomVeileder(endretkandidat);
         Optional<Kandidat> lagretKandidat = kandidatRepository.hentKandidat(id);
-        lagretKandidat.ifPresent(value -> eventPublisher.publishEvent(new KandidatEndret(value)));
+        lagretKandidat.ifPresent(value -> {
+            Optional<PermittertArbeidssoker> permittertArbeidssoker = permittertArbeidssokerService.hentNyestePermitterteArbeidssoker(value.getAktørId());
+            eventPublisher.publishEvent(new KandidatEndret(value, permittertArbeidssoker));
+        });
 
         return lagretKandidat;
     }
@@ -117,6 +131,7 @@ public class KandidatService {
             eventPublisher.publishEvent(new KandidatSlettet(slettetKey.get(), oppfølgingAvsluttetMelding.getAktørId(), Brukertype.SYSTEM, dateProvider.now()));
             log.info("Slettet kandidat med id {} pga. avsluttet oppfølging", slettetKey.get());
         }
+        permittertArbeidssokerService.behandleOppfølgingAvsluttet(oppfølgingAvsluttetMelding);
     }
 
     public String hentAktørId(String fnr) {
@@ -142,5 +157,22 @@ public class KandidatService {
     public boolean kandidatEksisterer(String aktørId) {
         Optional<Kandidat> kandidat = kandidatRepository.hentNyesteKandidat(aktørId);
         return kandidat.isPresent();
+    }
+
+    //TODO: Gjenstår å koble sammen med Kafka-meldingene fra annen branch
+    public void behandleArbeidssokerRegistrert(ArbeidssokerRegistrertDTO arbeidssokerRegistrertDTO) {
+        try {
+            PermittertArbeidssoker permittertArbeidssoker = permittertArbeidssokerService.behandleArbeidssokerRegistrert(arbeidssokerRegistrertDTO);
+            Optional<Kandidat> optionalKandidat = hentNyesteKandidat(permittertArbeidssoker.getAktørId());
+            if( optionalKandidat.isPresent() ){
+                // TODO: Vil føre til at noen metrikker trigges, selv om kandidat ikke er endret.
+                // Vil det være bedre å bruke PermittertArbeidssokerEndretEllerOpprettet i begge tilfeller?
+                eventPublisher.publishEvent(new KandidatEndret(optionalKandidat.get(), Optional.of(permittertArbeidssoker)));
+            } else {
+                eventPublisher.publishEvent(new PermittertArbeidssokerEndretEllerOpprettet(permittertArbeidssoker));
+            }
+        } catch( Exception e) {
+            log.error("Noe har feilet under behandling av ArbeidssokerRegistrertDTO", e);
+        }
     }
 }

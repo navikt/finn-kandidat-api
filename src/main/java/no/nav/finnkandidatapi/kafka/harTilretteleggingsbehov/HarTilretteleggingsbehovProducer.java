@@ -9,6 +9,8 @@ import no.nav.finnkandidatapi.kandidat.Kandidat;
 import no.nav.finnkandidatapi.metrikker.KandidatEndret;
 import no.nav.finnkandidatapi.metrikker.KandidatOpprettet;
 import no.nav.finnkandidatapi.metrikker.KandidatSlettet;
+import no.nav.finnkandidatapi.metrikker.PermittertArbeidssokerEndretEllerOpprettet;
+import no.nav.finnkandidatapi.permittert.PermittertArbeidssoker;
 import no.nav.finnkandidatapi.unleash.FeatureToggleService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.EventListener;
@@ -17,7 +19,10 @@ import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Component;
 import org.springframework.util.concurrent.ListenableFuture;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static no.nav.finnkandidatapi.unleash.UnleashConfiguration.HAR_TILRETTELEGGINGSBEHOV_PRODUCER_FEATURE;
 
@@ -49,23 +54,43 @@ public class HarTilretteleggingsbehovProducer {
     @EventListener
     public void kandidatOpprettet(KandidatOpprettet event) {
         Kandidat kandidat = event.getKandidat();
+        Optional<PermittertArbeidssoker> permittertArbeidssoker = event.getPermittertArbeidssoker();
         List<String> kategorier = kandidat.kategorier();
-        HarTilretteleggingsbehov melding = new HarTilretteleggingsbehov(kandidat.getAktørId(), true, kategorier);
+        List<String> kategorierOgPermittering = kombiner(kategorier, permittertArbeidssoker);
+        HarTilretteleggingsbehov melding = new HarTilretteleggingsbehov(kandidat.getAktørId(), true, kategorierOgPermittering);
         sendKafkamelding(melding);
     }
 
     @EventListener
     public void kandidatEndret(KandidatEndret event) {
         Kandidat kandidat = event.getKandidat();
+        Optional<PermittertArbeidssoker> permittertArbeidssoker = event.getPermittertArbeidssoker();
         List<String> kategorier = kandidat.kategorier();
         boolean harBehov = !kategorier.isEmpty();
-        HarTilretteleggingsbehov melding = new HarTilretteleggingsbehov(kandidat.getAktørId(), harBehov, kategorier);
+        List<String> kategorierOgPermittering = kombiner(kategorier, permittertArbeidssoker);
+        HarTilretteleggingsbehov melding = new HarTilretteleggingsbehov(kandidat.getAktørId(), harBehov, kategorierOgPermittering);
         sendKafkamelding(melding);
+    }
+
+    private List<String> kombiner(List<String> kategorier, Optional<PermittertArbeidssoker> permittertArbeidssoker) {
+        List<String> kombinert = new ArrayList<>(kategorier);
+        if( permittertArbeidssoker.isPresent() && permittertArbeidssoker.get().erPermittert()) {
+            kombinert.add(PermittertArbeidssoker.ER_PERMITTERT_KATEGORI);
+        }
+        return kombinert;
     }
 
     @EventListener
     public void kandidatSlettet(KandidatSlettet event) {
         HarTilretteleggingsbehov melding = new HarTilretteleggingsbehov(event.getAktørId(), false, List.of());
+        sendKafkamelding(melding);
+    }
+
+    @EventListener
+    public void PermitteringMottattUtenKandidat(PermittertArbeidssokerEndretEllerOpprettet event) {
+        PermittertArbeidssoker permittertArbeidssoker = event.getPermittertArbeidssoker();
+        List<String> kategorier = kombiner(Collections.emptyList(), Optional.of(permittertArbeidssoker));
+        HarTilretteleggingsbehov melding = new HarTilretteleggingsbehov(permittertArbeidssoker.getAktørId(), false, kategorier);
         sendKafkamelding(melding);
     }
 

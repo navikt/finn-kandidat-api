@@ -7,6 +7,7 @@ import no.nav.finnkandidatapi.kafka.oppfølgingAvsluttet.OppfølgingAvsluttetMel
 import no.nav.finnkandidatapi.metrikker.KandidatEndret;
 import no.nav.finnkandidatapi.metrikker.KandidatOpprettet;
 import no.nav.finnkandidatapi.metrikker.KandidatSlettet;
+import no.nav.finnkandidatapi.permittert.PermittertArbeidssokerService;
 import no.nav.finnkandidatapi.unleash.FeatureToggleService;
 import no.nav.finnkandidatapi.veilarbarena.VeilarbArenaClient;
 import org.assertj.core.api.Assertions;
@@ -56,8 +57,12 @@ public class KandidatServiceTest {
     @Mock
     private MeterRegistry meterRegistry;
 
+    @Mock
+    private PermittertArbeidssokerService permittertArbeidssokerService;
+
     @Before
     public void setUp() {
+        when(permittertArbeidssokerService.hentNyestePermitterteArbeidssoker(any())).thenReturn(Optional.empty());
         when(featureToggleService.isEnabled(HENT_OPPFØLGINGSBRUKER_VED_OPPRETT_KANDIDAT)).thenReturn(true);
         kandidatService = new KandidatService(
                 repository,
@@ -66,7 +71,8 @@ public class KandidatServiceTest {
                 dateProvider,
                 veilarbArenaClient,
                 featureToggleService,
-                meterRegistry
+                meterRegistry,
+                permittertArbeidssokerService
         );
     }
 
@@ -144,7 +150,7 @@ public class KandidatServiceTest {
         when(veilarbArenaClient.hentOppfølgingsbruker(kandidat.getFnr(), kandidat.getAktørId())).thenReturn(enOppfølgingsbruker());
 
         kandidatService.opprettKandidat(kandidatDto, enVeileder());
-        verify(eventPublisher).publishEvent(new KandidatOpprettet(kandidat));
+        verify(eventPublisher).publishEvent(new KandidatOpprettet(kandidat, Optional.empty()));
     }
 
     @Test
@@ -190,7 +196,7 @@ public class KandidatServiceTest {
 
         Kandidat endretKandidat = kandidatService.endreKandidat(enKandidatDto(), enVeileder()).get();
 
-        verify(eventPublisher).publishEvent(new KandidatEndret(endretKandidat));
+        verify(eventPublisher).publishEvent(new KandidatEndret(endretKandidat, Optional.empty()));
     }
 
     @Test

@@ -6,11 +6,13 @@ import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
 import no.finn.unleash.Unleash;
 import no.nav.finnkandidatapi.kandidat.Kandidat;
+import no.nav.finnkandidatapi.kandidat.KandidatService;
 import no.nav.finnkandidatapi.metrikker.KandidatEndret;
 import no.nav.finnkandidatapi.metrikker.KandidatOpprettet;
 import no.nav.finnkandidatapi.metrikker.KandidatSlettet;
 import no.nav.finnkandidatapi.metrikker.PermittertArbeidssokerEndretEllerOpprettet;
 import no.nav.finnkandidatapi.permittert.PermittertArbeidssoker;
+import no.nav.finnkandidatapi.permittert.PermittertArbeidssokerService;
 import no.nav.finnkandidatapi.unleash.FeatureToggleService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.EventListener;
@@ -37,16 +39,22 @@ public class HarTilretteleggingsbehovProducer {
     private String topic;
     private MeterRegistry meterRegistry;
     private FeatureToggleService featureToggleService;
+    private KandidatService kandidatService;
+    private PermittertArbeidssokerService permittertArbeidssokerService;
 
     public HarTilretteleggingsbehovProducer(
             KafkaTemplate<String, String> kafkaTemplate,
-            @Value("${kandidat-endret.topic}") String topic,
+            @Value("${kandidat-endret.topic}" ) String topic,
             MeterRegistry meterRegistry,
-            Unleash unleash, FeatureToggleService featureToggleService) {
+            Unleash unleash, FeatureToggleService featureToggleService,
+            KandidatService kandidatService,
+            PermittertArbeidssokerService permittertArbeidssokerService) {
         this.kafkaTemplate = kafkaTemplate;
         this.topic = topic;
         this.meterRegistry = meterRegistry;
         this.featureToggleService = featureToggleService;
+        this.kandidatService = kandidatService;
+        this.permittertArbeidssokerService = permittertArbeidssokerService;
         meterRegistry.counter(HAR_TILRETTELEGGINGSBEHOV_PRODUSENT_SUKSESS);
         meterRegistry.counter(HAR_TILRETTELEGGINGSBEHOV_PRODUSENT_FEILET);
     }
@@ -54,30 +62,20 @@ public class HarTilretteleggingsbehovProducer {
     @EventListener
     public void kandidatOpprettet(KandidatOpprettet event) {
         Kandidat kandidat = event.getKandidat();
-        Optional<PermittertArbeidssoker> permittertArbeidssoker = event.getPermittertArbeidssoker();
-        List<String> kategorier = kandidat.kategorier();
-        List<String> kategorierOgPermittering = kombiner(kategorier, permittertArbeidssoker);
-        HarTilretteleggingsbehov melding = new HarTilretteleggingsbehov(kandidat.getAktørId(), true, kategorierOgPermittering);
-        sendKafkamelding(melding);
+        kandidatOpprettetEllerEndret(kandidat);
     }
 
     @EventListener
     public void kandidatEndret(KandidatEndret event) {
         Kandidat kandidat = event.getKandidat();
-        Optional<PermittertArbeidssoker> permittertArbeidssoker = event.getPermittertArbeidssoker();
-        List<String> kategorier = kandidat.kategorier();
-        boolean harBehov = !kategorier.isEmpty();
-        List<String> kategorierOgPermittering = kombiner(kategorier, permittertArbeidssoker);
-        HarTilretteleggingsbehov melding = new HarTilretteleggingsbehov(kandidat.getAktørId(), harBehov, kategorierOgPermittering);
-        sendKafkamelding(melding);
+        kandidatOpprettetEllerEndret(kandidat);
     }
 
-    private List<String> kombiner(List<String> kategorier, Optional<PermittertArbeidssoker> permittertArbeidssoker) {
-        List<String> kombinert = new ArrayList<>(kategorier);
-        if( permittertArbeidssoker.isPresent() && permittertArbeidssoker.get().erPermittert()) {
-            kombinert.add(PermittertArbeidssoker.ER_PERMITTERT_KATEGORI);
-        }
-        return kombinert;
+    private void kandidatOpprettetEllerEndret(Kandidat kandidat) {
+        Optional<PermittertArbeidssoker> permittertArbeidssoker = permittertArbeidssokerService.hentNyestePermitterteArbeidssoker(kandidat.getAktørId());
+        List<String> kategorier = kandidat.kategorier();
+
+        lagOgSendMelding(kandidat.getAktørId(), kategorier, permittertArbeidssoker);
     }
 
     @EventListener
@@ -87,11 +85,27 @@ public class HarTilretteleggingsbehovProducer {
     }
 
     @EventListener
-    public void PermitteringMottattUtenKandidat(PermittertArbeidssokerEndretEllerOpprettet event) {
+    public void permitteringEndretEllerOpprettet(PermittertArbeidssokerEndretEllerOpprettet event) {
         PermittertArbeidssoker permittertArbeidssoker = event.getPermittertArbeidssoker();
-        List<String> kategorier = kombiner(Collections.emptyList(), Optional.of(permittertArbeidssoker));
-        HarTilretteleggingsbehov melding = new HarTilretteleggingsbehov(permittertArbeidssoker.getAktørId(), false, kategorier);
+        Optional<Kandidat> kandidat = kandidatService.hentNyesteKandidat(permittertArbeidssoker.getAktørId());
+        List<String> kategorier = kandidat.map(Kandidat::kategorier).orElse(Collections.emptyList());
+
+        lagOgSendMelding(permittertArbeidssoker.getAktørId(), kategorier, Optional.of(permittertArbeidssoker));
+    }
+
+    private void lagOgSendMelding(String aktørId, List<String> kategorier, Optional<PermittertArbeidssoker> permittertArbeidssoker) {
+        boolean harBehov = !kategorier.isEmpty();
+        List<String> kategorierOgPermittering = kombiner(kategorier, permittertArbeidssoker);
+        HarTilretteleggingsbehov melding = new HarTilretteleggingsbehov(aktørId, harBehov, kategorierOgPermittering);
         sendKafkamelding(melding);
+    }
+
+    private List<String> kombiner(List<String> kategorier, Optional<PermittertArbeidssoker> permittertArbeidssoker) {
+        List<String> kombinert = new ArrayList<>(kategorier);
+        if (permittertArbeidssoker.isPresent() && permittertArbeidssoker.get().erPermittert()) {
+            kombinert.add(PermittertArbeidssoker.ER_PERMITTERT_KATEGORI);
+        }
+        return kombinert;
     }
 
     public void sendKafkamelding(HarTilretteleggingsbehov melding) {

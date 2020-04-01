@@ -57,12 +57,8 @@ public class KandidatServiceTest {
     @Mock
     private MeterRegistry meterRegistry;
 
-    @Mock
-    private PermittertArbeidssokerService permittertArbeidssokerService;
-
     @Before
     public void setUp() {
-        when(permittertArbeidssokerService.hentNyestePermitterteArbeidssoker(any())).thenReturn(Optional.empty());
         when(featureToggleService.isEnabled(HENT_OPPFØLGINGSBRUKER_VED_OPPRETT_KANDIDAT)).thenReturn(true);
         kandidatService = new KandidatService(
                 repository,
@@ -71,8 +67,7 @@ public class KandidatServiceTest {
                 dateProvider,
                 veilarbArenaClient,
                 featureToggleService,
-                meterRegistry,
-                permittertArbeidssokerService
+                meterRegistry
         );
     }
 
@@ -150,7 +145,7 @@ public class KandidatServiceTest {
         when(veilarbArenaClient.hentOppfølgingsbruker(kandidat.getFnr(), kandidat.getAktørId())).thenReturn(enOppfølgingsbruker());
 
         kandidatService.opprettKandidat(kandidatDto, enVeileder());
-        verify(eventPublisher).publishEvent(new KandidatOpprettet(kandidat, Optional.empty()));
+        verify(eventPublisher).publishEvent(new KandidatOpprettet(kandidat));
     }
 
     @Test
@@ -196,7 +191,7 @@ public class KandidatServiceTest {
 
         Kandidat endretKandidat = kandidatService.endreKandidat(enKandidatDto(), enVeileder()).get();
 
-        verify(eventPublisher).publishEvent(new KandidatEndret(endretKandidat, Optional.empty()));
+        verify(eventPublisher).publishEvent(new KandidatEndret(endretKandidat));
     }
 
     @Test

@@ -3,6 +3,10 @@ package no.nav.finnkandidatapi.permittert;
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.finnkandidatapi.kafka.oppfølgingAvsluttet.OppfølgingAvsluttetMelding;
+import no.nav.finnkandidatapi.kandidat.Kandidat;
+import no.nav.finnkandidatapi.metrikker.KandidatEndret;
+import no.nav.finnkandidatapi.metrikker.KandidatOpprettet;
+import no.nav.finnkandidatapi.metrikker.PermittertArbeidssokerEndretEllerOpprettet;
 import no.nav.finnkandidatapi.unleash.FeatureToggleService;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -34,13 +38,15 @@ public class PermittertArbeidssokerService {
         }
     }
 
-    public PermittertArbeidssoker behandleArbeidssokerRegistrert(ArbeidssokerRegistrertDTO arbeidssokerRegistrertDTO) {
+    public void behandleArbeidssokerRegistrert(ArbeidssokerRegistrertDTO arbeidssokerRegistrertDTO) {
         PermittertArbeidssoker permittertArbeidssoker =
                 repository.hentNyestePermittertArbeidssoker(arbeidssokerRegistrertDTO.getAktørId())
                         .map(arbeidssoker -> PermittertArbeidssoker.endrePermittertArbeidssoker(arbeidssoker, arbeidssokerRegistrertDTO))
                         .orElse(PermittertArbeidssoker.opprettPermittertArbeidssoker(arbeidssokerRegistrertDTO));
         Integer id = repository.lagrePermittertArbeidssoker(permittertArbeidssoker);
         Optional<PermittertArbeidssoker> lagretPermittertArbeidssoker = repository.hentPermittertArbeidssoker(id);
-        return lagretPermittertArbeidssoker.orElseThrow(() -> new RuntimeException("Uventet feil ved nnehandling av ArbeidssokerRegistrertDTO. Dette skal egentlig ikke feile, det er en createOrUpdate operasjon" ));
+        lagretPermittertArbeidssoker.ifPresent(value ->
+            eventPublisher.publishEvent(new PermittertArbeidssokerEndretEllerOpprettet(value))
+        );
     }
 }

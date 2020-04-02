@@ -35,7 +35,7 @@ public class MetrikkRegistrering {
     }
 
     @EventListener
-    public void PermitteringMottattUtenKandidat(PermittertArbeidssokerEndretEllerOpprettet event) {
+    public void permitteringMottattUtenKandidat(PermittertArbeidssokerEndretEllerOpprettet event) {
         MetricsFactory.createEvent("finn-kandidat.permittertas.lagret")
                 .addTagToReport("status",event.getPermittertArbeidssoker().getStatusFraVeilarbRegistrering())
                 .report();

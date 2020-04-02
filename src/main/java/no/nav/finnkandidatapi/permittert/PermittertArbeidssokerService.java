@@ -21,7 +21,7 @@ public class PermittertArbeidssokerService {
     private final ApplicationEventPublisher eventPublisher;
     private final MeterRegistry meterRegistry;
 
-    public PermittertArbeidssokerService(PermittertArbeidssokerRepository repository, ApplicationEventPublisher eventPublisher, FeatureToggleService featureToggleService, MeterRegistry meterRegistry) {
+    public PermittertArbeidssokerService(PermittertArbeidssokerRepository repository, ApplicationEventPublisher eventPublisher, MeterRegistry meterRegistry) {
         this.repository = repository;
         this.eventPublisher = eventPublisher;
         this.meterRegistry = meterRegistry;

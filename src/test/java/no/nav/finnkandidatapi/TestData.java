@@ -5,6 +5,7 @@ import no.nav.finnkandidatapi.kandidat.Kandidat;
 import no.nav.finnkandidatapi.kandidat.KandidatDto;
 import no.nav.finnkandidatapi.kandidat.Veileder;
 import no.nav.finnkandidatapi.logging.LoggEvent;
+import no.nav.finnkandidatapi.permittert.ArbeidssokerRegistrertDTO;
 import no.nav.finnkandidatapi.permittert.DinSituasjonSvarFraVeilarbReg;
 import no.nav.finnkandidatapi.permittert.PermittertArbeidssoker;
 import no.nav.finnkandidatapi.sts.STSToken;
@@ -28,8 +29,33 @@ import static no.nav.finnkandidatapi.kandidat.UtfordringerMedNorsk.*;
 
 public class TestData {
 
+    public static ArbeidssokerRegistrertDTO enKjentArbeidssokerRegistrering() {
+        return ArbeidssokerRegistrertDTO.builder()
+                .aktørId("1000000000001")
+                .status(DinSituasjonSvarFraVeilarbReg.ER_PERMITTERT.name())
+                .registreringTidspunkt(LocalDateTime.now())
+                .build();
+    }
+
+    public static ArbeidssokerRegistrertDTO enUkjentArbeidssokerRegistrering() {
+        return ArbeidssokerRegistrertDTO.builder()
+                .aktørId("1000000000002")
+                .status(DinSituasjonSvarFraVeilarbReg.ER_PERMITTERT.name())
+                .registreringTidspunkt(LocalDateTime.now())
+                .build();
+    }
+
     public static PermittertArbeidssoker enPermittertArbeidssoker() {
         return PermittertArbeidssoker.builder()
+                .aktørId("1000000000001")
+                .statusFraVeilarbRegistrering(DinSituasjonSvarFraVeilarbReg.ER_PERMITTERT.name())
+                .tidspunktForStatusFraVeilarbRegistrering(LocalDateTime.now())
+                .build();
+    }
+
+    public static PermittertArbeidssoker enLagretPermittertArbeidssoker(Integer id) {
+        return PermittertArbeidssoker.builder()
+                .id(id)
                 .aktørId("1000000000001")
                 .statusFraVeilarbRegistrering(DinSituasjonSvarFraVeilarbReg.ER_PERMITTERT.name())
                 .tidspunktForStatusFraVeilarbRegistrering(LocalDateTime.now())

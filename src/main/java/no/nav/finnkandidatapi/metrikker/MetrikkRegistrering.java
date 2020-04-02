@@ -33,4 +33,11 @@ public class MetrikkRegistrering {
                     .report();
         }
     }
+
+    @EventListener
+    public void permitteringLagret(PermittertArbeidssokerEndretEllerOpprettet event) {
+        MetricsFactory.createEvent("finn-kandidat.permittertas.lagret")
+                .addTagToReport("status",event.getPermittertArbeidssoker().getStatusFraVeilarbRegistrering())
+                .report();
+    }
 }

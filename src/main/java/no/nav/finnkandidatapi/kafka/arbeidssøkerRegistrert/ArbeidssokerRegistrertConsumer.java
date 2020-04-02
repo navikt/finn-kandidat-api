@@ -3,12 +3,17 @@ package no.nav.finnkandidatapi.kafka.arbeidssøkerRegistrert;
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.arbeid.soker.registrering.ArbeidssokerRegistrertEvent;
-import no.nav.finnkandidatapi.kandidat.KandidatService;
+import no.nav.finnkandidatapi.permittert.ArbeidssokerRegistrertDTO;
+import no.nav.finnkandidatapi.permittert.DinSituasjonSvarFraVeilarbReg;
+import no.nav.finnkandidatapi.permittert.PermittertArbeidssokerService;
+import no.nav.metrics.MetricsFactory;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.context.annotation.Profile;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.serializer.FailedDeserializationInfo;
 import org.springframework.stereotype.Component;
+
+import static no.nav.finnkandidatapi.kafka.arbeidssøkerRegistrert.VeilArbRegistreringOpprettetParser.parseTidspunkt;
 
 @Slf4j
 @Component
@@ -16,18 +21,20 @@ import org.springframework.stereotype.Component;
 public class ArbeidssokerRegistrertConsumer {
 
     private static final String REGISTRERT_ARBEIDSSOKER_FEILET = "finnkandidat.registrertarbeidssoker.feilet";
+    private static final String REGISTRERT_ARBEIDSSOKER_DROPPET = "finnkandidat.registrertarbeidssoker.droppet";
+    private static final String REGISTRERT_ARBEIDSSOKER_AKSEPTERT = "finnkandidat.registrertarbeidssoker.akseptert";
 
-    private KandidatService kandidatService;
+    private PermittertArbeidssokerService permittertArbeidssokerService;
     @SuppressWarnings({"unused", "FieldCanBeLocal"})
     private ArbeidssokerRegistrertConfig arbeidssokerRegistrertConfig;
     private MeterRegistry meterRegistry;
 
     public ArbeidssokerRegistrertConsumer(
-            KandidatService kandidatService,
+            PermittertArbeidssokerService permittertArbeidssokerService,
             ArbeidssokerRegistrertConfig arbeidssokerRegistrertConfig,
             MeterRegistry meterRegistry
     ) {
-        this.kandidatService = kandidatService;
+        this.permittertArbeidssokerService = permittertArbeidssokerService;
         this.arbeidssokerRegistrertConfig = arbeidssokerRegistrertConfig;
         this.meterRegistry = meterRegistry;
         meterRegistry.counter(REGISTRERT_ARBEIDSSOKER_FEILET);
@@ -49,6 +56,10 @@ public class ArbeidssokerRegistrertConsumer {
 
         ArbeidssokerRegistrertEvent arbeidssokerRegistrert = melding.value();
 
+        MetricsFactory.createEvent("finn-kandidat.permittertas.mottatt" )
+                .addTagToReport("status", arbeidssokerRegistrert.getBrukersSituasjon())
+                .report();
+
         if (arbeidssokerRegistrert instanceof FaultyArbeidssokerRegistrert) {
             FailedDeserializationInfo failedDeserializationInfo = ((FaultyArbeidssokerRegistrert) arbeidssokerRegistrert).getFailedDeserializationInfo();
             meterRegistry.counter(REGISTRERT_ARBEIDSSOKER_FEILET).increment();
@@ -60,6 +71,26 @@ public class ArbeidssokerRegistrertConsumer {
             );
             throw new RuntimeException("Kunne ikke deserialisere ArbeidssokerRegistrertEvent", failedDeserializationInfo.getException());
         }
-        kandidatService.behandleArbeidssøkerRegistrert(arbeidssokerRegistrert);
+
+        ArbeidssokerRegistrertDTO arbeidssokerRegistrertDTO = mapEventTilDto(arbeidssokerRegistrert);
+
+        if (harBrukerRegistrertSegSomPermittert(arbeidssokerRegistrertDTO)) {
+            permittertArbeidssokerService.behandleArbeidssokerRegistrert(arbeidssokerRegistrertDTO);
+            meterRegistry.counter(REGISTRERT_ARBEIDSSOKER_AKSEPTERT).increment();
+        } else {
+            meterRegistry.counter(REGISTRERT_ARBEIDSSOKER_DROPPET).increment();
+        }
+    }
+
+    private boolean harBrukerRegistrertSegSomPermittert(ArbeidssokerRegistrertDTO arbeidssokerRegistrertDTO) {
+        return arbeidssokerRegistrertDTO.getStatus().equalsIgnoreCase(DinSituasjonSvarFraVeilarbReg.ER_PERMITTERT.name());
+    }
+
+    private ArbeidssokerRegistrertDTO mapEventTilDto(ArbeidssokerRegistrertEvent arbeidssokerRegistrert) {
+        return ArbeidssokerRegistrertDTO.builder()
+                .aktørId(arbeidssokerRegistrert.getAktorid())
+                .status(arbeidssokerRegistrert.getBrukersSituasjon())
+                .registreringTidspunkt(parseTidspunkt(arbeidssokerRegistrert.getRegistreringOpprettet()))
+                .build();
     }
 }

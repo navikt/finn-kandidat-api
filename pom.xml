@@ -203,13 +203,6 @@
 		</dependency>
 	</dependencies>
 
-	<repositories>
-		<repository>
-			<id>external-mirror-github-navikt</id>
-			<url>https://github-package-registry-mirror.gc.nav.no/cached/maven-release</url>
-		</repository>
-	</repositories>
-
 	<build>
 		<plugins>
 			<plugin>

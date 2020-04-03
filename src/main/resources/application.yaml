@@ -62,6 +62,8 @@ SERVICEBRUKER_PASSORD: na
 oppfolging-avsluttet.topic: en-kafka-topic
 oppfolging-endret.topic: en-annen-kafka-topic
 
+vedtak-endret.topic: en-fjerde-kafka-topic
+
 ---
 spring:
   profiles: dev
@@ -78,6 +80,8 @@ spring:
 
 oppfolging-avsluttet.topic: aapen-fo-endringPaaAvsluttOppfolging-v1-q0
 oppfolging-endret.topic: aapen-fo-endringPaaOppfoelgingsBruker-v1-q0
+
+vedtak-endret.topic: gg-arena-vedtak-dagpenger-v1-q
 
 database:
   navn: finn-kandidat-dev
@@ -130,6 +134,8 @@ spring:
 
 oppfolging-avsluttet.topic: aapen-fo-endringPaaAvsluttOppfolging-v1-p
 oppfolging-endret.topic: aapen-fo-endringPaaOppfoelgingsBruker-v1-p
+
+vedtak-endret.topic: gg-arena-vedtak-dagpenger-v1-p
 
 database:
   navn: finn-kandidat-prod

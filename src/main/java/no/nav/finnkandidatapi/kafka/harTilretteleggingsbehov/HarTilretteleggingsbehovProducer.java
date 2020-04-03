@@ -93,7 +93,7 @@ public class HarTilretteleggingsbehovProducer {
         lagOgSendMelding(permittertArbeidssoker.getAktørId(), kategorier, Optional.of(permittertArbeidssoker));
     }
 
-    private void lagOgSendMelding(String aktørId, List<String> kategorier, Optional<PermittertArbeidssoker> permittertArbeidssoker) {
+    public void lagOgSendMelding(String aktørId, List<String> kategorier, Optional<PermittertArbeidssoker> permittertArbeidssoker) {
         boolean harBehov = !kategorier.isEmpty();
         List<String> kategorierOgPermittering = kombiner(kategorier, permittertArbeidssoker);
         HarTilretteleggingsbehov melding = new HarTilretteleggingsbehov(aktørId, harBehov, kategorierOgPermittering);

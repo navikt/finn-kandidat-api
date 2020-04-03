@@ -5,6 +5,8 @@ import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.HarTilretteleggings
 import no.nav.finnkandidatapi.kandidat.Fysisk;
 import no.nav.finnkandidatapi.kandidat.KandidatRepository;
 import no.nav.finnkandidatapi.kandidat.Veileder;
+import no.nav.finnkandidatapi.permittert.PermittertArbeidssoker;
+import no.nav.finnkandidatapi.permittert.PermittertArbeidssokerRepository;
 import no.nav.finnkandidatapi.tilgangskontroll.TilgangskontrollException;
 import no.nav.finnkandidatapi.tilgangskontroll.TilgangskontrollService;
 import org.junit.Before;
@@ -42,9 +44,12 @@ public class KafkaRepublisherTest {
     @Mock
     private KafkaRepublisherConfig config;
 
+    @Mock
+    private PermittertArbeidssokerRepository permittertArbeidssokerRepository;
+
     @Before
     public void setUp() {
-        this.kafkaRepublisher = new KafkaRepublisher(producer, repository, tilgangskontrollService, config);
+        this.kafkaRepublisher = new KafkaRepublisher(producer, repository, permittertArbeidssokerRepository, tilgangskontrollService, config);
     }
 
     @Test(expected = TilgangskontrollException.class)

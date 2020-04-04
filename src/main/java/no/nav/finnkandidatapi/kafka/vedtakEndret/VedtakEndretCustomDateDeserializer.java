@@ -11,10 +11,14 @@ import java.time.format.DateTimeParseException;
 
 public class VedtakEndretCustomDateDeserializer extends StdDeserializer<LocalDateTime> {
 
-    private DateTimeFormatter formatterMedT =
+    private DateTimeFormatter formatterMedTOgMikroSekunder =
             DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS" );
-    private DateTimeFormatter formatterUtenT =
+    private DateTimeFormatter formatterUtenTOgMedMikroSekunder =
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS" );
+    private DateTimeFormatter formatterUtenT =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss" );
+    private DateTimeFormatter formatterMedT =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss" );
     private DateTimeFormatter formatterMerkelig =
             DateTimeFormatter.ofPattern("yyyy-MM-dd:HH:mm:ss" );
 
@@ -30,16 +34,27 @@ public class VedtakEndretCustomDateDeserializer extends StdDeserializer<LocalDat
     public LocalDateTime deserialize(JsonParser jsonparser, DeserializationContext context)
             throws IOException {
         String tekst = jsonparser.getText();
+        if (tekst == null || tekst.isBlank()) {
+            return null;
+        }
         try {
-            return LocalDateTime.parse(tekst, formatterMedT);
+            return LocalDateTime.parse(tekst, formatterMedTOgMikroSekunder);
         } catch (DateTimeParseException dtpe) {
             try {
-                return LocalDateTime.parse(tekst, formatterUtenT);
+                return LocalDateTime.parse(tekst, formatterUtenTOgMedMikroSekunder);
             } catch (DateTimeParseException dtpe2) {
                 try {
-                    return LocalDateTime.parse(tekst, formatterMerkelig);
+                    return LocalDateTime.parse(tekst, formatterUtenT);
                 } catch (DateTimeParseException dtpe3) {
-                    throw new RuntimeException(String.format("Klarte ikke å parse %s, feil %s, %s og %s", tekst, dtpe.getMessage(), dtpe2.getMessage(), dtpe3.getMessage()));
+                    try {
+                        return LocalDateTime.parse(tekst, formatterMedT);
+                    } catch (DateTimeParseException dtpe4) {
+                        try {
+                            return LocalDateTime.parse(tekst, formatterMerkelig);
+                        } catch (DateTimeParseException dtpe5) {
+                            throw new RuntimeException(String.format("Klarte ikke å parse %s, siste feil  er %s", tekst, dtpe5.getMessage()));
+                        }
+                    }
                 }
             }
         }

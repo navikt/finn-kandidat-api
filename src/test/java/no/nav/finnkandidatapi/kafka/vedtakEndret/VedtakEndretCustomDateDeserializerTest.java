@@ -66,6 +66,33 @@ public class VedtakEndretCustomDateDeserializerTest {
         assertThat(value.getTid().getNano()).isEqualTo(0);
     }
 
+    @Test
+    public void skal_parse_manglende_felt_til_null() throws JsonProcessingException {
+        String json = "{ }";
+        ObjectMapper mapper = new ObjectMapper();
+
+        ObjektMedLocalDateTime value = mapper.readValue(json, ObjektMedLocalDateTime.class);
+        assertThat(value.getTid()).isNull();
+    }
+
+    @Test
+    public void skal_parse_null_til_null() throws JsonProcessingException {
+        String json = "{ \"tid\": null }";
+        ObjectMapper mapper = new ObjectMapper();
+
+        ObjektMedLocalDateTime value = mapper.readValue(json, ObjektMedLocalDateTime.class);
+        assertThat(value.getTid()).isNull();
+    }
+
+    @Test
+    public void skal_parse_tomt_felt_til_null() throws JsonProcessingException {
+        String json = "{ \"tid\": \"\" }";
+        ObjectMapper mapper = new ObjectMapper();
+
+        ObjektMedLocalDateTime value = mapper.readValue(json, ObjektMedLocalDateTime.class);
+        assertThat(value.getTid()).isNull();
+    }
+
     @Data
     @Builder
     @NoArgsConstructor

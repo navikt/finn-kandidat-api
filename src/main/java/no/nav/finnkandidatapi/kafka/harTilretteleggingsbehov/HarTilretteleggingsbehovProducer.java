@@ -14,6 +14,8 @@ import no.nav.finnkandidatapi.metrikker.PermittertArbeidssokerEndretEllerOpprett
 import no.nav.finnkandidatapi.permittert.PermittertArbeidssoker;
 import no.nav.finnkandidatapi.permittert.PermittertArbeidssokerService;
 import no.nav.finnkandidatapi.unleash.FeatureToggleService;
+import no.nav.finnkandidatapi.vedtak.Vedtak;
+import no.nav.finnkandidatapi.vedtak.VedtakService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.EventListener;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -21,10 +23,8 @@ import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Component;
 import org.springframework.util.concurrent.ListenableFuture;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.util.*;
 
 import static no.nav.finnkandidatapi.unleash.UnleashConfiguration.HAR_TILRETTELEGGINGSBEHOV_PRODUCER_FEATURE;
 
@@ -41,6 +41,7 @@ public class HarTilretteleggingsbehovProducer {
     private FeatureToggleService featureToggleService;
     private KandidatService kandidatService;
     private PermittertArbeidssokerService permittertArbeidssokerService;
+    private VedtakService vedtakService;
 
     public HarTilretteleggingsbehovProducer(
             KafkaTemplate<String, String> kafkaTemplate,
@@ -48,13 +49,15 @@ public class HarTilretteleggingsbehovProducer {
             MeterRegistry meterRegistry,
             Unleash unleash, FeatureToggleService featureToggleService,
             KandidatService kandidatService,
-            PermittertArbeidssokerService permittertArbeidssokerService) {
+            PermittertArbeidssokerService permittertArbeidssokerService,
+            VedtakService vedtakService) {
         this.kafkaTemplate = kafkaTemplate;
         this.topic = topic;
         this.meterRegistry = meterRegistry;
         this.featureToggleService = featureToggleService;
         this.kandidatService = kandidatService;
         this.permittertArbeidssokerService = permittertArbeidssokerService;
+        this.vedtakService = vedtakService;
         meterRegistry.counter(HAR_TILRETTELEGGINGSBEHOV_PRODUSENT_SUKSESS);
         meterRegistry.counter(HAR_TILRETTELEGGINGSBEHOV_PRODUSENT_FEILET);
     }
@@ -73,9 +76,10 @@ public class HarTilretteleggingsbehovProducer {
 
     private void kandidatOpprettetEllerEndret(Kandidat kandidat) {
         Optional<PermittertArbeidssoker> permittertArbeidssoker = permittertArbeidssokerService.hentNyestePermitterteArbeidssoker(kandidat.getAktørId());
+        List<Vedtak> vedtak = vedtakService.hentNyesteVedtakForAktør(kandidat.getAktørId());
         List<String> kategorier = kandidat.kategorier();
 
-        lagOgSendMelding(kandidat.getAktørId(), kategorier, permittertArbeidssoker);
+        lagOgSendMelding(kandidat.getAktørId(), kategorier, permittertArbeidssoker, vedtak);
     }
 
     @EventListener
@@ -88,21 +92,54 @@ public class HarTilretteleggingsbehovProducer {
     public void permitteringEndretEllerOpprettet(PermittertArbeidssokerEndretEllerOpprettet event) {
         PermittertArbeidssoker permittertArbeidssoker = event.getPermittertArbeidssoker();
         Optional<Kandidat> kandidat = kandidatService.hentNyesteKandidat(permittertArbeidssoker.getAktørId());
+        List<Vedtak> vedtak = vedtakService.hentNyesteVedtakForAktør(permittertArbeidssoker.getAktørId());
         List<String> kategorier = kandidat.map(Kandidat::kategorier).orElse(Collections.emptyList());
 
-        lagOgSendMelding(permittertArbeidssoker.getAktørId(), kategorier, Optional.of(permittertArbeidssoker));
+        lagOgSendMelding(permittertArbeidssoker.getAktørId(), kategorier, Optional.of(permittertArbeidssoker), vedtak);
     }
 
-    private void lagOgSendMelding(String aktørId, List<String> kategorier, Optional<PermittertArbeidssoker> permittertArbeidssoker) {
+    private void lagOgSendMelding(String aktørId,
+                                  List<String> kategorier,
+                                  Optional<PermittertArbeidssoker> permittertArbeidssoker,
+                                  List<Vedtak> vedtak) {
         boolean harBehov = !kategorier.isEmpty();
-        List<String> kategorierOgPermittering = kombiner(kategorier, permittertArbeidssoker);
+        boolean erPermittert = sjekkOmErPermittert(permittertArbeidssoker, vedtak);
+        List<String> kategorierOgPermittering = kombiner(kategorier, erPermittert);
         HarTilretteleggingsbehov melding = new HarTilretteleggingsbehov(aktørId, harBehov, kategorierOgPermittering);
         sendKafkamelding(melding);
     }
 
-    private List<String> kombiner(List<String> kategorier, Optional<PermittertArbeidssoker> permittertArbeidssoker) {
+    private boolean sjekkOmErPermittert(Optional<PermittertArbeidssoker> permittertArbeidssoker, List<Vedtak> vedtak) {
+        Optional<LocalDateTime> datoForSisteVedtak = vedtak == null ? Optional.empty() : vedtak.stream().filter(v -> v.erPermittert()).map(v -> v.getFraDato()).sorted(Comparator.reverseOrder()).findFirst();
+        Optional<LocalDateTime> datoForVeilarbRegistrering = permittertArbeidssoker.map(as -> as.getTidspunktForStatusFraVeilarbRegistrering());
+
+        if (datoForSisteVedtak.isEmpty() && datoForVeilarbRegistrering.isEmpty()) {
+            return false;
+        } else if (datoForSisteVedtak.isPresent() && datoForVeilarbRegistrering.isEmpty()) {
+            return erSistePermitteringsVedtakGyldig(vedtak);
+        } else if (datoForSisteVedtak.isEmpty() && datoForVeilarbRegistrering.isPresent()) {
+            return harArbeidssokerRegistrertSegSomPermittert(permittertArbeidssoker);
+        } else {
+            if (datoForSisteVedtak.get().isAfter(datoForVeilarbRegistrering.get())) {
+                return erSistePermitteringsVedtakGyldig(vedtak);
+            } else {
+                return harArbeidssokerRegistrertSegSomPermittert(permittertArbeidssoker);
+            }
+        }
+    }
+
+    private boolean harArbeidssokerRegistrertSegSomPermittert(Optional<PermittertArbeidssoker> permittertArbeidssoker) {
+        return permittertArbeidssoker.get().erPermittert();
+    }
+
+    private boolean erSistePermitteringsVedtakGyldig(List<Vedtak> vedtak) {
+        Optional<Vedtak> sisteVedtak = vedtak.stream().filter(v -> v.erPermittert()).sorted((v1, v2) -> v2.getFraDato().compareTo(v1.getFraDato())).findFirst();
+        return sisteVedtak.get().erGyldig();
+    }
+
+    private List<String> kombiner(List<String> kategorier, boolean erPermittert) {
         List<String> kombinert = new ArrayList<>(kategorier);
-        if (permittertArbeidssoker.isPresent() && permittertArbeidssoker.get().erPermittert()) {
+        if (erPermittert) {
             kombinert.add(PermittertArbeidssoker.ER_PERMITTERT_KATEGORI);
         }
         return kombinert;

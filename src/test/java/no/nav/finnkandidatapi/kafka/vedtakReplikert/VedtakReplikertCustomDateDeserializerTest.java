@@ -1,4 +1,4 @@
-package no.nav.finnkandidatapi.kafka.vedtakEndret;
+package no.nav.finnkandidatapi.kafka.vedtakReplikert;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -15,7 +15,7 @@ import java.time.Month;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class VedtakEndretCustomDateDeserializerTest {
+public class VedtakReplikertCustomDateDeserializerTest {
 
     @Test
     public void skal_parse_localdatetime_med_t_delimiter() throws JsonProcessingException {
@@ -100,7 +100,7 @@ public class VedtakEndretCustomDateDeserializerTest {
     @JsonIgnoreProperties(ignoreUnknown = true)
     static class ObjektMedLocalDateTime {
 
-        @JsonDeserialize(using = VedtakEndretCustomDateDeserializer.class)
+        @JsonDeserialize(using = VedtakReplikertCustomDateDeserializer.class)
         private LocalDateTime tid;
     }
 }

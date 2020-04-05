@@ -1,4 +1,4 @@
-package no.nav.finnkandidatapi.kafka.vedtakEndret;
+package no.nav.finnkandidatapi.kafka.vedtakReplikert;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -23,9 +23,9 @@ public class VedtakRad {
     private String vedtakstatuskode;
     private String utfallkode;
     private String rettighetkode;
-    @JsonDeserialize(using = VedtakEndretCustomDateDeserializer.class)
+    @JsonDeserialize(using = VedtakReplikertCustomDateDeserializer.class)
     private LocalDateTime fra_dato;
-    @JsonDeserialize(using = VedtakEndretCustomDateDeserializer.class)
+    @JsonDeserialize(using = VedtakReplikertCustomDateDeserializer.class)
     private LocalDateTime til_dato;
     private String fodselsnr;
 }

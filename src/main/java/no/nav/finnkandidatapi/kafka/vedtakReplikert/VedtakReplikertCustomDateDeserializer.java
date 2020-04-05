@@ -1,4 +1,4 @@
-package no.nav.finnkandidatapi.kafka.vedtakEndret;
+package no.nav.finnkandidatapi.kafka.vedtakReplikert;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
-public class VedtakEndretCustomDateDeserializer extends StdDeserializer<LocalDateTime> {
+public class VedtakReplikertCustomDateDeserializer extends StdDeserializer<LocalDateTime> {
 
     private DateTimeFormatter formatterMedTOgMikroSekunder =
             DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS" );
@@ -22,11 +22,11 @@ public class VedtakEndretCustomDateDeserializer extends StdDeserializer<LocalDat
     private DateTimeFormatter formatterMerkelig =
             DateTimeFormatter.ofPattern("yyyy-MM-dd:HH:mm:ss" );
 
-    public VedtakEndretCustomDateDeserializer() {
+    public VedtakReplikertCustomDateDeserializer() {
         this(null);
     }
 
-    public VedtakEndretCustomDateDeserializer(Class<?> vc) {
+    public VedtakReplikertCustomDateDeserializer(Class<?> vc) {
         super(vc);
     }
 

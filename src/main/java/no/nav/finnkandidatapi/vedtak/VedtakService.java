@@ -16,8 +16,8 @@ import java.util.Optional;
 public class VedtakService {
 
     private static final String VEDTAK_INSERT_LAGRET = "finnkandidat.vedtak.insert.lagret";
-    private static final String VEDTAK_UPDATE_LAGRET = "finnkandidat.vedtak.insert.lagret";
-    private static final String VEDTAK_DELETE_LAGRET = "finnkandidat.vedtak.insert.lagret";
+    private static final String VEDTAK_UPDATE_LAGRET = "finnkandidat.vedtak.update.lagret";
+    private static final String VEDTAK_DELETE_LAGRET = "finnkandidat.vedtak.delete.lagret";
 
     private final VedtakRepository vedtakRepository;
     private final AktørRegisterClient aktørRegisterClient;

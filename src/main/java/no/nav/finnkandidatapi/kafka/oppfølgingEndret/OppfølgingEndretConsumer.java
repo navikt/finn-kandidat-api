@@ -35,7 +35,8 @@ public class OppfølgingEndretConsumer {
     @KafkaListener(
             topics = "#{oppfolgingEndretConfig.getTopic()}",
             groupId = "finn-kandidat-oppfolging-endret",
-            clientIdPrefix = "oppfolging-endret"
+            clientIdPrefix = "oppfolging-endret",
+            containerFactory = "kafkaListenerContainerFactory"
     )
     public void konsumerMelding(ConsumerRecord<String, String> melding) {
         log.info(

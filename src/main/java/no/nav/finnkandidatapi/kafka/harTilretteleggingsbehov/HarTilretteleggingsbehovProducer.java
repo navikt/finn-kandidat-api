@@ -80,7 +80,12 @@ public class HarTilretteleggingsbehovProducer {
 
     @EventListener
     public void kandidatSlettet(KandidatSlettet event) {
-        HarTilretteleggingsbehov melding = new HarTilretteleggingsbehov(event.getAktørId(), false, List.of());
+        List<String> kategorier = new ArrayList<>();
+        Optional<PermittertArbeidssoker> permittertArbeidssoker = permittertArbeidssokerService.hentNyestePermitterteArbeidssoker(event.getAktørId());
+        if (permittertArbeidssoker.isPresent() && permittertArbeidssoker.get().erPermittert()) {
+            kategorier.add(PermittertArbeidssoker.ER_PERMITTERT_KATEGORI);
+        }
+        HarTilretteleggingsbehov melding = new HarTilretteleggingsbehov(event.getAktørId(), false, kategorier);
         sendKafkamelding(melding);
     }
 
@@ -109,6 +114,7 @@ public class HarTilretteleggingsbehovProducer {
     }
 
     public void sendKafkamelding(HarTilretteleggingsbehov melding) {
+        log.info("Lager melding med følgende behov: {}", melding.getBehov());
         String payload;
         try {
             payload = new ObjectMapper().writeValueAsString(melding);

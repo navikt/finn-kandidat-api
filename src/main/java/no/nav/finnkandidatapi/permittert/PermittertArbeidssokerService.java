@@ -1,6 +1,5 @@
 package no.nav.finnkandidatapi.permittert;
 
-import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.finnkandidatapi.kafka.oppfølgingAvsluttet.OppfølgingAvsluttetMelding;
 import no.nav.finnkandidatapi.metrikker.PermittertArbeidssokerEndretEllerOpprettet;
@@ -33,11 +32,6 @@ public class PermittertArbeidssokerService {
     }
 
     public void behandleArbeidssokerRegistrert(ArbeidssokerRegistrertDTO arbeidssokerRegistrertDTO) {
-        log.info("Har mottatt en melding fra veilarbregistrering om bruker {} som {} registrerte status {} ",
-                "(anonymisert)",
-                arbeidssokerRegistrertDTO.getRegistreringTidspunkt(),
-                arbeidssokerRegistrertDTO.getStatus());
-
         PermittertArbeidssoker permittertArbeidssoker =
                 repository.hentNyestePermittertArbeidssoker(arbeidssokerRegistrertDTO.getAktørId())
                         .map(arbeidssoker -> PermittertArbeidssoker.endrePermittertArbeidssoker(arbeidssoker, arbeidssokerRegistrertDTO))

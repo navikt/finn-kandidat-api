@@ -5,6 +5,8 @@ import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.HarTilretteleggings
 import no.nav.finnkandidatapi.kandidat.Fysisk;
 import no.nav.finnkandidatapi.kandidat.KandidatRepository;
 import no.nav.finnkandidatapi.kandidat.Veileder;
+import no.nav.finnkandidatapi.permittert.PermittertArbeidssoker;
+import no.nav.finnkandidatapi.permittert.PermittertArbeidssokerRepository;
 import no.nav.finnkandidatapi.tilgangskontroll.TilgangskontrollException;
 import no.nav.finnkandidatapi.tilgangskontroll.TilgangskontrollService;
 import org.junit.Before;
@@ -20,8 +22,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static no.nav.finnkandidatapi.TestData.enAktørId;
-import static no.nav.finnkandidatapi.TestData.enVeileder;
+import static no.nav.finnkandidatapi.TestData.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -42,9 +43,12 @@ public class KafkaRepublisherTest {
     @Mock
     private KafkaRepublisherConfig config;
 
+    @Mock
+    private PermittertArbeidssokerRepository permittertArbeidssokerRepository;
+
     @Before
     public void setUp() {
-        this.kafkaRepublisher = new KafkaRepublisher(producer, repository, tilgangskontrollService, config);
+        this.kafkaRepublisher = new KafkaRepublisher(producer, repository, permittertArbeidssokerRepository, tilgangskontrollService, config);
     }
 
     @Test(expected = TilgangskontrollException.class)
@@ -139,5 +143,30 @@ public class KafkaRepublisherTest {
         kafkaRepublisher.republiserKandidat(aktørId);
 
         verify(producer).sendKafkamelding(harTilretteleggingsbehov);
+    }
+
+    @Test
+    public void republiserKandidat__skal_sende_med_permittertstatus() {
+        Veileder veileder = enVeileder();
+        String aktørId = enAktørId();
+
+        when(tilgangskontrollService.hentInnloggetVeileder()).thenReturn(veileder);
+        when(config.getNavIdenterSomKanRepublisere()).thenReturn(Arrays.asList(veileder.getNavIdent()));
+        HarTilretteleggingsbehov harTilretteleggingsbehov = new HarTilretteleggingsbehov(aktørId, true, List.of(Fysisk.behovskategori));
+        when(repository.hentHarTilretteleggingsbehov(aktørId)).thenReturn(
+                Optional.of(harTilretteleggingsbehov)
+        );
+        when(permittertArbeidssokerRepository.hentNyestePermittertArbeidssoker(aktørId)).thenReturn(
+                Optional.of(enPermittertArbeidssoker())
+        );
+
+        kafkaRepublisher.republiserKandidat(aktørId);
+
+        HarTilretteleggingsbehov forventetBehov = new HarTilretteleggingsbehov(
+                aktørId,
+                true,
+                List.of(Fysisk.behovskategori, PermittertArbeidssoker.ER_PERMITTERT_KATEGORI)
+        );
+        verify(producer).sendKafkamelding(forventetBehov);
     }
 }

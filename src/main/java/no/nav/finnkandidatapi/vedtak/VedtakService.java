@@ -39,6 +39,9 @@ public class VedtakService {
         //evt sjekk om senesteVedtak finnes og evt har nyere pos/timestamp, isåfall abort og evt log?
         //kan være aktuelt pga replay av gamle Kafka-meldinger..
 
+        //TODO: Kan et vedtak endre rettighetKode, eller vil det være likt fra det opprettes til det evt slettes?
+        //Hvis det ikke kan endres, så kan vi filtrere bort det som ikke er FISK eller PERM..
+
         if ( vedtakReplikert.getOp_type().equalsIgnoreCase("I")) {
             String aktørId = hentAktørId(vedtakReplikert.getAfter().getFodselsnr());
             Vedtak vedtak = Vedtak.opprettFraAfter(aktørId, vedtakReplikert);

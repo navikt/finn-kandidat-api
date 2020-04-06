@@ -109,7 +109,6 @@ public class HarTilretteleggingsbehovProducer {
     }
 
     public void sendKafkamelding(HarTilretteleggingsbehov melding) {
-        log.info("Lager melding med følgende behov: {}", melding.getBehov());
         String payload;
         try {
             payload = new ObjectMapper().writeValueAsString(melding);

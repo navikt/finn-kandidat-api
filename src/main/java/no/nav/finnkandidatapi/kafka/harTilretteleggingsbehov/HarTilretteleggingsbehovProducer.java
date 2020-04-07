@@ -14,8 +14,7 @@ import no.nav.finnkandidatapi.metrikker.PermittertArbeidssokerEndretEllerOpprett
 import no.nav.finnkandidatapi.permittert.PermittertArbeidssoker;
 import no.nav.finnkandidatapi.permittert.PermittertArbeidssokerService;
 import no.nav.finnkandidatapi.unleash.FeatureToggleService;
-import no.nav.finnkandidatapi.vedtak.Vedtak;
-import no.nav.finnkandidatapi.vedtak.VedtakService;
+import no.nav.finnkandidatapi.vedtak.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.EventListener;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -60,6 +59,21 @@ public class HarTilretteleggingsbehovProducer {
         this.vedtakService = vedtakService;
         meterRegistry.counter(HAR_TILRETTELEGGINGSBEHOV_PRODUSENT_SUKSESS);
         meterRegistry.counter(HAR_TILRETTELEGGINGSBEHOV_PRODUSENT_FEILET);
+    }
+
+    @EventListener
+    public void vedtakOpprettet(VedtakOpprettet vedtakOpprettet) {
+
+    }
+
+    @EventListener
+    public void vedtakEndret(VedtakEndret vedtakEndret) {
+
+    }
+
+    @EventListener
+    public void vedtakSlettet(VedtakSlettet vedtakSlettet) {
+
     }
 
     @EventListener

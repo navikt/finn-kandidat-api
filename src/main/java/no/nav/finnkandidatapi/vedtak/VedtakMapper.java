@@ -24,7 +24,6 @@ public class VedtakMapper implements RowMapper<Vedtak> {
                 .aktørId(rs.getString(AKTØR_ID))
                 .fnr(rs.getString(FNR))
                 .vedtakId(rs.getLong(VEDTAK_ID))
-                .sakId(rs.getLong(SAK_ID))
                 .personId(rs.getLong(PERSON_ID))
                 .typeKode(rs.getString(TYPEKODE))
                 .statusKode(rs.getString(STATUSKODE))

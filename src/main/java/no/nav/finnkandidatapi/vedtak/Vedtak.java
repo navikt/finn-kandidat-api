@@ -15,7 +15,6 @@ public class Vedtak {
     private String aktørId;
     private String fnr;
     private Long vedtakId;
-    private Long sakId;
     private Long personId;
     private String typeKode;
     private String statusKode;
@@ -44,7 +43,6 @@ public class Vedtak {
                 .aktørId(aktørId)
                 .fnr(rad.getFodselsnr())
                 .vedtakId(rad.getVedtak_id())
-                .sakId(rad.getSak_id())
                 .personId(rad.getPerson_id())
                 .typeKode(rad.getVedtaktypekode())
                 .statusKode(rad.getVedtakstatuskode())

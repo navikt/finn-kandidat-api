@@ -17,7 +17,6 @@ import java.time.LocalDateTime;
 public class VedtakRad {
 
     private Long vedtak_id;
-    private Long sak_id;
     private Long person_id;
     private String vedtaktypekode;
     private String vedtakstatuskode;

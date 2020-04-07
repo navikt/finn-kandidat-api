@@ -46,9 +46,9 @@ public class VedtakReplikertConsumer {
 
         try {
             String json = melding.value();
-            log.info("Vedtak endret melding mottatt, json: {} ", json);
+            log.info("Vedtak replikert melding mottatt, json: {} ", json);
             VedtakReplikert vedtakReplikert = deserialiserMelding(json);
-            log.info("Vedtak endret melding mottatt, java: {} ", vedtakReplikert);
+            log.info("Vedtak replikert melding mottatt, java: {} ", vedtakReplikert);
             vedtakService.behandleVedtakReplikert(vedtakReplikert);
 
         } catch (RuntimeException e) {

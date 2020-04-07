@@ -36,13 +36,16 @@ public class VedtakService {
 
     public void behandleVedtakReplikert(VedtakReplikert vedtakReplikert) {
 
-        //evt sjekk om senesteVedtak finnes og evt har nyere pos/timestamp, isåfall abort og evt log?
+        //Kan evt sjekke om senesteVedtak finnes og evt har nyere pos/timestamp, isåfall abort og evt log?
         //kan være aktuelt pga replay av gamle Kafka-meldinger..
 
-        //TODO: Kan et vedtak endre rettighetKode, eller vil det være likt fra det opprettes til det evt slettes?
-        //Hvis det ikke kan endres, så kan vi filtrere bort det som ikke er FISK eller PERM..
-
         if ( vedtakReplikert.getOp_type().equalsIgnoreCase("I")) {
+            //Vi vil nok sjelden/aldri få Inserts, da vedtakene blir opprettet i Arena
+            //i en tilstand som blir filtrert vekk av GG.
+            if(!erPermitteringsvedtak(vedtakReplikert.getAfter())) {
+                log.info("Dropper å lagre vedtak {}, da det ikke er et permitteringsvedtak", vedtakReplikert.getAfter().getVedtak_id());
+                return;
+            }
             String aktørId = hentAktørId(vedtakReplikert.getAfter().getFodselsnr());
             Vedtak vedtak = Vedtak.opprettFraAfter(aktørId, vedtakReplikert);
             Long id = vedtakRepository.lagreVedtak(vedtak);
@@ -51,6 +54,10 @@ public class VedtakService {
             meterRegistry.counter(VEDTAK_INSERT_LAGRET).increment();
 
         } else if( vedtakReplikert.getOp_type().equalsIgnoreCase("U")) {
+            if(!erPermitteringsvedtak(vedtakReplikert.getAfter())) {
+                log.info("Dropper å lagre vedtak {}, da det ikke er et permitteringsvedtak", vedtakReplikert.getAfter().getVedtak_id());
+                return;
+            }
             String aktørId = hentAktørId(vedtakReplikert.getAfter().getFodselsnr());
             Vedtak vedtak = Vedtak.opprettFraAfter(aktørId, vedtakReplikert);
             Long id = vedtakRepository.lagreVedtak(vedtak);
@@ -60,6 +67,12 @@ public class VedtakService {
 
         } else if( vedtakReplikert.getOp_type().equalsIgnoreCase("D")) {
             //Slettes noen gang vedtak i Arena?
+            //Vi vil nok uansett sjelden/aldri få Inserts, da vedtakene blir i Arena blir satt til AVSLU
+            //før de evt blir slettet, og da vil vi ikke få slette-meldingen fordi vi filtrerer den bort i GG
+            if(!erPermitteringsvedtak(vedtakReplikert.getBefore())) {
+                log.info("Dropper å lagre vedtak {}, da det ikke er et permitteringsvedtak", vedtakReplikert.getBefore().getVedtak_id());
+                return;
+            }
             String aktørId = hentAktørId(vedtakReplikert.getBefore().getFodselsnr());
             Vedtak vedtak = Vedtak.opprettFraBefore(aktørId, vedtakReplikert);
             Long id = vedtakRepository.lagreVedtak(vedtak);
@@ -69,6 +82,10 @@ public class VedtakService {
         } else {
             log.error("Ukjent operasjon {}", vedtakReplikert.getOp_type());
         }
+    }
+
+    private boolean erPermitteringsvedtak(VedtakRad vedtakRad) {
+        return vedtakRad.getRettighetkode().equalsIgnoreCase("FISK") || vedtakRad.getRettighetkode().equalsIgnoreCase("PERM");
     }
 
     public String hentAktørId(String fnr) {

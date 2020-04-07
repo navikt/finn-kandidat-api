@@ -11,12 +11,12 @@ public class VedtakReplikertUtils {
             VedtakReplikert vedtakReplikert = mapper.readValue(melding, VedtakReplikert.class);
 
             if (vedtakReplikert.getOp_type() == null) {
-                throw new RuntimeException("Kunne ikke deserialisere VedtakRepliker, melding: " + vedtakReplikert);
+                throw new RuntimeException("Kunne ikke deserialisere VedtakReplikert, melding: " + vedtakReplikert);
             }
             return vedtakReplikert;
 
         } catch (IOException e) {
-            throw new RuntimeException("Kunne ikke deserialisere VedtakRepliker", e);
+            throw new RuntimeException("Kunne ikke deserialisere VedtakReplikert", e);
         }
     }
 }

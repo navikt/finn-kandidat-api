@@ -5,7 +5,6 @@ CREATE TABLE vedtak (
     aktor_id VARCHAR(20),
     fnr VARCHAR(11),
     vedtak_id BIGINT,
-    sak_id BIGINT,
     person_id BIGINT,
     vedtaktypekode VARCHAR(2),
     vedtakstatuskode VARCHAR(10),

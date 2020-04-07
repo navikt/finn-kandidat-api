@@ -21,7 +21,6 @@ public class VedtakRepository {
     static final String OPPRETTET = "opprettet";
     static final String SLETTET = "slettet";
     static final String VEDTAK_ID = "vedtak_id";
-    static final String SAK_ID = "sak_id";
     static final String PERSON_ID = "person_id";
     static final String TYPEKODE = "vedtaktypekode";
     static final String STATUSKODE = "vedtakstatuskode";
@@ -85,6 +84,7 @@ public class VedtakRepository {
     }
 
     public Long lagreVedtak(Vedtak vedtak) {
+        //TODO: Har det noen hensikt å lagre all historikk fra Arena, eller kunne vi updated samme raden istedet? (basert på vedtakId)
         Map<String, Object> parameters = lagInsertParameter(vedtak);
         return jdbcInsert.executeAndReturnKey(parameters).longValue();
     }
@@ -95,7 +95,6 @@ public class VedtakRepository {
         parameters.put(AKTØR_ID, vedtak.getAktørId());
         parameters.put(FNR, vedtak.getFnr());
         parameters.put(VEDTAK_ID, vedtak.getVedtakId());
-        parameters.put(SAK_ID, vedtak.getSakId());
         parameters.put(PERSON_ID, vedtak.getPersonId());
         parameters.put(TYPEKODE, vedtak.getTypeKode());
         parameters.put(STATUSKODE, vedtak.getStatusKode());

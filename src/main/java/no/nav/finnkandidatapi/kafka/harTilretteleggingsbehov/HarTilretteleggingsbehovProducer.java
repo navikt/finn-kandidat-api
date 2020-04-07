@@ -90,7 +90,7 @@ public class HarTilretteleggingsbehovProducer {
 
     private void kandidatOpprettetEllerEndret(Kandidat kandidat) {
         Optional<PermittertArbeidssoker> permittertArbeidssoker = permittertArbeidssokerService.hentNyestePermitterteArbeidssoker(kandidat.getAktørId());
-        List<Vedtak> vedtak = vedtakService.hentNyesteVedtakForAktør(kandidat.getAktørId());
+        Optional<Vedtak> vedtak = vedtakService.hentNyesteVedtakForAktør(kandidat.getAktørId());
         List<String> kategorier = kandidat.kategorier();
 
         lagOgSendMelding(kandidat.getAktørId(), kategorier, permittertArbeidssoker, vedtak);
@@ -111,7 +111,7 @@ public class HarTilretteleggingsbehovProducer {
     public void permitteringEndretEllerOpprettet(PermittertArbeidssokerEndretEllerOpprettet event) {
         PermittertArbeidssoker permittertArbeidssoker = event.getPermittertArbeidssoker();
         Optional<Kandidat> kandidat = kandidatService.hentNyesteKandidat(permittertArbeidssoker.getAktørId());
-        List<Vedtak> vedtak = vedtakService.hentNyesteVedtakForAktør(permittertArbeidssoker.getAktørId());
+        Optional<Vedtak> vedtak = vedtakService.hentNyesteVedtakForAktør(permittertArbeidssoker.getAktørId());
         List<String> kategorier = kandidat.map(Kandidat::kategorier).orElse(Collections.emptyList());
 
         lagOgSendMelding(permittertArbeidssoker.getAktørId(), kategorier, Optional.of(permittertArbeidssoker), vedtak);
@@ -120,7 +120,7 @@ public class HarTilretteleggingsbehovProducer {
     private void lagOgSendMelding(String aktørId,
                                   List<String> kategorier,
                                   Optional<PermittertArbeidssoker> permittertArbeidssoker,
-                                  List<Vedtak> vedtak) {
+                                  Optional<Vedtak> vedtak) {
         boolean harBehov = !kategorier.isEmpty();
         boolean erPermittert = sjekkOmErPermittert(permittertArbeidssoker, vedtak);
         List<String> kategorierOgPermittering = kombiner(kategorier, erPermittert);
@@ -128,20 +128,20 @@ public class HarTilretteleggingsbehovProducer {
         sendKafkamelding(melding);
     }
 
-    private boolean sjekkOmErPermittert(Optional<PermittertArbeidssoker> permittertArbeidssoker, List<Vedtak> vedtak) {
+    private boolean sjekkOmErPermittert(Optional<PermittertArbeidssoker> permittertArbeidssoker, Optional<Vedtak> vedtak) {
         Optional<LocalDateTime> datoForSisteVedtak = hentFraDatoForSisteVedtak(vedtak);
         Optional<LocalDateTime> datoForVeilarbRegistrering = hentTidspunktForSisteRegistrering(permittertArbeidssoker);
 
         if (harHverkenVedtakEllerRegistrering(datoForSisteVedtak, datoForVeilarbRegistrering)) {
             return false;
         } else if (harVedtakMenIkkeRegistrering(datoForSisteVedtak, datoForVeilarbRegistrering)) {
-            return erSistePermitteringsVedtakGyldig(vedtak);
+            return erSistePermitteringsVedtakGyldig(vedtak.get());
         } else if (harRegistreringMenIkkeVedtak(datoForSisteVedtak, datoForVeilarbRegistrering)) {
             return harArbeidssokerRegistrertSegSomPermittert(permittertArbeidssoker);
         } else {
             //har både vedtak og registrering
             if (datoForSisteVedtak.get().isAfter(datoForVeilarbRegistrering.get())) {
-                return erSistePermitteringsVedtakGyldig(vedtak);
+                return erSistePermitteringsVedtakGyldig(vedtak.get());
             } else {
                 return harArbeidssokerRegistrertSegSomPermittert(permittertArbeidssoker);
             }
@@ -152,12 +152,8 @@ public class HarTilretteleggingsbehovProducer {
         return permittertArbeidssoker.map(as -> as.getTidspunktForStatusFraVeilarbRegistrering());
     }
 
-    private Optional<LocalDateTime> hentFraDatoForSisteVedtak(List<Vedtak> vedtak) {
-        return finnNyestePermitteringsVedtak(vedtak).map(v-> v.getFraDato());
-    }
-
-    Optional<Vedtak> finnNyestePermitteringsVedtak(List<Vedtak> vedtak) {
-        return vedtak.stream().filter(v -> v.erPermittert()).sorted((v1, v2) -> v2.getFraDato().compareTo(v1.getFraDato())).findFirst();
+    private Optional<LocalDateTime> hentFraDatoForSisteVedtak(Optional<Vedtak> vedtak) {
+        return vedtak.map(v-> v.getFraDato());
     }
 
     private boolean harRegistreringMenIkkeVedtak(Optional<LocalDateTime> datoForSisteVedtak, Optional<LocalDateTime> datoForVeilarbRegistrering) {
@@ -176,9 +172,8 @@ public class HarTilretteleggingsbehovProducer {
         return permittertArbeidssoker.get().erPermittert();
     }
 
-    boolean erSistePermitteringsVedtakGyldig(List<Vedtak> vedtak) {
-        Optional<Vedtak> sisteVedtak = finnNyestePermitteringsVedtak(vedtak);
-        return sisteVedtak.get().erGyldig();
+    boolean erSistePermitteringsVedtakGyldig(Vedtak vedtak) {
+        return vedtak.erGyldig();
     }
 
     private List<String> kombiner(List<String> kategorier, boolean erPermittert) {

@@ -92,7 +92,7 @@ public class VedtakService {
         return aktørRegisterClient.tilAktørId(fnr);
     }
 
-    public List<Vedtak> hentNyesteVedtakForAktør(String aktørId) {
-        return vedtakRepository.hentNyesteVedtakForAktør(aktørId);
+    public Optional<Vedtak> hentNyesteVedtakForAktør(String aktørId) {
+        return vedtakRepository.hentNyesteVersjonAvNyesteVedtakForAktør(aktørId);
     }
 }

@@ -47,15 +47,15 @@ public class VedtakRepository {
         this.dateProvider = dateProvider;
     }
 
-    public List<Vedtak> hentNyesteVedtakForAktør(String aktørId) {
+    public Optional<Vedtak> hentNyesteVersjonAvNyesteVedtakForAktør(String aktørId) {
         try {
-            return jdbcTemplate.query(
-                    "SELECT v1.* FROM vedtak v1 WHERE (v1.aktor_id = ?) AND NOT EXISTS (SELECT 1 FROM vedtak v2 where v2.id > v1.id AND v2.aktor_id = v1.aktor_id AND v2.vedtak_id = v1.vedtak_id)",
-                    vedtakMapper,
-                    new Object[]{aktørId}
+            Vedtak vedtak = jdbcTemplate.queryForObject(
+                    "SELECT * FROM vedtak WHERE (v1.aktor_id = ?) ORDER BY fra_dato DESC, id DESC LIMIT 1", new Object[]{aktørId},
+                    vedtakMapper
             );
+            return Optional.ofNullable(vedtak);
         } catch (EmptyResultDataAccessException e) {
-            return Collections.emptyList();
+            return Optional.empty();
         }
     }
 

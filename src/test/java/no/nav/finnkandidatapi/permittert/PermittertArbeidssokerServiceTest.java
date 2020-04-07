@@ -35,15 +35,11 @@ public class PermittertArbeidssokerServiceTest {
     @Mock
     private ApplicationEventPublisher eventPublisher;
 
-    @Mock
-    private MeterRegistry meterRegistry;
-
     @Before
     public void setUp() {
         service = new PermittertArbeidssokerService(
                 repository,
-                eventPublisher,
-                meterRegistry);
+                eventPublisher);
     }
 
     @Test

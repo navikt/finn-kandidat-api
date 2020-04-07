@@ -119,6 +119,28 @@
 		</dependency>
 
 		<dependency>
+			<groupId>io.confluent</groupId>
+			<artifactId>kafka-avro-serializer</artifactId>
+			<version>5.3.0</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-log4j12</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.avro</groupId>
+			<artifactId>avro</artifactId>
+			<version>1.8.2</version>
+		</dependency>
+		<dependency>
+			<groupId>no.nav.arbeid</groupId>
+			<artifactId>veilarbregistrering-skjema</artifactId>
+			<version>1.202003170935-7f8835e</version>
+		</dependency>
+
+		<dependency>
 			<groupId>io.springfox</groupId>
 			<artifactId>springfox-swagger2</artifactId>
 			<version>2.9.2</version>
@@ -166,5 +188,39 @@
 			</plugin>
 		</plugins>
 	</build>
+
+	<profiles>
+		<profile>
+			<id>circle</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<repositories>
+				<!-- Skal brukes hvis bygget kjører utenfor NAV (f.eks. en ekstern maskin, eller Circle CI) -->
+				<repository>
+					<id>external-mirror-github-navikt</id>
+					<url>https://github-package-registry-mirror.gc.nav.no/cached/maven-release</url>
+				</repository>
+				<repository>
+					<id>confluents repo</id>
+					<url>https://packages.confluent.io/maven/</url>
+				</repository>
+			</repositories>
+		</profile>
+		<profile>
+			<id>local</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<repositories>
+				<!-- Skal brukes hvis bygget kjører internt (f.eks. Jenkins, fra utviklerimage, eller via ScaleFT) -->
+				<repository>
+					<id>internal-mirror-github-navikt</id>
+					<url>https://repo.adeo.no/repository/github-package-registry-navikt/</url>
+				</repository>
+			</repositories>
+
+		</profile>
+	</profiles>
 
 </project>

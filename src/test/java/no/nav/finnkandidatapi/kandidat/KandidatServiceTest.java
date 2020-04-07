@@ -7,7 +7,6 @@ import no.nav.finnkandidatapi.kafka.oppfølgingAvsluttet.OppfølgingAvsluttetMel
 import no.nav.finnkandidatapi.metrikker.KandidatEndret;
 import no.nav.finnkandidatapi.metrikker.KandidatOpprettet;
 import no.nav.finnkandidatapi.metrikker.KandidatSlettet;
-import no.nav.finnkandidatapi.permittert.PermittertArbeidssokerService;
 import no.nav.finnkandidatapi.unleash.FeatureToggleService;
 import no.nav.finnkandidatapi.veilarbarena.VeilarbArenaClient;
 import org.assertj.core.api.Assertions;

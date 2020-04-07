@@ -50,7 +50,7 @@ public class VedtakRepository {
     public Optional<Vedtak> hentNyesteVersjonAvNyesteVedtakForAktør(String aktørId) {
         try {
             Vedtak vedtak = jdbcTemplate.queryForObject(
-                    "SELECT * FROM vedtak WHERE (v1.aktor_id = ?) ORDER BY fra_dato DESC, id DESC LIMIT 1", new Object[]{aktørId},
+                    "SELECT * FROM vedtak WHERE (aktor_id = ?) ORDER BY fra_dato DESC, id DESC LIMIT 1", new Object[]{aktørId},
                     vedtakMapper
             );
             return Optional.ofNullable(vedtak);
@@ -84,7 +84,6 @@ public class VedtakRepository {
     }
 
     public Long lagreVedtak(Vedtak vedtak) {
-        //TODO: Har det noen hensikt å lagre all historikk fra Arena, eller kunne vi updated samme raden istedet? (basert på vedtakId)
         Map<String, Object> parameters = lagInsertParameter(vedtak);
         return jdbcInsert.executeAndReturnKey(parameters).longValue();
     }

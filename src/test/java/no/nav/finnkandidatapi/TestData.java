@@ -1,6 +1,8 @@
 package no.nav.finnkandidatapi;
 
 import net.minidev.json.JSONObject;
+import no.nav.finnkandidatapi.kafka.vedtakReplikert.VedtakRad;
+import no.nav.finnkandidatapi.kafka.vedtakReplikert.VedtakReplikert;
 import no.nav.finnkandidatapi.kandidat.Kandidat;
 import no.nav.finnkandidatapi.kandidat.KandidatDto;
 import no.nav.finnkandidatapi.kandidat.Veileder;
@@ -11,6 +13,7 @@ import no.nav.finnkandidatapi.permittert.PermittertArbeidssoker;
 import no.nav.finnkandidatapi.sts.STSToken;
 import no.nav.finnkandidatapi.tilbakemelding.Behov;
 import no.nav.finnkandidatapi.tilbakemelding.Tilbakemelding;
+import no.nav.finnkandidatapi.vedtak.Vedtak;
 import no.nav.finnkandidatapi.veilarbarena.Oppfølgingsbruker;
 
 import java.time.Clock;
@@ -28,6 +31,39 @@ import static no.nav.finnkandidatapi.kandidat.Fysisk.ERGONOMI;
 import static no.nav.finnkandidatapi.kandidat.UtfordringerMedNorsk.*;
 
 public class TestData {
+
+    public static VedtakReplikert etUpdateVedtakReplikert() {
+        return VedtakReplikert.builder()
+            .op_type("U")
+            .after(VedtakRad.builder()
+                    .vedtak_id(45L)
+                    .rettighetkode("PERM")
+                    .build())
+            .build();
+    }
+
+    public static Vedtak etVedtak() {
+        return Vedtak.builder()
+                .aktørId("1000000000001")
+                .arenaDbOperasjon("U")
+                .arenaDbTidsstempel(LocalDateTime.now())
+                .arenaDbTransactionlogPosisjon("1")
+                .fnr("01010112345")
+                .fraDato(LocalDateTime.now().minusMonths(5))
+                .tilDato(LocalDateTime.now().minusMonths(1))
+                .personId(1000L)
+                .rettighetKode("PERM")
+                .slettet(false)
+                .statusKode("IVERK")
+                .typeKode("E")
+                .utfallKode("JA")
+                .vedtakId(101L)
+                .build();
+    }
+
+    public static Vedtak etTomtVedtak() {
+        return Vedtak.builder().build();
+    }
 
     public static ArbeidssokerRegistrertDTO enKjentArbeidssokerRegistrering() {
         return ArbeidssokerRegistrertDTO.builder()

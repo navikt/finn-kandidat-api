@@ -12,30 +12,34 @@ import static no.nav.finnkandidatapi.vedtak.VedtakRepository.*;
 @Component
 public class VedtakMapper implements RowMapper<Vedtak> {
 
+    private Long getNullableLong(ResultSet rs, String fieldName) throws SQLException {
+        Long value = rs.getLong(fieldName);
+        return rs.wasNull() ? null : value;
+    }
+
+    private LocalDateTime getLocalDateTime(ResultSet rs, String fieldName) throws SQLException {
+        return rs.getTimestamp(fieldName) == null ? null : rs.getTimestamp(fieldName).toLocalDateTime();
+    }
+
     @Override
     public Vedtak mapRow(ResultSet rs, int i) throws SQLException {
-
-        LocalDateTime arenaDbTidsstempel = rs.getTimestamp(ARENADB_TS) == null ? null : rs.getTimestamp(ARENADB_TS).toLocalDateTime();
-        LocalDateTime fraDato = rs.getTimestamp(FRA_DATO) == null ? null : rs.getTimestamp(FRA_DATO).toLocalDateTime();
-        LocalDateTime tilDato = rs.getTimestamp(TIL_DATO) == null ? null : rs.getTimestamp(TIL_DATO).toLocalDateTime();
 
         return Vedtak.builder()
                 .id(rs.getLong(ID))
                 .aktørId(rs.getString(AKTØR_ID))
                 .fnr(rs.getString(FNR))
-                .vedtakId(rs.getLong(VEDTAK_ID))
-                .personId(rs.getLong(PERSON_ID))
+                .vedtakId(getNullableLong(rs, VEDTAK_ID))
+                .personId(getNullableLong(rs, PERSON_ID))
                 .typeKode(rs.getString(TYPEKODE))
                 .statusKode(rs.getString(STATUSKODE))
                 .utfallKode(rs.getString(UTFALLKODE))
                 .rettighetKode(rs.getString(RETTIGHETKODE))
-                .fraDato(fraDato)
-                .tilDato(tilDato)
-                .arenaDbTidsstempel(arenaDbTidsstempel)
+                .fraDato(getLocalDateTime(rs, FRA_DATO))
+                .tilDato(getLocalDateTime(rs, TIL_DATO))
+                .arenaDbTidsstempel(getLocalDateTime(rs, ARENADB_TS))
                 .arenaDbTransactionlogPosisjon(rs.getString(ARENADB_POS))
                 .arenaDbOperasjon(rs.getString(ARENADB_OP))
                 .slettet(rs.getBoolean(SLETTET))
                 .build();
-
     }
 }

@@ -86,7 +86,7 @@ public class PermittertArbeidssokerRepositoryTest {
     }
 
     @Test
-    public void hentNyesteKandidat__skal_håndtere_henting_av_ikke_eksisterende_kandidat() {
+    public void hentNyestePermitterteArbeidssoker__skal_håndtere_henting_av_ikke_eksisterende_arbeidssokere() {
         boolean eksisterer = repository.hentNyestePermittertArbeidssoker("finnes ikke").isPresent();
 
         assertThat(eksisterer).isFalse();
@@ -108,6 +108,7 @@ public class PermittertArbeidssokerRepositoryTest {
 
         assertThat(id).isNotEmpty();
     }
+
     @Test
     public void slett_skal_returnere_empty_hvis_allerede_slettet() {
         PermittertArbeidssoker permittertArbeidssoker = enPermittertArbeidssoker();

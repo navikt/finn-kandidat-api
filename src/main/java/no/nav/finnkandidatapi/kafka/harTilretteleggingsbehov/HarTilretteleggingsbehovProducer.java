@@ -129,16 +129,17 @@ public class HarTilretteleggingsbehovProducer {
     }
 
     private boolean sjekkOmErPermittert(Optional<PermittertArbeidssoker> permittertArbeidssoker, List<Vedtak> vedtak) {
-        Optional<LocalDateTime> datoForSisteVedtak = vedtak == null ? Optional.empty() : vedtak.stream().filter(v -> v.erPermittert()).map(v -> v.getFraDato()).sorted(Comparator.reverseOrder()).findFirst();
-        Optional<LocalDateTime> datoForVeilarbRegistrering = permittertArbeidssoker.map(as -> as.getTidspunktForStatusFraVeilarbRegistrering());
+        Optional<LocalDateTime> datoForSisteVedtak = hentFraDatoForSisteVedtak(vedtak);
+        Optional<LocalDateTime> datoForVeilarbRegistrering = hentTidspunktForSisteRegistrering(permittertArbeidssoker);
 
-        if (datoForSisteVedtak.isEmpty() && datoForVeilarbRegistrering.isEmpty()) {
+        if (harHverkenVedtakEllerRegistrering(datoForSisteVedtak, datoForVeilarbRegistrering)) {
             return false;
-        } else if (datoForSisteVedtak.isPresent() && datoForVeilarbRegistrering.isEmpty()) {
+        } else if (harVedtakMenIkkeRegistrering(datoForSisteVedtak, datoForVeilarbRegistrering)) {
             return erSistePermitteringsVedtakGyldig(vedtak);
-        } else if (datoForSisteVedtak.isEmpty() && datoForVeilarbRegistrering.isPresent()) {
+        } else if (harRegistreringMenIkkeVedtak(datoForSisteVedtak, datoForVeilarbRegistrering)) {
             return harArbeidssokerRegistrertSegSomPermittert(permittertArbeidssoker);
         } else {
+            //har både vedtak og registrering
             if (datoForSisteVedtak.get().isAfter(datoForVeilarbRegistrering.get())) {
                 return erSistePermitteringsVedtakGyldig(vedtak);
             } else {
@@ -147,12 +148,36 @@ public class HarTilretteleggingsbehovProducer {
         }
     }
 
+    private Optional<LocalDateTime> hentTidspunktForSisteRegistrering(Optional<PermittertArbeidssoker> permittertArbeidssoker) {
+        return permittertArbeidssoker.map(as -> as.getTidspunktForStatusFraVeilarbRegistrering());
+    }
+
+    private Optional<LocalDateTime> hentFraDatoForSisteVedtak(List<Vedtak> vedtak) {
+        return finnNyestePermitteringsVedtak(vedtak).map(v-> v.getFraDato());
+    }
+
+    Optional<Vedtak> finnNyestePermitteringsVedtak(List<Vedtak> vedtak) {
+        return vedtak.stream().filter(v -> v.erPermittert()).sorted((v1, v2) -> v2.getFraDato().compareTo(v1.getFraDato())).findFirst();
+    }
+
+    private boolean harRegistreringMenIkkeVedtak(Optional<LocalDateTime> datoForSisteVedtak, Optional<LocalDateTime> datoForVeilarbRegistrering) {
+        return datoForSisteVedtak.isEmpty() && datoForVeilarbRegistrering.isPresent();
+    }
+
+    private boolean harVedtakMenIkkeRegistrering(Optional<LocalDateTime> datoForSisteVedtak, Optional<LocalDateTime> datoForVeilarbRegistrering) {
+        return datoForSisteVedtak.isPresent() && datoForVeilarbRegistrering.isEmpty();
+    }
+
+    private boolean harHverkenVedtakEllerRegistrering(Optional<LocalDateTime> datoForSisteVedtak, Optional<LocalDateTime> datoForVeilarbRegistrering) {
+        return datoForSisteVedtak.isEmpty() && datoForVeilarbRegistrering.isEmpty();
+    }
+
     private boolean harArbeidssokerRegistrertSegSomPermittert(Optional<PermittertArbeidssoker> permittertArbeidssoker) {
         return permittertArbeidssoker.get().erPermittert();
     }
 
-    private boolean erSistePermitteringsVedtakGyldig(List<Vedtak> vedtak) {
-        Optional<Vedtak> sisteVedtak = vedtak.stream().filter(v -> v.erPermittert()).sorted((v1, v2) -> v2.getFraDato().compareTo(v1.getFraDato())).findFirst();
+    boolean erSistePermitteringsVedtakGyldig(List<Vedtak> vedtak) {
+        Optional<Vedtak> sisteVedtak = finnNyestePermitteringsVedtak(vedtak);
         return sisteVedtak.get().erGyldig();
     }
 

@@ -1,6 +1,8 @@
 package no.nav.finnkandidatapi.kandidat;
 
 import no.nav.finnkandidatapi.tilgangskontroll.TokenUtils;
+import no.nav.finnkandidatapi.veilarboppfolging.Oppfølgingsstatus;
+import no.nav.finnkandidatapi.veilarboppfolging.VeilarbOppfolgingClient;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

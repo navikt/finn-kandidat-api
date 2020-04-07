@@ -1,4 +1,4 @@
-package no.nav.finnkandidatapi.kandidat;
+package no.nav.finnkandidatapi.veilarboppfolging;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;

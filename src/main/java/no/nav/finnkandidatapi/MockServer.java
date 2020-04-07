@@ -6,7 +6,7 @@ import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.matching.StringValuePattern;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.finnkandidatapi.kandidat.Oppfølgingsstatus;
+import no.nav.finnkandidatapi.veilarboppfolging.Oppfølgingsstatus;
 import no.nav.finnkandidatapi.sts.STSToken;
 import no.nav.finnkandidatapi.tilgangskontroll.veilarbabac.VeilarbabacClient;
 import org.springframework.beans.factory.DisposableBean;

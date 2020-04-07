@@ -1,4 +1,4 @@
-package no.nav.finnkandidatapi.kandidat;
+package no.nav.finnkandidatapi.veilarboppfolging;
 
 import no.nav.finnkandidatapi.tilgangskontroll.TokenUtils;
 import org.springframework.beans.factory.annotation.Value;

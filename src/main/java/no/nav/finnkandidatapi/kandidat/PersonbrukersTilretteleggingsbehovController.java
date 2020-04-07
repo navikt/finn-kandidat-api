@@ -1,6 +1,8 @@
 package no.nav.finnkandidatapi.kandidat;
 
 import no.nav.finnkandidatapi.tilgangskontroll.TokenUtils;
+import no.nav.finnkandidatapi.veilarboppfolging.Oppfølgingsstatus;
+import no.nav.finnkandidatapi.veilarboppfolging.VeilarbOppfolgingClient;
 import no.nav.security.token.support.core.api.ProtectedWithClaims;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

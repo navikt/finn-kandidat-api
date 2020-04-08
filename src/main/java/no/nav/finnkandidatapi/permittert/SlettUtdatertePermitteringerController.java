@@ -4,8 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.finnkandidatapi.aktørregister.AktørRegisterClient;
 import no.nav.finnkandidatapi.veilarboppfolging.VeilarbOppfolgingClient;
 import no.nav.security.token.support.core.api.Protected;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,7 +13,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
 @Protected
-@Controller
+@RestController
 public class SlettUtdatertePermitteringerController {
 
     private final PermittertArbeidssokerRepository permittertArbeidssokerRepository;

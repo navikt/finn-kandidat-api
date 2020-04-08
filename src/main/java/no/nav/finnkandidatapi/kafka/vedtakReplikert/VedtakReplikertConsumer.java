@@ -45,6 +45,7 @@ public class VedtakReplikertConsumer {
                 melding.partition()
         );
         String json = melding.value();
+        log.info("Vedtak replikert meldingen: {}", json);
         try {
             VedtakReplikert vedtakReplikert = deserialiserMelding(json);
             log.info("Vedtak replikert melding mottatt, java: {} ", vedtakReplikert);

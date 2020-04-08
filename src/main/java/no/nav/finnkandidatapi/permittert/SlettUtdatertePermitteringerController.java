@@ -32,7 +32,7 @@ public class SlettUtdatertePermitteringerController {
         arbeidssøkere.forEach(permittertArbeidssoker -> {
             String fnr = aktørRegisterClient.tilFnr(permittertArbeidssoker.getAktørId());
             boolean erUnderOppfølging = veilarbOppfolgingClient.hentOppfølgingsstatus(fnr).isUnderOppfolging();
-            if (erUnderOppfølging) {
+            if (!erUnderOppfølging) {
                 permittertArbeidssokerRepository.slettPermittertArbeidssoker(permittertArbeidssoker.getAktørId());
             }
         });

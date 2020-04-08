@@ -26,8 +26,5 @@ ON vedtak(slettet);
 CREATE INDEX idx_vedtak_fra_dato
 ON vedtak(fra_dato);
 
-CREATE INDEX idx_vedtak_fra_dato
-ON vedtak(fra_dato);
-
 CREATE INDEX idx_vedtak_kombo
 ON vedtak(aktor_id, slettet, fra_dato, id);

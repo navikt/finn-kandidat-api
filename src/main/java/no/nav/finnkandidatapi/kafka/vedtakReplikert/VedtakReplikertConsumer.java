@@ -8,6 +8,8 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import static no.nav.finnkandidatapi.kafka.vedtakReplikert.VedtakReplikertUtils.deserialiserMelding;
 
 @Slf4j
@@ -20,6 +22,7 @@ public class VedtakReplikertConsumer {
     @SuppressWarnings({"unused", "FieldCanBeLocal"})
     private VedtakReplikertConfig vedtakReplikertConfig;
     private MeterRegistry meterRegistry;
+    private AtomicInteger teller = new AtomicInteger(0);
 
     public VedtakReplikertConsumer(
             VedtakService vedtakService,
@@ -55,6 +58,10 @@ public class VedtakReplikertConsumer {
                     .report();
 
             vedtakService.behandleVedtakReplikert(vedtakReplikert);
+            int tellerVerdi = teller.incrementAndGet();
+            if( tellerVerdi > 10 ) {
+                throw new RuntimeException("Ikke les flere meldinger..");
+            }
 
         } catch (RuntimeException e) {
             meterRegistry.counter(REPLIKERTVEDTAK_FEILET).increment();

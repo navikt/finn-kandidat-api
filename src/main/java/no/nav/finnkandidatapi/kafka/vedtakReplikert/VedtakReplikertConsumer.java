@@ -34,7 +34,7 @@ public class VedtakReplikertConsumer {
 
     @KafkaListener(
             topics = "#{vedtakReplikertConfig.getTopic()}",
-            groupId = "finn-kandidat-vedtak-replikert",
+            groupId = "finn-kandidat-vedtak-replikert2",
             clientIdPrefix = "vedtak-replikert"
     )
     public void konsumerMelding(ConsumerRecord<String, String> melding) {

@@ -20,5 +20,14 @@ CREATE TABLE vedtak (
 CREATE INDEX idx_vedtak_aktorid
 ON vedtak(aktor_id);
 
+CREATE INDEX idx_vedtak_slettet
+ON vedtak(slettet);
+
+CREATE INDEX idx_vedtak_fra_dato
+ON vedtak(fra_dato);
+
+CREATE INDEX idx_vedtak_fra_dato
+ON vedtak(fra_dato);
+
 CREATE INDEX idx_vedtak_kombo
-ON vedtak(aktor_id, vedtak_id, id);
+ON vedtak(aktor_id, slettet, fra_dato, id);

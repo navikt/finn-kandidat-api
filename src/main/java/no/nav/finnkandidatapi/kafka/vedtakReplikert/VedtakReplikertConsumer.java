@@ -3,6 +3,7 @@ package no.nav.finnkandidatapi.kafka.vedtakReplikert;
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.finnkandidatapi.vedtak.VedtakService;
+import no.nav.metrics.MetricsFactory;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
@@ -43,12 +44,15 @@ public class VedtakReplikertConsumer {
                 melding.offset(),
                 melding.partition()
         );
-
+        String json = melding.value();
         try {
-            String json = melding.value();
-            log.info("Vedtak replikert melding mottatt, json: {} ", json);
             VedtakReplikert vedtakReplikert = deserialiserMelding(json);
             log.info("Vedtak replikert melding mottatt, java: {} ", vedtakReplikert);
+
+            MetricsFactory.createEvent("finn-kandidat.vedtak.mottatt" )
+                    .addTagToReport("operasjon", vedtakReplikert.getOp_type())
+                    .report();
+
             vedtakService.behandleVedtakReplikert(vedtakReplikert);
 
         } catch (RuntimeException e) {
@@ -58,6 +62,7 @@ public class VedtakReplikertConsumer {
                     melding.offset(),
                     melding.partition()
             );
+            log.error("Vedtak replikert meldingen som feilet: {}", json);
             throw e;
         }
     }

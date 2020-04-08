@@ -1,6 +1,7 @@
 package no.nav.finnkandidatapi;
 
 import net.minidev.json.JSONObject;
+import no.nav.finnkandidatapi.kafka.vedtakReplikert.Tokens;
 import no.nav.finnkandidatapi.kafka.vedtakReplikert.VedtakRad;
 import no.nav.finnkandidatapi.kafka.vedtakReplikert.VedtakReplikert;
 import no.nav.finnkandidatapi.kandidat.Kandidat;
@@ -35,6 +36,7 @@ public class TestData {
     public static VedtakReplikert etUpdateVedtakReplikert() {
         return VedtakReplikert.builder()
             .op_type("U")
+            .tokens(Tokens.builder().fodselsnr("01010112345").build())
             .after(VedtakRad.builder()
                     .vedtak_id(45L)
                     .rettighetkode("PERM")
@@ -45,6 +47,7 @@ public class TestData {
     public static VedtakReplikert etDeleteVedtakReplikert() {
         return VedtakReplikert.builder()
                 .op_type("D")
+                .tokens(Tokens.builder().fodselsnr("01010112345").build())
                 .before(VedtakRad.builder()
                         .vedtak_id(45L)
                         .rettighetkode("PERM")

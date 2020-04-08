@@ -38,10 +38,10 @@ public class Vedtak {
         return opprett(aktørId, vedtakEndret, rad, true);
     }
 
-    private static Vedtak opprett(String aktørId, VedtakReplikert vedtakEndret, VedtakRad rad, boolean slettet) {
+    private static Vedtak opprett(String aktørId, VedtakReplikert vedtakReplikert, VedtakRad rad, boolean slettet) {
         return Vedtak.builder()
                 .aktørId(aktørId)
-                .fnr(rad.getFodselsnr())
+                .fnr(vedtakReplikert.getTokens().getFodselsnr())
                 .vedtakId(rad.getVedtak_id())
                 .personId(rad.getPerson_id())
                 .typeKode(rad.getVedtaktypekode())
@@ -50,9 +50,9 @@ public class Vedtak {
                 .rettighetKode(rad.getRettighetkode())
                 .fraDato(rad.getFra_dato())
                 .tilDato(rad.getTil_dato())
-                .arenaDbTidsstempel(vedtakEndret.getOp_ts())
-                .arenaDbTransactionlogPosisjon(vedtakEndret.getPos())
-                .arenaDbOperasjon(vedtakEndret.getOp_type())
+                .arenaDbTidsstempel(vedtakReplikert.getOp_ts())
+                .arenaDbTransactionlogPosisjon(vedtakReplikert.getPos())
+                .arenaDbOperasjon(vedtakReplikert.getOp_type())
                 .slettet(slettet)
                 .build();
     }

@@ -66,7 +66,7 @@ public class VedtakService {
             return;
         }
 
-        String aktørId = hentAktørId(vedtakReplikert.getBefore().getFodselsnr());
+        String aktørId = hentAktørId(vedtakReplikert.getTokens().getFodselsnr());
         Vedtak vedtak = Vedtak.opprettFraBefore(aktørId, vedtakReplikert);
         Long id = vedtakRepository.lagreVedtak(vedtak);
         vedtak.setId(id);
@@ -84,7 +84,7 @@ public class VedtakService {
             return;
         }
 
-        String aktørId = hentAktørId(vedtakReplikert.getAfter().getFodselsnr());
+        String aktørId = hentAktørId(vedtakReplikert.getTokens().getFodselsnr());
         Vedtak vedtak = Vedtak.opprettFraAfter(aktørId, vedtakReplikert);
         Long id = vedtakRepository.lagreVedtak(vedtak);
         vedtak.setId(id);
@@ -100,7 +100,7 @@ public class VedtakService {
             return;
         }
 
-        String aktørId = hentAktørId(vedtakReplikert.getAfter().getFodselsnr());
+        String aktørId = hentAktørId(vedtakReplikert.getTokens().getFodselsnr());
         Vedtak vedtak = Vedtak.opprettFraAfter(aktørId, vedtakReplikert);
         Long id = vedtakRepository.lagreVedtak(vedtak);
         vedtak.setId(id);

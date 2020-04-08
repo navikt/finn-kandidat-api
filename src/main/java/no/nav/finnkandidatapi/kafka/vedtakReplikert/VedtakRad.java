@@ -25,7 +25,6 @@ public class VedtakRad {
     private LocalDateTime fra_dato;
     @JsonDeserialize(using = VedtakReplikertCustomDateDeserializer.class)
     private LocalDateTime til_dato;
-    private String fodselsnr;
 
     public boolean erPermitteringsvedtak() {
         return rettighetkode != null && (rettighetkode.equalsIgnoreCase("FISK") || rettighetkode.equalsIgnoreCase("PERM"));

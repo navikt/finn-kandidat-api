@@ -22,7 +22,6 @@ public class VedtakReplikertConsumer {
     @SuppressWarnings({"unused", "FieldCanBeLocal"})
     private VedtakReplikertConfig vedtakReplikertConfig;
     private MeterRegistry meterRegistry;
-    private AtomicInteger teller = new AtomicInteger(0);
 
     public VedtakReplikertConsumer(
             VedtakService vedtakService,
@@ -48,20 +47,14 @@ public class VedtakReplikertConsumer {
                 melding.partition()
         );
         String json = melding.value();
-        log.info("Vedtak replikert meldingen: {}", json);
         try {
             VedtakReplikert vedtakReplikert = deserialiserMelding(json);
-            log.info("Vedtak replikert melding mottatt, java: {} ", vedtakReplikert);
 
             MetricsFactory.createEvent("finn-kandidat.vedtak.mottatt" )
                     .addTagToReport("operasjon", vedtakReplikert.getOp_type())
                     .report();
 
             vedtakService.behandleVedtakReplikert(vedtakReplikert);
-            int tellerVerdi = teller.incrementAndGet();
-            if( tellerVerdi > 10 ) {
-                throw new RuntimeException("Ikke les flere meldinger..");
-            }
 
         } catch (RuntimeException e) {
             meterRegistry.counter(REPLIKERTVEDTAK_FEILET).increment();

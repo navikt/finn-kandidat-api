@@ -7,8 +7,10 @@ import no.nav.finnkandidatapi.kandidat.KandidatRepository;
 import no.nav.finnkandidatapi.kandidat.Veileder;
 import no.nav.finnkandidatapi.permittert.PermittertArbeidssoker;
 import no.nav.finnkandidatapi.permittert.PermittertArbeidssokerRepository;
+import no.nav.finnkandidatapi.permittert.PermittertArbeidssokerService;
 import no.nav.finnkandidatapi.tilgangskontroll.TilgangskontrollException;
 import no.nav.finnkandidatapi.tilgangskontroll.TilgangskontrollService;
+import no.nav.finnkandidatapi.vedtak.VedtakService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -44,11 +46,14 @@ public class KafkaRepublisherTest {
     private KafkaRepublisherConfig config;
 
     @Mock
-    private PermittertArbeidssokerRepository permittertArbeidssokerRepository;
+    private PermittertArbeidssokerService permittertArbeidssokerService;
+
+    @Mock
+    private VedtakService vedtakService;
 
     @Before
     public void setUp() {
-        this.kafkaRepublisher = new KafkaRepublisher(producer, repository, permittertArbeidssokerRepository, tilgangskontrollService, config);
+        this.kafkaRepublisher = new KafkaRepublisher(producer, repository, permittertArbeidssokerService, vedtakService, tilgangskontrollService, config);
     }
 
     @Test(expected = TilgangskontrollException.class)
@@ -156,7 +161,7 @@ public class KafkaRepublisherTest {
         when(repository.hentHarTilretteleggingsbehov(aktørId)).thenReturn(
                 Optional.of(harTilretteleggingsbehov)
         );
-        when(permittertArbeidssokerRepository.hentNyestePermittertArbeidssoker(aktørId)).thenReturn(
+        when(permittertArbeidssokerService.hentNyestePermitterteArbeidssoker(aktørId)).thenReturn(
                 Optional.of(enPermittertArbeidssoker())
         );
 

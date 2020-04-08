@@ -63,17 +63,24 @@ public class HarTilretteleggingsbehovProducer {
 
     @EventListener
     public void vedtakOpprettet(VedtakOpprettet vedtakOpprettet) {
-
+        mottattVedtakEvent(vedtakOpprettet.getVedtak());
     }
 
     @EventListener
     public void vedtakEndret(VedtakEndret vedtakEndret) {
-
+        mottattVedtakEvent(vedtakEndret.getVedtak());
     }
 
     @EventListener
     public void vedtakSlettet(VedtakSlettet vedtakSlettet) {
+        mottattVedtakEvent(vedtakSlettet.getVedtak());
+    }
 
+    private void mottattVedtakEvent(Vedtak vedtak) {
+        Optional<PermittertArbeidssoker> permittertArbeidssoker = permittertArbeidssokerService.hentNyestePermitterteArbeidssoker(vedtak.getAktørId());
+        Optional<Kandidat> kandidat = kandidatService.hentNyesteKandidat(vedtak.getAktørId());
+        List<String> kategorier = kandidat.map(Kandidat::kategorier).orElse(Collections.emptyList());
+        lagOgSendMelding(vedtak.getAktørId(), kategorier, permittertArbeidssoker, Optional.of(vedtak));
     }
 
     @EventListener
@@ -122,58 +129,10 @@ public class HarTilretteleggingsbehovProducer {
                                   Optional<PermittertArbeidssoker> permittertArbeidssoker,
                                   Optional<Vedtak> vedtak) {
         boolean harBehov = !kategorier.isEmpty();
-        boolean erPermittert = sjekkOmErPermittert(permittertArbeidssoker, vedtak);
+        boolean erPermittert = SjekkPermittertUtil.sjekkOmErPermittert(permittertArbeidssoker, vedtak);
         List<String> kategorierOgPermittering = kombiner(kategorier, erPermittert);
         HarTilretteleggingsbehov melding = new HarTilretteleggingsbehov(aktørId, harBehov, kategorierOgPermittering);
         sendKafkamelding(melding);
-    }
-
-    private boolean sjekkOmErPermittert(Optional<PermittertArbeidssoker> permittertArbeidssoker, Optional<Vedtak> vedtak) {
-        Optional<LocalDateTime> datoForSisteVedtak = hentFraDatoForSisteVedtak(vedtak);
-        Optional<LocalDateTime> datoForVeilarbRegistrering = hentTidspunktForSisteRegistrering(permittertArbeidssoker);
-
-        if (harHverkenVedtakEllerRegistrering(datoForSisteVedtak, datoForVeilarbRegistrering)) {
-            return false;
-        } else if (harVedtakMenIkkeRegistrering(datoForSisteVedtak, datoForVeilarbRegistrering)) {
-            return erSistePermitteringsVedtakGyldig(vedtak.get());
-        } else if (harRegistreringMenIkkeVedtak(datoForSisteVedtak, datoForVeilarbRegistrering)) {
-            return harArbeidssokerRegistrertSegSomPermittert(permittertArbeidssoker);
-        } else {
-            //har både vedtak og registrering
-            if (datoForSisteVedtak.get().isAfter(datoForVeilarbRegistrering.get())) {
-                return erSistePermitteringsVedtakGyldig(vedtak.get());
-            } else {
-                return harArbeidssokerRegistrertSegSomPermittert(permittertArbeidssoker);
-            }
-        }
-    }
-
-    private Optional<LocalDateTime> hentTidspunktForSisteRegistrering(Optional<PermittertArbeidssoker> permittertArbeidssoker) {
-        return permittertArbeidssoker.map(as -> as.getTidspunktForStatusFraVeilarbRegistrering());
-    }
-
-    private Optional<LocalDateTime> hentFraDatoForSisteVedtak(Optional<Vedtak> vedtak) {
-        return vedtak.map(v-> v.getFraDato());
-    }
-
-    private boolean harRegistreringMenIkkeVedtak(Optional<LocalDateTime> datoForSisteVedtak, Optional<LocalDateTime> datoForVeilarbRegistrering) {
-        return datoForSisteVedtak.isEmpty() && datoForVeilarbRegistrering.isPresent();
-    }
-
-    private boolean harVedtakMenIkkeRegistrering(Optional<LocalDateTime> datoForSisteVedtak, Optional<LocalDateTime> datoForVeilarbRegistrering) {
-        return datoForSisteVedtak.isPresent() && datoForVeilarbRegistrering.isEmpty();
-    }
-
-    private boolean harHverkenVedtakEllerRegistrering(Optional<LocalDateTime> datoForSisteVedtak, Optional<LocalDateTime> datoForVeilarbRegistrering) {
-        return datoForSisteVedtak.isEmpty() && datoForVeilarbRegistrering.isEmpty();
-    }
-
-    private boolean harArbeidssokerRegistrertSegSomPermittert(Optional<PermittertArbeidssoker> permittertArbeidssoker) {
-        return permittertArbeidssoker.get().erPermittert();
-    }
-
-    boolean erSistePermitteringsVedtakGyldig(Vedtak vedtak) {
-        return vedtak.erGyldig();
     }
 
     private List<String> kombiner(List<String> kategorier, boolean erPermittert) {

@@ -94,4 +94,38 @@ public class VedtakRepositoryTest {
         assertThat(lagretId3).isNotEqualTo(lagretId4);
         assertThat(uthentetVedtak.getId()).isEqualTo(lagretId2);
     }
+
+    @Test
+    public void hentNyesteVersjonAvNyesteVedtakForAktør_skal_ikke_hente_slettede_vedtak() {
+        Vedtak vedtak1 = etVedtak();
+        Long lagretId1 = repository.lagreVedtak(vedtak1);
+        Long lagretId2 = repository.lagreVedtak(vedtak1);
+
+        Vedtak vedtak2 = etVedtak();
+        vedtak2.setVedtakId(4545L);
+        vedtak2.setFraDato(vedtak1.getFraDato().minusDays(4));
+        Long lagretId3 = repository.lagreVedtak(vedtak2);
+        Long lagretId4 = repository.lagreVedtak(vedtak2);
+
+        repository.logiskSlettVedtak(vedtak1);
+
+        Vedtak uthentetVedtak = repository.hentNyesteVersjonAvNyesteVedtakForAktør(vedtak1.getAktørId()).get();
+
+        assertThat(lagretId1).isNotEqualTo(lagretId2);
+        assertThat(lagretId2).isNotEqualTo(lagretId3);
+        assertThat(lagretId3).isNotEqualTo(lagretId4);
+        assertThat(uthentetVedtak.getId()).isEqualTo(lagretId4);
+    }
+
+    @Test
+    public void hent_vedtak_fra_id_skal_hente_slettet() {
+        Vedtak vedtak = etVedtak();
+        Long lagretId = repository.lagreVedtak(vedtak);
+        repository.logiskSlettVedtak(vedtak);
+        Vedtak uthentetVedtak = repository.hentVedtak(lagretId).get();
+
+        assertThat(vedtak.isSlettet()).isFalse();
+        assertThat(uthentetVedtak).isEqualToIgnoringGivenFields(vedtak, "id", "slettet" );
+        assertThat(uthentetVedtak.isSlettet()).isTrue();
+    }
 }

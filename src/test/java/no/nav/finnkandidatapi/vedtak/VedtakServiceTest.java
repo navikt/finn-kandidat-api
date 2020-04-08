@@ -15,6 +15,7 @@ import org.springframework.context.ApplicationEventPublisher;
 
 import static no.nav.finnkandidatapi.TestData.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
@@ -28,7 +29,7 @@ public class VedtakServiceTest {
     private VedtakRepository vedtakRepository;
 
     @Mock
-    private AktørRegisterClient aktørRgisterClient;
+    private AktørRegisterClient aktørRegisterClient;
 
     @Mock
     private ApplicationEventPublisher eventPublisher;
@@ -42,7 +43,7 @@ public class VedtakServiceTest {
     @Before
     public void setUp() {
         when(meterRegistry.counter(anyString())).thenReturn(counter);
-        vedtakService = new VedtakService(vedtakRepository, aktørRgisterClient, eventPublisher, meterRegistry);
+        vedtakService = new VedtakService(vedtakRepository, aktørRegisterClient, eventPublisher, meterRegistry);
     }
 
     @Test
@@ -60,6 +61,40 @@ public class VedtakServiceTest {
     }
 
     @Test
+    public void delete_operasjoner_skal_lagres_og_markeres_som_slettet() {
+        Long id = 1234L;
+        when(vedtakRepository.lagreVedtak(any())).thenReturn(id);
+        when(vedtakRepository.logiskSlettVedtak(any())).thenReturn(1);
+
+        VedtakReplikert vedtakReplikert = etDeleteVedtakReplikert();
+        vedtakService.behandleVedtakReplikert(vedtakReplikert);
+
+        verify(vedtakRepository, times(1)).lagreVedtak(any());
+        verify(vedtakRepository, times(1)).logiskSlettVedtak(any());
+        ArgumentCaptor<VedtakSlettet> argument = ArgumentCaptor.forClass(VedtakSlettet.class);
+        verify(eventPublisher).publishEvent(argument.capture());
+        assertThat(argument.getValue().getVedtak().getId()).isEqualTo(id);
+    }
+
+    @Test
+    public void feil_ved_sletting_skal_kaste_exception() {
+        Long id = 1234L;
+        when(vedtakRepository.lagreVedtak(any())).thenReturn(id);
+        when(vedtakRepository.logiskSlettVedtak(any())).thenReturn(0);
+
+        VedtakReplikert vedtakReplikert = etDeleteVedtakReplikert();
+        Throwable thrown = catchThrowable(() -> {
+            vedtakService.behandleVedtakReplikert(vedtakReplikert);
+        });
+
+        assertThat(thrown).isInstanceOf(RuntimeException.class).hasNoCause();
+        verify(vedtakRepository, times(1)).lagreVedtak(any());
+        verify(vedtakRepository, times(1)).logiskSlettVedtak(any());
+        verifyNoInteractions(eventPublisher);
+        verifyNoInteractions(meterRegistry);
+    }
+
+    @Test
     public void lønnsmiddel_vedtak_skal_avvises() {
         Long id = 1234L;
 
@@ -69,7 +104,7 @@ public class VedtakServiceTest {
 
         verifyNoInteractions(vedtakRepository);
         verifyNoInteractions(eventPublisher);
-        verifyNoInteractions(aktørRgisterClient);
+        verifyNoInteractions(aktørRegisterClient);
         verifyNoInteractions(meterRegistry);
     }
 }

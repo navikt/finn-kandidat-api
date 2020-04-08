@@ -2,7 +2,9 @@ package no.nav.finnkandidatapi.vedtak;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.finnkandidatapi.DateProvider;
+import no.nav.finnkandidatapi.kandidat.FinnKandidatException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -50,7 +52,7 @@ public class VedtakRepository {
     public Optional<Vedtak> hentNyesteVersjonAvNyesteVedtakForAktør(String aktørId) {
         try {
             Vedtak vedtak = jdbcTemplate.queryForObject(
-                    "SELECT * FROM vedtak WHERE (aktor_id = ?) ORDER BY fra_dato DESC, id DESC LIMIT 1", new Object[]{aktørId},
+                    "SELECT * FROM vedtak WHERE aktor_id = ? AND slettet = false ORDER BY fra_dato DESC, id DESC LIMIT 1", new Object[]{aktørId},
                     vedtakMapper
             );
             return Optional.ofNullable(vedtak);
@@ -62,7 +64,7 @@ public class VedtakRepository {
     public Optional<Vedtak> hentNyesteVedtak(String vedtakId) {
         try {
             Vedtak vedtak = jdbcTemplate.queryForObject(
-                    "SELECT * FROM vedtak WHERE (vedtak_id = ?) ORDER BY id DESC LIMIT 1", new Object[]{vedtakId},
+                    "SELECT * FROM vedtak WHERE vedtak_id = ? ORDER BY id DESC LIMIT 1", new Object[]{vedtakId},
                     vedtakMapper
             );
             return Optional.ofNullable(vedtak);
@@ -86,6 +88,15 @@ public class VedtakRepository {
     public Long lagreVedtak(Vedtak vedtak) {
         Map<String, Object> parameters = lagInsertParameter(vedtak);
         return jdbcInsert.executeAndReturnKey(parameters).longValue();
+    }
+
+    public int logiskSlettVedtak(Vedtak vedtak) {
+        try {
+            return jdbcTemplate.update("UPDATE vedtak SET slettet = true WHERE vedtak_id = ?", vedtak.getVedtakId());
+        } catch (DataAccessException e) {
+            log.error("Klarte ikke å sette vedtak {} som slettet", vedtak.getVedtakId());
+            return 0;
+        }
     }
 
     private Map<String, Object> lagInsertParameter(Vedtak vedtak) {

@@ -42,6 +42,16 @@ public class TestData {
             .build();
     }
 
+    public static VedtakReplikert etDeleteVedtakReplikert() {
+        return VedtakReplikert.builder()
+                .op_type("D")
+                .before(VedtakRad.builder()
+                        .vedtak_id(45L)
+                        .rettighetkode("PERM")
+                        .build())
+                .build();
+    }
+
     public static Vedtak etVedtak() {
         return Vedtak.builder()
                 .aktørId("1000000000001")

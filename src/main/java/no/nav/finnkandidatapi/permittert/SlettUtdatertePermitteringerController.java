@@ -2,8 +2,11 @@ package no.nav.finnkandidatapi.permittert;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.finnkandidatapi.aktørregister.AktørRegisterClient;
+import no.nav.finnkandidatapi.kandidat.AktorRegisteretUkjentFnrException;
+import no.nav.finnkandidatapi.kandidat.FinnKandidatException;
 import no.nav.finnkandidatapi.veilarboppfolging.VeilarbOppfolgingClient;
 import no.nav.security.token.support.core.api.Protected;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -31,21 +34,33 @@ public class SlettUtdatertePermitteringerController {
     }
 
     @DeleteMapping("/permitteringer")
-    public void slettAlleUtdatertePermitteringer() {
+    public ResponseEntity slettAlleUtdatertePermitteringer() {
         List<PermittertArbeidssoker> arbeidssøkere = permittertArbeidssokerRepository.hentAllePermitterteArbeidssokere();
         log.info("Fant {} permitterte arbeidssøkere", arbeidssøkere.size());
 
         AtomicInteger antallSletta = new AtomicInteger();
         arbeidssøkere.forEach(permittertArbeidssoker -> {
-            String fnr = aktørRegisterClient.tilFnr(permittertArbeidssoker.getAktørId());
+            String fnr;
+            try {
+                fnr = aktørRegisterClient.tilFnr(permittertArbeidssoker.getAktørId());
+            } catch (FinnKandidatException exception) {
+                log.error("Kunne ikke hente fnr til bruker.", exception);
+                return;
+            }
+
             boolean erUnderOppfølging = veilarbOppfolgingClient.hentOppfølgingsstatus(fnr).isUnderOppfolging();
             if (!erUnderOppfølging) {
                 Optional<Integer> id = permittertArbeidssokerRepository.slettPermittertArbeidssoker(permittertArbeidssoker.getAktørId());
-                log.info("Slettet permittert arbeidssøker. Ny rad id: {}", id);
-                antallSletta.getAndIncrement();
+                if (id.isPresent()) {
+                    log.info("Slettet permittert arbeidssøker. Ny rad id: {}", id.get());
+                    antallSletta.getAndIncrement();
+                } else {
+                    log.error("Greide ikke slette permittert arbeidssøker. aktørId: ");
+                }
             }
         });
 
-        log.info("Sletta {} permitterte arbeidssøkere ikke under oppfølging", antallSletta.get());
+        log.info("Slettet {} permitterte arbeidssøkere ikke under oppfølging", antallSletta.get());
+        return ResponseEntity.ok("Antall sletta: " + antallSletta.get());
     }
 }

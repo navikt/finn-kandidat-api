@@ -61,11 +61,6 @@ public class VedtakService {
         //Vi vil neppe få disse, da vedtak ikke slettes i Arena og hvis de slettes så er det fra en tilstand som er filtrert bort fra oss
         log.info("Fikk en slettemelding!");
 
-        if (!vedtakReplikert.getBefore().erPermitteringsvedtak()) {
-            log.info("Dropper å lagre vedtak {}, da det ikke er et permitteringsvedtak", vedtakReplikert.getBefore().getVedtak_id());
-            return;
-        }
-
         String aktørId = hentAktørId(vedtakReplikert.getTokens().getFodselsnr());
         Vedtak vedtak = Vedtak.opprettFraBefore(aktørId, vedtakReplikert);
         Long id = vedtakRepository.lagreVedtak(vedtak);
@@ -79,10 +74,6 @@ public class VedtakService {
     }
 
     private void behandleUpdate(VedtakReplikert vedtakReplikert) {
-        if (!vedtakReplikert.getAfter().erPermitteringsvedtak()) {
-            log.info("Dropper å lagre vedtak {}, da det ikke er et permitteringsvedtak", vedtakReplikert.getAfter().getVedtak_id());
-            return;
-        }
 
         String aktørId = hentAktørId(vedtakReplikert.getTokens().getFodselsnr());
         Vedtak vedtak = Vedtak.opprettFraAfter(aktørId, vedtakReplikert);
@@ -94,11 +85,6 @@ public class VedtakService {
 
     private void behandleInsert(VedtakReplikert vedtakReplikert) {
         //Vi vil nok sjelden/aldri få Inserts, da vedtakene blir opprettet i Arena i en tilstand som blir filtrert vekk av GG.
-
-        if (!vedtakReplikert.getAfter().erPermitteringsvedtak()) {
-            log.info("Dropper å lagre vedtak {}, da det ikke er et permitteringsvedtak", vedtakReplikert.getAfter().getVedtak_id());
-            return;
-        }
 
         String aktørId = hentAktørId(vedtakReplikert.getTokens().getFodselsnr());
         Vedtak vedtak = Vedtak.opprettFraAfter(aktørId, vedtakReplikert);

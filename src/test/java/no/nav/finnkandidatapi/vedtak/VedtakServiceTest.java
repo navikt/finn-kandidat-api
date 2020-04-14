@@ -93,18 +93,4 @@ public class VedtakServiceTest {
         verifyNoInteractions(eventPublisher);
         verifyNoInteractions(meterRegistry);
     }
-
-    @Test
-    public void lønnsmiddel_vedtak_skal_avvises() {
-        Long id = 1234L;
-
-        VedtakReplikert vedtakReplikert = etUpdateVedtakReplikert();
-        vedtakReplikert.getAfter().setRettighetkode("LONN");
-        vedtakService.behandleVedtakReplikert(vedtakReplikert);
-
-        verifyNoInteractions(vedtakRepository);
-        verifyNoInteractions(eventPublisher);
-        verifyNoInteractions(aktørRegisterClient);
-        verifyNoInteractions(meterRegistry);
-    }
 }

@@ -43,6 +43,7 @@ public class VedtakServiceTest {
     @Before
     public void setUp() {
         when(meterRegistry.counter(anyString())).thenReturn(counter);
+        when(aktørRegisterClient.tilAktørId(any())).thenReturn("1000000000001");
         vedtakService = new VedtakService(vedtakRepository, aktørRegisterClient, eventPublisher, meterRegistry);
     }
 

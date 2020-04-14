@@ -1,6 +1,7 @@
 package no.nav.finnkandidatapi.aktørregister;
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.finnkandidatapi.kandidat.AktorRegisteretUkjentFnrException;
 import no.nav.finnkandidatapi.kandidat.FinnKandidatException;
 import no.nav.finnkandidatapi.sts.STSClient;
 import org.springframework.beans.factory.annotation.Value;
@@ -76,6 +77,9 @@ public class AktørRegisterClient {
         }
 
         if (identinfoForAktør.getFeilmelding() != null) {
+            if (identinfoForAktør.getFeilmelding().equalsIgnoreCase("Den angitte personidenten finnes ikke")) {
+                throw new AktorRegisteretUkjentFnrException("Feil fra aktørregister for id " + id + " type " + type + ", feilmelding: " + identinfoForAktør.getFeilmelding());
+            }
             throw new FinnKandidatException("Feil fra aktørregister for id " + id + " type " + type + ", feilmelding: " + identinfoForAktør.getFeilmelding());
         }
 

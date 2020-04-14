@@ -63,6 +63,8 @@ oppfolging-avsluttet.topic: en-kafka-topic
 oppfolging-endret.topic: en-annen-kafka-topic
 arbeidssoker-registrert.topic: en-tredje-kafka-topic
 
+vedtak-replikert.topic: en-fjerde-kafka-topic
+
 ---
 spring:
   profiles: dev
@@ -81,6 +83,7 @@ spring:
 oppfolging-avsluttet.topic: aapen-fo-endringPaaAvsluttOppfolging-v1-q0
 oppfolging-endret.topic: aapen-fo-endringPaaOppfoelgingsBruker-v1-q0
 arbeidssoker-registrert.topic: aapen-arbeid-arbeidssoker-registrert-q0
+vedtak-replikert.topic: gg-arena-vedtak-dagpenger-v1-q
 
 database:
   navn: finn-kandidat-dev
@@ -135,6 +138,7 @@ spring:
 oppfolging-avsluttet.topic: aapen-fo-endringPaaAvsluttOppfolging-v1-p
 oppfolging-endret.topic: aapen-fo-endringPaaOppfoelgingsBruker-v1-p
 arbeidssoker-registrert.topic: aapen-arbeid-arbeidssoker-registrert-p
+vedtak-replikert.topic: gg-arena-vedtak-dagpenger-v1-p
 
 database:
   navn: finn-kandidat-prod

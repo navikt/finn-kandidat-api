@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.finnkandidatapi.kafka.oppfølgingAvsluttet.OppfolgingAvsluttetConfig;
 import no.nav.finnkandidatapi.kafka.oppfølgingEndret.OppfolgingEndretConfig;
+import no.nav.finnkandidatapi.kafka.vedtakReplikert.VedtakReplikertConfig;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.context.annotation.Profile;
 import org.springframework.kafka.test.EmbeddedKafkaBroker;
@@ -25,7 +26,10 @@ public class EnKafkaMockServer implements DisposableBean {
         Spring initialiserer komponenter i alfabetisk rekkefølge hvis
         de ikke har noen synlige avhengigheter.
      */
-    public EnKafkaMockServer(OppfolgingAvsluttetConfig oppfolgingAvsluttetConfig, OppfolgingEndretConfig oppfolgingEndretConfig) {
+    public EnKafkaMockServer(
+            OppfolgingAvsluttetConfig oppfolgingAvsluttetConfig,
+            OppfolgingEndretConfig oppfolgingEndretConfig,
+            VedtakReplikertConfig vedtakReplikertConfig) {
         log.info("Starter embedded Kafka");
         embeddedKafka = new EmbeddedKafkaBroker(
                 1,
@@ -33,6 +37,7 @@ public class EnKafkaMockServer implements DisposableBean {
                 1,
                 oppfolgingAvsluttetConfig.getTopic(),
                 oppfolgingEndretConfig.getTopic(),
+                vedtakReplikertConfig.getTopic(),
                 topicName
         );
         embeddedKafka.afterPropertiesSet();

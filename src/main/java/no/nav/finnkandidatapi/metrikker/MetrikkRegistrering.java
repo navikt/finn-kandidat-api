@@ -2,6 +2,10 @@ package no.nav.finnkandidatapi.metrikker;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.finnkandidatapi.kandidat.Brukertype;
+import no.nav.finnkandidatapi.vedtak.Vedtak;
+import no.nav.finnkandidatapi.vedtak.VedtakEndret;
+import no.nav.finnkandidatapi.vedtak.VedtakOpprettet;
+import no.nav.finnkandidatapi.vedtak.VedtakSlettet;
 import no.nav.metrics.MetricsFactory;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
@@ -18,6 +22,31 @@ public class MetrikkRegistrering {
     @EventListener
     public void kandidatEndret(KandidatEndret event) {
         MetricsFactory.createEvent("finn-kandidat.kandidat.endret").report();
+    }
+
+    @EventListener
+    public void vedtakOpprettet(VedtakOpprettet event) {
+        rapporterVedtakEvent(event.getVedtak());
+    }
+
+    @EventListener
+    public void vedtakEndret(VedtakEndret event) {
+        rapporterVedtakEvent(event.getVedtak());
+    }
+
+    @EventListener
+    public void vedtakSlettet(VedtakSlettet event) {
+        rapporterVedtakEvent(event.getVedtak());
+    }
+
+    private void rapporterVedtakEvent(Vedtak vedtak) {
+        MetricsFactory.createEvent("finn-kandidat.vedtak.lagret" )
+                .addTagToReport("operasjon", vedtak.getArenaDbOperasjon())
+                .addTagToReport("rettighet", vedtak.getRettighetKode())
+                .addTagToReport("status", vedtak.getStatusKode())
+                .addTagToReport("type", vedtak.getTypeKode())
+                .addTagToReport("utfall", vedtak.getUtfallKode())
+                .report();
     }
 
     @EventListener

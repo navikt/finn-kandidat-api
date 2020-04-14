@@ -2,8 +2,6 @@ package no.nav.finnkandidatapi.permittert;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.finnkandidatapi.DateProvider;
-import no.nav.finnkandidatapi.aktørregister.AktørRegisterClient;
-import no.nav.finnkandidatapi.veilarboppfolging.VeilarbOppfolgingClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -89,10 +87,21 @@ public class PermittertArbeidssokerRepository {
     }
 
     public void slettAllePermitterteArbeidssokere() {
-        jdbcTemplate.execute("DELETE FROM permittert" );
+        jdbcTemplate.execute("DELETE FROM permittert");
     }
 
     public List<PermittertArbeidssoker> hentAllePermitterteArbeidssokere() {
-        return jdbcTemplate.query("SELECT * FROM permittert", permittertArbeidssokerMapper);
+        return jdbcTemplate.query(
+                "SELECT p.* " +
+                "FROM permittert p " +
+                "INNER JOIN " +
+                "(SELECT aktor_id, MAX(id) AS nyesteId " +
+                "FROM permittert " +
+                "GROUP BY aktor_id) gruppertPermittert " +
+                "ON p.aktor_id = gruppertPermittert.aktor_id " +
+                "AND p.id = gruppertPermittert.nyesteId " +
+                "WHERE slettet = false " +
+                "ORDER BY p.opprettet",
+                permittertArbeidssokerMapper);
     }
 }

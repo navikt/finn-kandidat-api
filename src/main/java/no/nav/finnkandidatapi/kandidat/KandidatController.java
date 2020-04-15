@@ -9,9 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static no.bekk.bekkopen.person.FodselsnummerValidator.isValid;
 
@@ -37,51 +35,6 @@ public class KandidatController {
 
         Kandidat kandidat = kandidatService.hentNyesteKandidat(aktørId).orElseThrow(NotFoundException::new);
         return ResponseEntity.ok(kandidat);
-    }
-
-    /**
-     * @deprecated finn-kandidat frontend er slått av så endepunktet blir ikke brukt lengre
-     */
-    @Deprecated
-    @GetMapping("/{fnr}/aktorId")
-    public ResponseEntity<String> hentAktørId(@PathVariable("fnr") String fnr) {
-        loggBrukAvEndepunkt("hentAktørId");
-        tilgangskontroll.sjekkPilotTilgang();
-
-        boolean gyldigFnr = isValid(fnr);
-        if (!gyldigFnr) {
-            return ResponseEntity.badRequest().body("Ugyldig fødselsnummer");
-        }
-
-        String aktørId = kandidatService.hentAktørId(fnr);
-        return ResponseEntity.ok(aktørId);
-    }
-
-    /**
-     * @deprecated finn-kandidat frontend er slått av så endepunktet blir ikke brukt lengre
-     */
-    @Deprecated
-    @GetMapping("/{aktørId}/fnr")
-    public ResponseEntity<String> hentFnr(@PathVariable("aktørId") String aktørId) {
-        loggBrukAvEndepunkt("hentFnr");
-        tilgangskontroll.sjekkPilotTilgang();
-        String fnr = kandidatService.hentFnr(aktørId);
-        return ResponseEntity.ok(fnr);
-    }
-
-    /**
-     * @deprecated finn-kandidat frontend er slått av så endepunktet blir ikke brukt lengre
-     */
-    @Deprecated
-    @GetMapping
-    public ResponseEntity<List<Kandidat>> hentKandidater() {
-        loggBrukAvEndepunkt("hentKandidater");
-        tilgangskontroll.sjekkPilotTilgang();
-        List<Kandidat> kandidater =
-                kandidatService.hentKandidater().stream()
-                .filter(kandidat -> tilgangskontroll.harLesetilgangTilKandidat(kandidat.getAktørId()))
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(kandidater);
     }
 
     @PostMapping
@@ -135,18 +88,6 @@ public class KandidatController {
         Kandidat endretKandidat = kandidatService.endreKandidat(kandidatDto, veileder)
                 .orElseThrow(FinnKandidatException::new);
         return ResponseEntity.ok(endretKandidat);
-    }
-
-    /**
-     * @deprecated finn-kandidat frontend er slått av så endepunktet blir ikke brukt lengre
-     */
-    @Deprecated
-    @GetMapping("/{aktørId}/skrivetilgang")
-    public ResponseEntity hentSkrivetilgang(@PathVariable("aktørId") String aktørId) {
-        loggBrukAvEndepunkt("hentSkrivetilgang");
-        tilgangskontroll.sjekkPilotTilgang();
-        tilgangskontroll.sjekkSkrivetilgangTilKandidat(aktørId);
-        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{fnrEllerAktørId}")

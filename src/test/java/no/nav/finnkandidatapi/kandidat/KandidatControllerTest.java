@@ -9,7 +9,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.util.List;
 import java.util.Optional;
 
 import static no.nav.finnkandidatapi.TestData.*;
@@ -210,40 +209,6 @@ public class KandidatControllerTest {
         assertThat(respons.getBody()).isEqualTo(kandidat);
     }
 
-    @Test
-    public void hentKandidater__skal_returnere_ok_med_kandidater() {
-        værInnloggetSom(enVeileder());
-
-        Kandidat kandidat1 = enKandidat("1000000000001");
-        Kandidat kandidat2 = enKandidat("1000000000002");
-
-        when(service.hentKandidater()).thenReturn(List.of(kandidat1, kandidat2));
-        when(tilgangskontroll.harLesetilgangTilKandidat(anyString())).thenReturn(true);
-
-        ResponseEntity<List<Kandidat>> respons = controller.hentKandidater();
-
-        assertThat(respons.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(respons.getBody().get(0)).isEqualToIgnoringGivenFields(kandidat1, "id");
-        assertThat(respons.getBody().get(1)).isEqualToIgnoringGivenFields(kandidat2, "id");
-    }
-
-    @Test
-    public void hentKandidater__skal_bare_returnere_kandidater_man_har_lesetilgang_til() {
-        værInnloggetSom(enVeileder());
-
-        Kandidat kandidatManHarTilgangTil = enKandidat("1000000000001");
-        Kandidat kandidatManIkkeHarTilgangTil = enKandidat("1000000000002");
-
-        when(service.hentKandidater()).thenReturn(List.of(kandidatManHarTilgangTil, kandidatManIkkeHarTilgangTil));
-        when(tilgangskontroll.harLesetilgangTilKandidat("1000000000001")).thenReturn(true);
-        when(tilgangskontroll.harLesetilgangTilKandidat("1000000000002")).thenReturn(false);
-
-        ResponseEntity<List<Kandidat>> respons = controller.hentKandidater();
-
-        assertThat(respons.getBody().get(0)).isEqualToIgnoringGivenFields(kandidatManHarTilgangTil, "id");
-        assertThat(respons.getBody().size()).isEqualTo(1);
-    }
-
     @Test(expected = NotFoundException.class)
     public void hentKandidat__skal_kaste_NotFoundException_hvis_kandidat_ikke_fins() {
         værInnloggetSom(enVeileder());
@@ -289,59 +254,6 @@ public class KandidatControllerTest {
         controller.hentKandidat(aktørId);
 
         verify(tilgangskontroll, times(1)).sjekkLesetilgangTilKandidat(aktørId);
-    }
-
-    @Test
-    public void hentAktørId__skal_returnere_ok_med_aktørId() {
-        værInnloggetSom(enVeileder());
-        String fnr = "02020963312";
-        String aktørId = "1000000000001";
-        when(service.hentAktørId(fnr)).thenReturn(aktørId);
-
-        ResponseEntity<String> respons = controller.hentAktørId(fnr);
-
-        assertThat(respons.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(respons.getBody()).isEqualTo(aktørId);
-    }
-
-    @Test(expected = FinnKandidatException.class)
-    public void hentAktørId__skal_kaste_FinnKandidatException_hvis_kall_til_aktørregister_feiler() {
-        værInnloggetSom(enVeileder());
-        String fnr = "02020963312";
-        when(service.hentAktørId(fnr)).thenThrow(FinnKandidatException.class);
-
-        controller.hentAktørId(fnr);
-    }
-
-    @Test
-    public void hentFnr__skal_returnere_ok_med_fnr() {
-        værInnloggetSom(enVeileder());
-        String fnr = "02020963312";
-        String aktørId = "1000000000001";
-        when(service.hentFnr(aktørId)).thenReturn(fnr);
-
-        ResponseEntity<String> respons = controller.hentFnr(aktørId);
-
-        assertThat(respons.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(respons.getBody()).isEqualTo(fnr);
-    }
-
-    @Test(expected = FinnKandidatException.class)
-    public void hentFnr__skal_kaste_FinnKandidatException_hvis_kall_til_aktørregister_feiler() {
-        værInnloggetSom(enVeileder());
-        String aktørId = "02020963312";
-        when(service.hentFnr(aktørId)).thenThrow(FinnKandidatException.class);
-
-        controller.hentFnr(aktørId);
-    }
-
-    @Test
-    public void hentSkrivetilgang__skal_returnere_ok_hvis_veileder_har_skrivetilgang() {
-        værInnloggetSom(enVeileder());
-        String aktørId = "1000000000001";
-
-        controller.hentSkrivetilgang(aktørId);
-        verify(tilgangskontroll, times(1)).sjekkSkrivetilgangTilKandidat(aktørId);
     }
 
     @Test

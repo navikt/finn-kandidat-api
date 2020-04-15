@@ -49,6 +49,7 @@ public class MockServer implements DisposableBean {
         mockVeilarbarena(veilarbarenaUrl);
         mockAxsys(axsysUrl);
         mockKall(veilarboppfølgingUrl + "/underoppfolging", Oppfølgingsstatus.builder().underOppfolging(true).build());
+        mockKall(veilarboppfølgingUrl + "/underoppfolging?fnr=01065500791", Oppfølgingsstatus.builder().underOppfolging(false).build());
 
         server.start();
     }

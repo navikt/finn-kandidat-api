@@ -55,7 +55,7 @@ public class SlettUtdatertePermitteringerController {
                     log.info("Slettet permittert arbeidssøker. Ny rad id: {}", id.get());
                     antallSletta.getAndIncrement();
                 } else {
-                    log.error("Greide ikke slette permittert arbeidssøker. aktørId: ");
+                    log.error("Greide ikke slette permittert arbeidssøker. aktørId: {}", permittertArbeidssoker.getAktørId());
                 }
             }
         });

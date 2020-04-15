@@ -7,9 +7,10 @@ metadata:
     team: {{team}}
 spec:
   image: {{version}}
-  team: {{team}}
   port: 8080
-  resources.limits.memory: 2048Mi
+  resources:
+    limits:
+      memory: 2048Mi
   ingresses:
   - https://arbeidsgiver.nais.adeo.no/finn-kandidat-api/
   - https://app.adeo.no/finn-kandidat-api/

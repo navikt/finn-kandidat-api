@@ -57,6 +57,8 @@ public class SlettUtdatertePermitteringerController {
                 } else {
                     log.error("Greide ikke slette permittert arbeidssøker. aktørId: {}", permittertArbeidssoker.getAktørId());
                 }
+            } else {
+                log.info("{} er under oppfølging. Ignorerer.", permittertArbeidssoker.getAktørId());
             }
         });
 

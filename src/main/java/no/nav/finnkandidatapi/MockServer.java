@@ -6,7 +6,7 @@ import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.matching.StringValuePattern;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.finnkandidatapi.kandidat.Oppfølgingsstatus;
+import no.nav.finnkandidatapi.veilarboppfolging.Oppfølgingsstatus;
 import no.nav.finnkandidatapi.sts.STSToken;
 import no.nav.finnkandidatapi.tilgangskontroll.veilarbabac.VeilarbabacClient;
 import org.springframework.beans.factory.DisposableBean;
@@ -49,6 +49,7 @@ public class MockServer implements DisposableBean {
         mockVeilarbarena(veilarbarenaUrl);
         mockAxsys(axsysUrl);
         mockKall(veilarboppfølgingUrl + "/underoppfolging", Oppfølgingsstatus.builder().underOppfolging(true).build());
+        mockKall(veilarboppfølgingUrl + "/underoppfolging?fnr=01065500791", Oppfølgingsstatus.builder().underOppfolging(false).build());
 
         server.start();
     }

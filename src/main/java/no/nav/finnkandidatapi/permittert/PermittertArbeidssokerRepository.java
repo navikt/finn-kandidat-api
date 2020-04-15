@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -86,6 +87,21 @@ public class PermittertArbeidssokerRepository {
     }
 
     public void slettAllePermitterteArbeidssokere() {
-        jdbcTemplate.execute("DELETE FROM permittert" );
+        jdbcTemplate.execute("DELETE FROM permittert");
+    }
+
+    public List<PermittertArbeidssoker> hentAllePermitterteArbeidssokere() {
+        return jdbcTemplate.query(
+                "SELECT p.* " +
+                "FROM permittert p " +
+                "INNER JOIN " +
+                "(SELECT aktor_id, MAX(id) AS nyesteId " +
+                "FROM permittert " +
+                "GROUP BY aktor_id) gruppertPermittert " +
+                "ON p.aktor_id = gruppertPermittert.aktor_id " +
+                "AND p.id = gruppertPermittert.nyesteId " +
+                "WHERE slettet = false " +
+                "ORDER BY p.opprettet",
+                permittertArbeidssokerMapper);
     }
 }

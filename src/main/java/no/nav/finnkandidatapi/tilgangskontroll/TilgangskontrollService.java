@@ -3,7 +3,6 @@ package no.nav.finnkandidatapi.tilgangskontroll;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.finnkandidatapi.kandidat.Veileder;
 import no.nav.finnkandidatapi.tilgangskontroll.veilarbabac.VeilarbabacClient;
-import no.nav.finnkandidatapi.unleash.FeatureToggleService;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -14,20 +13,13 @@ public class TilgangskontrollService {
 
     private final TokenUtils tokenUtils;
     private final VeilarbabacClient veilarbabacClient;
-    private final FeatureToggleService featureToggleService;
 
     public TilgangskontrollService(
             TokenUtils tokenUtils,
-            VeilarbabacClient veilarbabacClient,
-            FeatureToggleService featureToggleService
+            VeilarbabacClient veilarbabacClient
     ) {
         this.tokenUtils = tokenUtils;
         this.veilarbabacClient = veilarbabacClient;
-        this.featureToggleService = featureToggleService;
-    }
-
-    public boolean harLesetilgangTilKandidat(String aktørId) {
-        return hentTilgang(aktørId, TilgangskontrollAction.read);
     }
 
     public void sjekkLesetilgangTilKandidat(String aktørId) {
@@ -54,11 +46,5 @@ public class TilgangskontrollService {
 
     public Veileder hentInnloggetVeileder() {
         return tokenUtils.hentInnloggetVeileder();
-    }
-
-    public void sjekkPilotTilgang() {
-        if (!featureToggleService.isEnabled(FINN_KANDIDAT_PILOTTILGANG_KONTOR)) {
-            throw new IkkeIPilotException("Innlogget bruker tilhører ikke et kontor som er i pilot");
-        }
     }
 }

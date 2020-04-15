@@ -30,7 +30,6 @@ public class KandidatController {
         boolean erFnr = isValid(fnrEllerAktørId);
         String aktørId = erFnr ? kandidatService.hentAktørId(fnrEllerAktørId) : fnrEllerAktørId;
 
-        tilgangskontroll.sjekkPilotTilgang();
         tilgangskontroll.sjekkLesetilgangTilKandidat(aktørId);
 
         Kandidat kandidat = kandidatService.hentNyesteKandidat(aktørId).orElseThrow(NotFoundException::new);
@@ -40,8 +39,6 @@ public class KandidatController {
     @PostMapping
     public ResponseEntity<Kandidat> opprettKandidat(@RequestBody KandidatDto kandidat) {
         loggBrukAvEndepunkt("opprettKandidat");
-
-        tilgangskontroll.sjekkPilotTilgang();
 
         if (kandidat.getAktørId() == null && kandidat.getFnr() != null) {
             String aktørId = kandidatService.hentAktørId(kandidat.getFnr());
@@ -73,7 +70,6 @@ public class KandidatController {
     @PutMapping
     public ResponseEntity<Kandidat> endreKandidat(@RequestBody KandidatDto kandidatDto) {
         loggBrukAvEndepunkt("endreKandidat");
-        tilgangskontroll.sjekkPilotTilgang();
 
         if (kandidatDto.getAktørId() == null && kandidatDto.getFnr() != null) {
             String aktørId = kandidatService.hentAktørId(kandidatDto.getFnr());
@@ -97,7 +93,6 @@ public class KandidatController {
         boolean erFnr = isValid(fnrEllerAktørId);
         String aktørId = erFnr ? kandidatService.hentAktørId(fnrEllerAktørId) : fnrEllerAktørId;
 
-        tilgangskontroll.sjekkPilotTilgang();
         tilgangskontroll.sjekkSkrivetilgangTilKandidat(aktørId);
 
         Optional<Integer> id = kandidatService.slettKandidat(aktørId, tilgangskontroll.hentInnloggetVeileder());

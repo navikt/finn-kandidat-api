@@ -17,7 +17,7 @@ import java.util.Optional;
 @Repository
 public class MidlertidigUtilgjengeligRepository {
 
-    static final String PERMITTERTARBEIDSSOKER_TABELL = "permittert";
+    static final String MIDLERTIDIG_UTILGJENGELIG_TABELL = "midlertidig_utilgjengelig";
     static final String ID = "id";
     static final String AKTØR_ID = "aktor_id";
     static final String FRA_DATO = "fra_dato";
@@ -30,22 +30,20 @@ public class MidlertidigUtilgjengeligRepository {
     private JdbcTemplate jdbcTemplate;
     private SimpleJdbcInsert jdbcInsert;
     private final MidlertidigUtilgjengeligMapper utilgjengeligMapper;
-    private final DateProvider dateProvider;
 
     @Autowired
     public MidlertidigUtilgjengeligRepository(JdbcTemplate jdbcTemplate, SimpleJdbcInsert simpleJdbcInsert, MidlertidigUtilgjengeligMapper utilgjengeligMapper, DateProvider dateProvider) {
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcInsert = simpleJdbcInsert
-                .withTableName(PERMITTERTARBEIDSSOKER_TABELL)
+                .withTableName(MIDLERTIDIG_UTILGJENGELIG_TABELL)
                 .usingGeneratedKeyColumns(ID);
         this.utilgjengeligMapper = utilgjengeligMapper;
-        this.dateProvider = dateProvider;
     }
 
-    public Optional<MidlertidigUtilgjengelig> hentNyesteUtilgjengelig(String aktørId) {
+    public Optional<MidlertidigUtilgjengelig> hentNyesteMidlertidigUtilgjengelig(String aktørId) {
         try {
             MidlertidigUtilgjengelig midlertidigUtilgjengelig = jdbcTemplate.queryForObject(
-                    "SELECT * FROM utilgjengelig WHERE (aktor_id = ?) ORDER BY id DESC LIMIT 1", new Object[]{aktørId},
+                    "SELECT * FROM " + MIDLERTIDIG_UTILGJENGELIG_TABELL + " WHERE (aktor_id = ?) ORDER BY id DESC LIMIT 1", new Object[]{aktørId},
                     utilgjengeligMapper
             );
             return Optional.ofNullable(midlertidigUtilgjengelig);
@@ -54,10 +52,10 @@ public class MidlertidigUtilgjengeligRepository {
         }
     }
 
-    public Optional<MidlertidigUtilgjengelig> hentUtilgjengelig(Integer id) {
+    public Optional<MidlertidigUtilgjengelig> hentMidlertidigUtilgjengelig(Integer id) {
         try {
             MidlertidigUtilgjengelig midlertidigUtilgjengelig = jdbcTemplate.queryForObject(
-                    "SELECT * FROM utilgjengelig WHERE id = ?", new Object[]{id},
+                    "SELECT * FROM " + MIDLERTIDIG_UTILGJENGELIG_TABELL + " WHERE id = ?", new Object[]{id},
                     utilgjengeligMapper
             );
             return Optional.ofNullable(midlertidigUtilgjengelig);
@@ -66,7 +64,7 @@ public class MidlertidigUtilgjengeligRepository {
         }
     }
 
-    public Integer lagreUtilgjengelig(MidlertidigUtilgjengelig midlertidigUtilgjengelig) {
+    public Integer lagreMidlertidigUtilgjengelig(MidlertidigUtilgjengelig midlertidigUtilgjengelig) {
         Map<String, Object> parameters = lagInsertParameter(midlertidigUtilgjengelig, false);
         return jdbcInsert.executeAndReturnKey(parameters).intValue();
     }
@@ -82,20 +80,20 @@ public class MidlertidigUtilgjengeligRepository {
         return parameters;
     }
 
-    public Optional<Integer> slettUtilgjengelig(String aktørId) {
-        return hentNyesteUtilgjengelig(aktørId)
+    public Optional<Integer> slettMidlertidigUtilgjengelig(String aktørId) {
+        return hentNyesteMidlertidigUtilgjengelig(aktørId)
                 .map(midlertidigUtilgjengelig -> lagInsertParameter(midlertidigUtilgjengelig, true))
                 .map(utilgjengelig -> jdbcInsert.executeAndReturnKey(utilgjengelig).intValue());
     }
 
-    public void slettAllePermitterteArbeidssokere() {
-        jdbcTemplate.execute("DELETE FROM utilgjengelig");
+    public void slettAlleMidlertidigUtilgjengelig() {
+        jdbcTemplate.execute("DELETE FROM " + MIDLERTIDIG_UTILGJENGELIG_TABELL);
     }
 
-    public List<MidlertidigUtilgjengelig> hentAlleUtilgjengelig() {
+    public List<MidlertidigUtilgjengelig> hentAlleMidlertidigUtilgjengelig() {
         return jdbcTemplate.query(
                 "SELECT p.* " +
-                "FROM utilgjengelig p " +
+                "FROM " + MIDLERTIDIG_UTILGJENGELIG_TABELL + " p " +
                 "INNER JOIN " +
                 "(SELECT aktor_id, MAX(id) AS nyesteId " +
                 "FROM utilgjengelig " +

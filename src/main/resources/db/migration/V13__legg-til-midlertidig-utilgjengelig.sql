@@ -1,4 +1,4 @@
-CREATE TABLE midlertidigUtilgjengelig (
+CREATE TABLE midlertidig_utilgjengelig (
     id SERIAL PRIMARY KEY,
     aktor_id VARCHAR(20),
     registrert_av_ident VARCHAR(7),

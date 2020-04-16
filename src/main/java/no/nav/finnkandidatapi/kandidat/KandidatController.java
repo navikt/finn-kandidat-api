@@ -9,9 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static no.bekk.bekkopen.person.FodselsnummerValidator.isValid;
 
@@ -32,63 +30,15 @@ public class KandidatController {
         boolean erFnr = isValid(fnrEllerAktørId);
         String aktørId = erFnr ? kandidatService.hentAktørId(fnrEllerAktørId) : fnrEllerAktørId;
 
-        tilgangskontroll.sjekkPilotTilgang();
         tilgangskontroll.sjekkLesetilgangTilKandidat(aktørId);
 
         Kandidat kandidat = kandidatService.hentNyesteKandidat(aktørId).orElseThrow(NotFoundException::new);
         return ResponseEntity.ok(kandidat);
     }
 
-    /**
-     * @deprecated finn-kandidat frontend er slått av så endepunktet blir ikke brukt lengre
-     */
-    @Deprecated
-    @GetMapping("/{fnr}/aktorId")
-    public ResponseEntity<String> hentAktørId(@PathVariable("fnr") String fnr) {
-        loggBrukAvEndepunkt("hentAktørId");
-        tilgangskontroll.sjekkPilotTilgang();
-
-        boolean gyldigFnr = isValid(fnr);
-        if (!gyldigFnr) {
-            return ResponseEntity.badRequest().body("Ugyldig fødselsnummer");
-        }
-
-        String aktørId = kandidatService.hentAktørId(fnr);
-        return ResponseEntity.ok(aktørId);
-    }
-
-    /**
-     * @deprecated finn-kandidat frontend er slått av så endepunktet blir ikke brukt lengre
-     */
-    @Deprecated
-    @GetMapping("/{aktørId}/fnr")
-    public ResponseEntity<String> hentFnr(@PathVariable("aktørId") String aktørId) {
-        loggBrukAvEndepunkt("hentFnr");
-        tilgangskontroll.sjekkPilotTilgang();
-        String fnr = kandidatService.hentFnr(aktørId);
-        return ResponseEntity.ok(fnr);
-    }
-
-    /**
-     * @deprecated finn-kandidat frontend er slått av så endepunktet blir ikke brukt lengre
-     */
-    @Deprecated
-    @GetMapping
-    public ResponseEntity<List<Kandidat>> hentKandidater() {
-        loggBrukAvEndepunkt("hentKandidater");
-        tilgangskontroll.sjekkPilotTilgang();
-        List<Kandidat> kandidater =
-                kandidatService.hentKandidater().stream()
-                .filter(kandidat -> tilgangskontroll.harLesetilgangTilKandidat(kandidat.getAktørId()))
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(kandidater);
-    }
-
     @PostMapping
     public ResponseEntity<Kandidat> opprettKandidat(@RequestBody KandidatDto kandidat) {
         loggBrukAvEndepunkt("opprettKandidat");
-
-        tilgangskontroll.sjekkPilotTilgang();
 
         if (kandidat.getAktørId() == null && kandidat.getFnr() != null) {
             String aktørId = kandidatService.hentAktørId(kandidat.getFnr());
@@ -120,7 +70,6 @@ public class KandidatController {
     @PutMapping
     public ResponseEntity<Kandidat> endreKandidat(@RequestBody KandidatDto kandidatDto) {
         loggBrukAvEndepunkt("endreKandidat");
-        tilgangskontroll.sjekkPilotTilgang();
 
         if (kandidatDto.getAktørId() == null && kandidatDto.getFnr() != null) {
             String aktørId = kandidatService.hentAktørId(kandidatDto.getFnr());
@@ -137,18 +86,6 @@ public class KandidatController {
         return ResponseEntity.ok(endretKandidat);
     }
 
-    /**
-     * @deprecated finn-kandidat frontend er slått av så endepunktet blir ikke brukt lengre
-     */
-    @Deprecated
-    @GetMapping("/{aktørId}/skrivetilgang")
-    public ResponseEntity hentSkrivetilgang(@PathVariable("aktørId") String aktørId) {
-        loggBrukAvEndepunkt("hentSkrivetilgang");
-        tilgangskontroll.sjekkPilotTilgang();
-        tilgangskontroll.sjekkSkrivetilgangTilKandidat(aktørId);
-        return ResponseEntity.ok().build();
-    }
-
     @DeleteMapping("/{fnrEllerAktørId}")
     public ResponseEntity slettKandidat(@PathVariable("fnrEllerAktørId") String fnrEllerAktørId) {
         loggBrukAvEndepunkt("slettKandidat");
@@ -156,7 +93,6 @@ public class KandidatController {
         boolean erFnr = isValid(fnrEllerAktørId);
         String aktørId = erFnr ? kandidatService.hentAktørId(fnrEllerAktørId) : fnrEllerAktørId;
 
-        tilgangskontroll.sjekkPilotTilgang();
         tilgangskontroll.sjekkSkrivetilgangTilKandidat(aktørId);
 
         Optional<Integer> id = kandidatService.slettKandidat(aktørId, tilgangskontroll.hentInnloggetVeileder());

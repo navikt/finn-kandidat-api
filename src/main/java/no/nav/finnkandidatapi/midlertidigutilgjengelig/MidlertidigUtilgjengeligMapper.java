@@ -24,8 +24,8 @@ public class MidlertidigUtilgjengeligMapper implements RowMapper<MidlertidigUtil
                 .tilDato(tilLocalDateTime(rs.getTimestamp(TIL_DATO)))
                 .registrertAvIdent(rs.getString(REGISTRERT_AV_IDENT))
                 .registrertAvNavn(rs.getString(REGISTRERT_AV_NAVN))
-                .sistEndretAvIdent(SIST_ENDRET_AV_IDENT)
-                .sistEndretAvNavn(SIST_ENDRET_AV_NAVN)
+                .sistEndretAvIdent(rs.getString(SIST_ENDRET_AV_IDENT))
+                .sistEndretAvNavn(rs.getString(SIST_ENDRET_AV_NAVN))
                 .build();
     }
 

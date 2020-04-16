@@ -10,10 +10,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 @Repository
@@ -26,7 +23,6 @@ public class MidlertidigUtilgjengeligRepository {
     static final String TIL_DATO = "til_dato";
     static final String REGISTRERT_AV_IDENT = "registrert_av_ident";
     static final String REGISTRERT_AV_NAVN = "registrert_av_navn";
-    static final String SIST_ENDRET_TIDSPUNKT = "sist_endret_tidspunkt";
     static final String SIST_ENDRET_AV_IDENT = "sist_endret_av_ident";
     static final String SIST_ENDRET_AV_NAVN = "sist_endret_av_navn";
 
@@ -73,11 +69,17 @@ public class MidlertidigUtilgjengeligRepository {
     }
 
     private Map<String, Object> lagInsertParameter(MidlertidigUtilgjengelig midlertidigUtilgjengelig) {
+
         Map<String, Object> parameters = new HashMap<>();
+
         parameters.put(AKTØR_ID, midlertidigUtilgjengelig.getAktørId());
+        parameters.put(FRA_DATO, midlertidigUtilgjengelig.getFraDato());
         parameters.put(TIL_DATO, midlertidigUtilgjengelig.getTilDato());
         parameters.put(REGISTRERT_AV_IDENT, midlertidigUtilgjengelig.getRegistrertAvIdent());
         parameters.put(REGISTRERT_AV_NAVN, midlertidigUtilgjengelig.getRegistrertAvNavn());
+        parameters.put(SIST_ENDRET_AV_IDENT, midlertidigUtilgjengelig.getSistEndretAvIdent());
+        parameters.put(SIST_ENDRET_AV_NAVN, midlertidigUtilgjengelig.getSistEndretAvNavn());
+
         return parameters;
     }
 

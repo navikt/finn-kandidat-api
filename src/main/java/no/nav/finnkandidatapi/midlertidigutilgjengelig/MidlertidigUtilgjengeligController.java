@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 @Protected
 @RestController
 @RequestMapping("/midlertidig-utilgjengelig")
@@ -22,20 +24,20 @@ public class MidlertidigUtilgjengeligController {
     }
 
     @GetMapping("/{aktørId}")
-    public ResponseEntity<MidlertidigUtilgjengelig> getMidlertidigUtilgjengelig(@PathVariable("aktørId") String aktørId) {
-        Veileder innloggetVeileder = tilgangskontroll.hentInnloggetVeileder();
+    public ResponseEntity<?> getMidlertidigUtilgjengelig(@PathVariable("aktørId") String aktørId) {
+        tilgangskontroll.hentInnloggetVeileder();
 
-        MidlertidigUtilgjengelig status = service.hentMidlertidigUtilgjengelig(aktørId, innloggetVeileder);
-        return ResponseEntity.ok(status);
+        Optional<MidlertidigUtilgjengelig> status = service.hentMidlertidigUtilgjengelig(aktørId);
+
+        return status.isEmpty() ?
+             ResponseEntity.notFound().build() : ResponseEntity.ok(status);
     }
 
     @PostMapping
-    public ResponseEntity postMidlertidigUtilgjengelig(@RequestBody MidlertidigUtilgjengeligDto midlertidigUtilgjengelig) {
+    public ResponseEntity<MidlertidigUtilgjengelig> postMidlertidigUtilgjengelig(@RequestBody MidlertidigUtilgjengeligDto midlertidigUtilgjengelig) {
         Veileder innloggetVeileder = tilgangskontroll.hentInnloggetVeileder();
 
-        MidlertidigUtilgjengelig lagretMidlertidigUtilgjengelig = service.lagreMidlertidigUtilgjengelig(midlertidigUtilgjengelig, innloggetVeileder);
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(lagretMidlertidigUtilgjengelig);
+        MidlertidigUtilgjengelig lagretMidlertidigUtilgjengelig = service.opprettMidlertidigUtilgjengelig(midlertidigUtilgjengelig, innloggetVeileder);
+        return ResponseEntity.status(HttpStatus.CREATED).body(lagretMidlertidigUtilgjengelig);
     }
 }

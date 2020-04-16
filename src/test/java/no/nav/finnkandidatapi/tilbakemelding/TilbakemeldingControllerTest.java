@@ -77,6 +77,6 @@ public class TilbakemeldingControllerTest {
     }
 
     private void værInnloggetSom(String navIdent) {
-        when(tilgangskontrollService.hentInnloggetVeileder()).thenReturn(new Veileder(navIdent));
+        when(tilgangskontrollService.hentInnloggetVeileder()).thenReturn(new Veileder(navIdent, "Ola Nordmann"));
     }
 }

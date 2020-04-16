@@ -1,36 +1,50 @@
 package no.nav.finnkandidatapi.midlertidigutilgjengelig;
 
+import no.nav.finnkandidatapi.kandidat.FinnKandidatException;
 import no.nav.finnkandidatapi.kandidat.Veileder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 public class MidlertidigUtilgjengeligService {
+    private final MidlertidigUtilgjengeligRepository repository;
 
-    public MidlertidigUtilgjengelig hentMidlertidigUtilgjengelig(String aktørId, Veileder innloggetVeileder) {
-        // TODO: Snakk med repository
-        return MidlertidigUtilgjengelig.builder()
-                .id(1)
-                .aktørId("0000000000")
-                .fraDato(LocalDateTime.now())
-                .tilDato(LocalDateTime.now().plusDays(15))
-                .registreringstidspunkt(LocalDateTime.now())
-                .registrertAvIdent(innloggetVeileder.getNavIdent())
-                .registrertAvNavn("Joare Mangstuen Mossby")
-                .build();
+    public MidlertidigUtilgjengeligService(MidlertidigUtilgjengeligRepository repository) {
+        this.repository = repository;
     }
 
-    public MidlertidigUtilgjengelig lagreMidlertidigUtilgjengelig(MidlertidigUtilgjengeligDto midlertidigUtilgjengelig, Veileder innloggetVeileder) {
-        // TODO: Snakk med repository
-        return MidlertidigUtilgjengelig.builder()
-                .id(1)
-                .aktørId(midlertidigUtilgjengelig.getAktørId())
-                .fraDato(midlertidigUtilgjengelig.getFraDato())
-                .tilDato(midlertidigUtilgjengelig.getTilDato())
-                .registreringstidspunkt(LocalDateTime.now())
-                .registrertAvIdent(innloggetVeileder.getNavIdent())
-                .registrertAvNavn("Joare Mangstuen Mossby")
-                .build();
+    public Optional<MidlertidigUtilgjengelig> hentMidlertidigUtilgjengelig(String aktørId) {
+        return repository.hentMidlertidigUtilgjengelig(aktørId);
+    }
+
+    public MidlertidigUtilgjengelig opprettMidlertidigUtilgjengelig(MidlertidigUtilgjengeligDto midlertidigUtilgjengeligDto, Veileder innloggetVeileder) {
+        MidlertidigUtilgjengelig midlertidigUtilgjengelig = MidlertidigUtilgjengelig.opprettMidlertidigUtilgjengelig(
+                midlertidigUtilgjengeligDto,
+                innloggetVeileder
+        );
+
+        Optional<MidlertidigUtilgjengelig> eksisterendeMidlertidigUtilgjengelig = repository.hentMidlertidigUtilgjengelig(midlertidigUtilgjengeligDto.getAktørId());
+        eksisterendeMidlertidigUtilgjengelig.ifPresent(error -> {
+            throw new FinnesException();
+        });
+
+        Integer id = repository.lagreMidlertidigUtilgjengelig(midlertidigUtilgjengelig);
+        Optional<MidlertidigUtilgjengelig> lagretUtilgjengelighet = repository.hentMidlertidigUtilgjengeligMedId(id);
+
+        if (lagretUtilgjengelighet.isEmpty()) {
+            throw new FinnKandidatException();
+        }
+
+        return lagretUtilgjengelighet.get();
+    }
+
+    public Optional<MidlertidigUtilgjengelig> forlengeMidlertidigUtilgjengelig(MidlertidigUtilgjengeligDto midlertidigUtilgjengeligDto, Veileder innloggetVeileder) {
+        Integer antallOppdaterte = repository.forlengeMidlertidigUtilgjengelig(
+                midlertidigUtilgjengeligDto.getAktørId(), midlertidigUtilgjengeligDto.getTilDato(), innloggetVeileder
+        );
+
+        // TODO: Kast feil hvis antall oppdaterte er noe annet enn 0.
+        return repository.hentMidlertidigUtilgjengelig(midlertidigUtilgjengeligDto.getAktørId());
     }
 }

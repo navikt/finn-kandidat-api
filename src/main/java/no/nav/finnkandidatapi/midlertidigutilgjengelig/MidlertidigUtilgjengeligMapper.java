@@ -19,13 +19,11 @@ public class MidlertidigUtilgjengeligMapper implements RowMapper<MidlertidigUtil
 
     private MidlertidigUtilgjengelig mapUtilgjengelig(ResultSet rs, int i) throws SQLException {
         return MidlertidigUtilgjengelig.builder()
-                .id(rs.getInt(ID))
                 .aktørId(rs.getString(AKTØR_ID))
                 .fraDato(tilLocalDateTime(rs.getTimestamp(FRA_DATO)))
                 .tilDato(tilLocalDateTime(rs.getTimestamp(TIL_DATO)))
                 .registrertAvIdent(rs.getString(REGISTRERT_AV_IDENT))
                 .registrertAvNavn(rs.getString(REGISTRERT_AV_NAVN))
-                .sistEndretTidspunkt(tilLocalDateTime(rs.getTimestamp(SIST_ENDRET_TIDSPUNKT)))
                 .sistEndretAvIdent(SIST_ENDRET_AV_IDENT)
                 .sistEndretAvNavn(SIST_ENDRET_AV_NAVN)
                 .build();

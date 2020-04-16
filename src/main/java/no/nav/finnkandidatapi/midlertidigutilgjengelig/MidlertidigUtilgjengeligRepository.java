@@ -2,12 +2,14 @@ package no.nav.finnkandidatapi.midlertidigutilgjengelig;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.finnkandidatapi.DateProvider;
+import no.nav.finnkandidatapi.kandidat.Veileder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,10 +43,22 @@ public class MidlertidigUtilgjengeligRepository {
         this.midlertidigUtilgjengeligMapper = midlertidigUtilgjengeligMapper;
     }
 
-    public Optional<MidlertidigUtilgjengelig> hentMidlertidigUtilgjengelig(Integer id) {
+    public Optional<MidlertidigUtilgjengelig> hentMidlertidigUtilgjengeligMedId(Integer id) {
         try {
             MidlertidigUtilgjengelig midlertidigUtilgjengelig = jdbcTemplate.queryForObject(
                     "SELECT * FROM " + MIDLERTIDIG_UTILGJENGELIG_TABELL + " WHERE id = ?", new Object[]{id},
+                    midlertidigUtilgjengeligMapper
+            );
+            return Optional.ofNullable(midlertidigUtilgjengelig);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    public Optional<MidlertidigUtilgjengelig> hentMidlertidigUtilgjengelig(String aktørId) {
+        try {
+            MidlertidigUtilgjengelig midlertidigUtilgjengelig = jdbcTemplate.queryForObject(
+                    "SELECT * FROM " + MIDLERTIDIG_UTILGJENGELIG_TABELL + " WHERE aktor_id = ?", new Object[]{aktørId},
                     midlertidigUtilgjengeligMapper
             );
             return Optional.ofNullable(midlertidigUtilgjengelig);
@@ -58,29 +72,24 @@ public class MidlertidigUtilgjengeligRepository {
         return jdbcInsert.executeAndReturnKey(parameters).intValue();
     }
 
-    public Integer forlengeMidlertidigUtilgjengelig(MidlertidigUtilgjengelig midlertidigUtilgjengelig) {
-        Map<String, Object> parameters = lagInsertParameter(midlertidigUtilgjengelig);
+    private Map<String, Object> lagInsertParameter(MidlertidigUtilgjengelig midlertidigUtilgjengelig) {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put(AKTØR_ID, midlertidigUtilgjengelig.getAktørId());
+        parameters.put(TIL_DATO, midlertidigUtilgjengelig.getTilDato());
+        parameters.put(REGISTRERT_AV_IDENT, midlertidigUtilgjengelig.getRegistrertAvIdent());
+        parameters.put(REGISTRERT_AV_NAVN, midlertidigUtilgjengelig.getRegistrertAvNavn());
+        return parameters;
+    }
+
+    public Integer forlengeMidlertidigUtilgjengelig(String aktørId, LocalDateTime forlengetDato, Veileder innloggetVeileder) {
         return jdbcTemplate.update(
                 "UPDATE "+ MIDLERTIDIG_UTILGJENGELIG_TABELL +
                 " SET til_dato = ?, sist_endret_tidspunkt = ?, sist_endret_av_ident = ?, sist_endret_av_navn = ?" +
                 " WHERE aktor_id = ?",
-                new Object[]{midlertidigUtilgjengelig.getTilDato()},
-                new Object[]{midlertidigUtilgjengelig.getSistEndretAvIdent()},
-                new Object[]{midlertidigUtilgjengelig.getSistEndretAvNavn()},
-                new Object[]{midlertidigUtilgjengelig.getAktørId()});
-    }
-
-    private Map<String, Object> lagInsertParameter(MidlertidigUtilgjengelig midlertidigUtilgjengelig) {
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put(AKTØR_ID, midlertidigUtilgjengelig.getAktørId());
-        parameters.put(FRA_DATO, midlertidigUtilgjengelig.getFraDato());
-        parameters.put(TIL_DATO, midlertidigUtilgjengelig.getTilDato());
-        parameters.put(REGISTRERT_AV_IDENT, midlertidigUtilgjengelig.getRegistrertAvIdent());
-        parameters.put(REGISTRERT_AV_NAVN, midlertidigUtilgjengelig.getRegistrertAvNavn());
-        parameters.put(SIST_ENDRET_TIDSPUNKT, midlertidigUtilgjengelig.getSistEndretTidspunkt());
-        parameters.put(SIST_ENDRET_AV_IDENT, midlertidigUtilgjengelig.getSistEndretAvIdent());
-        parameters.put(SIST_ENDRET_AV_NAVN, midlertidigUtilgjengelig.getRegistrertAvNavn());
-        return parameters;
+                new Object[]{forlengetDato},
+                new Object[]{innloggetVeileder.getNavIdent()},
+                new Object[]{innloggetVeileder.getNavn()},
+                new Object[]{aktørId});
     }
 
     public Integer slettMidlertidigUtilgjengelig(String aktørId) {

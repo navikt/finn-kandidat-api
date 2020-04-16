@@ -9,6 +9,5 @@ import java.time.LocalDateTime;
 @Builder
 public class MidlertidigUtilgjengeligDto {
     private String aktørId;
-    private LocalDateTime fraDato;
     private LocalDateTime tilDato;
 }

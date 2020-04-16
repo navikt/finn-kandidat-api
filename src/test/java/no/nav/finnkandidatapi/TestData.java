@@ -178,7 +178,7 @@ public class TestData {
     }
 
     public static Veileder enVeileder() {
-        return new Veileder("X123456");
+        return new Veileder("X123456", "Ola Nordmann");
     }
 
     public static String enNavIdent() {

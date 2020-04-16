@@ -17,6 +17,7 @@ public class TokenUtils {
     final static String ISSUER_SELVBETJENING = "selvbetjening";
 
     final static String NAVIDENT_CLAIM = "NAVident";
+    final static String NAME_CLAIM = "name";
 
     private final TokenValidationContextHolder contextHolder;
 
@@ -30,13 +31,20 @@ public class TokenUtils {
         return contextHolder.getTokenValidationContext().getJwtToken(issuer).getTokenAsString();
     }
 
+    private Veileder byggVeilederMedAzureAdClaims(JwtTokenClaims claims) {
+        String navIdent = claims.get(NAVIDENT_CLAIM).toString();
+        String name = claims.get(NAME_CLAIM).toString();
+
+        return new Veileder(navIdent, name);
+    }
+
     public Veileder hentInnloggetVeileder() {
         if (erInnloggetMedAzureAD()) {
-            String navIdent = contextHolder.getTokenValidationContext().getClaims(ISSUER_ISSO).get(NAVIDENT_CLAIM).toString();
-            return new Veileder(navIdent);
+            JwtTokenClaims claims = contextHolder.getTokenValidationContext().getClaims(ISSUER_ISSO);
+            return byggVeilederMedAzureAdClaims(claims);
         } else if (erInnloggetMedOpenAM()) {
             String navIdent = contextHolder.getTokenValidationContext().getClaims(ISSUER_OPENAM).getSubject();
-            return new Veileder(navIdent);
+            return new Veileder(navIdent, "");
         } else {
             throw new TilgangskontrollException("Veileder er ikke innlogget.");
         }

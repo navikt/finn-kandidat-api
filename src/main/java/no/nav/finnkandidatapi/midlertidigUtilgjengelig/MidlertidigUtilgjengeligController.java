@@ -30,7 +30,7 @@ public class MidlertidigUtilgjengeligController {
     }
 
     @PostMapping
-    public ResponseEntity postMidlertidigUtilgjengelig(@RequestBody MidlertidigUtilgjengeligDTO midlertidigUtilgjengelig) {
+    public ResponseEntity postMidlertidigUtilgjengelig(@RequestBody MidlertidigUtilgjengeligDto midlertidigUtilgjengelig) {
         Veileder innloggetVeileder = tilgangskontroll.hentInnloggetVeileder();
 
         MidlertidigUtilgjengelig lagretMidlertidigUtilgjengelig = service.lagreMidlertidigUtilgjengelig(midlertidigUtilgjengelig, innloggetVeileder);

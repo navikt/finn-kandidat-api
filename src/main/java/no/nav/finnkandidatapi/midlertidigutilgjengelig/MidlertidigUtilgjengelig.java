@@ -14,6 +14,7 @@ public class MidlertidigUtilgjengelig {
     private LocalDateTime tilDato;
     private String registrertAvIdent;
     private String registrertAvNavn;
-    private LocalDateTime registreringstidspunkt;
-    private boolean slettet;
+    private LocalDateTime sistEndretTidspunkt;
+    private String sistEndretAvIdent;
+    private String sistEndretAvNavn;
 }

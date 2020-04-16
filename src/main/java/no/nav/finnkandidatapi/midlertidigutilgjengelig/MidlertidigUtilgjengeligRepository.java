@@ -24,39 +24,28 @@ public class MidlertidigUtilgjengeligRepository {
     static final String TIL_DATO = "til_dato";
     static final String REGISTRERT_AV_IDENT = "registrert_av_ident";
     static final String REGISTRERT_AV_NAVN = "registrert_av_navn";
-    static final String REGISTRERINGSTIDSPUNKT = "registreringstidspunkt";
-    static final String SLETTET = "slettet";
+    static final String SIST_ENDRET_TIDSPUNKT = "sist_endret_tidspunkt";
+    static final String SIST_ENDRET_AV_IDENT = "sist_endret_av_ident";
+    static final String SIST_ENDRET_AV_NAVN = "sist_endret_av_navn";
 
     private JdbcTemplate jdbcTemplate;
     private SimpleJdbcInsert jdbcInsert;
-    private final MidlertidigUtilgjengeligMapper utilgjengeligMapper;
+    private final MidlertidigUtilgjengeligMapper midlertidigUtilgjengeligMapper;
 
     @Autowired
-    public MidlertidigUtilgjengeligRepository(JdbcTemplate jdbcTemplate, SimpleJdbcInsert simpleJdbcInsert, MidlertidigUtilgjengeligMapper utilgjengeligMapper, DateProvider dateProvider) {
+    public MidlertidigUtilgjengeligRepository(JdbcTemplate jdbcTemplate, SimpleJdbcInsert simpleJdbcInsert, MidlertidigUtilgjengeligMapper midlertidigUtilgjengeligMapper, DateProvider dateProvider) {
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcInsert = simpleJdbcInsert
                 .withTableName(MIDLERTIDIG_UTILGJENGELIG_TABELL)
                 .usingGeneratedKeyColumns(ID);
-        this.utilgjengeligMapper = utilgjengeligMapper;
-    }
-
-    public Optional<MidlertidigUtilgjengelig> hentNyesteMidlertidigUtilgjengelig(String aktørId) {
-        try {
-            MidlertidigUtilgjengelig midlertidigUtilgjengelig = jdbcTemplate.queryForObject(
-                    "SELECT * FROM " + MIDLERTIDIG_UTILGJENGELIG_TABELL + " WHERE (aktor_id = ?) ORDER BY id DESC LIMIT 1", new Object[]{aktørId},
-                    utilgjengeligMapper
-            );
-            return Optional.ofNullable(midlertidigUtilgjengelig);
-        } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
-        }
+        this.midlertidigUtilgjengeligMapper = midlertidigUtilgjengeligMapper;
     }
 
     public Optional<MidlertidigUtilgjengelig> hentMidlertidigUtilgjengelig(Integer id) {
         try {
             MidlertidigUtilgjengelig midlertidigUtilgjengelig = jdbcTemplate.queryForObject(
                     "SELECT * FROM " + MIDLERTIDIG_UTILGJENGELIG_TABELL + " WHERE id = ?", new Object[]{id},
-                    utilgjengeligMapper
+                    midlertidigUtilgjengeligMapper
             );
             return Optional.ofNullable(midlertidigUtilgjengelig);
         } catch (EmptyResultDataAccessException e) {
@@ -65,43 +54,36 @@ public class MidlertidigUtilgjengeligRepository {
     }
 
     public Integer lagreMidlertidigUtilgjengelig(MidlertidigUtilgjengelig midlertidigUtilgjengelig) {
-        Map<String, Object> parameters = lagInsertParameter(midlertidigUtilgjengelig, false);
+        Map<String, Object> parameters = lagInsertParameter(midlertidigUtilgjengelig);
         return jdbcInsert.executeAndReturnKey(parameters).intValue();
     }
 
-    private Map<String, Object> lagInsertParameter(MidlertidigUtilgjengelig midlertidigUtilgjengelig, boolean skalSlettes) {
+    public Integer forlengeMidlertidigUtilgjengelig(MidlertidigUtilgjengelig midlertidigUtilgjengelig) {
+        Map<String, Object> parameters = lagInsertParameter(midlertidigUtilgjengelig);
+        return jdbcTemplate.update(
+                "UPDATE "+ MIDLERTIDIG_UTILGJENGELIG_TABELL +
+                " SET til_dato = ?, sist_endret_tidspunkt = ?, sist_endret_av_ident = ?, sist_endret_av_navn = ?" +
+                " WHERE aktor_id = ?",
+                new Object[]{midlertidigUtilgjengelig.getTilDato()},
+                new Object[]{midlertidigUtilgjengelig.getSistEndretAvIdent()},
+                new Object[]{midlertidigUtilgjengelig.getSistEndretAvNavn()},
+                new Object[]{midlertidigUtilgjengelig.getAktørId()});
+    }
+
+    private Map<String, Object> lagInsertParameter(MidlertidigUtilgjengelig midlertidigUtilgjengelig) {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put(AKTØR_ID, midlertidigUtilgjengelig.getAktørId());
         parameters.put(FRA_DATO, midlertidigUtilgjengelig.getFraDato());
         parameters.put(TIL_DATO, midlertidigUtilgjengelig.getTilDato());
         parameters.put(REGISTRERT_AV_IDENT, midlertidigUtilgjengelig.getRegistrertAvIdent());
         parameters.put(REGISTRERT_AV_NAVN, midlertidigUtilgjengelig.getRegistrertAvNavn());
-        parameters.put(SLETTET, midlertidigUtilgjengelig.isSlettet());
+        parameters.put(SIST_ENDRET_TIDSPUNKT, midlertidigUtilgjengelig.getSistEndretTidspunkt());
+        parameters.put(SIST_ENDRET_AV_IDENT, midlertidigUtilgjengelig.getSistEndretAvIdent());
+        parameters.put(SIST_ENDRET_AV_NAVN, midlertidigUtilgjengelig.getRegistrertAvNavn());
         return parameters;
     }
 
-    public Optional<Integer> slettMidlertidigUtilgjengelig(String aktørId) {
-        return hentNyesteMidlertidigUtilgjengelig(aktørId)
-                .map(midlertidigUtilgjengelig -> lagInsertParameter(midlertidigUtilgjengelig, true))
-                .map(utilgjengelig -> jdbcInsert.executeAndReturnKey(utilgjengelig).intValue());
-    }
-
-    public void slettAlleMidlertidigUtilgjengelig() {
-        jdbcTemplate.execute("DELETE FROM " + MIDLERTIDIG_UTILGJENGELIG_TABELL);
-    }
-
-    public List<MidlertidigUtilgjengelig> hentAlleMidlertidigUtilgjengelig() {
-        return jdbcTemplate.query(
-                "SELECT p.* " +
-                "FROM " + MIDLERTIDIG_UTILGJENGELIG_TABELL + " p " +
-                "INNER JOIN " +
-                "(SELECT aktor_id, MAX(id) AS nyesteId " +
-                "FROM utilgjengelig " +
-                "GROUP BY aktor_id) gruppertUtilgjengelig " +
-                "ON p.aktor_id = gruppertUtilgjengelig.aktor_id " +
-                "AND p.id = gruppertUtilgjengelig.nyesteId " +
-                "WHERE slettet = false " +
-                "ORDER BY p.registreringstidspunkt",
-                utilgjengeligMapper);
+    public Integer slettMidlertidigUtilgjengelig(String aktørId) {
+        return jdbcTemplate.update("DELETE FROM " + MIDLERTIDIG_UTILGJENGELIG_TABELL + " WHERE aktor_id = ?", new Object[]{aktørId});
     }
 }

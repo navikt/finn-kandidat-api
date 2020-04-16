@@ -14,10 +14,6 @@ import static no.nav.finnkandidatapi.midlertidigutilgjengelig.MidlertidigUtilgje
 public class MidlertidigUtilgjengeligMapper implements RowMapper<MidlertidigUtilgjengelig> {
     @Override
     public MidlertidigUtilgjengelig mapRow(ResultSet rs, int i) throws SQLException {
-        if (rs.getBoolean(SLETTET)) {
-            return null;
-        }
-
         return mapUtilgjengelig(rs, i);
     }
 
@@ -29,8 +25,9 @@ public class MidlertidigUtilgjengeligMapper implements RowMapper<MidlertidigUtil
                 .tilDato(tilLocalDateTime(rs.getTimestamp(TIL_DATO)))
                 .registrertAvIdent(rs.getString(REGISTRERT_AV_IDENT))
                 .registrertAvNavn(rs.getString(REGISTRERT_AV_NAVN))
-                .registreringstidspunkt(tilLocalDateTime(rs.getTimestamp(REGISTRERINGSTIDSPUNKT)))
-                .slettet(rs.getBoolean(SLETTET))
+                .sistEndretTidspunkt(tilLocalDateTime(rs.getTimestamp(SIST_ENDRET_TIDSPUNKT)))
+                .sistEndretAvIdent(SIST_ENDRET_AV_IDENT)
+                .sistEndretAvNavn(SIST_ENDRET_AV_NAVN)
                 .build();
     }
 

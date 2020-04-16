@@ -20,7 +20,7 @@ public class MidlertidigUtilgjengeligService {
                 .build();
     }
 
-    public MidlertidigUtilgjengelig lagreMidlertidigUtilgjengelig(MidlertidigUtilgjengeligDTO midlertidigUtilgjengelig, Veileder innloggetVeileder) {
+    public MidlertidigUtilgjengelig lagreMidlertidigUtilgjengelig(MidlertidigUtilgjengeligDto midlertidigUtilgjengelig, Veileder innloggetVeileder) {
         // TODO: Snakk med repository
         return MidlertidigUtilgjengelig.builder()
                 .id(1)

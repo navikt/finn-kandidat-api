@@ -3,6 +3,7 @@ package no.nav.finnkandidatapi.midlertidigUtilgjengelig;
 import no.nav.finnkandidatapi.kandidat.Veileder;
 import no.nav.finnkandidatapi.tilgangskontroll.TilgangskontrollService;
 import no.nav.security.oidc.api.Protected;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,10 +22,20 @@ public class MidlertidigUtilgjengeligController {
     }
 
     @GetMapping("/{aktørId}")
-    public ResponseEntity<MidlertidigUtilgjengelig> hentMidlertidigUtilgjengelig(@PathVariable("aktørId") String aktørId) {
+    public ResponseEntity<MidlertidigUtilgjengelig> getMidlertidigUtilgjengelig(@PathVariable("aktørId") String aktørId) {
         Veileder innloggetVeileder = tilgangskontroll.hentInnloggetVeileder();
 
         MidlertidigUtilgjengelig status = service.hentMidlertidigUtilgjengelig(aktørId, innloggetVeileder);
         return ResponseEntity.ok(status);
+    }
+
+    @PostMapping
+    public ResponseEntity postMidlertidigUtilgjengelig(@RequestBody MidlertidigUtilgjengeligDTO midlertidigUtilgjengelig) {
+        Veileder innloggetVeileder = tilgangskontroll.hentInnloggetVeileder();
+
+        MidlertidigUtilgjengelig lagretMidlertidigUtilgjengelig = service.lagreMidlertidigUtilgjengelig(midlertidigUtilgjengelig, innloggetVeileder);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(lagretMidlertidigUtilgjengelig);
     }
 }

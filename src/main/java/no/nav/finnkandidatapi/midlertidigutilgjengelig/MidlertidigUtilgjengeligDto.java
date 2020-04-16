@@ -1,4 +1,4 @@
-package no.nav.finnkandidatapi.midlertidigUtilgjengelig;
+package no.nav.finnkandidatapi.midlertidigutilgjengelig;
 
 import lombok.Builder;
 import lombok.Data;

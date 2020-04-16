@@ -1,4 +1,4 @@
-package no.nav.finnkandidatapi.midlertidigUtilgjengelig;
+package no.nav.finnkandidatapi.midlertidigutilgjengelig;
 
 import no.nav.finnkandidatapi.kandidat.Veileder;
 import no.nav.finnkandidatapi.tilgangskontroll.TilgangskontrollService;

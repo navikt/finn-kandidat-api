@@ -1,4 +1,4 @@
-package no.nav.finnkandidatapi.midlertidigUtilgjengelig;
+package no.nav.finnkandidatapi.midlertidigutilgjengelig;
 
 import no.nav.finnkandidatapi.kandidat.Veileder;
 import org.springframework.stereotype.Service;
@@ -16,7 +16,8 @@ public class MidlertidigUtilgjengeligService {
                 .fraDato(LocalDateTime.now())
                 .tilDato(LocalDateTime.now().plusDays(15))
                 .registreringstidspunkt(LocalDateTime.now())
-                .registrertAv(innloggetVeileder.getNavIdent())
+                .registrertAvIdent(innloggetVeileder.getNavIdent())
+                .registrertAvNavn("Joare Mangstuen Mossby")
                 .build();
     }
 
@@ -28,7 +29,8 @@ public class MidlertidigUtilgjengeligService {
                 .fraDato(midlertidigUtilgjengelig.getFraDato())
                 .tilDato(midlertidigUtilgjengelig.getTilDato())
                 .registreringstidspunkt(LocalDateTime.now())
-                .registrertAv(innloggetVeileder.getNavIdent())
+                .registrertAvIdent(innloggetVeileder.getNavIdent())
+                .registrertAvNavn("Joare Mangstuen Mossby")
                 .build();
     }
 }

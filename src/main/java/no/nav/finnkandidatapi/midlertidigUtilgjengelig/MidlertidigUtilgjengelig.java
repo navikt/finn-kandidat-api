@@ -7,8 +7,11 @@ import java.time.LocalDateTime;
 
 @Data
 @Builder
-public class MidlertidigUtilgjengeligDTO {
+public class MidlertidigUtilgjengelig {
+    private int id;
     private String aktørId;
     private LocalDateTime fraDato;
     private LocalDateTime tilDato;
+    private String registrertAv;
+    private LocalDateTime registreringstidspunkt;
 }

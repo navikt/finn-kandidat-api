@@ -21,8 +21,11 @@ public class MidlertidigUtilgjengeligService {
     }
 
     public MidlertidigUtilgjengelig opprettMidlertidigUtilgjengelig(MidlertidigUtilgjengeligDto midlertidigUtilgjengeligDto, Veileder innloggetVeileder) {
+        LocalDateTime utilgjengeligFraIdag = LocalDateTime.now();
+
         MidlertidigUtilgjengelig midlertidigUtilgjengelig = MidlertidigUtilgjengelig.opprettMidlertidigUtilgjengelig(
                 midlertidigUtilgjengeligDto,
+                utilgjengeligFraIdag,
                 innloggetVeileder
         );
 

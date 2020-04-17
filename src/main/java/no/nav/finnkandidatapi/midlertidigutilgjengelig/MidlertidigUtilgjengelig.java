@@ -17,9 +17,10 @@ public class MidlertidigUtilgjengelig {
     private String sistEndretAvIdent;
     private String sistEndretAvNavn;
 
-    public static MidlertidigUtilgjengelig opprettMidlertidigUtilgjengelig(MidlertidigUtilgjengeligDto dto, Veileder veileder) {
+    public static MidlertidigUtilgjengelig opprettMidlertidigUtilgjengelig(MidlertidigUtilgjengeligDto dto, LocalDateTime fraDato, Veileder veileder) {
         return MidlertidigUtilgjengelig.builder()
                 .aktørId(dto.getAktørId())
+                .fraDato(fraDato)
                 .tilDato(dto.getTilDato())
                 .registrertAvIdent(veileder.getNavIdent())
                 .registrertAvNavn(veileder.getNavn())

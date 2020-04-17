@@ -73,6 +73,7 @@ public class MidlertidigUtilgjengeligRepository {
         Map<String, Object> parameters = new HashMap<>();
 
         parameters.put(AKTØR_ID, midlertidigUtilgjengelig.getAktørId());
+        parameters.put(FRA_DATO, midlertidigUtilgjengelig.getFraDato());
         parameters.put(TIL_DATO, midlertidigUtilgjengelig.getTilDato());
         parameters.put(REGISTRERT_AV_IDENT, midlertidigUtilgjengelig.getRegistrertAvIdent());
         parameters.put(REGISTRERT_AV_NAVN, midlertidigUtilgjengelig.getRegistrertAvNavn());

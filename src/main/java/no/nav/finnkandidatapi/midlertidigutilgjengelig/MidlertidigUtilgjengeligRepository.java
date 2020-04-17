@@ -85,10 +85,10 @@ public class MidlertidigUtilgjengeligRepository {
                 "UPDATE "+ MIDLERTIDIG_UTILGJENGELIG_TABELL +
                 " SET til_dato = ?, sist_endret_av_ident = ?, sist_endret_av_navn = ?" +
                 " WHERE aktor_id = ?",
-                new Object[]{forlengetDato},
-                new Object[]{innloggetVeileder.getNavIdent()},
-                new Object[]{innloggetVeileder.getNavn()},
-                new Object[]{aktørId});
+                forlengetDato,
+                innloggetVeileder.getNavIdent(),
+                innloggetVeileder.getNavn(),
+                aktørId);
     }
 
     public Integer slettMidlertidigUtilgjengelig(String aktørId) {

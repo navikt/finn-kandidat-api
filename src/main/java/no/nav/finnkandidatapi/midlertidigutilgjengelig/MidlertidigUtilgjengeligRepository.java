@@ -73,12 +73,9 @@ public class MidlertidigUtilgjengeligRepository {
         Map<String, Object> parameters = new HashMap<>();
 
         parameters.put(AKTØR_ID, midlertidigUtilgjengelig.getAktørId());
-        parameters.put(FRA_DATO, midlertidigUtilgjengelig.getFraDato());
         parameters.put(TIL_DATO, midlertidigUtilgjengelig.getTilDato());
         parameters.put(REGISTRERT_AV_IDENT, midlertidigUtilgjengelig.getRegistrertAvIdent());
         parameters.put(REGISTRERT_AV_NAVN, midlertidigUtilgjengelig.getRegistrertAvNavn());
-        parameters.put(SIST_ENDRET_AV_IDENT, midlertidigUtilgjengelig.getSistEndretAvIdent());
-        parameters.put(SIST_ENDRET_AV_NAVN, midlertidigUtilgjengelig.getSistEndretAvNavn());
 
         return parameters;
     }
@@ -86,7 +83,7 @@ public class MidlertidigUtilgjengeligRepository {
     public Integer forlengeMidlertidigUtilgjengelig(String aktørId, LocalDateTime forlengetDato, Veileder innloggetVeileder) {
         return jdbcTemplate.update(
                 "UPDATE "+ MIDLERTIDIG_UTILGJENGELIG_TABELL +
-                " SET til_dato = ?, sist_endret_tidspunkt = ?, sist_endret_av_ident = ?, sist_endret_av_navn = ?" +
+                " SET til_dato = ?, sist_endret_av_ident = ?, sist_endret_av_navn = ?" +
                 " WHERE aktor_id = ?",
                 new Object[]{forlengetDato},
                 new Object[]{innloggetVeileder.getNavIdent()},

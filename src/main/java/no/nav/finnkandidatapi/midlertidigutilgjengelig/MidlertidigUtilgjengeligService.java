@@ -5,6 +5,7 @@ import no.nav.finnkandidatapi.kandidat.NotFoundException;
 import no.nav.finnkandidatapi.kandidat.Veileder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -40,16 +41,16 @@ public class MidlertidigUtilgjengeligService {
         return lagretUtilgjengelighet.get();
     }
 
-    public Optional<MidlertidigUtilgjengelig> forlengeMidlertidigUtilgjengelig(MidlertidigUtilgjengeligDto midlertidigUtilgjengeligDto, Veileder innloggetVeileder) {
+    public Optional<MidlertidigUtilgjengelig> forlengeMidlertidigUtilgjengelig(String aktørId, LocalDateTime tilDato, Veileder innloggetVeileder) {
         Integer antallOppdaterte = repository.forlengeMidlertidigUtilgjengelig(
-                midlertidigUtilgjengeligDto.getAktørId(), midlertidigUtilgjengeligDto.getTilDato(), innloggetVeileder
+                aktørId, tilDato, innloggetVeileder
         );
 
         if (antallOppdaterte == 0) {
             throw new NotFoundException();
         }
 
-        return repository.hentMidlertidigUtilgjengelig(midlertidigUtilgjengeligDto.getAktørId());
+        return repository.hentMidlertidigUtilgjengelig(aktørId);
     }
 
     public void slettMidlertidigUtilgjengelig(String aktørId) {

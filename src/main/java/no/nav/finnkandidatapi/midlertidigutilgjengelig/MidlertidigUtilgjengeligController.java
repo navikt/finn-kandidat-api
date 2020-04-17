@@ -42,11 +42,15 @@ public class MidlertidigUtilgjengeligController {
         return ResponseEntity.status(HttpStatus.CREATED).body(lagret);
     }
 
-    @PutMapping
-    public ResponseEntity<MidlertidigUtilgjengelig> putMidlertidigUtilgjengelig(@RequestBody MidlertidigUtilgjengeligDto midlertidigUtilgjengeligDto) {
+    @PutMapping("/{aktørId}")
+    public ResponseEntity<MidlertidigUtilgjengelig> putMidlertidigUtilgjengelig(@PathVariable("aktørId") String aktørId, @RequestBody MidlertidigUtilgjengeligDto midlertidigUtilgjengeligDto) {
         Veileder innloggetVeileder = tilgangskontroll.hentInnloggetVeileder();
 
-        Optional<MidlertidigUtilgjengelig> forlenget = service.forlengeMidlertidigUtilgjengelig(midlertidigUtilgjengeligDto, innloggetVeileder);
+        if (!aktørId.equals(midlertidigUtilgjengeligDto.getAktørId())) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        Optional<MidlertidigUtilgjengelig> forlenget = service.forlengeMidlertidigUtilgjengelig(aktørId, midlertidigUtilgjengeligDto.getTilDato(), innloggetVeileder);
 
         return forlenget.isEmpty() ?
                 ResponseEntity.notFound().build() : ResponseEntity.ok(forlenget.get());

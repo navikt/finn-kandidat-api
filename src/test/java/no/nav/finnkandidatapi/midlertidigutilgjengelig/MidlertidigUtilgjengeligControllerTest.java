@@ -14,7 +14,7 @@ import org.springframework.http.ResponseEntity;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MidlertidigUtilgjengeligControllerTest {
@@ -64,8 +64,29 @@ public class MidlertidigUtilgjengeligControllerTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(response.getBody() instanceof MidlertidigUtilgjengelig);
         assertThat(response.getBody()).isEqualTo(midlertidigUtilgjengelig);
+    }
 
+    @Test
+    public void deleteMidlertidigUtilgjengelig__skal_kunne_slette_midlertidig_utilgjengelig() {
+        MidlertidigUtilgjengelig midlertidigUtilgjengelig = TestData.enMidlertidigUtilgjengelig("2222232");
+        var response = controller.deleteMidlertidigUtilgjenglig(midlertidigUtilgjengelig.getAktørId());
+        verify(midlertidigUtilgjengeligService, times(1)).slettMidlertidigUtilgjengelig(midlertidigUtilgjengelig.getAktørId());
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
 
+    @Test
+    public void putMidlertidigUtilgjengelig__skal_kunne_oppdatere_tildato() {
+        MidlertidigUtilgjengelig midlertidigUtilgjengelig = TestData.enMidlertidigUtilgjengelig("333333");
+        MidlertidigUtilgjengeligDto midlertidigUtilgjengeligDto = new MidlertidigUtilgjengeligDto(midlertidigUtilgjengelig.getAktørId(), midlertidigUtilgjengelig.getTilDato());
+
+        when(midlertidigUtilgjengeligService.forlengeMidlertidigUtilgjengelig(
+                midlertidigUtilgjengelig.getAktørId(), midlertidigUtilgjengelig.getTilDato(), enVeileder))
+                .thenReturn(Optional.of(midlertidigUtilgjengelig));
+
+        var response = controller.putMidlertidigUtilgjengelig(midlertidigUtilgjengelig.getAktørId(), midlertidigUtilgjengeligDto);
+        
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isEqualTo(midlertidigUtilgjengelig);
     }
 
 }

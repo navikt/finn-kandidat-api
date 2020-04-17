@@ -30,7 +30,7 @@ public class MidlertidigUtilgjengeligController {
         Optional<MidlertidigUtilgjengelig> status = service.hentMidlertidigUtilgjengelig(aktørId);
 
         return status.isEmpty() ?
-             ResponseEntity.notFound().build() : ResponseEntity.ok(status);
+             ResponseEntity.notFound().build() : ResponseEntity.ok(status.get());
     }
 
     @PostMapping

@@ -26,7 +26,7 @@ public class MidlertidigUtilgjengeligService {
 
         Optional<MidlertidigUtilgjengelig> eksisterendeMidlertidigUtilgjengelig = repository.hentMidlertidigUtilgjengelig(midlertidigUtilgjengeligDto.getAktørId());
         eksisterendeMidlertidigUtilgjengelig.ifPresent(error -> {
-            throw new FinnesException();
+            throw new AlleredeRegistrertException("Det er allerede registrert at kandidaten er midlertidig utilgjengelig");
         });
 
         Integer id = repository.lagreMidlertidigUtilgjengelig(midlertidigUtilgjengelig);
@@ -44,7 +44,10 @@ public class MidlertidigUtilgjengeligService {
                 midlertidigUtilgjengeligDto.getAktørId(), midlertidigUtilgjengeligDto.getTilDato(), innloggetVeileder
         );
 
-        // TODO: Kast feil hvis antall oppdaterte er noe annet enn 0.
+        if (antallOppdaterte != 0) {
+            throw new FinnKandidatException();
+        }
+
         return repository.hentMidlertidigUtilgjengelig(midlertidigUtilgjengeligDto.getAktørId());
     }
 }

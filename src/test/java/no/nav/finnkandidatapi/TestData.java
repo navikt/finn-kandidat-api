@@ -197,7 +197,15 @@ public class TestData {
     }
 
     public static Veileder enVeileder() {
-        return new Veileder("X123456", "Ola Nordmann");
+        return new Veileder("X123456", etFornavn() + " " + etEtternavn());
+    }
+
+    public static String etFornavn() {
+        return "Ola";
+    }
+
+    public static String etEtternavn() {
+        return "Nordmann";
     }
 
     public static String enNavIdent() {

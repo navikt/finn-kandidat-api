@@ -5,16 +5,16 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.client.HttpClientErrorException;
 
 @ResponseStatus(HttpStatus.CONFLICT)
-public class FinnesException extends RuntimeException {
-    public FinnesException() {
+public class AlleredeRegistrertException extends RuntimeException {
+    public AlleredeRegistrertException() {
         super();
     }
 
-    public FinnesException(String s) {
+    public AlleredeRegistrertException(String s) {
         super(s);
     }
 
-    public FinnesException(String s, HttpClientErrorException e) {
+    public AlleredeRegistrertException(String s, HttpClientErrorException e) {
         super(s, e);
     }
 }

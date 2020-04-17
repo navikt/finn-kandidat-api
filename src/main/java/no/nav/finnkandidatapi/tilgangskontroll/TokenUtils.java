@@ -1,5 +1,6 @@
 package no.nav.finnkandidatapi.tilgangskontroll;
 
+import lombok.extern.slf4j.Slf4j;
 import no.nav.security.token.support.core.context.TokenValidationContextHolder;
 import no.nav.security.token.support.core.jwt.JwtToken;
 import no.nav.security.token.support.core.jwt.JwtTokenClaims;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
+@Slf4j
 @Component
 public class TokenUtils {
 
@@ -17,7 +19,8 @@ public class TokenUtils {
     final static String ISSUER_SELVBETJENING = "selvbetjening";
 
     final static String NAVIDENT_CLAIM = "NAVident";
-    final static String NAME_CLAIM = "name";
+    final static String GIVEN_NAME_CLAIM = "given_name";
+    final static String FAMILY_NAME_CLAIM = "family_name";
 
     private final TokenValidationContextHolder contextHolder;
 
@@ -31,20 +34,31 @@ public class TokenUtils {
         return contextHolder.getTokenValidationContext().getJwtToken(issuer).getTokenAsString();
     }
 
-    private Veileder byggVeilederMedAzureAdClaims(JwtTokenClaims claims) {
+    private Veileder hentInnloggetVeilederMedAzureAdClaims(JwtTokenClaims claims) {
         String navIdent = claims.get(NAVIDENT_CLAIM).toString();
-        String name = claims.get(NAME_CLAIM).toString();
+        String fullName;
 
-        return new Veileder(navIdent, name);
+        if (claims.get(GIVEN_NAME_CLAIM) == null || claims.get(GIVEN_NAME_CLAIM) == null) {
+            log.warn("Fant ikke navn på veileder i token fra Azure AD");
+            fullName = null;
+        } else {
+            String givenName = claims.get(GIVEN_NAME_CLAIM).toString();
+            String familyName = claims.get(FAMILY_NAME_CLAIM).toString();
+            fullName = givenName + " " + familyName;
+        }
+
+        return new Veileder(navIdent, fullName);
     }
 
     public Veileder hentInnloggetVeileder() {
         if (erInnloggetMedAzureAD()) {
             JwtTokenClaims claims = contextHolder.getTokenValidationContext().getClaims(ISSUER_ISSO);
-            return byggVeilederMedAzureAdClaims(claims);
+            return hentInnloggetVeilederMedAzureAdClaims(claims);
+
         } else if (erInnloggetMedOpenAM()) {
             String navIdent = contextHolder.getTokenValidationContext().getClaims(ISSUER_OPENAM).getSubject();
-            return new Veileder(navIdent, "");
+            return new Veileder(navIdent, null);
+
         } else {
             throw new TilgangskontrollException("Veileder er ikke innlogget.");
         }

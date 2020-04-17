@@ -43,11 +43,11 @@ public class MidlertidigUtilgjengeligController {
     }
 
     @PutMapping("/{aktørId}")
-    public ResponseEntity<MidlertidigUtilgjengelig> putMidlertidigUtilgjengelig(@PathVariable("aktørId") String aktørId, @RequestBody MidlertidigUtilgjengeligDto midlertidigUtilgjengeligDto) {
+    public ResponseEntity<?> putMidlertidigUtilgjengelig(@PathVariable("aktørId") String aktørId, @RequestBody MidlertidigUtilgjengeligDto midlertidigUtilgjengeligDto) {
         Veileder innloggetVeileder = tilgangskontroll.hentInnloggetVeileder();
 
         if (!aktørId.equals(midlertidigUtilgjengeligDto.getAktørId())) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body("Aktør-id er annerledes i URL og body");
         }
 
         Optional<MidlertidigUtilgjengelig> forlenget = service.forlengeMidlertidigUtilgjengelig(aktørId, midlertidigUtilgjengeligDto.getTilDato(), innloggetVeileder);

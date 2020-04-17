@@ -1,6 +1,7 @@
 package no.nav.finnkandidatapi.midlertidigutilgjengelig;
 
 import no.nav.finnkandidatapi.kandidat.FinnKandidatException;
+import no.nav.finnkandidatapi.kandidat.NotFoundException;
 import no.nav.finnkandidatapi.kandidat.Veileder;
 import org.springframework.stereotype.Service;
 
@@ -44,10 +45,20 @@ public class MidlertidigUtilgjengeligService {
                 midlertidigUtilgjengeligDto.getAktørId(), midlertidigUtilgjengeligDto.getTilDato(), innloggetVeileder
         );
 
-        if (antallOppdaterte != 0) {
-            throw new FinnKandidatException();
+        if (antallOppdaterte == 0) {
+            throw new NotFoundException();
         }
 
         return repository.hentMidlertidigUtilgjengelig(midlertidigUtilgjengeligDto.getAktørId());
+    }
+
+    public void slettMidlertidigUtilgjengelig(String aktørId) {
+        Integer antallOppdaterteRader = repository.slettMidlertidigUtilgjengelig(
+                aktørId
+        );
+
+        if (antallOppdaterteRader == 0) {
+            throw new NotFoundException();
+        }
     }
 }

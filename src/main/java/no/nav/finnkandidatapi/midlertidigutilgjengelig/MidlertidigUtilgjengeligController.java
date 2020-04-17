@@ -1,5 +1,6 @@
 package no.nav.finnkandidatapi.midlertidigutilgjengelig;
 
+import com.sun.mail.iap.Response;
 import no.nav.finnkandidatapi.kandidat.Veileder;
 import no.nav.finnkandidatapi.tilgangskontroll.TilgangskontrollService;
 import no.nav.security.token.support.core.api.Protected;
@@ -27,17 +28,35 @@ public class MidlertidigUtilgjengeligController {
     public ResponseEntity<?> getMidlertidigUtilgjengelig(@PathVariable("aktørId") String aktørId) {
         tilgangskontroll.hentInnloggetVeileder();
 
-        Optional<MidlertidigUtilgjengelig> status = service.hentMidlertidigUtilgjengelig(aktørId);
+        Optional<MidlertidigUtilgjengelig> midlertidigUtilgjengelig = service.hentMidlertidigUtilgjengelig(aktørId);
 
-        return status.isEmpty() ?
-             ResponseEntity.notFound().build() : ResponseEntity.ok(status.get());
+        return midlertidigUtilgjengelig.isEmpty() ?
+             ResponseEntity.notFound().build() : ResponseEntity.ok(midlertidigUtilgjengelig.get());
     }
 
     @PostMapping
     public ResponseEntity<MidlertidigUtilgjengelig> postMidlertidigUtilgjengelig(@RequestBody MidlertidigUtilgjengeligDto midlertidigUtilgjengelig) {
         Veileder innloggetVeileder = tilgangskontroll.hentInnloggetVeileder();
 
-        MidlertidigUtilgjengelig lagretMidlertidigUtilgjengelig = service.opprettMidlertidigUtilgjengelig(midlertidigUtilgjengelig, innloggetVeileder);
-        return ResponseEntity.status(HttpStatus.CREATED).body(lagretMidlertidigUtilgjengelig);
+        MidlertidigUtilgjengelig lagret = service.opprettMidlertidigUtilgjengelig(midlertidigUtilgjengelig, innloggetVeileder);
+        return ResponseEntity.status(HttpStatus.CREATED).body(lagret);
+    }
+
+    @PutMapping
+    public ResponseEntity<MidlertidigUtilgjengelig> putMidlertidigUtilgjengelig(@RequestBody MidlertidigUtilgjengeligDto midlertidigUtilgjengeligDto) {
+        Veileder innloggetVeileder = tilgangskontroll.hentInnloggetVeileder();
+
+        Optional<MidlertidigUtilgjengelig> forlenget = service.forlengeMidlertidigUtilgjengelig(midlertidigUtilgjengeligDto, innloggetVeileder);
+
+        return forlenget.isEmpty() ?
+                ResponseEntity.notFound().build() : ResponseEntity.ok(forlenget.get());
+    }
+
+    @DeleteMapping("/{aktørId}")
+    public ResponseEntity<MidlertidigUtilgjengelig> deleteMidlertidigUtilgjenglig(@PathVariable("aktørId") String aktørId) {
+        tilgangskontroll.hentInnloggetVeileder();
+
+        service.slettMidlertidigUtilgjengelig(aktørId);
+        return ResponseEntity.ok().build();
     }
 }

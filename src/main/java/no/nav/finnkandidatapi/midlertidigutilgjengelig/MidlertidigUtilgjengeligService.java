@@ -3,9 +3,13 @@ package no.nav.finnkandidatapi.midlertidigutilgjengelig;
 import no.nav.finnkandidatapi.kandidat.FinnKandidatException;
 import no.nav.finnkandidatapi.kandidat.NotFoundException;
 import no.nav.finnkandidatapi.kandidat.Veileder;
+import org.apache.tomcat.jni.Local;
 import org.springframework.stereotype.Service;
 
+import javax.ws.rs.BadRequestException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Optional;
 
 @Service
@@ -20,12 +24,21 @@ public class MidlertidigUtilgjengeligService {
         return repository.hentMidlertidigUtilgjengelig(aktørId);
     }
 
+    private void sjekkAtDatoErIFremtiden(LocalDateTime tilDato) {
+        LocalDate idag = LocalDate.now();
+        LocalDateTime idagMidnatt = LocalDateTime.of(idag, LocalTime.MIDNIGHT);
+        if (tilDato.isBefore(idagMidnatt)) {
+            throw new BadRequestException("Du kan ikke sette en kandidat som midlertidig utilgjengelig tilbake i tid");
+        }
+    }
+
     public MidlertidigUtilgjengelig opprettMidlertidigUtilgjengelig(MidlertidigUtilgjengeligDto midlertidigUtilgjengeligDto, Veileder innloggetVeileder) {
-        LocalDateTime utilgjengeligFraIdag = LocalDateTime.now();
+        LocalDateTime utilgjengeligFraDato = LocalDateTime.now();
+        sjekkAtDatoErIFremtiden(midlertidigUtilgjengeligDto.getTilDato());
 
         MidlertidigUtilgjengelig midlertidigUtilgjengelig = MidlertidigUtilgjengelig.opprettMidlertidigUtilgjengelig(
                 midlertidigUtilgjengeligDto,
-                utilgjengeligFraIdag,
+                utilgjengeligFraDato,
                 innloggetVeileder
         );
 
@@ -45,6 +58,8 @@ public class MidlertidigUtilgjengeligService {
     }
 
     public Optional<MidlertidigUtilgjengelig> forlengeMidlertidigUtilgjengelig(String aktørId, LocalDateTime tilDato, Veileder innloggetVeileder) {
+        sjekkAtDatoErIFremtiden(tilDato);
+
         Integer antallOppdaterte = repository.forlengeMidlertidigUtilgjengelig(
                 aktørId, tilDato, innloggetVeileder
         );

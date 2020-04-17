@@ -8,9 +8,12 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import javax.ws.rs.BadRequestException;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -85,5 +88,22 @@ public class MidlertidigUtilgjengeligServiceTest {
         verify(repository, times(1)).forlengeMidlertidigUtilgjengelig(any(), any(), any());
 
         assertThat(response).isNotEmpty().get().isEqualTo(midlertidigUtilgjengelig);
+    }
+
+    @Test
+    public void forlengeMidlertidigUtilgjengelig__tildato_kan_ikke_være_tilbake_i_tid() {
+        MidlertidigUtilgjengelig midlertidigUtilgjengelig = TestData.enMidlertidigUtilgjengelig("7777722");
+        midlertidigUtilgjengelig.setTilDato(LocalDateTime.of(2000, 1, 1, 1, 0, 0));
+
+        when(repository.forlengeMidlertidigUtilgjengelig(midlertidigUtilgjengelig.getAktørId(), midlertidigUtilgjengelig.getTilDato(), enVeileder))
+                .thenReturn(1);
+
+        when(repository.hentMidlertidigUtilgjengelig(midlertidigUtilgjengelig.getAktørId()))
+                .thenReturn(Optional.of(midlertidigUtilgjengelig));
+        
+        assertThrows(BadRequestException.class,
+                () -> {
+                    service.forlengeMidlertidigUtilgjengelig(midlertidigUtilgjengelig.getAktørId(), midlertidigUtilgjengelig.getTilDato(), enVeileder);
+                });
     }
 }

@@ -6,7 +6,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-@Builder
+ @Builder
 public class MidlertidigUtilgjengeligDto {
     private String aktørId;
     private LocalDateTime tilDato;

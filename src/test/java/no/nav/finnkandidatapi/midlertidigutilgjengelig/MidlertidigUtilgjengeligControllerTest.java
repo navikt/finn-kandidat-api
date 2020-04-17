@@ -27,10 +27,13 @@ public class MidlertidigUtilgjengeligControllerTest {
     @Mock
     private TilgangskontrollService tilgangskontrollService;
 
+    Veileder enVeileder = new Veileder("A100000", "Ola Nordmann");
+
     @Before
     public void before() {
         controller = new MidlertidigUtilgjengeligController(midlertidigUtilgjengeligService, tilgangskontrollService);
-        when(tilgangskontrollService.hentInnloggetVeileder()).thenReturn(new Veileder("A100000", "Ola Nordmann"));
+
+        when(tilgangskontrollService.hentInnloggetVeileder()).thenReturn(enVeileder);
     }
 
     @Test
@@ -47,5 +50,22 @@ public class MidlertidigUtilgjengeligControllerTest {
         assertThat((MidlertidigUtilgjengelig)response.getBody()).isEqualTo(midlertidigUtilgjengelig);
     }
 
+    @Test
+    public void postMidlertidigUtilgjengelig__skal_kunne_poste_midlertidig_utilgjengelig() {
+        MidlertidigUtilgjengelig midlertidigUtilgjengelig = TestData.enMidlertidigUtilgjengelig("2222222");
+
+        MidlertidigUtilgjengeligDto midlertidigUtilgjengeligDto = new MidlertidigUtilgjengeligDto(midlertidigUtilgjengelig.getAktørId(), midlertidigUtilgjengelig.getTilDato());
+        when(midlertidigUtilgjengeligService.opprettMidlertidigUtilgjengelig(
+                midlertidigUtilgjengeligDto, enVeileder))
+                .thenReturn(midlertidigUtilgjengelig);
+
+        var response = controller.postMidlertidigUtilgjengelig(midlertidigUtilgjengeligDto);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        assertThat(response.getBody() instanceof MidlertidigUtilgjengelig);
+        assertThat(response.getBody()).isEqualTo(midlertidigUtilgjengelig);
+
+
+    }
 
 }

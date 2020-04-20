@@ -74,30 +74,36 @@ public class MidlertidigUtilgjengeligServiceTest {
     }
 
     @Test
-    public void forlengeMidlertidigUtilgjengelig__kan_oppdatere_tildato() {
+    public void endreMidlertidigUtilgjengelig__kan_oppdatere_tildato() {
         MidlertidigUtilgjengelig midlertidigUtilgjengelig = TestData.enMidlertidigUtilgjengelig("7777722");
 
-        when(repository.forlengeMidlertidigUtilgjengelig(midlertidigUtilgjengelig.getAktørId(), midlertidigUtilgjengelig.getTilDato(), enVeileder))
+        when(repository.endreMidlertidigUtilgjengelig(midlertidigUtilgjengelig.getAktørId(), midlertidigUtilgjengelig.getTilDato(), enVeileder))
                 .thenReturn(1);
 
         when(repository.hentMidlertidigUtilgjengelig(midlertidigUtilgjengelig.getAktørId()))
                 .thenReturn(Optional.of(midlertidigUtilgjengelig));
 
-        var response = service.forlengeMidlertidigUtilgjengelig(midlertidigUtilgjengelig.getAktørId(), midlertidigUtilgjengelig.getTilDato(), enVeileder);
+        var response = service.endreMidlertidigTilgjengelig(midlertidigUtilgjengelig.getAktørId(), midlertidigUtilgjengelig.getTilDato(), enVeileder);
 
-        verify(repository, times(1)).forlengeMidlertidigUtilgjengelig(any(), any(), any());
+        verify(repository, times(1)).endreMidlertidigUtilgjengelig(any(), any(), any());
 
         assertThat(response).isNotEmpty().get().isEqualTo(midlertidigUtilgjengelig);
     }
 
     @Test
-    public void forlengeMidlertidigUtilgjengelig__tildato_kan_ikke_være_tilbake_i_tid() {
+    public void endreMidlertidigUtilgjengelig__tildato_kan_ikke_være_tilbake_i_tid() {
         MidlertidigUtilgjengelig midlertidigUtilgjengelig = TestData.enMidlertidigUtilgjengelig("7777722");
         midlertidigUtilgjengelig.setTilDato(LocalDateTime.of(2000, 1, 1, 1, 0, 0));
+
+        when(repository.endreMidlertidigUtilgjengelig(midlertidigUtilgjengelig.getAktørId(), midlertidigUtilgjengelig.getTilDato(), enVeileder))
+                .thenReturn(1);
+
+        when(repository.hentMidlertidigUtilgjengelig(midlertidigUtilgjengelig.getAktørId()))
+                .thenReturn(Optional.of(midlertidigUtilgjengelig));
         
         assertThrows(BadRequestException.class,
                 () -> {
-                    service.forlengeMidlertidigUtilgjengelig(midlertidigUtilgjengelig.getAktørId(), midlertidigUtilgjengelig.getTilDato(), enVeileder);
+                    service.endreMidlertidigTilgjengelig(midlertidigUtilgjengelig.getAktørId(), midlertidigUtilgjengelig.getTilDato(), enVeileder);
                 });
     }
 }

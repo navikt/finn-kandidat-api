@@ -3,7 +3,6 @@ package no.nav.finnkandidatapi.midlertidigutilgjengelig;
 import no.nav.finnkandidatapi.kandidat.FinnKandidatException;
 import no.nav.finnkandidatapi.kandidat.NotFoundException;
 import no.nav.finnkandidatapi.kandidat.Veileder;
-import org.apache.tomcat.jni.Local;
 import org.springframework.stereotype.Service;
 
 import javax.ws.rs.BadRequestException;
@@ -57,10 +56,10 @@ public class MidlertidigUtilgjengeligService {
         return lagretUtilgjengelighet.get();
     }
 
-    public Optional<MidlertidigUtilgjengelig> forlengeMidlertidigUtilgjengelig(String aktørId, LocalDateTime tilDato, Veileder innloggetVeileder) {
+    public Optional<MidlertidigUtilgjengelig> endreMidlertidigTilgjengelig(String aktørId, LocalDateTime tilDato, Veileder innloggetVeileder) {
         sjekkAtDatoErIFremtiden(tilDato);
 
-        Integer antallOppdaterte = repository.forlengeMidlertidigUtilgjengelig(
+        Integer antallOppdaterte = repository.endreMidlertidigUtilgjengelig(
                 aktørId, tilDato, innloggetVeileder
         );
 

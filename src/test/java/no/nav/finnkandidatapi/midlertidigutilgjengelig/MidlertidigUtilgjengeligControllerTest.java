@@ -78,7 +78,7 @@ public class MidlertidigUtilgjengeligControllerTest {
         MidlertidigUtilgjengelig midlertidigUtilgjengelig = TestData.enMidlertidigUtilgjengelig("333333");
         MidlertidigUtilgjengeligDto midlertidigUtilgjengeligDto = new MidlertidigUtilgjengeligDto(midlertidigUtilgjengelig.getAktørId(), midlertidigUtilgjengelig.getTilDato());
 
-        when(midlertidigUtilgjengeligService.forlengeMidlertidigUtilgjengelig(
+        when(midlertidigUtilgjengeligService.endreMidlertidigTilgjengelig(
                 midlertidigUtilgjengelig.getAktørId(), midlertidigUtilgjengelig.getTilDato(), enVeileder))
                 .thenReturn(Optional.of(midlertidigUtilgjengelig));
 

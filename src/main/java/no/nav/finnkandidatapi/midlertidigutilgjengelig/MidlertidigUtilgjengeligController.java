@@ -1,6 +1,5 @@
 package no.nav.finnkandidatapi.midlertidigutilgjengelig;
 
-import com.sun.mail.iap.Response;
 import no.nav.finnkandidatapi.kandidat.Veileder;
 import no.nav.finnkandidatapi.tilgangskontroll.TilgangskontrollService;
 import no.nav.security.token.support.core.api.Protected;
@@ -50,10 +49,10 @@ public class MidlertidigUtilgjengeligController {
             return ResponseEntity.badRequest().body("Aktør-id er annerledes i URL og body");
         }
 
-        Optional<MidlertidigUtilgjengelig> forlenget = service.forlengeMidlertidigUtilgjengelig(aktørId, midlertidigUtilgjengeligDto.getTilDato(), innloggetVeileder);
+        Optional<MidlertidigUtilgjengelig> endret = service.endreMidlertidigTilgjengelig(aktørId, midlertidigUtilgjengeligDto.getTilDato(), innloggetVeileder);
 
-        return forlenget.isEmpty() ?
-                ResponseEntity.notFound().build() : ResponseEntity.ok(forlenget.get());
+        return endret.isEmpty() ?
+                ResponseEntity.notFound().build() : ResponseEntity.ok(endret.get());
     }
 
     @DeleteMapping("/{aktørId}")

@@ -94,12 +94,6 @@ public class MidlertidigUtilgjengeligServiceTest {
     public void forlengeMidlertidigUtilgjengelig__tildato_kan_ikke_være_tilbake_i_tid() {
         MidlertidigUtilgjengelig midlertidigUtilgjengelig = TestData.enMidlertidigUtilgjengelig("7777722");
         midlertidigUtilgjengelig.setTilDato(LocalDateTime.of(2000, 1, 1, 1, 0, 0));
-
-        when(repository.forlengeMidlertidigUtilgjengelig(midlertidigUtilgjengelig.getAktørId(), midlertidigUtilgjengelig.getTilDato(), enVeileder))
-                .thenReturn(1);
-
-        when(repository.hentMidlertidigUtilgjengelig(midlertidigUtilgjengelig.getAktørId()))
-                .thenReturn(Optional.of(midlertidigUtilgjengelig));
         
         assertThrows(BadRequestException.class,
                 () -> {

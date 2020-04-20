@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,20 +29,24 @@ public class MidlertidigUtilgjengeligRepositoryTest {
     public void skal_kunne_lagre_og_hente_midlertidig_utilgjengelig() {
         MidlertidigUtilgjengelig behovTilLagring = enMidlertidigUtilgjengelig("11100000000");
 
+        String[] skalVæreNull = { "sistEndretAvIdent", "sistEndretAvNavn"};
+
         Integer lagretId = repository.lagreMidlertidigUtilgjengelig(behovTilLagring);
         MidlertidigUtilgjengelig uthentetBehov = repository.hentMidlertidigUtilgjengelig(behovTilLagring.getAktørId()).get();
 
-        assertThat(uthentetBehov).isEqualToIgnoringGivenFields(behovTilLagring, "id");
+        assertThat(uthentetBehov).isEqualToIgnoringGivenFields(behovTilLagring, skalVæreNull)
+                .extracting(skalVæreNull).containsOnlyNulls();
     }
 
     @Test
-    public void skal_kunne_lagre_og_hente_ut_med_null() {
+    public void skal_kunne_lagre_og_hente_ut_med_bare_obligatoriske_felt() {
         MidlertidigUtilgjengelig behovTilLagring = enMidlertidigUtilgjengeligMedBareNull();
+        behovTilLagring.setFraDato(LocalDateTime.of(2020, 1, 1 , 0, 0));
 
         repository.lagreMidlertidigUtilgjengelig(behovTilLagring);
         MidlertidigUtilgjengelig uthentetBehov = repository.hentMidlertidigUtilgjengelig(behovTilLagring.getAktørId()).get();
 
-        assertThat(uthentetBehov).isEqualToIgnoringGivenFields(enMidlertidigUtilgjengeligMedBareNull(), "id");
+        assertThat(uthentetBehov).isEqualToIgnoringGivenFields(behovTilLagring, "id");
     }
 
     @Test
@@ -69,9 +74,17 @@ public class MidlertidigUtilgjengeligRepositoryTest {
         var lagret2 = repository.hentMidlertidigUtilgjengelig(midlertidigUtilgjengelig2.getAktørId());
         var lagret3 = repository.hentMidlertidigUtilgjengelig(midlertidigUtilgjengelig3.getAktørId());
 
-        assertThat(lagret1).isNotEmpty().get().isEqualToIgnoringGivenFields(midlertidigUtilgjengelig1, "id");
-        assertThat(lagret2).isNotEmpty().get().isEqualToIgnoringGivenFields(midlertidigUtilgjengelig2, "id");
-        assertThat(lagret3).isNotEmpty().get().isEqualToIgnoringGivenFields(midlertidigUtilgjengelig3, "id");
+        String[] skalVæreNull = { "sistEndretAvIdent", "sistEndretAvNavn"};
+
+        assertThat(lagret1).isNotEmpty().get()
+                .isEqualToIgnoringGivenFields(midlertidigUtilgjengelig1, skalVæreNull)
+                .extracting(skalVæreNull).containsOnlyNulls();
+        assertThat(lagret2).isNotEmpty().get()
+                .isEqualToIgnoringGivenFields(midlertidigUtilgjengelig2, skalVæreNull)
+                .extracting(skalVæreNull).containsOnlyNulls();
+        assertThat(lagret3).isNotEmpty().get()
+                .isEqualToIgnoringGivenFields(midlertidigUtilgjengelig3, skalVæreNull)
+                .extracting(skalVæreNull).containsOnlyNulls();
     }
 
     @Test

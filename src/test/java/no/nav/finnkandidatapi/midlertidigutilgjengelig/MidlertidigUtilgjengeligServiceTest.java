@@ -98,9 +98,6 @@ public class MidlertidigUtilgjengeligServiceTest {
         when(repository.endreMidlertidigUtilgjengelig(midlertidigUtilgjengelig.getAktørId(), midlertidigUtilgjengelig.getTilDato(), enVeileder))
                 .thenReturn(1);
 
-        when(repository.hentMidlertidigUtilgjengelig(midlertidigUtilgjengelig.getAktørId()))
-                .thenReturn(Optional.of(midlertidigUtilgjengelig));
-        
         assertThrows(BadRequestException.class,
                 () -> {
                     service.endreMidlertidigTilgjengelig(midlertidigUtilgjengelig.getAktørId(), midlertidigUtilgjengelig.getTilDato(), enVeileder);

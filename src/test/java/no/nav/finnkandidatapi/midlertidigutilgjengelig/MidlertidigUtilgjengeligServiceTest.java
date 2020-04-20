@@ -95,9 +95,6 @@ public class MidlertidigUtilgjengeligServiceTest {
         MidlertidigUtilgjengelig midlertidigUtilgjengelig = TestData.enMidlertidigUtilgjengelig("7777722");
         midlertidigUtilgjengelig.setTilDato(LocalDateTime.of(2000, 1, 1, 1, 0, 0));
 
-        when(repository.endreMidlertidigUtilgjengelig(midlertidigUtilgjengelig.getAktørId(), midlertidigUtilgjengelig.getTilDato(), enVeileder))
-                .thenReturn(1);
-
         assertThrows(BadRequestException.class,
                 () -> {
                     service.endreMidlertidigTilgjengelig(midlertidigUtilgjengelig.getAktørId(), midlertidigUtilgjengelig.getTilDato(), enVeileder);

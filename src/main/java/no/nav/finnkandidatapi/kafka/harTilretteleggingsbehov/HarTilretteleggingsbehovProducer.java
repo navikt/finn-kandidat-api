@@ -24,10 +24,7 @@ import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Component;
 import org.springframework.util.concurrent.ListenableFuture;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -156,12 +153,15 @@ public class HarTilretteleggingsbehovProducer {
 
         Optional<String> midlertidigUtilgjengeligFilter = finnMidlertidigUtilgjengeligFilter(midlertidigUtilgjengelig);
 
-        return Stream.of(
+        return concatToList(
                 kategorier.stream(),
                 permitteringsfilter.stream(),
                 midlertidigUtilgjengeligFilter.stream()
-        )
-                .reduce(Stream::concat)
+        );
+    }
+
+    private <T> List<T> concatToList(Stream<T>... s) {
+        return Arrays.stream(s).reduce(Stream::concat)
                 .orElseGet(Stream::empty)
                 .collect(Collectors.toList());
     }

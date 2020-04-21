@@ -1,5 +1,6 @@
 package no.nav.finnkandidatapi.kafka.republisher;
 
+import com.nimbusds.oauth2.sdk.util.CollectionUtils;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.HarTilretteleggingsbehov;
 import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.HarTilretteleggingsbehovProducer;
@@ -22,9 +23,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static java.util.Collections.emptyList;
 
 @RestController
 @Component
@@ -62,7 +67,7 @@ public class KafkaRepublisher {
      *
      * @return 200 OK hvis kandidater ble republisert.
      */
-    @PostMapping("/internal/kafka/republish" )
+    @PostMapping("/internal/kafka/republish")
     //TODO: Denne må oppdateres med blant annet permitteringer før den kjøres.
     public ResponseEntity republiserAlleKandidater() {
         String ident = sjekkTilgangTilRepublisher();
@@ -80,8 +85,8 @@ public class KafkaRepublisher {
     /*
      * Republiser en enkelt kandidat til Kafka. Brukes bare i spesielle tilfeller.
      */
-    @PostMapping("/internal/kafka/republish/{aktørId}" )
-    public ResponseEntity republiserKandidat(@PathVariable("aktørId" ) String aktørId) {
+    @PostMapping("/internal/kafka/republish/{aktørId}")
+    public ResponseEntity republiserKandidat(@PathVariable("aktørId") String aktørId) {
         String ident = sjekkTilgangTilRepublisher();
 
         Optional<HarTilretteleggingsbehov> harTilretteleggingsbehov = kandidatRepository.hentHarTilretteleggingsbehov(aktørId);
@@ -93,32 +98,37 @@ public class KafkaRepublisher {
             return ResponseEntity.notFound().build();
         }
 
-        boolean harBehov = harTilretteleggingsbehov
-                .map(HarTilretteleggingsbehov::getBehov)
-                .filter(behov -> !behov.isEmpty())
-                .isPresent();
+        List<String> tilretteleggingsbehovFilter = harTilretteleggingsbehov.map(HarTilretteleggingsbehov::getBehov).orElse(emptyList());
 
-        List<String> behov = new ArrayList<>();
-        harTilretteleggingsbehov.ifPresent(tilretteleggingsbehov -> behov.addAll(tilretteleggingsbehov.getBehov()));
-        boolean erPermittert = SjekkPermittertUtil.sjekkOmErPermittert(permittertArbeidssoker, vedtak);
-        if (erPermittert) {
-            behov.add(PermittertArbeidssoker.ER_PERMITTERT_KATEGORI);
-        }
+        Optional<String> permitteringFilter = SjekkPermittertUtil.sjekkOmErPermittert(permittertArbeidssoker, vedtak)
+                ? Optional.of(PermittertArbeidssoker.ER_PERMITTERT_KATEGORI)
+                : Optional.empty();
 
-        MidlertidigTilretteleggingsbehovProducer.finnMidlertidigUtilgjengeligFilter(midlertidigUtilgjengelig)
-                .ifPresent(behov::add);
+        Optional<String> midlertidigUtilgjengeligFilter = MidlertidigTilretteleggingsbehovProducer.finnMidlertidigUtilgjengeligFilter(midlertidigUtilgjengelig);
 
-        HarTilretteleggingsbehov behovMedPermittering = new HarTilretteleggingsbehov(aktørId, harBehov, behov);
+        List<String> behov = concatToList(
+                tilretteleggingsbehovFilter.stream(),
+                permitteringFilter.stream(),
+                midlertidigUtilgjengeligFilter.stream()
+        );
+
+        HarTilretteleggingsbehov behovMedPermittering = new HarTilretteleggingsbehov(aktørId, CollectionUtils.isNotEmpty(tilretteleggingsbehovFilter), behov);
         log.warn("Bruker med ident {} republiserer kandidat med aktørId {}.", ident, aktørId);
         harTilretteleggingsbehovProducer.sendKafkamelding(behovMedPermittering);
         return ResponseEntity.ok().build();
+    }
+
+    private <T> List<T> concatToList(Stream<T>... s) {
+        return Arrays.stream(s).reduce(Stream::concat)
+                .orElseGet(Stream::empty)
+                .collect(Collectors.toList());
     }
 
     private String sjekkTilgangTilRepublisher() {
         String innloggetNavIdent = tilgangskontrollService.hentInnloggetVeileder().getNavIdent();
 
         if (!config.getNavIdenterSomKanRepublisere().contains(innloggetNavIdent)) {
-            throw new TilgangskontrollException("Bruker med ident " + innloggetNavIdent + " har ikke tilgang til å republisere Kafka-meldinger" );
+            throw new TilgangskontrollException("Bruker med ident " + innloggetNavIdent + " har ikke tilgang til å republisere Kafka-meldinger");
         }
 
         return innloggetNavIdent;

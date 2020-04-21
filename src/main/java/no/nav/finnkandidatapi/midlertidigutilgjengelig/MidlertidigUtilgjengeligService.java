@@ -23,17 +23,8 @@ public class MidlertidigUtilgjengeligService {
         return repository.hentMidlertidigUtilgjengelig(aktørId);
     }
 
-    private void sjekkAtDatoErIFremtiden(LocalDateTime tilDato) {
-        LocalDate idag = LocalDate.now();
-        LocalDateTime idagMidnatt = LocalDateTime.of(idag, LocalTime.MIDNIGHT);
-        if (tilDato.isBefore(idagMidnatt)) {
-            throw new BadRequestException("Du kan ikke sette en kandidat som midlertidig utilgjengelig tilbake i tid");
-        }
-    }
-
     public MidlertidigUtilgjengelig opprettMidlertidigUtilgjengelig(MidlertidigUtilgjengeligDto midlertidigUtilgjengeligDto, Veileder innloggetVeileder) {
         LocalDateTime utilgjengeligFraDato = LocalDateTime.now();
-        sjekkAtDatoErIFremtiden(midlertidigUtilgjengeligDto.getTilDato());
 
         MidlertidigUtilgjengelig midlertidigUtilgjengelig = MidlertidigUtilgjengelig.opprettMidlertidigUtilgjengelig(
                 midlertidigUtilgjengeligDto,
@@ -57,26 +48,20 @@ public class MidlertidigUtilgjengeligService {
     }
 
     public Optional<MidlertidigUtilgjengelig> endreMidlertidigTilgjengelig(String aktørId, LocalDateTime tilDato, Veileder innloggetVeileder) {
-        sjekkAtDatoErIFremtiden(tilDato);
-
         Integer antallOppdaterte = repository.endreMidlertidigUtilgjengelig(
                 aktørId, tilDato, innloggetVeileder
         );
 
         if (antallOppdaterte == 0) {
-            throw new NotFoundException();
+            return Optional.empty();
         }
 
         return repository.hentMidlertidigUtilgjengelig(aktørId);
     }
 
-    public void slettMidlertidigUtilgjengelig(String aktørId) {
-        Integer antallOppdaterteRader = repository.slettMidlertidigUtilgjengelig(
+    public Integer slettMidlertidigUtilgjengelig(String aktørId) {
+        return repository.slettMidlertidigUtilgjengelig(
                 aktørId
         );
-
-        if (antallOppdaterteRader == 0) {
-            throw new NotFoundException();
-        }
     }
 }

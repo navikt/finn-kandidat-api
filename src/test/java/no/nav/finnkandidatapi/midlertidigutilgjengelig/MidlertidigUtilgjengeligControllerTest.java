@@ -10,9 +10,12 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 
+import javax.ws.rs.BadRequestException;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -68,7 +71,10 @@ public class MidlertidigUtilgjengeligControllerTest {
     @Test
     public void deleteMidlertidigUtilgjengelig__skal_kunne_slette_midlertidig_utilgjengelig() {
         MidlertidigUtilgjengelig midlertidigUtilgjengelig = TestData.enMidlertidigUtilgjengelig("2222232");
+
+        when(midlertidigUtilgjengeligService.slettMidlertidigUtilgjengelig(midlertidigUtilgjengelig.getAktørId())).thenReturn(1);
         var response = controller.deleteMidlertidigUtilgjenglig(midlertidigUtilgjengelig.getAktørId());
+
         verify(midlertidigUtilgjengeligService, times(1)).slettMidlertidigUtilgjengelig(midlertidigUtilgjengelig.getAktørId());
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
@@ -88,4 +94,14 @@ public class MidlertidigUtilgjengeligControllerTest {
         assertThat(response.getBody()).isEqualTo(midlertidigUtilgjengelig);
     }
 
+    @Test
+    public void putMidlertidigUtilgjengelig__tildato_kan_ikke_være_tilbake_i_tid() {
+        MidlertidigUtilgjengelig midlertidigUtilgjengelig = TestData.enMidlertidigUtilgjengelig("7777722");
+        midlertidigUtilgjengelig.setTilDato(LocalDateTime.of(2000, 1, 1, 1, 0, 0));
+
+        MidlertidigUtilgjengeligDto midlertidigUtilgjengeligDto = new MidlertidigUtilgjengeligDto(midlertidigUtilgjengelig.getAktørId(), midlertidigUtilgjengelig.getTilDato());
+
+        var response = controller.putMidlertidigUtilgjengelig(midlertidigUtilgjengelig.getAktørId(), midlertidigUtilgjengeligDto);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
 }

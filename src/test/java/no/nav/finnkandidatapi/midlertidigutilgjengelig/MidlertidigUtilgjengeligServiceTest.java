@@ -89,15 +89,4 @@ public class MidlertidigUtilgjengeligServiceTest {
 
         assertThat(response).isNotEmpty().get().isEqualTo(midlertidigUtilgjengelig);
     }
-
-    @Test
-    public void endreMidlertidigUtilgjengelig__tildato_kan_ikke_være_tilbake_i_tid() {
-        MidlertidigUtilgjengelig midlertidigUtilgjengelig = TestData.enMidlertidigUtilgjengelig("7777722");
-        midlertidigUtilgjengelig.setTilDato(LocalDateTime.of(2000, 1, 1, 1, 0, 0));
-
-        assertThrows(BadRequestException.class,
-                () -> {
-                    service.endreMidlertidigTilgjengelig(midlertidigUtilgjengelig.getAktørId(), midlertidigUtilgjengelig.getTilDato(), enVeileder);
-                });
-    }
 }

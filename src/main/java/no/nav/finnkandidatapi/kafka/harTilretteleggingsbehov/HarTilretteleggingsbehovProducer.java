@@ -110,7 +110,7 @@ public class HarTilretteleggingsbehovProducer {
         Optional<PermittertArbeidssoker> permittertArbeidssoker = permittertArbeidssokerService.hentNyestePermitterteArbeidssoker(kandidat.getAktørId());
         Optional<Vedtak> vedtak = vedtakService.hentNyesteVedtakForAktør(kandidat.getAktørId());
         List<String> kategorier = kandidat.kategorier();
-            Optional<MidlertidigUtilgjengelig> midlertidigUtilgjengelig = midlertidigUtilgjengeligService.hentMidlertidigUtilgjengelig(kandidat.getAktørId());
+        Optional<MidlertidigUtilgjengelig> midlertidigUtilgjengelig = midlertidigUtilgjengeligService.hentMidlertidigUtilgjengelig(kandidat.getAktørId());
         lagOgSendMelding(kandidat.getAktørId(), kategorier, permittertArbeidssoker, vedtak, midlertidigUtilgjengelig);
     }
 
@@ -151,16 +151,19 @@ public class HarTilretteleggingsbehovProducer {
     }
 
     private List<String> kombiner(List<String> kategorier, boolean erPermittert, Optional<MidlertidigUtilgjengelig> midlertidigUtilgjengelig) {
-        List<String> kombinert = new ArrayList<>(kategorier);
-        if (erPermittert) {
-            kombinert.add(PermittertArbeidssoker.ER_PERMITTERT_KATEGORI);
-        }
+
+        Optional<String> permitteringsfilter = erPermittert ? Optional.of(PermittertArbeidssoker.ER_PERMITTERT_KATEGORI) : Optional.empty();
+
         Optional<String> midlertidigUtilgjengeligFilter = finnMidlertidigUtilgjengeligFilter(midlertidigUtilgjengelig);
 
-        return Stream.concat(
-                kombinert.stream(),
+        return Stream.of(
+                kategorier.stream(),
+                permitteringsfilter.stream(),
                 midlertidigUtilgjengeligFilter.stream()
-        ).collect(Collectors.toList());
+        )
+                .reduce(Stream::concat)
+                .orElseGet(Stream::empty)
+                .collect(Collectors.toList());
     }
 
     public void sendKafkamelding(HarTilretteleggingsbehov melding) {

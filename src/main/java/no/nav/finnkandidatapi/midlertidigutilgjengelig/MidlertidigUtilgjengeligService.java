@@ -23,7 +23,11 @@ public class MidlertidigUtilgjengeligService {
         return repository.hentMidlertidigUtilgjengelig(aktørId);
     }
 
-    public MidlertidigUtilgjengelig opprettMidlertidigUtilgjengelig(MidlertidigUtilgjengeligDto midlertidigUtilgjengeligDto, Veileder innloggetVeileder) {
+    public boolean midlertidigTilgjengeligEksisterer(String aktørId) {
+        return repository.hentMidlertidigUtilgjengelig(aktørId).isPresent();
+    }
+
+    public Optional<MidlertidigUtilgjengelig> opprettMidlertidigUtilgjengelig(MidlertidigUtilgjengeligDto midlertidigUtilgjengeligDto, Veileder innloggetVeileder) {
         LocalDateTime utilgjengeligFraDato = LocalDateTime.now();
 
         MidlertidigUtilgjengelig midlertidigUtilgjengelig = MidlertidigUtilgjengelig.opprettMidlertidigUtilgjengelig(
@@ -32,19 +36,8 @@ public class MidlertidigUtilgjengeligService {
                 innloggetVeileder
         );
 
-        Optional<MidlertidigUtilgjengelig> eksisterendeMidlertidigUtilgjengelig = repository.hentMidlertidigUtilgjengelig(midlertidigUtilgjengeligDto.getAktørId());
-        eksisterendeMidlertidigUtilgjengelig.ifPresent(error -> {
-            throw new AlleredeRegistrertException("Det er allerede registrert at kandidaten er midlertidig utilgjengelig");
-        });
-
         Integer id = repository.lagreMidlertidigUtilgjengelig(midlertidigUtilgjengelig);
-        Optional<MidlertidigUtilgjengelig> lagretUtilgjengelighet = repository.hentMidlertidigUtilgjengeligMedId(id);
-
-        if (lagretUtilgjengelighet.isEmpty()) {
-            throw new FinnKandidatException();
-        }
-
-        return lagretUtilgjengelighet.get();
+        return repository.hentMidlertidigUtilgjengeligMedId(id);
     }
 
     public Optional<MidlertidigUtilgjengelig> endreMidlertidigTilgjengelig(String aktørId, LocalDateTime tilDato, Veileder innloggetVeileder) {

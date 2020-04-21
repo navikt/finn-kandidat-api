@@ -56,9 +56,9 @@ public class MidlertidigUtilgjengeligServiceTest {
         when(repository.hentMidlertidigUtilgjengeligMedId(1))
                 .thenReturn(Optional.of(midlertidigUtilgjengelig));
 
-        MidlertidigUtilgjengelig response = service.opprettMidlertidigUtilgjengelig(midlertidigUtilgjengeligDto, enVeileder);
+        Optional<MidlertidigUtilgjengelig> response = service.opprettMidlertidigUtilgjengelig(midlertidigUtilgjengeligDto, enVeileder);
 
-        assertThat(response).isEqualTo(midlertidigUtilgjengelig);
+        assertThat(response).isEqualTo(Optional.of(midlertidigUtilgjengelig));
     }
 
     @Test

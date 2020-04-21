@@ -1,5 +1,6 @@
 package no.nav.finnkandidatapi.midlertidigutilgjengelig;
 
+import no.nav.finnkandidatapi.kandidat.FinnKandidatException;
 import no.nav.finnkandidatapi.kandidat.NotFoundException;
 import no.nav.finnkandidatapi.kandidat.Veileder;
 import no.nav.finnkandidatapi.tilgangskontroll.TilgangskontrollService;
@@ -53,8 +54,16 @@ public class MidlertidigUtilgjengeligController {
             return ResponseEntity.badRequest().body("Du kan ikke sette en kandidat som midlertidig utilgjengelig tilbake i tid");
         }
 
-        MidlertidigUtilgjengelig lagret = service.opprettMidlertidigUtilgjengelig(midlertidigUtilgjengelig, innloggetVeileder);
-        return ResponseEntity.status(HttpStatus.CREATED).body(lagret);
+        if (service.midlertidigTilgjengeligEksisterer(midlertidigUtilgjengelig.getAktørId())) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Det er allerede registrert at kandidaten er midlertidig utilgjengelig");
+        }
+
+        Optional<MidlertidigUtilgjengelig> lagret = service.opprettMidlertidigUtilgjengelig(midlertidigUtilgjengelig, innloggetVeileder);
+        if (lagret.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(lagret.get());
     }
 
     @PutMapping("/{aktørId}")

@@ -59,7 +59,7 @@ public class MidlertidigUtilgjengeligControllerTest {
         MidlertidigUtilgjengeligDto midlertidigUtilgjengeligDto = new MidlertidigUtilgjengeligDto(midlertidigUtilgjengelig.getAktørId(), midlertidigUtilgjengelig.getTilDato());
         when(midlertidigUtilgjengeligService.opprettMidlertidigUtilgjengelig(
                 midlertidigUtilgjengeligDto, enVeileder))
-                .thenReturn(midlertidigUtilgjengelig);
+                .thenReturn(Optional.of(midlertidigUtilgjengelig));
 
         var response = controller.postMidlertidigUtilgjengelig(midlertidigUtilgjengeligDto);
 

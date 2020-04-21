@@ -102,4 +102,15 @@ public class MidlertidigUtilgjengeligControllerTest {
         var response = controller.putMidlertidigUtilgjengelig(midlertidigUtilgjengelig.getAktørId(), midlertidigUtilgjengeligDto);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
+
+    @Test
+    public void putMidlertidigUtilgjengelig__tildato_kan_ikke_være_mer_enn_30_dager_frem_i_tid() {
+        MidlertidigUtilgjengelig midlertidigUtilgjengelig = TestData.enMidlertidigUtilgjengelig("7777722");
+        midlertidigUtilgjengelig.setTilDato(LocalDateTime.now().plusDays(31));
+
+        MidlertidigUtilgjengeligDto midlertidigUtilgjengeligDto = new MidlertidigUtilgjengeligDto(midlertidigUtilgjengelig.getAktørId(), midlertidigUtilgjengelig.getTilDato());
+
+        var response = controller.putMidlertidigUtilgjengelig(midlertidigUtilgjengelig.getAktørId(), midlertidigUtilgjengeligDto);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
 }

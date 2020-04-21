@@ -19,6 +19,9 @@ public class MidlertidigUtilgjengeligController {
     private final MidlertidigUtilgjengeligService service;
     private final TilgangskontrollService tilgangskontroll;
 
+    private final String DATO_TILBAKE_I_TID_FEIL = "Du kan ikke sette en kandidat som midlertidig utilgjengelig tilbake i tid";
+    private final String DATO_MER_ENN_30_DAGER_FREM_I_TID_FEIL = "Du kan ikke sette en kandidat som midlertidig utilgjengelig mer enn 30 dager frem i tid";
+
     public MidlertidigUtilgjengeligController(
             MidlertidigUtilgjengeligService service,
             TilgangskontrollService tilgangskontroll) {
@@ -33,6 +36,13 @@ public class MidlertidigUtilgjengeligController {
         return tilDato.isBefore(idagMidnatt);
     }
 
+    private boolean datoErMerEnn30DagerFremITid(LocalDateTime tilDato) {
+        LocalDate idag = LocalDate.now();
+        LocalDateTime idagMidnatt = LocalDateTime.of(idag, LocalTime.MIDNIGHT);
+
+        return !tilDato.isBefore(idagMidnatt.plusDays(31));
+    }
+
     @GetMapping("/{aktørId}")
     public ResponseEntity<?> getMidlertidigUtilgjengelig(@PathVariable("aktørId") String aktørId) {
         tilgangskontroll.hentInnloggetVeileder();
@@ -44,18 +54,22 @@ public class MidlertidigUtilgjengeligController {
     }
 
     @PostMapping
-    public ResponseEntity<?> postMidlertidigUtilgjengelig(@RequestBody MidlertidigUtilgjengeligDto midlertidigUtilgjengelig) {
+    public ResponseEntity<?> postMidlertidigUtilgjengelig(@RequestBody MidlertidigUtilgjengeligDto midlertidigUtilgjengeligDto) {
         Veileder innloggetVeileder = tilgangskontroll.hentInnloggetVeileder();
 
-        if (datoErTilbakeITid(midlertidigUtilgjengelig.getTilDato())) {
-            return ResponseEntity.badRequest().body("Du kan ikke sette en kandidat som midlertidig utilgjengelig tilbake i tid");
+        if (datoErTilbakeITid(midlertidigUtilgjengeligDto.getTilDato())) {
+            return ResponseEntity.badRequest().body(DATO_TILBAKE_I_TID_FEIL);
         }
 
-        if (service.midlertidigTilgjengeligEksisterer(midlertidigUtilgjengelig.getAktørId())) {
+        if (datoErMerEnn30DagerFremITid(midlertidigUtilgjengeligDto.getTilDato())) {
+            return ResponseEntity.badRequest().body(DATO_MER_ENN_30_DAGER_FREM_I_TID_FEIL);
+        }
+
+        if (service.midlertidigTilgjengeligEksisterer(midlertidigUtilgjengeligDto.getAktørId())) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Det er allerede registrert at kandidaten er midlertidig utilgjengelig");
         }
 
-        Optional<MidlertidigUtilgjengelig> lagret = service.opprettMidlertidigUtilgjengelig(midlertidigUtilgjengelig, innloggetVeileder);
+        Optional<MidlertidigUtilgjengelig> lagret = service.opprettMidlertidigUtilgjengelig(midlertidigUtilgjengeligDto, innloggetVeileder);
         if (lagret.isEmpty()) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
@@ -68,7 +82,11 @@ public class MidlertidigUtilgjengeligController {
         Veileder innloggetVeileder = tilgangskontroll.hentInnloggetVeileder();
 
         if (datoErTilbakeITid(midlertidigUtilgjengeligDto.getTilDato())) {
-            return ResponseEntity.badRequest().body("Du kan ikke sette en kandidat som midlertidig utilgjengelig tilbake i tid");
+            return ResponseEntity.badRequest().body(DATO_TILBAKE_I_TID_FEIL);
+        }
+
+        if (datoErMerEnn30DagerFremITid(midlertidigUtilgjengeligDto.getTilDato())) {
+            return ResponseEntity.badRequest().body(DATO_MER_ENN_30_DAGER_FREM_I_TID_FEIL);
         }
 
         if (!aktørId.equals(midlertidigUtilgjengeligDto.getAktørId())) {

@@ -66,7 +66,7 @@ KafkaRepublisherTest {
         when(tilgangskontrollService.hentInnloggetVeileder()).thenReturn(enVeileder());
         when(config.getNavIdenterSomKanRepublisere()).thenReturn(new ArrayList<>());
 
-        kafkaRepublisher.republiserAlleKandidater();
+        kafkaRepublisher.republiserAlleTilretteleggingsbehov();
     }
 
     @Test
@@ -76,7 +76,7 @@ KafkaRepublisherTest {
         when(tilgangskontrollService.hentInnloggetVeileder()).thenReturn(veileder);
         when(config.getNavIdenterSomKanRepublisere()).thenReturn(Arrays.asList(veileder.getNavIdent()));
 
-        ResponseEntity response = kafkaRepublisher.republiserAlleKandidater();
+        ResponseEntity response = kafkaRepublisher.republiserAlleTilretteleggingsbehov();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
@@ -93,7 +93,7 @@ KafkaRepublisherTest {
                 harTilretteleggingsbehovFalse
         ));
 
-        kafkaRepublisher.republiserAlleKandidater();
+        kafkaRepublisher.republiserAlleTilretteleggingsbehov();
 
         verify(producer, times(2)).sendKafkamelding(any());
         verify(producer).sendKafkamelding(harTilretteleggingsbehovTrue);

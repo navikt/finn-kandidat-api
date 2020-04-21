@@ -67,16 +67,18 @@ public class KafkaRepublisher {
      *
      * @return 200 OK hvis kandidater ble republisert.
      */
-    @PostMapping("/internal/kafka/republish")
+    @PostMapping("/internal/kafka/republish/tilrettelegging")
     //TODO: Denne må oppdateres med blant annet permitteringer før den kjøres.
-    public ResponseEntity republiserAlleKandidater() {
+    public ResponseEntity republiserAlleTilretteleggingsbehov() {
         String ident = sjekkTilgangTilRepublisher();
 
         List<HarTilretteleggingsbehov> kandidatoppdateringer = kandidatRepository.hentHarTilretteleggingsbehov();
 
         log.warn("Bruker med ident {} republiserer alle {} kandidater!", ident, kandidatoppdateringer.size());
         kandidatoppdateringer.forEach(oppdatering -> {
-            harTilretteleggingsbehovProducer.sendKafkamelding(oppdatering);
+            List<String> behovFilter = lagbehov(oppdatering.getAktoerId(), Optional.of(oppdatering));
+            HarTilretteleggingsbehov behov = new HarTilretteleggingsbehov(oppdatering.getAktoerId(), CollectionUtils.isNotEmpty(behovFilter), behovFilter);
+            harTilretteleggingsbehovProducer.sendKafkamelding(behov);
         });
 
         return ResponseEntity.ok().build();
@@ -89,14 +91,23 @@ public class KafkaRepublisher {
     public ResponseEntity republiserKandidat(@PathVariable("aktørId") String aktørId) {
         String ident = sjekkTilgangTilRepublisher();
 
-        Optional<HarTilretteleggingsbehov> harTilretteleggingsbehov = kandidatRepository.hentHarTilretteleggingsbehov(aktørId);
+        List<String> behov = lagbehov(aktørId, Optional.empty());
+
+        if (behov.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        HarTilretteleggingsbehov behovMedPermittering = new HarTilretteleggingsbehov(aktørId, CollectionUtils.isNotEmpty(behov), behov);
+        log.warn("Bruker med ident {} republiserer kandidat med aktørId {}.", ident, aktørId);
+        harTilretteleggingsbehovProducer.sendKafkamelding(behovMedPermittering);
+        return ResponseEntity.ok().build();
+    }
+
+    public List<String> lagbehov(String aktørId, Optional<HarTilretteleggingsbehov> tilretteleggingsbehov) {
+        Optional<HarTilretteleggingsbehov> harTilretteleggingsbehov = tilretteleggingsbehov.or(() -> kandidatRepository.hentHarTilretteleggingsbehov(aktørId));
         Optional<PermittertArbeidssoker> permittertArbeidssoker = permittertArbeidssokerService.hentNyestePermitterteArbeidssoker(aktørId);
         Optional<Vedtak> vedtak = vedtakService.hentNyesteVedtakForAktør(aktørId);
         Optional<MidlertidigUtilgjengelig> midlertidigUtilgjengelig = midlertidigUtilgjengeligService.hentMidlertidigUtilgjengelig(aktørId);
-
-        if (harTilretteleggingsbehov.isEmpty() && permittertArbeidssoker.isEmpty() && vedtak.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
 
         List<String> tilretteleggingsbehovFilter = harTilretteleggingsbehov.map(HarTilretteleggingsbehov::getBehov).orElse(emptyList());
 
@@ -106,16 +117,11 @@ public class KafkaRepublisher {
 
         Optional<String> midlertidigUtilgjengeligFilter = MidlertidigTilretteleggingsbehovProducer.finnMidlertidigUtilgjengeligFilter(midlertidigUtilgjengelig);
 
-        List<String> behov = concatToList(
+        return concatToList(
                 tilretteleggingsbehovFilter.stream(),
                 permitteringFilter.stream(),
                 midlertidigUtilgjengeligFilter.stream()
         );
-
-        HarTilretteleggingsbehov behovMedPermittering = new HarTilretteleggingsbehov(aktørId, CollectionUtils.isNotEmpty(tilretteleggingsbehovFilter), behov);
-        log.warn("Bruker med ident {} republiserer kandidat med aktørId {}.", ident, aktørId);
-        harTilretteleggingsbehovProducer.sendKafkamelding(behovMedPermittering);
-        return ResponseEntity.ok().build();
     }
 
     private <T> List<T> concatToList(Stream<T>... s) {

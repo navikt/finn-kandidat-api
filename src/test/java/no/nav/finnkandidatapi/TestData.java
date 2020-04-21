@@ -135,8 +135,8 @@ public class TestData {
     public static MidlertidigUtilgjengelig enMidlertidigUtilgjengelig(String aktørid) {
         return MidlertidigUtilgjengelig.builder()
                 .aktørId(aktørid)
-                .fraDato(LocalDateTime.of(2120,4, 1, 0, 0))
-                .tilDato(LocalDateTime.of(2120,4, 15, 0, 0))
+                .fraDato(LocalDateTime.now())
+                .tilDato(LocalDateTime.now().plusDays(7))
                 .registrertAvIdent("A100000")
                 .registrertAvNavn("Ola Nordmann")
                 .sistEndretAvIdent("B200000")

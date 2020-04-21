@@ -2,11 +2,12 @@ package no.nav.finnkandidatapi.kafka.republisher;
 
 import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.HarTilretteleggingsbehov;
 import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.HarTilretteleggingsbehovProducer;
+import no.nav.finnkandidatapi.kafka.midlertidigutilgjengelig.MidlertidigTilretteleggingsbehovProducer;
 import no.nav.finnkandidatapi.kandidat.Fysisk;
 import no.nav.finnkandidatapi.kandidat.KandidatRepository;
 import no.nav.finnkandidatapi.kandidat.Veileder;
+import no.nav.finnkandidatapi.midlertidigutilgjengelig.MidlertidigUtilgjengeligService;
 import no.nav.finnkandidatapi.permittert.PermittertArbeidssoker;
-import no.nav.finnkandidatapi.permittert.PermittertArbeidssokerRepository;
 import no.nav.finnkandidatapi.permittert.PermittertArbeidssokerService;
 import no.nav.finnkandidatapi.tilgangskontroll.TilgangskontrollException;
 import no.nav.finnkandidatapi.tilgangskontroll.TilgangskontrollService;
@@ -30,7 +31,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
-public class KafkaRepublisherTest {
+public class
+KafkaRepublisherTest {
     private KafkaRepublisher kafkaRepublisher;
 
     @Mock
@@ -51,9 +53,12 @@ public class KafkaRepublisherTest {
     @Mock
     private VedtakService vedtakService;
 
+    @Mock
+    private MidlertidigUtilgjengeligService midlertidigUtilgjengeligService;
+
     @Before
     public void setUp() {
-        this.kafkaRepublisher = new KafkaRepublisher(producer, repository, permittertArbeidssokerService, vedtakService, tilgangskontrollService, config);
+        this.kafkaRepublisher = new KafkaRepublisher(producer, repository, permittertArbeidssokerService, vedtakService, midlertidigUtilgjengeligService, tilgangskontrollService, config);
     }
 
     @Test(expected = TilgangskontrollException.class)
@@ -171,6 +176,30 @@ public class KafkaRepublisherTest {
                 aktørId,
                 true,
                 List.of(Fysisk.behovskategori, PermittertArbeidssoker.ER_PERMITTERT_KATEGORI)
+        );
+        verify(producer).sendKafkamelding(forventetBehov);
+    }
+
+    @Test
+    public void republiserKandidat__skal_sende_med_midlertidig_utilgjengelig() {
+        Veileder veileder = enVeileder();
+        String aktørId = enAktørId();
+
+        when(tilgangskontrollService.hentInnloggetVeileder()).thenReturn(veileder);
+        when(config.getNavIdenterSomKanRepublisere()).thenReturn(Arrays.asList(veileder.getNavIdent()));
+        HarTilretteleggingsbehov harTilretteleggingsbehov = new HarTilretteleggingsbehov(aktørId, true, List.of(Fysisk.behovskategori));
+        when(repository.hentHarTilretteleggingsbehov(aktørId)).thenReturn(
+                Optional.of(harTilretteleggingsbehov)
+        );
+        when(midlertidigUtilgjengeligService.hentMidlertidigUtilgjengelig(aktørId))
+                .thenReturn(Optional.of(enMidlertidigUtilgjengelig("17171717")));
+
+        kafkaRepublisher.republiserKandidat(aktørId);
+
+        HarTilretteleggingsbehov forventetBehov = new HarTilretteleggingsbehov(
+                aktørId,
+                true,
+                List.of(Fysisk.behovskategori, MidlertidigTilretteleggingsbehovProducer.MIDLERTIDIG_UTILGJENGELIG)
         );
         verify(producer).sendKafkamelding(forventetBehov);
     }

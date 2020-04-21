@@ -4,7 +4,10 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.HarTilretteleggingsbehov;
 import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.HarTilretteleggingsbehovProducer;
 import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.SjekkPermittertUtil;
+import no.nav.finnkandidatapi.kafka.midlertidigutilgjengelig.MidlertidigTilretteleggingsbehovProducer;
 import no.nav.finnkandidatapi.kandidat.KandidatRepository;
+import no.nav.finnkandidatapi.midlertidigutilgjengelig.MidlertidigUtilgjengelig;
+import no.nav.finnkandidatapi.midlertidigutilgjengelig.MidlertidigUtilgjengeligService;
 import no.nav.finnkandidatapi.permittert.PermittertArbeidssoker;
 import no.nav.finnkandidatapi.permittert.PermittertArbeidssokerService;
 import no.nav.finnkandidatapi.tilgangskontroll.TilgangskontrollException;
@@ -32,6 +35,7 @@ public class KafkaRepublisher {
     private final KandidatRepository kandidatRepository;
     private final PermittertArbeidssokerService permittertArbeidssokerService;
     private final VedtakService vedtakService;
+    private final MidlertidigUtilgjengeligService midlertidigUtilgjengeligService;
     private final TilgangskontrollService tilgangskontrollService;
     private final KafkaRepublisherConfig config;
 
@@ -41,13 +45,14 @@ public class KafkaRepublisher {
             KandidatRepository kandidatRepository,
             PermittertArbeidssokerService permittertArbeidssokerService,
             VedtakService vedtakService,
-            TilgangskontrollService tilgangskontrollService,
+            MidlertidigUtilgjengeligService midlertidigUtilgjengeligService, TilgangskontrollService tilgangskontrollService,
             KafkaRepublisherConfig config
     ) {
         this.harTilretteleggingsbehovProducer = harTilretteleggingsbehovProducer;
         this.kandidatRepository = kandidatRepository;
         this.permittertArbeidssokerService = permittertArbeidssokerService;
         this.vedtakService = vedtakService;
+        this.midlertidigUtilgjengeligService = midlertidigUtilgjengeligService;
         this.tilgangskontrollService = tilgangskontrollService;
         this.config = config;
     }
@@ -58,6 +63,7 @@ public class KafkaRepublisher {
      * @return 200 OK hvis kandidater ble republisert.
      */
     @PostMapping("/internal/kafka/republish" )
+    //TODO: Denne må oppdateres med blant annet permitteringer før den kjøres.
     public ResponseEntity republiserAlleKandidater() {
         String ident = sjekkTilgangTilRepublisher();
 
@@ -81,6 +87,7 @@ public class KafkaRepublisher {
         Optional<HarTilretteleggingsbehov> harTilretteleggingsbehov = kandidatRepository.hentHarTilretteleggingsbehov(aktørId);
         Optional<PermittertArbeidssoker> permittertArbeidssoker = permittertArbeidssokerService.hentNyestePermitterteArbeidssoker(aktørId);
         Optional<Vedtak> vedtak = vedtakService.hentNyesteVedtakForAktør(aktørId);
+        Optional<MidlertidigUtilgjengelig> midlertidigUtilgjengelig = midlertidigUtilgjengeligService.hentMidlertidigUtilgjengelig(aktørId);
 
         if (harTilretteleggingsbehov.isEmpty() && permittertArbeidssoker.isEmpty() && vedtak.isEmpty()) {
             return ResponseEntity.notFound().build();
@@ -97,6 +104,9 @@ public class KafkaRepublisher {
         if (erPermittert) {
             behov.add(PermittertArbeidssoker.ER_PERMITTERT_KATEGORI);
         }
+
+        MidlertidigTilretteleggingsbehovProducer.finnMidlertidigUtilgjengeligFilter(midlertidigUtilgjengelig)
+                .ifPresent(behov::add);
 
         HarTilretteleggingsbehov behovMedPermittering = new HarTilretteleggingsbehov(aktørId, harBehov, behov);
         log.warn("Bruker med ident {} republiserer kandidat med aktørId {}.", ident, aktørId);

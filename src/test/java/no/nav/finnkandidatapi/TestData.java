@@ -8,6 +8,7 @@ import no.nav.finnkandidatapi.kandidat.Kandidat;
 import no.nav.finnkandidatapi.kandidat.KandidatDto;
 import no.nav.finnkandidatapi.kandidat.Veileder;
 import no.nav.finnkandidatapi.logging.LoggEvent;
+import no.nav.finnkandidatapi.midlertidigutilgjengelig.MidlertidigUtilgjengelig;
 import no.nav.finnkandidatapi.permittert.ArbeidssokerRegistrertDTO;
 import no.nav.finnkandidatapi.permittert.DinSituasjonSvarFraVeilarbReg;
 import no.nav.finnkandidatapi.permittert.PermittertArbeidssoker;
@@ -131,6 +132,24 @@ public class TestData {
                 .build();
     }
 
+    public static MidlertidigUtilgjengelig enMidlertidigUtilgjengelig(String aktørid) {
+        return MidlertidigUtilgjengelig.builder()
+                .aktørId(aktørid)
+                .fraDato(LocalDateTime.of(2120,4, 1, 0, 0))
+                .tilDato(LocalDateTime.of(2120,4, 15, 0, 0))
+                .registrertAvIdent("A100000")
+                .registrertAvNavn("Ola Nordmann")
+                .sistEndretAvIdent("B200000")
+                .sistEndretAvNavn("Kari Nordmann")
+                .build();
+    }
+
+    public static MidlertidigUtilgjengelig enMidlertidigUtilgjengeligMedBareNull() {
+        return MidlertidigUtilgjengelig.builder()
+                .aktørId("1000000011")
+                .build();
+    }
+
     public static KandidatDto enKandidatDto(Kandidat kandidat) {
         return KandidatDto.builder()
                 .fnr(kandidat.getFnr())
@@ -178,7 +197,15 @@ public class TestData {
     }
 
     public static Veileder enVeileder() {
-        return new Veileder("X123456");
+        return new Veileder("X123456", etFornavn() + " " + etEtternavn());
+    }
+
+    public static String etFornavn() {
+        return "Ola";
+    }
+
+    public static String etEtternavn() {
+        return "Nordmann";
     }
 
     public static String enNavIdent() {

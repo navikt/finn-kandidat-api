@@ -14,11 +14,10 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.Collections;
 import java.util.Map;
 
+import static no.nav.finnkandidatapi.TestData.*;
 import static no.nav.finnkandidatapi.tilgangskontroll.TokenUtils.ISSUER_ISSO;
 import static no.nav.finnkandidatapi.tilgangskontroll.TokenUtils.ISSUER_SELVBETJENING;
 import static no.nav.security.token.support.test.JwtTokenGenerator.*;
-import static no.nav.finnkandidatapi.TestData.enVeileder;
-import static no.nav.finnkandidatapi.TestData.etFnr;
 import static no.nav.security.oidc.test.support.JwtTokenGenerator.createSignedJWT;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
@@ -70,6 +69,9 @@ public class TokenUtilsTest {
     private void værInnloggetMedAzureAD(Veileder veileder) {
         JWTClaimsSet.Builder builder = new JWTClaimsSet.Builder();
         builder.claim("NAVident", veileder.getNavIdent());
+        builder.claim("given_name", etFornavn());
+        builder.claim("family_name", etEtternavn());
+
         String encodedToken = createSignedJWT(builder.build()).serialize();
         JwtToken jwtToken = new JwtToken(encodedToken);
         TokenValidationContext context = new TokenValidationContext(Map.of(ISSUER_ISSO, jwtToken));

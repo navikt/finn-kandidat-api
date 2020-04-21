@@ -1,14 +1,9 @@
 package no.nav.finnkandidatapi.midlertidigutilgjengelig;
 
-import no.nav.finnkandidatapi.kandidat.FinnKandidatException;
-import no.nav.finnkandidatapi.kandidat.NotFoundException;
 import no.nav.finnkandidatapi.kandidat.Veileder;
 import org.springframework.stereotype.Service;
 
-import javax.ws.rs.BadRequestException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.Optional;
 
 @Service

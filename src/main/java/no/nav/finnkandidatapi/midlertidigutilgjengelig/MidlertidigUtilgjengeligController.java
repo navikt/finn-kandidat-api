@@ -1,7 +1,5 @@
 package no.nav.finnkandidatapi.midlertidigutilgjengelig;
 
-import no.nav.finnkandidatapi.kandidat.FinnKandidatException;
-import no.nav.finnkandidatapi.kandidat.NotFoundException;
 import no.nav.finnkandidatapi.kandidat.Veileder;
 import no.nav.finnkandidatapi.tilgangskontroll.TilgangskontrollService;
 import no.nav.security.token.support.core.api.Protected;
@@ -9,7 +7,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.ws.rs.BadRequestException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;

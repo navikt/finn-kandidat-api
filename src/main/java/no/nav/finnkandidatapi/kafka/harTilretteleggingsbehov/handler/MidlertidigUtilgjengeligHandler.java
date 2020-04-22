@@ -25,17 +25,37 @@ public class MidlertidigUtilgjengeligHandler {
 
     @EventListener
     public void midlertidigUtilgjengeligOpprettet(MidlertidigUtilgjengeligOpprettet midlertidigUtilgjengeligOpprettet) {
+        MidlertidigUtilgjengelig midlertidigUtilgjengelig = midlertidigUtilgjengeligOpprettet.getMidlertidigUtilgjengelig();
+        if (midlertidigUtilgjengelig == null) {
+            throw new RuntimeException("midlertidigUtilgjengelig kan ikke være null for event MidlertidigUtilgjengeligOpprettet");
+        }
+        log.info("MidlertidigUtilgjengeligOpprettet event mottatt for aktørid {}, endret av: {}",
+                midlertidigUtilgjengelig.getAktørId(), midlertidigUtilgjengelig.getSistEndretAvIdent());
+
         mottattMidlertidigUtilgjengeligEvent(midlertidigUtilgjengeligOpprettet.getMidlertidigUtilgjengelig());
     }
 
     @EventListener
     public void midlertidigUtilgjengeligEndret(MidlertidigUtilgjengeligEndret midlertidigUtilgjengeligEndret) {
+        MidlertidigUtilgjengelig midlertidigUtilgjengelig = midlertidigUtilgjengeligEndret.getMidlertidigUtilgjengelig();
+        if (midlertidigUtilgjengelig == null) {
+            throw new RuntimeException("midlertidigUtilgjengelig kan ikke være null for event MidlertidigUtilgjengeligEndret");
+        }
+        log.info("MidlertidigUtilgjengeligEndret event mottatt for aktørid {}, endret av: {}",
+                midlertidigUtilgjengelig.getAktørId(), midlertidigUtilgjengelig.getSistEndretAvIdent());
+
         mottattMidlertidigUtilgjengeligEvent(midlertidigUtilgjengeligEndret.getMidlertidigUtilgjengelig());
     }
 
     @EventListener
     public void midlertidigUtilgjengeligSlettet(MidlertidigUtilgjengeligSlettet midlertidigUtilgjengeligSlettet) {
         MidlertidigUtilgjengelig midlertidigUtilgjengelig = midlertidigUtilgjengeligSlettet.getMidlertidigUtilgjengelig();
+        if (midlertidigUtilgjengelig == null) {
+            throw new RuntimeException("midlertidigUtilgjengelig kan ikke være null for event MidlertidigUtilgjengeligSlettet");
+        }
+        log.info("MidlertidigUtilgjengeligSlettet event mottatt for aktørid {}, endret av: {}",
+                midlertidigUtilgjengelig.getAktørId(), midlertidigUtilgjengelig.getSistEndretAvIdent());
+
         midlertidigUtilgjengelig.setTilDato(null);
         midlertidigUtilgjengelig.setFraDato(null);
         mottattMidlertidigUtilgjengeligEvent(midlertidigUtilgjengeligSlettet.getMidlertidigUtilgjengelig());

@@ -2,6 +2,7 @@ package no.nav.finnkandidatapi.kafka.republisher;
 
 import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.HarTilretteleggingsbehov;
 import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.HarTilretteleggingsbehovProducer;
+import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.SammenstillBehov;
 import no.nav.finnkandidatapi.kafka.midlertidigutilgjengelig.MidlertidigTilretteleggingsbehovProducer;
 import no.nav.finnkandidatapi.kandidat.Fysisk;
 import no.nav.finnkandidatapi.kandidat.KandidatRepository;
@@ -56,9 +57,12 @@ KafkaRepublisherTest {
     @Mock
     private MidlertidigUtilgjengeligService midlertidigUtilgjengeligService;
 
+    private SammenstillBehov sammenstillBehov;
+
     @Before
     public void setUp() {
-        this.kafkaRepublisher = new KafkaRepublisher(producer, repository, permittertArbeidssokerService, vedtakService, midlertidigUtilgjengeligService, tilgangskontrollService, config);
+        this.sammenstillBehov = new SammenstillBehov(repository, permittertArbeidssokerService, vedtakService, midlertidigUtilgjengeligService);
+        this.kafkaRepublisher = new KafkaRepublisher(producer, repository, tilgangskontrollService, sammenstillBehov, config);
     }
 
     @Test(expected = TilgangskontrollException.class)

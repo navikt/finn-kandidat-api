@@ -47,9 +47,4 @@ public class MidlertidigTilretteleggingsbehovProducerTest {
         Optional<String> filter = MidlertidigTilretteleggingsbehovProducer.finnMidlertidigUtilgjengeligFilter(Optional.of(tomTildato));
         assertThat(filter).isEmpty();
     }
-
-
-
-
-
 }

@@ -2,7 +2,7 @@ package no.nav.finnkandidatapi.midlertidigutilgjengelig;
 
 import no.nav.finnkandidatapi.kandidat.Veileder;
 import no.nav.finnkandidatapi.tilgangskontroll.TilgangskontrollService;
-import no.nav.security.token.support.core.api.Protected;
+import no.nav.security.token.support.core.api.ProtectedWithClaims;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,7 +12,9 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Optional;
 
-@Protected
+import static no.nav.finnkandidatapi.tilgangskontroll.TokenUtils.ISSUER_ISSO;
+
+@ProtectedWithClaims(issuer = ISSUER_ISSO)
 @RestController
 @RequestMapping("/midlertidig-utilgjengelig")
 public class MidlertidigUtilgjengeligController {

@@ -74,7 +74,7 @@ public class MidlertidigUtilgjengeligHandlerTest {
     }
 
     @Test
-    public void legg_inn_event() {
+    public void legg_inn_og_oppdater_event() {
 
         MidlertidigUtilgjengelig midlertidigUtilgjengelig = TestData.enMidlertidigUtilgjengelig(aktørid);
         midlertidigUtilgjengelig.setTilDato(LocalDateTime.now().plusDays(1));
@@ -84,10 +84,7 @@ public class MidlertidigUtilgjengeligHandlerTest {
         midlertidigUtilgjengeligHandler.midlertidigUtilgjengeligEndret(
                 new MidlertidigUtilgjengeligEndret(midlertidigUtilgjengelig)
         );
-        midlertidigUtilgjengeligHandler.midlertidigUtilgjengeligSlettet(
-                new MidlertidigUtilgjengeligSlettet(midlertidigUtilgjengelig)
-        );
-        verify(harTilretteleggingsbehovProducer, times(3)).sendKafkamelding(
+        verify(harTilretteleggingsbehovProducer, times(2)).sendKafkamelding(
                 new HarTilretteleggingsbehov(
                         aktørid,
                         true,
@@ -98,6 +95,29 @@ public class MidlertidigUtilgjengeligHandlerTest {
                                 "utfordringerMedNorsk",
                                 PermittertArbeidssoker.ER_PERMITTERT_KATEGORI,
                                 MidlertidigUtilgjengelig.MIDLERTIDIG_UTILGJENGELIG_1_UKE
+                        ))
+        );
+    }
+
+    @Test
+    public void legg_inn_event_slettet() {
+
+        MidlertidigUtilgjengelig midlertidigUtilgjengelig = TestData.enMidlertidigUtilgjengelig(aktørid);
+        midlertidigUtilgjengelig.setTilDato(LocalDateTime.now().plusDays(1));
+
+        midlertidigUtilgjengeligHandler.midlertidigUtilgjengeligSlettet(
+                new MidlertidigUtilgjengeligSlettet(midlertidigUtilgjengelig)
+        );
+        verify(harTilretteleggingsbehovProducer, times(1)).sendKafkamelding(
+                new HarTilretteleggingsbehov(
+                        aktørid,
+                        true,
+                        Arrays.asList(
+                                "arbeidstid",
+                                "fysisk",
+                                "arbeidshverdagen",
+                                "utfordringerMedNorsk",
+                                PermittertArbeidssoker.ER_PERMITTERT_KATEGORI
                         ))
         );
     }

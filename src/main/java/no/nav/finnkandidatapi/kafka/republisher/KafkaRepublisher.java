@@ -4,12 +4,16 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.HarTilretteleggingsbehov;
 import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.HarTilretteleggingsbehovProducer;
 import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.SammenstillBehov;
+import no.nav.finnkandidatapi.kandidat.Brukertype;
 import no.nav.finnkandidatapi.kandidat.KandidatRepository;
+import no.nav.finnkandidatapi.midlertidigutilgjengelig.MidlertidigUtilgjengelig;
+import no.nav.finnkandidatapi.midlertidigutilgjengelig.MidlertidigUtilgjengeligService;
 import no.nav.finnkandidatapi.tilgangskontroll.TilgangskontrollException;
 import no.nav.finnkandidatapi.tilgangskontroll.TilgangskontrollService;
 import no.nav.security.token.support.core.api.Protected;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,6 +28,7 @@ import java.util.List;
 public class KafkaRepublisher {
     private final HarTilretteleggingsbehovProducer harTilretteleggingsbehovProducer;
     private final KandidatRepository kandidatRepository;
+    private final MidlertidigUtilgjengeligService midlertidigUtilgjengeligService;
     private final SammenstillBehov sammenstillBehov;
     private final TilgangskontrollService tilgangskontrollService;
     private final KafkaRepublisherConfig config;
@@ -32,6 +37,7 @@ public class KafkaRepublisher {
     public KafkaRepublisher(
             HarTilretteleggingsbehovProducer harTilretteleggingsbehovProducer,
             KandidatRepository kandidatRepository,
+            MidlertidigUtilgjengeligService midlertidigUtilgjengeligService,
             TilgangskontrollService tilgangskontrollService,
             SammenstillBehov sammenstillBehov,
             KafkaRepublisherConfig config
@@ -39,8 +45,22 @@ public class KafkaRepublisher {
         this.harTilretteleggingsbehovProducer = harTilretteleggingsbehovProducer;
         this.kandidatRepository = kandidatRepository;
         this.sammenstillBehov = sammenstillBehov;
+        this.midlertidigUtilgjengeligService = midlertidigUtilgjengeligService;
         this.tilgangskontrollService = tilgangskontrollService;
         this.config = config;
+    }
+    /**
+     * Republiser alle midlertidig tilgjengelige hver natt, for å oppdatere med riktig filter i søket.
+     */
+    @Scheduled(cron="0 0 1 * * *") // Klokken 01.00 hver natt
+    public void oppdaterMidlertidigUtilgjengelig() {
+        List<MidlertidigUtilgjengelig> alleMidlertidigUtilgjengelig = midlertidigUtilgjengeligService.hentAlleMidlertidigUtilgjengelig();
+        log.warn("Scheduler republiserer alle {} midlertidig utilgjengelig!", Brukertype.SYSTEM, alleMidlertidigUtilgjengelig.size());
+        alleMidlertidigUtilgjengelig.forEach(
+                midlertidigUtilgjengelig -> harTilretteleggingsbehovProducer.sendKafkamelding(
+                        sammenstillBehov.lagbehov(midlertidigUtilgjengelig)
+                )
+        );
     }
 
     /**

@@ -35,6 +35,9 @@ public class MidlertidigUtilgjengeligHandler {
 
     @EventListener
     public void midlertidigUtilgjengeligSlettet(MidlertidigUtilgjengeligSlettet midlertidigUtilgjengeligSlettet) {
+        MidlertidigUtilgjengelig midlertidigUtilgjengelig = midlertidigUtilgjengeligSlettet.getMidlertidigUtilgjengelig();
+        midlertidigUtilgjengelig.setTilDato(null);
+        midlertidigUtilgjengelig.setFraDato(null);
         mottattMidlertidigUtilgjengeligEvent(midlertidigUtilgjengeligSlettet.getMidlertidigUtilgjengelig());
     }
 

@@ -1,5 +1,6 @@
 package no.nav.finnkandidatapi.midlertidigutilgjengelig;
 
+import lombok.extern.slf4j.Slf4j;
 import no.nav.finnkandidatapi.kandidat.Veileder;
 import no.nav.finnkandidatapi.tilgangskontroll.TilgangskontrollService;
 import no.nav.security.token.support.core.api.Protected;
@@ -15,6 +16,7 @@ import java.util.Optional;
 @Protected
 @RestController
 @RequestMapping("/midlertidig-utilgjengelig")
+@Slf4j
 public class MidlertidigUtilgjengeligController {
     private final MidlertidigUtilgjengeligService service;
     private final TilgangskontrollService tilgangskontroll;
@@ -40,12 +42,14 @@ public class MidlertidigUtilgjengeligController {
         Optional<MidlertidigUtilgjengelig> midlertidigUtilgjengelig = service.hentMidlertidigUtilgjengelig(aktørId);
 
         return midlertidigUtilgjengelig.isEmpty() ?
-             ResponseEntity.notFound().build() : ResponseEntity.ok(midlertidigUtilgjengelig.get());
+                ResponseEntity.notFound().build() : ResponseEntity.ok(midlertidigUtilgjengelig.get());
     }
 
     @PostMapping
     public ResponseEntity<?> postMidlertidigUtilgjengelig(@RequestBody MidlertidigUtilgjengeligDto midlertidigUtilgjengelig) {
         Veileder innloggetVeileder = tilgangskontroll.hentInnloggetVeileder();
+
+        log.info("Midlertidig utilgjengelig med aktør {} opprettes av {}", midlertidigUtilgjengelig.getAktørId(), innloggetVeileder);
 
         if (datoErTilbakeITid(midlertidigUtilgjengelig.getTilDato())) {
             return ResponseEntity.badRequest().body("Du kan ikke sette en kandidat som midlertidig utilgjengelig tilbake i tid");
@@ -67,6 +71,8 @@ public class MidlertidigUtilgjengeligController {
     public ResponseEntity<?> putMidlertidigUtilgjengelig(@PathVariable("aktørId") String aktørId, @RequestBody MidlertidigUtilgjengeligDto midlertidigUtilgjengeligDto) {
         Veileder innloggetVeileder = tilgangskontroll.hentInnloggetVeileder();
 
+        log.info("Midlertidig utilgjengelig med aktør {} oppdateres av {}", aktørId, innloggetVeileder);
+
         if (datoErTilbakeITid(midlertidigUtilgjengeligDto.getTilDato())) {
             return ResponseEntity.badRequest().body("Du kan ikke sette en kandidat som midlertidig utilgjengelig tilbake i tid");
         }
@@ -83,9 +89,11 @@ public class MidlertidigUtilgjengeligController {
 
     @DeleteMapping("/{aktørId}")
     public ResponseEntity<MidlertidigUtilgjengelig> deleteMidlertidigUtilgjenglig(@PathVariable("aktørId") String aktørId) {
-        tilgangskontroll.hentInnloggetVeileder();
 
-        Integer antallOppdaterteRader = service.slettMidlertidigUtilgjengelig(aktørId);
+        Veileder innloggetVeileder = tilgangskontroll.hentInnloggetVeileder();
+        log.info("Midlertidig utilgjengelig med aktør {} slettes av {}", aktørId, innloggetVeileder);
+
+        Integer antallOppdaterteRader = service.slettMidlertidigUtilgjengelig(aktørId, innloggetVeileder);
         if (antallOppdaterteRader == 0) {
             return ResponseEntity.notFound().build();
         }

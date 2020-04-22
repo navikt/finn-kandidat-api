@@ -83,9 +83,9 @@ public class MidlertidigUtilgjengeligRepository {
 
     public Integer endreMidlertidigUtilgjengelig(String aktørId, LocalDateTime nyDato, Veileder innloggetVeileder) {
         return jdbcTemplate.update(
-                "UPDATE "+ MIDLERTIDIG_UTILGJENGELIG_TABELL +
-                " SET til_dato = ?, sist_endret_av_ident = ?, sist_endret_av_navn = ?" +
-                " WHERE aktor_id = ?",
+                "UPDATE " + MIDLERTIDIG_UTILGJENGELIG_TABELL +
+                        " SET til_dato = ?, sist_endret_av_ident = ?, sist_endret_av_navn = ?" +
+                        " WHERE aktor_id = ?",
                 nyDato,
                 innloggetVeileder.getNavIdent(),
                 innloggetVeileder.getNavn(),
@@ -94,5 +94,16 @@ public class MidlertidigUtilgjengeligRepository {
 
     public Integer slettMidlertidigUtilgjengelig(String aktørId) {
         return jdbcTemplate.update("DELETE FROM " + MIDLERTIDIG_UTILGJENGELIG_TABELL + " WHERE aktor_id = ?", new Object[]{aktørId});
+    }
+
+    public List<MidlertidigUtilgjengelig> hentAlleMidlertidigUtilgjengelig() {
+        try {
+            return jdbcTemplate.query(
+                    "SELECT * FROM " + MIDLERTIDIG_UTILGJENGELIG_TABELL,
+                    midlertidigUtilgjengeligMapper
+            );
+        } catch (EmptyResultDataAccessException e) {
+            return Collections.emptyList();
+        }
     }
 }

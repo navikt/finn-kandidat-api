@@ -75,7 +75,7 @@ public class MidlertidigUtilgjengeligServiceTest {
         when(repository.slettMidlertidigUtilgjengelig(midlertidigUtilgjengelig.getAktørId()))
                 .thenReturn(1);
 
-        service.slettMidlertidigUtilgjengelig(midlertidigUtilgjengelig.getAktørId());
+        service.slettMidlertidigUtilgjengelig(midlertidigUtilgjengelig.getAktørId(), enVeileder);
 
         verify(repository, times(1)).slettMidlertidigUtilgjengelig(midlertidigUtilgjengelig.getAktørId());
         verify(applicationEventPublisher, times(1)).publishEvent(any(MidlertidigUtilgjengeligSlettet.class));

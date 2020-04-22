@@ -1,8 +1,5 @@
 package no.nav.finnkandidatapi.midlertidigutilgjengelig;
 
-import lombok.val;
-import org.assertj.core.api.Assertions;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +11,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import static no.nav.finnkandidatapi.TestData.*;
+import static no.nav.finnkandidatapi.TestData.enMidlertidigUtilgjengelig;
+import static no.nav.finnkandidatapi.TestData.enMidlertidigUtilgjengeligMedBareNull;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
@@ -29,7 +27,7 @@ public class MidlertidigUtilgjengeligRepositoryTest {
     public void skal_kunne_lagre_og_hente_midlertidig_utilgjengelig() {
         MidlertidigUtilgjengelig behovTilLagring = enMidlertidigUtilgjengelig("11100000000");
 
-        String[] skalVæreNull = { "sistEndretAvIdent", "sistEndretAvNavn"};
+        String[] skalVæreNull = {"sistEndretAvIdent", "sistEndretAvNavn"};
 
         Integer lagretId = repository.lagreMidlertidigUtilgjengelig(behovTilLagring);
         MidlertidigUtilgjengelig uthentetBehov = repository.hentMidlertidigUtilgjengelig(behovTilLagring.getAktørId()).get();
@@ -41,7 +39,7 @@ public class MidlertidigUtilgjengeligRepositoryTest {
     @Test
     public void skal_kunne_lagre_og_hente_ut_med_bare_obligatoriske_felt() {
         MidlertidigUtilgjengelig behovTilLagring = enMidlertidigUtilgjengeligMedBareNull();
-        behovTilLagring.setFraDato(LocalDateTime.of(2020, 1, 1 , 0, 0));
+        behovTilLagring.setFraDato(LocalDateTime.of(2020, 1, 1, 0, 0));
 
         repository.lagreMidlertidigUtilgjengelig(behovTilLagring);
         MidlertidigUtilgjengelig uthentetBehov = repository.hentMidlertidigUtilgjengelig(behovTilLagring.getAktørId()).get();
@@ -74,7 +72,7 @@ public class MidlertidigUtilgjengeligRepositoryTest {
         var lagret2 = repository.hentMidlertidigUtilgjengelig(midlertidigUtilgjengelig2.getAktørId());
         var lagret3 = repository.hentMidlertidigUtilgjengelig(midlertidigUtilgjengelig3.getAktørId());
 
-        String[] skalVæreNull = { "sistEndretAvIdent", "sistEndretAvNavn"};
+        String[] skalVæreNull = {"sistEndretAvIdent", "sistEndretAvNavn"};
 
         assertThat(lagret1).isNotEmpty().get()
                 .isEqualToIgnoringGivenFields(midlertidigUtilgjengelig1, skalVæreNull)
@@ -104,6 +102,21 @@ public class MidlertidigUtilgjengeligRepositoryTest {
 
         Integer id = repository.slettMidlertidigUtilgjengelig(uregistrertAktørId);
         assertThat(id).isEqualTo(0);
+    }
+
+    @Test
+    public void hentAlleMidlertidigUtilgjengelig__skal_returnere_alle_midlertidig_utilgjengelig() {
+        MidlertidigUtilgjengelig midlertidigUtilgjengelig1 = enMidlertidigUtilgjengelig("1000000000300");
+        MidlertidigUtilgjengelig midlertidigUtilgjengelig2 = enMidlertidigUtilgjengelig("1000000000301");
+        repository.lagreMidlertidigUtilgjengelig(midlertidigUtilgjengelig1);
+        repository.lagreMidlertidigUtilgjengelig(midlertidigUtilgjengelig2);
+
+        List<MidlertidigUtilgjengelig> alleMidlertidigUtilgjengelig = repository.hentAlleMidlertidigUtilgjengelig();
+
+        String[] skalVæreEndret = {"sistEndretAvIdent", "sistEndretAvNavn"};
+        assertThat(alleMidlertidigUtilgjengelig).hasSize(2);
+        assertThat(alleMidlertidigUtilgjengelig.get(0)).isEqualToIgnoringGivenFields(midlertidigUtilgjengelig1, skalVæreEndret);
+        assertThat(alleMidlertidigUtilgjengelig.get(1)).isEqualToIgnoringGivenFields(midlertidigUtilgjengelig2, skalVæreEndret);
     }
 
 }

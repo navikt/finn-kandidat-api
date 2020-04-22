@@ -70,10 +70,10 @@ public class MidlertidigUtilgjengeligControllerTest {
     public void deleteMidlertidigUtilgjengelig__skal_kunne_slette_midlertidig_utilgjengelig() {
         MidlertidigUtilgjengelig midlertidigUtilgjengelig = TestData.enMidlertidigUtilgjengelig("2222232");
 
-        when(midlertidigUtilgjengeligService.slettMidlertidigUtilgjengelig(midlertidigUtilgjengelig.getAktørId())).thenReturn(1);
+        when(midlertidigUtilgjengeligService.slettMidlertidigUtilgjengelig(midlertidigUtilgjengelig.getAktørId(), enVeileder)).thenReturn(1);
         var response = controller.deleteMidlertidigUtilgjenglig(midlertidigUtilgjengelig.getAktørId());
 
-        verify(midlertidigUtilgjengeligService, times(1)).slettMidlertidigUtilgjengelig(midlertidigUtilgjengelig.getAktørId());
+        verify(midlertidigUtilgjengeligService, times(1)).slettMidlertidigUtilgjengelig(midlertidigUtilgjengelig.getAktørId(), enVeileder);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 

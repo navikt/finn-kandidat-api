@@ -8,6 +8,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -22,6 +23,10 @@ public class MidlertidigUtilgjengeligService {
 
     public Optional<MidlertidigUtilgjengelig> hentMidlertidigUtilgjengelig(String aktørId) {
         return repository.hentMidlertidigUtilgjengelig(aktørId);
+    }
+
+    public List<MidlertidigUtilgjengelig> hentAlleMidlertidigUtilgjengelig() {
+        return repository.hentAlleMidlertidigUtilgjengelig();
     }
 
     public boolean midlertidigTilgjengeligEksisterer(String aktørId) {
@@ -67,12 +72,16 @@ public class MidlertidigUtilgjengeligService {
         return response;
     }
 
-    public Integer slettMidlertidigUtilgjengelig(String aktørId) {
-        var response =  repository.slettMidlertidigUtilgjengelig(
+    public Integer slettMidlertidigUtilgjengelig(String aktørId, Veileder innloggetVeileder) {
+        var response = repository.slettMidlertidigUtilgjengelig(
                 aktørId
         );
         applicationEventPublisher.publishEvent(
-                new MidlertidigUtilgjengeligSlettet(MidlertidigUtilgjengelig.builder().aktørId(aktørId).build())
+                new MidlertidigUtilgjengeligSlettet(MidlertidigUtilgjengelig.builder()
+                        .aktørId(aktørId)
+                        .sistEndretAvIdent(innloggetVeileder.getNavIdent())
+                        .sistEndretAvNavn(innloggetVeileder.getNavn())
+                        .build())
         );
 
         return response;

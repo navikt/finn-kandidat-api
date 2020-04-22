@@ -3,10 +3,10 @@ package no.nav.finnkandidatapi.kafka.republisher;
 import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.HarTilretteleggingsbehov;
 import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.HarTilretteleggingsbehovProducer;
 import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.SammenstillBehov;
-import no.nav.finnkandidatapi.kafka.midlertidigutilgjengelig.MidlertidigTilretteleggingsbehovProducer;
 import no.nav.finnkandidatapi.kandidat.Fysisk;
 import no.nav.finnkandidatapi.kandidat.KandidatRepository;
 import no.nav.finnkandidatapi.kandidat.Veileder;
+import no.nav.finnkandidatapi.midlertidigutilgjengelig.MidlertidigUtilgjengelig;
 import no.nav.finnkandidatapi.midlertidigutilgjengelig.MidlertidigUtilgjengeligService;
 import no.nav.finnkandidatapi.permittert.PermittertArbeidssoker;
 import no.nav.finnkandidatapi.permittert.PermittertArbeidssokerService;
@@ -203,7 +203,7 @@ KafkaRepublisherTest {
         HarTilretteleggingsbehov forventetBehov = new HarTilretteleggingsbehov(
                 aktørId,
                 true,
-                List.of(Fysisk.behovskategori, MidlertidigTilretteleggingsbehovProducer.MIDLERTIDIG_UTILGJENGELIG)
+                List.of(Fysisk.behovskategori, MidlertidigUtilgjengelig.MIDLERTIDIG_UTILGJENGELIG)
         );
         verify(producer).sendKafkamelding(forventetBehov);
     }

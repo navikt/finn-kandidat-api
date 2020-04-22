@@ -1,6 +1,5 @@
 package no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov;
 
-import no.nav.finnkandidatapi.kafka.midlertidigutilgjengelig.MidlertidigTilretteleggingsbehovProducer;
 import no.nav.finnkandidatapi.kandidat.KandidatRepository;
 import no.nav.finnkandidatapi.midlertidigutilgjengelig.MidlertidigUtilgjengelig;
 import no.nav.finnkandidatapi.midlertidigutilgjengelig.MidlertidigUtilgjengeligService;
@@ -60,7 +59,7 @@ public class SammenstillBehov {
                 ? Optional.of(PermittertArbeidssoker.ER_PERMITTERT_KATEGORI)
                 : Optional.empty();
 
-        Optional<String> midlertidigUtilgjengeligFilter = MidlertidigTilretteleggingsbehovProducer.finnMidlertidigUtilgjengeligFilter(midlertidigUtilgjengelig);
+        Optional<String> midlertidigUtilgjengeligFilter = MidlertidigUtilgjengelig.finnMidlertidigUtilgjengeligFilter(midlertidigUtilgjengelig);
 
         var behov = concatToList(
                 tilretteleggingsbehovFilter.stream(),

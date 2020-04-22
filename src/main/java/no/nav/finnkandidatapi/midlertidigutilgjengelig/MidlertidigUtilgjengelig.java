@@ -5,6 +5,7 @@ import lombok.Data;
 import no.nav.finnkandidatapi.kandidat.Veileder;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Data
 @Builder
@@ -17,6 +18,9 @@ public class MidlertidigUtilgjengelig {
     private String sistEndretAvIdent;
     private String sistEndretAvNavn;
 
+    public static final String MIDLERTIDIG_UTILGJENGELIG_1_UKE = "midlertidigutilgjengelig1uke";
+    public static final String MIDLERTIDIG_UTILGJENGELIG = "midlertidigutilgjengelig";
+
     public static MidlertidigUtilgjengelig opprettMidlertidigUtilgjengelig(MidlertidigUtilgjengeligDto dto, LocalDateTime fraDato, Veileder veileder) {
         return MidlertidigUtilgjengelig.builder()
                 .aktørId(dto.getAktørId())
@@ -25,5 +29,22 @@ public class MidlertidigUtilgjengelig {
                 .registrertAvIdent(veileder.getNavIdent())
                 .registrertAvNavn(veileder.getNavn())
                 .build();
+    }
+
+    public static Optional<String> finnMidlertidigUtilgjengeligFilter(Optional<MidlertidigUtilgjengelig> midlertidigUtilgjengelig) {
+        if (midlertidigUtilgjengelig.isEmpty()) {
+            return Optional.empty();
+        }
+        LocalDateTime tilDato = midlertidigUtilgjengelig.get().getTilDato();
+        LocalDateTime nå = LocalDateTime.now();
+        if (tilDato == null) {
+            return Optional.empty();
+        } else if (tilDato.isBefore(nå)) {
+            return Optional.empty();
+        } else if (tilDato.isBefore(nå.plusWeeks(1))) {
+            return Optional.of(MIDLERTIDIG_UTILGJENGELIG_1_UKE);
+        } else {
+            return Optional.of(MIDLERTIDIG_UTILGJENGELIG);
+        }
     }
 }

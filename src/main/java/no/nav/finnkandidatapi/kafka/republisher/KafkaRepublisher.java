@@ -44,7 +44,7 @@ public class KafkaRepublisher {
     }
 
     /**
-     * Republiser alle kandidater til Kafka. Brukes bare i spesielle tilfeller.
+     * Republiser alle kandidater som har tilretteleggingsbehov til Kafka. Brukes bare i spesielle tilfeller.
      *
      * @return 200 OK hvis kandidater ble republisert.
      */

@@ -22,7 +22,7 @@ public class MidlertidigUtilgjengeligTest {
         MidlertidigUtilgjengelig omToDager = MidlertidigUtilgjengelig.builder()
                 .tilDato(LocalDateTime.now().plusDays(2)).build();
         Optional<String> filter = MidlertidigUtilgjengelig.finnMidlertidigUtilgjengeligFilter(Optional.of(omToDager));
-        assertThat(filter).isNotEmpty().get().isEqualTo(MidlertidigUtilgjengelig.MIDLERTIDIG_UTILGJENGELIG_1_UKE);
+        assertThat(filter).isNotEmpty().get().isEqualTo(MidlertidigUtilgjengelig.TILGJENGELIG_INNEN_1_UKE);
     }
 
     @Test

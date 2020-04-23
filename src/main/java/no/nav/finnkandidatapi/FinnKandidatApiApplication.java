@@ -10,7 +10,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 		"springfox.documentation.swagger.web.ApiResourceController",
 		"org.springframework"
 })
-@EnableScheduling
 public class FinnKandidatApiApplication {
 
 	public static void main(String[] args) {

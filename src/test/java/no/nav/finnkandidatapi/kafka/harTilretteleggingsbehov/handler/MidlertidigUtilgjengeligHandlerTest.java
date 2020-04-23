@@ -94,7 +94,7 @@ public class MidlertidigUtilgjengeligHandlerTest {
                                 "arbeidshverdagen",
                                 "utfordringerMedNorsk",
                                 PermittertArbeidssoker.ER_PERMITTERT_KATEGORI,
-                                MidlertidigUtilgjengelig.MIDLERTIDIG_UTILGJENGELIG_1_UKE
+                                MidlertidigUtilgjengelig.TILGJENGELIG_INNEN_1_UKE
                         ))
         );
     }

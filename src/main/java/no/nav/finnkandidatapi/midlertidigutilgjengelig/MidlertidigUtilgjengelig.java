@@ -18,7 +18,7 @@ public class MidlertidigUtilgjengelig {
     private String sistEndretAvIdent;
     private String sistEndretAvNavn;
 
-    public static final String MIDLERTIDIG_UTILGJENGELIG_1_UKE = "midlertidigutilgjengelig1uke";
+    public static final String TILGJENGELIG_INNEN_1_UKE = "tilgjengeliginnen1uke";
     public static final String MIDLERTIDIG_UTILGJENGELIG = "midlertidigutilgjengelig";
 
     public static MidlertidigUtilgjengelig opprettMidlertidigUtilgjengelig(MidlertidigUtilgjengeligDto dto, LocalDateTime fraDato, Veileder veileder) {
@@ -42,7 +42,7 @@ public class MidlertidigUtilgjengelig {
         } else if (tilDato.isBefore(nå)) {
             return Optional.empty();
         } else if (tilDato.isBefore(nå.plusWeeks(1))) {
-            return Optional.of(MIDLERTIDIG_UTILGJENGELIG_1_UKE);
+            return Optional.of(TILGJENGELIG_INNEN_1_UKE);
         } else {
             return Optional.of(MIDLERTIDIG_UTILGJENGELIG);
         }

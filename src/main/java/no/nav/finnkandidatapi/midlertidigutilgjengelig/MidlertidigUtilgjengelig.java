@@ -39,9 +39,9 @@ public class MidlertidigUtilgjengelig {
         LocalDateTime nå = LocalDateTime.now();
         if (tilDato == null) {
             return Optional.empty();
-        } else if (tilDato.isBefore(nå)) {
+        } else if (nå.toLocalDate().isAfter(tilDato.toLocalDate())) {
             return Optional.empty();
-        } else if (tilDato.isBefore(nå.plusWeeks(1))) {
+        } else if (nå.toLocalDate().isAfter(tilDato.toLocalDate().minusWeeks(1))) {
             return Optional.of(TILGJENGELIG_INNEN_1_UKE);
         } else {
             return Optional.of(MIDLERTIDIG_UTILGJENGELIG);

@@ -103,20 +103,4 @@ public class MidlertidigUtilgjengeligRepositoryTest {
         Integer id = repository.slettMidlertidigUtilgjengelig(uregistrertAktørId);
         assertThat(id).isEqualTo(0);
     }
-
-    @Test
-    public void hentAlleMidlertidigUtilgjengelig__skal_returnere_alle_midlertidig_utilgjengelig() {
-        MidlertidigUtilgjengelig midlertidigUtilgjengelig1 = enMidlertidigUtilgjengelig("1000000000300");
-        MidlertidigUtilgjengelig midlertidigUtilgjengelig2 = enMidlertidigUtilgjengelig("1000000000301");
-        repository.lagreMidlertidigUtilgjengelig(midlertidigUtilgjengelig1);
-        repository.lagreMidlertidigUtilgjengelig(midlertidigUtilgjengelig2);
-
-        List<MidlertidigUtilgjengelig> alleMidlertidigUtilgjengelig = repository.hentAlleMidlertidigUtilgjengelig();
-
-        String[] skalVæreEndret = {"sistEndretAvIdent", "sistEndretAvNavn"};
-        assertThat(alleMidlertidigUtilgjengelig).hasSize(2);
-        assertThat(alleMidlertidigUtilgjengelig.get(0)).isEqualToIgnoringGivenFields(midlertidigUtilgjengelig1, skalVæreEndret);
-        assertThat(alleMidlertidigUtilgjengelig.get(1)).isEqualToIgnoringGivenFields(midlertidigUtilgjengelig2, skalVæreEndret);
-    }
-
 }

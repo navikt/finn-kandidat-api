@@ -19,7 +19,6 @@ Vi bruker `h2` som database under utvikling. For å se, endre og slette kandidat
 JDBC URL: jdbc:h2:mem:testdb
 ```
 
-
 # Henvendelser
 
 ## For Nav-ansatte

@@ -61,7 +61,7 @@ public class MidlertidigUtilgjengeligController {
     public ResponseEntity<?> postMidlertidigUtilgjengelig(@RequestBody MidlertidigUtilgjengeligDto midlertidigUtilgjengeligDto) {
         Veileder innloggetVeileder = tilgangskontroll.hentInnloggetVeileder();
 
-        log.info("Midlertidig utilgjengelig med aktør {} opprettes av {}", midlertidigUtilgjengelig.getAktørId(), innloggetVeileder);
+        log.info("Midlertidig utilgjengelig med aktør {} opprettes av {}", midlertidigUtilgjengeligDto.getAktørId(), innloggetVeileder);
 
         if (datoErTilbakeITid(midlertidigUtilgjengeligDto.getTilDato())) {
             return ResponseEntity.badRequest().body(DATO_TILBAKE_I_TID_FEIL);

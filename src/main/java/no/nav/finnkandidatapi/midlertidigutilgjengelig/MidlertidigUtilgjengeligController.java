@@ -3,7 +3,7 @@ package no.nav.finnkandidatapi.midlertidigutilgjengelig;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.finnkandidatapi.kandidat.Veileder;
 import no.nav.finnkandidatapi.tilgangskontroll.TilgangskontrollService;
-import no.nav.security.token.support.core.api.Protected;
+import no.nav.security.token.support.core.api.ProtectedWithClaims;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,13 +13,18 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Optional;
 
-@Protected
+import static no.nav.finnkandidatapi.tilgangskontroll.TokenUtils.ISSUER_ISSO;
+
+@ProtectedWithClaims(issuer = ISSUER_ISSO)
 @RestController
 @RequestMapping("/midlertidig-utilgjengelig")
 @Slf4j
 public class MidlertidigUtilgjengeligController {
     private final MidlertidigUtilgjengeligService service;
     private final TilgangskontrollService tilgangskontroll;
+
+    private final String DATO_TILBAKE_I_TID_FEIL = "Du kan ikke sette en kandidat som midlertidig utilgjengelig tilbake i tid";
+    private final String DATO_MER_ENN_30_DAGER_FREM_I_TID_FEIL = "Du kan ikke sette en kandidat som midlertidig utilgjengelig mer enn 30 dager frem i tid";
 
     public MidlertidigUtilgjengeligController(
             MidlertidigUtilgjengeligService service,
@@ -35,6 +40,13 @@ public class MidlertidigUtilgjengeligController {
         return tilDato.isBefore(idagMidnatt);
     }
 
+    private boolean datoErMerEnn30DagerFremITid(LocalDateTime tilDato) {
+        LocalDate idag = LocalDate.now();
+        LocalDateTime idagMidnatt = LocalDateTime.of(idag, LocalTime.MIDNIGHT);
+
+        return !tilDato.isBefore(idagMidnatt.plusDays(31));
+    }
+
     @GetMapping("/{aktørId}")
     public ResponseEntity<?> getMidlertidigUtilgjengelig(@PathVariable("aktørId") String aktørId) {
         tilgangskontroll.hentInnloggetVeileder();
@@ -46,20 +58,24 @@ public class MidlertidigUtilgjengeligController {
     }
 
     @PostMapping
-    public ResponseEntity<?> postMidlertidigUtilgjengelig(@RequestBody MidlertidigUtilgjengeligDto midlertidigUtilgjengelig) {
+    public ResponseEntity<?> postMidlertidigUtilgjengelig(@RequestBody MidlertidigUtilgjengeligDto midlertidigUtilgjengeligDto) {
         Veileder innloggetVeileder = tilgangskontroll.hentInnloggetVeileder();
 
         log.info("Midlertidig utilgjengelig med aktør {} opprettes av {}", midlertidigUtilgjengelig.getAktørId(), innloggetVeileder);
 
-        if (datoErTilbakeITid(midlertidigUtilgjengelig.getTilDato())) {
-            return ResponseEntity.badRequest().body("Du kan ikke sette en kandidat som midlertidig utilgjengelig tilbake i tid");
+        if (datoErTilbakeITid(midlertidigUtilgjengeligDto.getTilDato())) {
+            return ResponseEntity.badRequest().body(DATO_TILBAKE_I_TID_FEIL);
         }
 
-        if (service.midlertidigTilgjengeligEksisterer(midlertidigUtilgjengelig.getAktørId())) {
+        if (datoErMerEnn30DagerFremITid(midlertidigUtilgjengeligDto.getTilDato())) {
+            return ResponseEntity.badRequest().body(DATO_MER_ENN_30_DAGER_FREM_I_TID_FEIL);
+        }
+
+        if (service.midlertidigTilgjengeligEksisterer(midlertidigUtilgjengeligDto.getAktørId())) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Det er allerede registrert at kandidaten er midlertidig utilgjengelig");
         }
 
-        Optional<MidlertidigUtilgjengelig> lagret = service.opprettMidlertidigUtilgjengelig(midlertidigUtilgjengelig, innloggetVeileder);
+        Optional<MidlertidigUtilgjengelig> lagret = service.opprettMidlertidigUtilgjengelig(midlertidigUtilgjengeligDto, innloggetVeileder);
         if (lagret.isEmpty()) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
@@ -74,7 +90,11 @@ public class MidlertidigUtilgjengeligController {
         log.info("Midlertidig utilgjengelig med aktør {} oppdateres av {}", aktørId, innloggetVeileder);
 
         if (datoErTilbakeITid(midlertidigUtilgjengeligDto.getTilDato())) {
-            return ResponseEntity.badRequest().body("Du kan ikke sette en kandidat som midlertidig utilgjengelig tilbake i tid");
+            return ResponseEntity.badRequest().body(DATO_TILBAKE_I_TID_FEIL);
+        }
+
+        if (datoErMerEnn30DagerFremITid(midlertidigUtilgjengeligDto.getTilDato())) {
+            return ResponseEntity.badRequest().body(DATO_MER_ENN_30_DAGER_FREM_I_TID_FEIL);
         }
 
         if (!aktørId.equals(midlertidigUtilgjengeligDto.getAktørId())) {

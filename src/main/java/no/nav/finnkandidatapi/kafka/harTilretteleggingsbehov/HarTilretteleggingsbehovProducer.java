@@ -29,9 +29,7 @@ public class HarTilretteleggingsbehovProducer {
     public HarTilretteleggingsbehovProducer(
             KafkaTemplate<String, String> kafkaTemplate,
             @Value("${kandidat-endret.topic}") String topic,
-            MeterRegistry meterRegistry,
-            Unleash unleash, FeatureToggleService featureToggleService,
-            SammenstillBehov sammenstillBehov
+            MeterRegistry meterRegistry, FeatureToggleService featureToggleService
     ) {
         this.kafkaTemplate = kafkaTemplate;
         this.topic = topic;

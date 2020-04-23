@@ -53,7 +53,7 @@ public class SammenstillBehov {
                 = midlertidigUtilgjengeligInput.or(() -> midlertidigUtilgjengeligService.hentMidlertidigUtilgjengelig(aktørId));
 
         List<String> tilretteleggingsbehovFilter = harTilretteleggingsbehov.map(HarTilretteleggingsbehov::getBehov).orElse(emptyList());
-        boolean erTilretteleggingsbehov = harTilretteleggingsbehov.filter(t -> t.isHarTilretteleggingsbehov() == true).isPresent();
+        boolean erTilretteleggingsbehov = harTilretteleggingsbehov.filter(t -> t.isHarTilretteleggingsbehov()).isPresent();
 
         Optional<String> permitteringFilter = SjekkPermittertUtil.sjekkOmErPermittert(permittertArbeidssoker, vedtak)
                 ? Optional.of(PermittertArbeidssoker.ER_PERMITTERT_KATEGORI)

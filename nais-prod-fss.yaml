@@ -12,7 +12,6 @@ spec:
     limits:
       memory: 2048Mi
   ingresses:
-  - https://arbeidsgiver.nais.adeo.no/finn-kandidat-api/
   - https://app.adeo.no/finn-kandidat-api/
   liveness:
     path: /finn-kandidat-api/internal/actuator/health

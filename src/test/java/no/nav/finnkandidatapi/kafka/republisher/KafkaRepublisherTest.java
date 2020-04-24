@@ -62,7 +62,7 @@ KafkaRepublisherTest {
     @Before
     public void setUp() {
         this.sammenstillBehov = new SammenstillBehov(repository, permittertArbeidssokerService, vedtakService, midlertidigUtilgjengeligService);
-        this.kafkaRepublisher = new KafkaRepublisher(producer, repository, midlertidigUtilgjengeligService,  tilgangskontrollService, sammenstillBehov, config);
+        this.kafkaRepublisher = new KafkaRepublisher(producer, repository,  tilgangskontrollService, sammenstillBehov, config);
     }
 
     @Test(expected = TilgangskontrollException.class)

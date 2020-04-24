@@ -35,7 +35,7 @@ public class KafkaRepublisher {
     private final TilgangskontrollService tilgangskontrollService;
     private final KafkaRepublisherConfig config;
 
-    private final static String HVER_NATT_KLOKKEN_ETT = "0 0 1 * * *";
+    private final static String HVER_NATT_KLOKKEN_ETT = " 0 * * * * *";
 
     @Autowired
     public KafkaRepublisher(
@@ -62,7 +62,7 @@ public class KafkaRepublisher {
     public void oppdaterMidlertidigUtilgjengelig() {
         LockAssert.assertLocked();
         List<MidlertidigUtilgjengelig> alleMidlertidigUtilgjengelig = midlertidigUtilgjengeligService.hentAlleMidlertidigUtilgjengelig();
-        log.warn("Scheduler republiserer alle {} midlertidig utilgjengelig!", Brukertype.SYSTEM, alleMidlertidigUtilgjengelig.size());
+        log.warn("Scheduler med bruker {} republiserer alle {} midlertidig utilgjengelig!", Brukertype.SYSTEM, alleMidlertidigUtilgjengelig.size());
         alleMidlertidigUtilgjengelig.forEach(
                 midlertidigUtilgjengelig -> harTilretteleggingsbehovProducer.sendKafkamelding(
                         sammenstillBehov.lagbehov(midlertidigUtilgjengelig)

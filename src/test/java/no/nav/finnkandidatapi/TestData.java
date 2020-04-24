@@ -36,13 +36,13 @@ public class TestData {
 
     public static VedtakReplikert etUpdateVedtakReplikert() {
         return VedtakReplikert.builder()
-            .op_type("U")
-            .tokens(Tokens.builder().fodselsnr("01010112345").build())
-            .after(VedtakRad.builder()
-                    .vedtak_id(45L)
-                    .rettighetkode("PERM")
-                    .build())
-            .build();
+                .op_type("U")
+                .tokens(Tokens.builder().fodselsnr("01010112345").build())
+                .after(VedtakRad.builder()
+                        .vedtak_id(45L)
+                        .rettighetkode("PERM")
+                        .build())
+                .build();
     }
 
     public static VedtakReplikert etDeleteVedtakReplikert() {

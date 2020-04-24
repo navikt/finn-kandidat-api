@@ -21,6 +21,7 @@ JDBC URL: jdbc:h2:mem:testdb
 
 # Henvendelser
 
+
 ## For Nav-ansatte
 * Dette Git-repositoriet eies av [Team inkludering i Produktområde arbeidsgiver](https://navno.sharepoint.com/sites/intranett-prosjekter-og-utvikling/SitePages/Produktomr%C3%A5de-arbeidsgiver.aspx).
 * Slack-kanaler:

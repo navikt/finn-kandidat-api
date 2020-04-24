@@ -51,6 +51,20 @@ public class KafkaRepublisher {
     }
 
     /**
+     * Republiser alle midlertidig tilgjengelige hver natt, for å oppdatere med riktig filter i søket.
+     */
+    @Scheduled(cron="0 0 1 * * *") // Klokken 01.00 hver natt
+    public void oppdaterMidlertidigUtilgjengelig() {
+        List<MidlertidigUtilgjengelig> alleMidlertidigUtilgjengelig = midlertidigUtilgjengeligService.hentAlleMidlertidigUtilgjengelig();
+        log.warn("Scheduler republiserer alle {} midlertidig utilgjengelig!", Brukertype.SYSTEM, alleMidlertidigUtilgjengelig.size());
+        alleMidlertidigUtilgjengelig.forEach(
+                midlertidigUtilgjengelig -> harTilretteleggingsbehovProducer.sendKafkamelding(
+                        sammenstillBehov.lagbehov(midlertidigUtilgjengelig)
+                )
+        );
+    }
+
+    /**
      * Republiser alle kandidater som har tilretteleggingsbehov til Kafka. Brukes bare i spesielle tilfeller.
      *
      * @return 200 OK hvis kandidater ble republisert.

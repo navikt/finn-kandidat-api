@@ -95,4 +95,15 @@ public class MidlertidigUtilgjengeligRepository {
     public Integer slettMidlertidigUtilgjengelig(String aktørId) {
         return jdbcTemplate.update("DELETE FROM " + MIDLERTIDIG_UTILGJENGELIG_TABELL + " WHERE aktor_id = ?", new Object[]{aktørId});
     }
+
+    public List<MidlertidigUtilgjengelig> hentAlleMidlertidigUtilgjengelig() {
+        try {
+            return jdbcTemplate.query(
+                    "SELECT * FROM " + MIDLERTIDIG_UTILGJENGELIG_TABELL,
+                    midlertidigUtilgjengeligMapper
+            );
+        } catch (EmptyResultDataAccessException e) {
+            return Collections.emptyList();
+        }
+    }
 }

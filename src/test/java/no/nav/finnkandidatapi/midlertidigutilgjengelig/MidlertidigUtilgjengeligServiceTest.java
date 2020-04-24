@@ -2,11 +2,15 @@ package no.nav.finnkandidatapi.midlertidigutilgjengelig;
 
 import no.nav.finnkandidatapi.TestData;
 import no.nav.finnkandidatapi.kandidat.Veileder;
+import no.nav.finnkandidatapi.midlertidigutilgjengelig.event.MidlertidigUtilgjengeligEndret;
+import no.nav.finnkandidatapi.midlertidigutilgjengelig.event.MidlertidigUtilgjengeligOpprettet;
+import no.nav.finnkandidatapi.midlertidigutilgjengelig.event.MidlertidigUtilgjengeligSlettet;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.util.Optional;
 
@@ -22,11 +26,15 @@ public class MidlertidigUtilgjengeligServiceTest {
     @Mock
     private MidlertidigUtilgjengeligRepository repository;
 
+    @Mock
+    private ApplicationEventPublisher applicationEventPublisher;
+
+
     Veileder enVeileder = new Veileder("A100000", "Ola Nordmann");
 
     @Before
     public void before() {
-        service = new MidlertidigUtilgjengeligService(repository);
+        service = new MidlertidigUtilgjengeligService(repository, applicationEventPublisher);
     }
 
     @Test
@@ -56,6 +64,8 @@ public class MidlertidigUtilgjengeligServiceTest {
         Optional<MidlertidigUtilgjengelig> response = service.opprettMidlertidigUtilgjengelig(midlertidigUtilgjengeligDto, enVeileder);
 
         assertThat(response).isEqualTo(Optional.of(midlertidigUtilgjengelig));
+        verify(applicationEventPublisher, times(1)).publishEvent(any(MidlertidigUtilgjengeligOpprettet.class));
+
     }
 
     @Test
@@ -65,9 +75,11 @@ public class MidlertidigUtilgjengeligServiceTest {
         when(repository.slettMidlertidigUtilgjengelig(midlertidigUtilgjengelig.getAktørId()))
                 .thenReturn(1);
 
-        service.slettMidlertidigUtilgjengelig(midlertidigUtilgjengelig.getAktørId());
+        service.slettMidlertidigUtilgjengelig(midlertidigUtilgjengelig.getAktørId(), enVeileder);
 
         verify(repository, times(1)).slettMidlertidigUtilgjengelig(midlertidigUtilgjengelig.getAktørId());
+        verify(applicationEventPublisher, times(1)).publishEvent(any(MidlertidigUtilgjengeligSlettet.class));
+
     }
 
     @Test
@@ -85,5 +97,8 @@ public class MidlertidigUtilgjengeligServiceTest {
         verify(repository, times(1)).endreMidlertidigUtilgjengelig(any(), any(), any());
 
         assertThat(response).isNotEmpty().get().isEqualTo(midlertidigUtilgjengelig);
+
+        verify(applicationEventPublisher, times(1)).publishEvent(any(MidlertidigUtilgjengeligEndret.class));
+
     }
 }

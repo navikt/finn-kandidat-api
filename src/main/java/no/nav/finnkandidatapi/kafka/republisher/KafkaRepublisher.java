@@ -1,6 +1,8 @@
 package no.nav.finnkandidatapi.kafka.republisher;
 
 import lombok.extern.slf4j.Slf4j;
+import net.javacrumbs.shedlock.core.LockAssert;
+import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.HarTilretteleggingsbehov;
 import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.HarTilretteleggingsbehovProducer;
 import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.SammenstillBehov;
@@ -33,6 +35,8 @@ public class KafkaRepublisher {
     private final TilgangskontrollService tilgangskontrollService;
     private final KafkaRepublisherConfig config;
 
+    private final static String HVER_NATT_KLOKKEN_ETT = "0 0 1 * * *";
+
     @Autowired
     public KafkaRepublisher(
             HarTilretteleggingsbehovProducer harTilretteleggingsbehovProducer,
@@ -53,8 +57,10 @@ public class KafkaRepublisher {
     /**
      * Republiser alle midlertidig tilgjengelige hver natt, for å oppdatere med riktig filter i søket.
      */
-    @Scheduled(cron="0 0 1 * * *") // Klokken 01.00 hver natt
+    @Scheduled(cron=HVER_NATT_KLOKKEN_ETT)
+    @SchedulerLock(name = "oppdaterMidlertidigUtilgjengelig")
     public void oppdaterMidlertidigUtilgjengelig() {
+        LockAssert.assertLocked();
         List<MidlertidigUtilgjengelig> alleMidlertidigUtilgjengelig = midlertidigUtilgjengeligService.hentAlleMidlertidigUtilgjengelig();
         log.warn("Scheduler republiserer alle {} midlertidig utilgjengelig!", Brukertype.SYSTEM, alleMidlertidigUtilgjengelig.size());
         alleMidlertidigUtilgjengelig.forEach(

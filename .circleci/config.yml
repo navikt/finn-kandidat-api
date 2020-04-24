@@ -16,7 +16,7 @@ jobs:
             - m2-
       - run:
           name: Bygg med Maven
-          command: mvn clean package
+          command: mvn clean package -P circle
       - save_cache:
           name: Lagre Maven cache
           key: m2-{{ .Branch }}-{{ checksum "pom.xml" }}

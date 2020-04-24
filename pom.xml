@@ -215,10 +215,11 @@
 		<profile>
 			<id>circle</id>
 			<activation>
-				<activeByDefault>true</activeByDefault>
+				<activeByDefault>false</activeByDefault>
 			</activation>
 			<repositories>
-				<!-- Skal brukes hvis bygget kjører utenfor NAV (f.eks. en ekstern maskin, eller Circle CI) -->
+				<!-- Skal brukes hvis bygget kjører utenfor NAV (f.eks. en ekstern maskin, eller Circle CI).
+				 Se https://github.com/navikt/utvikling/blob/master/Konsumere%20biblioteker%20fra%20Github%20Package%20Registry.md -->
 				<repository>
 					<id>external-mirror-github-navikt</id>
 					<url>https://github-package-registry-mirror.gc.nav.no/cached/maven-release</url>
@@ -232,10 +233,11 @@
 		<profile>
 			<id>local</id>
 			<activation>
-				<activeByDefault>false</activeByDefault>
+				<activeByDefault>true</activeByDefault>
 			</activation>
 			<repositories>
-				<!-- Skal brukes hvis bygget kjører internt (f.eks. Jenkins, fra utviklerimage, eller via ScaleFT) -->
+				<!-- Skal brukes hvis bygget kjører internt (f.eks. Jenkins, fra utviklerimage, eller via ScaleFT/VPN).
+				 Se https://github.com/navikt/utvikling/blob/master/Konsumere%20biblioteker%20fra%20Github%20Package%20Registry.md-->
 				<repository>
 					<id>internal-mirror-github-navikt</id>
 					<url>https://repo.adeo.no/repository/github-package-registry-navikt/</url>

@@ -35,7 +35,7 @@ public class KafkaRepublisher {
     private final TilgangskontrollService tilgangskontrollService;
     private final KafkaRepublisherConfig config;
 
-    private final static String HVER_NATT_KLOKKEN_ETT = " 0 * * * * *";
+    private final static String HVER_NATT_KLOKKEN_ETT = "0 0 1 * * *";
 
     @Autowired
     public KafkaRepublisher(

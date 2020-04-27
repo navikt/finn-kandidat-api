@@ -43,7 +43,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-cache-
       - name: Build jar with Maven
-        run: mvn clean package -D maven.test.skip=true
+        run: mvn clean package -P external -D maven.test.skip=true
       - name: Build and publish Docker image
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

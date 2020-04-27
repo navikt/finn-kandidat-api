@@ -17,7 +17,7 @@ import java.util.List;
 @Slf4j
 public class MidlertidigUtilgjengeligScheduler {
 
-    private final static String HVER_NATT_KLOKKEN_ETT = "0 0 * * * *";
+    private final static String HVER_NATT_KLOKKEN_ETT = "0 0 1 * * *";
     private final static String HVER_TIME = "0 0 * * * *";
     private final MidlertidigUtilgjengeligService midlertidigUtilgjengeligService;
     private final HarTilretteleggingsbehovProducer harTilretteleggingsbehovProducer;

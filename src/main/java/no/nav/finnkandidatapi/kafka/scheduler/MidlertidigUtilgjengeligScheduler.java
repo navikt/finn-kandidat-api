@@ -18,7 +18,7 @@ import java.util.List;
 public class MidlertidigUtilgjengeligScheduler {
 
     private final static String HVER_NATT_KLOKKEN_ETT = "0 0 1 * * *";
-    private final static String HVER_TIME = "0 0 * * * *";
+    private final static String HVER_HALVE_TIME = "0 0/30 * * * *";
     private final MidlertidigUtilgjengeligService midlertidigUtilgjengeligService;
     private final HarTilretteleggingsbehovProducer harTilretteleggingsbehovProducer;
     private final SammenstillBehov sammenstillBehov;
@@ -32,7 +32,7 @@ public class MidlertidigUtilgjengeligScheduler {
     /**
      * Republiser alle midlertidig tilgjengelige hver natt, for å oppdatere med riktig filter i søket.
      */
-    @Scheduled(cron = HVER_TIME)
+    @Scheduled(cron = HVER_HALVE_TIME)
     @SchedulerLock(name = "oppdaterMidlertidigUtilgjengelig", lockAtLeastFor = "PT5M", lockAtMostFor = "PT14M")
     public void oppdaterMidlertidigUtilgjengelig() {
         LockAssert.assertLocked();

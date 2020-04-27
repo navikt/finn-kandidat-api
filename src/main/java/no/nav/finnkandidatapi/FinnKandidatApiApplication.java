@@ -10,9 +10,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
         "org.springframework"
 })
 public class FinnKandidatApiApplication {
-
     public static void main(String[] args) {
         SpringApplication.run(FinnKandidatApiApplication.class, args);
     }
-
 }

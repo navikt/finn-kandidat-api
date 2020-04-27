@@ -49,6 +49,6 @@ spec:
       action: "Sjekk loggene for å se hvorfor {{ $labels.backend }} returnerer HTTP feilresponser"
     - alert: (finn-kandidat-api) Økning HTTP klientfeil (4xx responser andre enn 401)
       severity: warning
-      expr: (100 * (sum by (backend) (rate(traefik_backend_requests_total{code=~"^4\\d[0,2-9]", backend=~"arbeidsgiver.nais.*/finn-kandidat-api/*"}[3m])) / sum by (backend) (rate(traefik_backend_requests_total{backend=~"arbeidsgiver.nais.*/finn-kandidat-api/*"}[3m])))) > 40
+      expr: (100 * (sum by (backend) (rate(traefik_backend_requests_total{code=~"^4\\d[0,2-9]", backend=~"arbeidsgiver.nais.*/finn-kandidat-api/*"}[3m])) / sum by (backend) (rate(traefik_backend_requests_total{backend=~"arbeidsgiver.nais.*/finn-kandidat-api/*"}[3m])))) > 60
       for: 3m
       action: "Sjekk loggene for å se hvorfor {{ $labels.backend }} returnerer HTTP feilresponser"

@@ -223,7 +223,7 @@
 
     <profiles>
         <profile>
-            <id>circle</id>
+            <id>external</id>
             <activation>
                 <activeByDefault>false</activeByDefault>
             </activation>

@@ -32,7 +32,7 @@ public class MidlertidigUtilgjengeligScheduler {
     /**
      * Republiser alle midlertidig tilgjengelige hver natt, for å oppdatere med riktig filter i søket.
      */
-    @Scheduled(cron = HVER_HALVE_TIME)
+    @Scheduled(cron = HVER_NATT_KLOKKEN_ETT)
     @SchedulerLock(name = "oppdaterMidlertidigUtilgjengelig", lockAtLeastFor = "PT5M", lockAtMostFor = "PT14M")
     public void oppdaterMidlertidigUtilgjengelig() {
         LockAssert.assertLocked();

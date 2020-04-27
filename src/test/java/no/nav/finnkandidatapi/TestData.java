@@ -36,13 +36,13 @@ public class TestData {
 
     public static VedtakReplikert etUpdateVedtakReplikert() {
         return VedtakReplikert.builder()
-            .op_type("U")
-            .tokens(Tokens.builder().fodselsnr("01010112345").build())
-            .after(VedtakRad.builder()
-                    .vedtak_id(45L)
-                    .rettighetkode("PERM")
-                    .build())
-            .build();
+                .op_type("U")
+                .tokens(Tokens.builder().fodselsnr("01010112345").build())
+                .after(VedtakRad.builder()
+                        .vedtak_id(45L)
+                        .rettighetkode("PERM")
+                        .build())
+                .build();
     }
 
     public static VedtakReplikert etDeleteVedtakReplikert() {
@@ -60,11 +60,11 @@ public class TestData {
         return Vedtak.builder()
                 .aktørId("1000000000001")
                 .arenaDbOperasjon("U")
-                .arenaDbTidsstempel(LocalDateTime.now())
+                .arenaDbTidsstempel(now())
                 .arenaDbTransactionlogPosisjon("1")
                 .fnr("01010112345")
-                .fraDato(LocalDateTime.now().minusMonths(5))
-                .tilDato(LocalDateTime.now().minusMonths(1))
+                .fraDato(now().minusMonths(5))
+                .tilDato(now().minusMonths(1))
                 .personId(1000L)
                 .rettighetKode("PERM")
                 .slettet(false)
@@ -83,7 +83,7 @@ public class TestData {
         return ArbeidssokerRegistrertDTO.builder()
                 .aktørId("1000000000001")
                 .status(DinSituasjonSvarFraVeilarbReg.ER_PERMITTERT.name())
-                .registreringTidspunkt(LocalDateTime.now())
+                .registreringTidspunkt(now())
                 .build();
     }
 
@@ -91,7 +91,7 @@ public class TestData {
         return ArbeidssokerRegistrertDTO.builder()
                 .aktørId("1000000000002")
                 .status(DinSituasjonSvarFraVeilarbReg.ER_PERMITTERT.name())
-                .registreringTidspunkt(LocalDateTime.now())
+                .registreringTidspunkt(now())
                 .build();
     }
 
@@ -99,7 +99,7 @@ public class TestData {
         return PermittertArbeidssoker.builder()
                 .aktørId("1000000000001")
                 .statusFraVeilarbRegistrering(DinSituasjonSvarFraVeilarbReg.ER_PERMITTERT.name())
-                .tidspunktForStatusFraVeilarbRegistrering(LocalDateTime.now())
+                .tidspunktForStatusFraVeilarbRegistrering(now())
                 .build();
     }
 
@@ -108,7 +108,7 @@ public class TestData {
                 .id(id)
                 .aktørId("1000000000001")
                 .statusFraVeilarbRegistrering(DinSituasjonSvarFraVeilarbReg.ER_PERMITTERT.name())
-                .tidspunktForStatusFraVeilarbRegistrering(LocalDateTime.now())
+                .tidspunktForStatusFraVeilarbRegistrering(now())
                 .build();
     }
 
@@ -135,8 +135,8 @@ public class TestData {
     public static MidlertidigUtilgjengelig enMidlertidigUtilgjengelig(String aktørid) {
         return MidlertidigUtilgjengelig.builder()
                 .aktørId(aktørid)
-                .fraDato(LocalDateTime.now())
-                .tilDato(LocalDateTime.now().plusDays(7))
+                .fraDato(now())
+                .tilDato(now().plusDays(7))
                 .registrertAvIdent("A100000")
                 .registrertAvNavn("Ola Nordmann")
                 .sistEndretAvIdent("B200000")
@@ -268,7 +268,7 @@ public class TestData {
      * grønne på Mac og røde på Windows. Se
      * https://stackoverflow.com/questions/52029920/localdatetime-now-has-different-levels-of-precision-on-windows-and-mac-machine
      * </p><p>
-     * Bruker metodenavnet now() for å gjøre det vanskeligere å bruke java.time.LocalDateTime.now() ved en feiltagelse.
+     * Bruker metodenavnet now() for å gjøre det vanskeligere å bruke java.time.now() ved en feiltagelse.
      * </p><p>
      * Returnert timestamp vil være garantert unik også ved flere kall innenfor samme millisekund, fordi metoden pauser tråden i ett millisekund.
      * </p>

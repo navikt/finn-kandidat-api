@@ -21,7 +21,7 @@ public class MidlertidigUtilgjengeligScheduler {
     private final MidlertidigUtilgjengeligService midlertidigUtilgjengeligService;
     private final HarTilretteleggingsbehovProducer harTilretteleggingsbehovProducer;
     private final SammenstillBehov sammenstillBehov;
-    
+
     public MidlertidigUtilgjengeligScheduler(MidlertidigUtilgjengeligService midlertidigUtilgjengeligService, HarTilretteleggingsbehovProducer harTilretteleggingsbehovProducer, SammenstillBehov sammenstillBehov) {
         this.midlertidigUtilgjengeligService = midlertidigUtilgjengeligService;
         this.harTilretteleggingsbehovProducer = harTilretteleggingsbehovProducer;
@@ -36,7 +36,7 @@ public class MidlertidigUtilgjengeligScheduler {
     public void oppdaterMidlertidigUtilgjengelig() {
         LockAssert.assertLocked();
         List<MidlertidigUtilgjengelig> alleMidlertidigUtilgjengelig = midlertidigUtilgjengeligService.hentAlleMidlertidigUtilgjengelig();
-        log.warn("Scheduler med bruker {} republiserer alle {} midlertidig utilgjengelig!", Brukertype.SYSTEM, alleMidlertidigUtilgjengelig.size());
+        log.info("Scheduler med bruker {} republiserer alle {} midlertidig utilgjengelig!", Brukertype.SYSTEM, alleMidlertidigUtilgjengelig.size());
         alleMidlertidigUtilgjengelig.forEach(
                 midlertidigUtilgjengelig -> harTilretteleggingsbehovProducer.sendKafkamelding(
                         sammenstillBehov.lagbehov(midlertidigUtilgjengelig)

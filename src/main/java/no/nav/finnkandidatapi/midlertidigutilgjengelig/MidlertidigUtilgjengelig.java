@@ -31,11 +31,8 @@ public class MidlertidigUtilgjengelig {
                 .build();
     }
 
-    public static Optional<String> finnMidlertidigUtilgjengeligFilter(Optional<MidlertidigUtilgjengelig> midlertidigUtilgjengelig) {
-        if (midlertidigUtilgjengelig.isEmpty()) {
-            return Optional.empty();
-        }
-        LocalDateTime tilDato = midlertidigUtilgjengelig.get().getTilDato();
+    public Optional<String> finnMidlertidigUtilgjengeligFilter() {
+        LocalDateTime tilDato = getTilDato();
         LocalDateTime nå = LocalDateTime.now();
         if (tilDato == null) {
             return Optional.empty();

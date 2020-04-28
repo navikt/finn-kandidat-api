@@ -59,7 +59,7 @@ public class SammenstillBehov {
                 ? Optional.of(PermittertArbeidssoker.ER_PERMITTERT_KATEGORI)
                 : Optional.empty();
 
-        Optional<String> midlertidigUtilgjengeligFilter = MidlertidigUtilgjengelig.finnMidlertidigUtilgjengeligFilter(midlertidigUtilgjengelig);
+        Optional<String> midlertidigUtilgjengeligFilter = midlertidigUtilgjengelig.flatMap(it -> it.finnMidlertidigUtilgjengeligFilter());
 
         var behov = concatToList(
                 tilretteleggingsbehovFilter.stream(),

@@ -53,7 +53,7 @@ public class MidlertidigUtilgjengeligServiceTest {
     public void postMidlertidigUtilgjengelig__kan_poste_midlertidig_utilgjengelig() {
         MidlertidigUtilgjengelig midlertidigUtilgjengelig = TestData.enMidlertidigUtilgjengelig("77777777");
 
-        MidlertidigUtilgjengeligDto midlertidigUtilgjengeligDto = new MidlertidigUtilgjengeligDto(midlertidigUtilgjengelig.getAktørId(), midlertidigUtilgjengelig.getTilDato());
+        MidlertidigUtilgjengeligInboundDto midlertidigUtilgjengeligInboundDto = new MidlertidigUtilgjengeligInboundDto(midlertidigUtilgjengelig.getAktørId(), midlertidigUtilgjengelig.getTilDato());
 
         when(repository.lagreMidlertidigUtilgjengelig(any(MidlertidigUtilgjengelig.class)))
                 .thenReturn(1);
@@ -61,7 +61,7 @@ public class MidlertidigUtilgjengeligServiceTest {
         when(repository.hentMidlertidigUtilgjengeligMedId(1))
                 .thenReturn(Optional.of(midlertidigUtilgjengelig));
 
-        Optional<MidlertidigUtilgjengelig> response = service.opprettMidlertidigUtilgjengelig(midlertidigUtilgjengeligDto, enVeileder);
+        Optional<MidlertidigUtilgjengelig> response = service.opprettMidlertidigUtilgjengelig(midlertidigUtilgjengeligInboundDto, enVeileder);
 
         assertThat(response).isEqualTo(Optional.of(midlertidigUtilgjengelig));
         verify(applicationEventPublisher, times(1)).publishEvent(any(MidlertidigUtilgjengeligOpprettet.class));

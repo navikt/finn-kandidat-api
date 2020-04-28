@@ -33,11 +33,11 @@ public class MidlertidigUtilgjengeligService {
         return repository.hentMidlertidigUtilgjengelig(aktørId).isPresent();
     }
 
-    public Optional<MidlertidigUtilgjengelig> opprettMidlertidigUtilgjengelig(MidlertidigUtilgjengeligDto midlertidigUtilgjengeligDto, Veileder innloggetVeileder) {
+    public Optional<MidlertidigUtilgjengelig> opprettMidlertidigUtilgjengelig(MidlertidigUtilgjengeligInboundDto midlertidigUtilgjengeligInboundDto, Veileder innloggetVeileder) {
         LocalDateTime utilgjengeligFraDato = LocalDateTime.now();
 
         MidlertidigUtilgjengelig midlertidigUtilgjengelig = MidlertidigUtilgjengelig.opprettMidlertidigUtilgjengelig(
-                midlertidigUtilgjengeligDto,
+                midlertidigUtilgjengeligInboundDto,
                 utilgjengeligFraDato,
                 innloggetVeileder
         );

@@ -50,32 +50,30 @@ public class MidlertidigUtilgjengeligController {
     @GetMapping("/{aktørId}")
     public ResponseEntity<?> getMidlertidigUtilgjengelig(@PathVariable("aktørId") String aktørId) {
         tilgangskontroll.hentInnloggetVeileder();
-
         Optional<MidlertidigUtilgjengelig> midlertidigUtilgjengelig = service.hentMidlertidigUtilgjengelig(aktørId);
-
-        return midlertidigUtilgjengelig.isEmpty() ?
-                ResponseEntity.notFound().build() : ResponseEntity.ok(midlertidigUtilgjengelig.get());
+        MidlertidigUtilgjengeligOutboundDto dto = midlertidigUtilgjengelig.map(MidlertidigUtilgjengeligOutboundDto::new).orElse(new MidlertidigUtilgjengeligOutboundDto(null));
+        return ResponseEntity.ok(dto);
     }
 
     @PostMapping
-    public ResponseEntity<?> postMidlertidigUtilgjengelig(@RequestBody MidlertidigUtilgjengeligDto midlertidigUtilgjengeligDto) {
+    public ResponseEntity<?> postMidlertidigUtilgjengelig(@RequestBody MidlertidigUtilgjengeligInboundDto dto) {
         Veileder innloggetVeileder = tilgangskontroll.hentInnloggetVeileder();
 
-        log.info("Midlertidig utilgjengelig med aktør {} opprettes av {}", midlertidigUtilgjengeligDto.getAktørId(), innloggetVeileder);
+        log.info("Midlertidig utilgjengelig med aktør {} opprettes av {}", dto.getAktørId(), innloggetVeileder);
 
-        if (datoErTilbakeITid(midlertidigUtilgjengeligDto.getTilDato())) {
+        if (datoErTilbakeITid(dto.getTilDato())) {
             return ResponseEntity.badRequest().body(DATO_TILBAKE_I_TID_FEIL);
         }
 
-        if (datoErMerEnn30DagerFremITid(midlertidigUtilgjengeligDto.getTilDato())) {
+        if (datoErMerEnn30DagerFremITid(dto.getTilDato())) {
             return ResponseEntity.badRequest().body(DATO_MER_ENN_30_DAGER_FREM_I_TID_FEIL);
         }
 
-        if (service.midlertidigTilgjengeligEksisterer(midlertidigUtilgjengeligDto.getAktørId())) {
+        if (service.midlertidigTilgjengeligEksisterer(dto.getAktørId())) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Det er allerede registrert at kandidaten er midlertidig utilgjengelig");
         }
 
-        Optional<MidlertidigUtilgjengelig> lagret = service.opprettMidlertidigUtilgjengelig(midlertidigUtilgjengeligDto, innloggetVeileder);
+        Optional<MidlertidigUtilgjengelig> lagret = service.opprettMidlertidigUtilgjengelig(dto, innloggetVeileder);
         if (lagret.isEmpty()) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
@@ -84,24 +82,24 @@ public class MidlertidigUtilgjengeligController {
     }
 
     @PutMapping("/{aktørId}")
-    public ResponseEntity<?> putMidlertidigUtilgjengelig(@PathVariable("aktørId") String aktørId, @RequestBody MidlertidigUtilgjengeligDto midlertidigUtilgjengeligDto) {
+    public ResponseEntity<?> putMidlertidigUtilgjengelig(@PathVariable("aktørId") String aktørId, @RequestBody MidlertidigUtilgjengeligInboundDto dto) {
         Veileder innloggetVeileder = tilgangskontroll.hentInnloggetVeileder();
 
         log.info("Midlertidig utilgjengelig med aktør {} oppdateres av {}", aktørId, innloggetVeileder);
 
-        if (datoErTilbakeITid(midlertidigUtilgjengeligDto.getTilDato())) {
+        if (datoErTilbakeITid(dto.getTilDato())) {
             return ResponseEntity.badRequest().body(DATO_TILBAKE_I_TID_FEIL);
         }
 
-        if (datoErMerEnn30DagerFremITid(midlertidigUtilgjengeligDto.getTilDato())) {
+        if (datoErMerEnn30DagerFremITid(dto.getTilDato())) {
             return ResponseEntity.badRequest().body(DATO_MER_ENN_30_DAGER_FREM_I_TID_FEIL);
         }
 
-        if (!aktørId.equals(midlertidigUtilgjengeligDto.getAktørId())) {
+        if (!aktørId.equals(dto.getAktørId())) {
             return ResponseEntity.badRequest().body("Aktør-id er annerledes i URL og body");
         }
 
-        Optional<MidlertidigUtilgjengelig> endret = service.endreMidlertidigTilgjengelig(aktørId, midlertidigUtilgjengeligDto.getTilDato(), innloggetVeileder);
+        Optional<MidlertidigUtilgjengelig> endret = service.endreMidlertidigTilgjengelig(aktørId, dto.getTilDato(), innloggetVeileder);
 
         return endret.isEmpty() ?
                 ResponseEntity.notFound().build() : ResponseEntity.ok(endret.get());

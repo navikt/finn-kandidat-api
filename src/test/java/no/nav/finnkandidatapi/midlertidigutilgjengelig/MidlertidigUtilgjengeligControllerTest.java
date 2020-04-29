@@ -1,6 +1,5 @@
 package no.nav.finnkandidatapi.midlertidigutilgjengelig;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.val;
 import no.nav.finnkandidatapi.TestData;
 import no.nav.finnkandidatapi.kandidat.Veileder;
@@ -48,7 +47,7 @@ public class MidlertidigUtilgjengeligControllerTest {
         var response = controller.getMidlertidigUtilgjengelig(midlertidigUtilgjengelig.getAktørId());
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody() instanceof MidlertidigUtilgjengeligOutboundDto);
+        assertThat(response.getBody()).isInstanceOf(MidlertidigUtilgjengeligOutboundDto.class);
         MidlertidigUtilgjengelig actual = ((MidlertidigUtilgjengeligOutboundDto) response.getBody()).getMidlertidigUtilgjengelig();
         assertThat(actual).isEqualTo(midlertidigUtilgjengelig);
     }
@@ -76,8 +75,9 @@ public class MidlertidigUtilgjengeligControllerTest {
         var response = controller.postMidlertidigUtilgjengelig(dto);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-        assertThat(response.getBody() instanceof MidlertidigUtilgjengelig);
-        assertThat(response.getBody()).isEqualTo(midlertidigUtilgjengelig);
+        assertThat(response.getBody()).isInstanceOf(MidlertidigUtilgjengeligOutboundDto.class);
+        val actual = ((MidlertidigUtilgjengeligOutboundDto) response.getBody()).getMidlertidigUtilgjengelig();
+        assertThat(actual).isEqualTo(midlertidigUtilgjengelig);
     }
 
     @Test
@@ -103,7 +103,9 @@ public class MidlertidigUtilgjengeligControllerTest {
         var response = controller.putMidlertidigUtilgjengelig(midlertidigUtilgjengelig.getAktørId(), dto);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isEqualTo(midlertidigUtilgjengelig);
+        assertThat(response.getBody()).isInstanceOf(MidlertidigUtilgjengeligOutboundDto.class);
+        val actual = ((MidlertidigUtilgjengeligOutboundDto) response.getBody()).getMidlertidigUtilgjengelig();
+        assertThat(actual).isEqualTo(midlertidigUtilgjengelig);
     }
 
     @Test

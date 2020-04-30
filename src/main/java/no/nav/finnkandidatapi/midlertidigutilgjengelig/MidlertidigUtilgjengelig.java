@@ -21,7 +21,7 @@ public class MidlertidigUtilgjengelig {
     public static final String TILGJENGELIG_INNEN_1_UKE = "tilgjengeliginnen1uke";
     public static final String MIDLERTIDIG_UTILGJENGELIG = "midlertidigutilgjengelig";
 
-    public static MidlertidigUtilgjengelig opprettMidlertidigUtilgjengelig(MidlertidigUtilgjengeligDto dto, LocalDateTime fraDato, Veileder veileder) {
+    public static MidlertidigUtilgjengelig opprettMidlertidigUtilgjengelig(MidlertidigUtilgjengeligInboundDto dto, LocalDateTime fraDato, Veileder veileder) {
         return MidlertidigUtilgjengelig.builder()
                 .aktørId(dto.getAktørId())
                 .fraDato(fraDato)
@@ -31,11 +31,8 @@ public class MidlertidigUtilgjengelig {
                 .build();
     }
 
-    public static Optional<String> finnMidlertidigUtilgjengeligFilter(Optional<MidlertidigUtilgjengelig> midlertidigUtilgjengelig) {
-        if (midlertidigUtilgjengelig.isEmpty()) {
-            return Optional.empty();
-        }
-        LocalDateTime tilDato = midlertidigUtilgjengelig.get().getTilDato();
+    public Optional<String> finnMidlertidigUtilgjengeligFilter() {
+        LocalDateTime tilDato = getTilDato();
         LocalDateTime nå = LocalDateTime.now();
         if (tilDato == null) {
             return Optional.empty();

@@ -2,25 +2,30 @@
 
 En backend for Finn kandidat, skrevet i Spring.
 
-## Installasjon
 
-Bruk en IDE eller kjør:
+## Kjøre applikasjonen lokalt
 
-```
-mvn install
-mvn spring:boot run
-```
+IntelliJ: Kjør klassen FinnKandidatApiApplication. 
+
+Kommandolinje: Kjør `mvn spring:boot run` (OBS: Dette funker ikke for meg per april 2020. Are Husby)
+
+
+## API-dokumentasjon
+Swagger-dokumentajonen finnes på http://localhost:8080/finn-kandidat-api/swagger-ui.html
+
+### Autentisering når appen kjører lokalt
+Bruk Swagger UI til å føst sende en GET til endepunktet token-generator-controller > /local/isso-login. Deretter kall det endepunktet du ønsker å teste.
+ 
 
 ## Database for utvikling
 
-Vi bruker `h2` som database under utvikling. For å se, endre og slette kandidater kan du logge deg inn på [localhost:8080/finn-kandidat-api/h2](http://localhost:8080/finn-kandidat-api/h2). Bruk standard brukernavn og passord og følgende URL:
-
-```
-JDBC URL: jdbc:h2:mem:testdb
-```
+Vi bruker `h2` som database under utvikling når du kjører lokalt. For å se, endre og slette kandidater kan du logge deg inn på [localhost:8080/finn-kandidat-api/h2](http://localhost:8080/finn-kandidat-api/h2). Bruk standard brukernavn og passord og følgende URL:
+- JDBC URL: jdbc:h2:mem:testdb
+- Brukernavn: sa
+- Passord: <ingenting\>
+Ev. sette opp en 
 
 # Henvendelser
-
 
 ## For Nav-ansatte
 * Dette Git-repositoriet eies av [Team inkludering i Produktområde arbeidsgiver](https://navno.sharepoint.com/sites/intranett-prosjekter-og-utvikling/SitePages/Produktomr%C3%A5de-arbeidsgiver.aspx).

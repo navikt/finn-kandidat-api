@@ -11,9 +11,11 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Optional;
 
 import static no.nav.finnkandidatapi.tilgangskontroll.TokenUtils.ISSUER_ISSO;
+import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.ResponseEntity.*;
 
 @ProtectedWithClaims(issuer = ISSUER_ISSO)
 @RestController
@@ -50,61 +52,59 @@ public class MidlertidigUtilgjengeligController {
     @GetMapping("/{aktørId}")
     public ResponseEntity<?> getMidlertidigUtilgjengelig(@PathVariable("aktørId") String aktørId) {
         tilgangskontroll.hentInnloggetVeileder();
-
-        Optional<MidlertidigUtilgjengelig> midlertidigUtilgjengelig = service.hentMidlertidigUtilgjengelig(aktørId);
-
-        return midlertidigUtilgjengelig.isEmpty() ?
-                ResponseEntity.notFound().build() : ResponseEntity.ok(midlertidigUtilgjengelig.get());
+        MidlertidigUtilgjengeligOutboundDto dto = service.hentMidlertidigUtilgjengelig(aktørId).
+                map(MidlertidigUtilgjengeligOutboundDto::new).
+                orElse(new MidlertidigUtilgjengeligOutboundDto(null));
+        return ok(dto);
     }
 
     @PostMapping
-    public ResponseEntity<?> postMidlertidigUtilgjengelig(@RequestBody MidlertidigUtilgjengeligDto midlertidigUtilgjengeligDto) {
+    public ResponseEntity<?> postMidlertidigUtilgjengelig(@RequestBody MidlertidigUtilgjengeligInboundDto inbound) {
         Veileder innloggetVeileder = tilgangskontroll.hentInnloggetVeileder();
 
-        log.info("Midlertidig utilgjengelig med aktør {} opprettes av {}", midlertidigUtilgjengeligDto.getAktørId(), innloggetVeileder);
+        log.info("Midlertidig utilgjengelig med aktør {} opprettes av {}", inbound.getAktørId(), innloggetVeileder);
 
-        if (datoErTilbakeITid(midlertidigUtilgjengeligDto.getTilDato())) {
+        if (datoErTilbakeITid(inbound.getTilDato())) {
             return ResponseEntity.badRequest().body(DATO_TILBAKE_I_TID_FEIL);
         }
 
-        if (datoErMerEnn30DagerFremITid(midlertidigUtilgjengeligDto.getTilDato())) {
+        if (datoErMerEnn30DagerFremITid(inbound.getTilDato())) {
             return ResponseEntity.badRequest().body(DATO_MER_ENN_30_DAGER_FREM_I_TID_FEIL);
         }
 
-        if (service.midlertidigTilgjengeligEksisterer(midlertidigUtilgjengeligDto.getAktørId())) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Det er allerede registrert at kandidaten er midlertidig utilgjengelig");
+        if (service.midlertidigTilgjengeligEksisterer(inbound.getAktørId())) {
+            return status(HttpStatus.CONFLICT).body("Det er allerede registrert at kandidaten er midlertidig utilgjengelig");
         }
 
-        Optional<MidlertidigUtilgjengelig> lagret = service.opprettMidlertidigUtilgjengelig(midlertidigUtilgjengeligDto, innloggetVeileder);
-        if (lagret.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        return service.opprettMidlertidigUtilgjengelig(inbound, innloggetVeileder).
+                map(MidlertidigUtilgjengeligOutboundDto::new).
+                map(outbound -> status(CREATED).body(outbound)).
+                orElse(status(INTERNAL_SERVER_ERROR).build());
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(lagret.get());
     }
 
     @PutMapping("/{aktørId}")
-    public ResponseEntity<?> putMidlertidigUtilgjengelig(@PathVariable("aktørId") String aktørId, @RequestBody MidlertidigUtilgjengeligDto midlertidigUtilgjengeligDto) {
+    public ResponseEntity<?> putMidlertidigUtilgjengelig(@PathVariable("aktørId") String aktørId, @RequestBody MidlertidigUtilgjengeligInboundDto dto) {
         Veileder innloggetVeileder = tilgangskontroll.hentInnloggetVeileder();
 
         log.info("Midlertidig utilgjengelig med aktør {} oppdateres av {}", aktørId, innloggetVeileder);
 
-        if (datoErTilbakeITid(midlertidigUtilgjengeligDto.getTilDato())) {
+        if (datoErTilbakeITid(dto.getTilDato())) {
             return ResponseEntity.badRequest().body(DATO_TILBAKE_I_TID_FEIL);
         }
 
-        if (datoErMerEnn30DagerFremITid(midlertidigUtilgjengeligDto.getTilDato())) {
+        if (datoErMerEnn30DagerFremITid(dto.getTilDato())) {
             return ResponseEntity.badRequest().body(DATO_MER_ENN_30_DAGER_FREM_I_TID_FEIL);
         }
 
-        if (!aktørId.equals(midlertidigUtilgjengeligDto.getAktørId())) {
+        if (!aktørId.equals(dto.getAktørId())) {
             return ResponseEntity.badRequest().body("Aktør-id er annerledes i URL og body");
         }
 
-        Optional<MidlertidigUtilgjengelig> endret = service.endreMidlertidigTilgjengelig(aktørId, midlertidigUtilgjengeligDto.getTilDato(), innloggetVeileder);
-
-        return endret.isEmpty() ?
-                ResponseEntity.notFound().build() : ResponseEntity.ok(endret.get());
+        return service.endreMidlertidigTilgjengelig(aktørId, dto.getTilDato(), innloggetVeileder).
+                map(MidlertidigUtilgjengeligOutboundDto::new).
+                map(ResponseEntity::ok).
+                orElse(notFound().build());
     }
 
     @DeleteMapping("/{aktørId}")
@@ -115,9 +115,9 @@ public class MidlertidigUtilgjengeligController {
 
         Integer antallOppdaterteRader = service.slettMidlertidigUtilgjengelig(aktørId, innloggetVeileder);
         if (antallOppdaterteRader == 0) {
-            return ResponseEntity.notFound().build();
+            return notFound().build();
         }
 
-        return ResponseEntity.ok().build();
+        return ok().build();
     }
 }

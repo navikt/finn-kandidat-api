@@ -1,5 +1,6 @@
 package no.nav.finnkandidatapi.midlertidigutilgjengelig;
 
+import lombok.val;
 import no.nav.finnkandidatapi.TestData;
 import no.nav.finnkandidatapi.kandidat.Veileder;
 import no.nav.finnkandidatapi.tilgangskontroll.TilgangskontrollService;
@@ -46,24 +47,37 @@ public class MidlertidigUtilgjengeligControllerTest {
         var response = controller.getMidlertidigUtilgjengelig(midlertidigUtilgjengelig.getAktørId());
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody() instanceof MidlertidigUtilgjengelig);
-        assertThat((MidlertidigUtilgjengelig)response.getBody()).isEqualTo(midlertidigUtilgjengelig);
+        assertThat(response.getBody()).isInstanceOf(MidlertidigUtilgjengeligOutboundDto.class);
+        MidlertidigUtilgjengelig actual = ((MidlertidigUtilgjengeligOutboundDto) response.getBody()).getMidlertidigUtilgjengelig();
+        assertThat(actual).isEqualTo(midlertidigUtilgjengelig);
+    }
+
+    @Test
+    public void getMidlertidigUtilgjengelig__skal_returnere_http200_gitt_at_ingen_data_finnes_for_aktøren() {
+        when(midlertidigUtilgjengeligService.hentMidlertidigUtilgjengelig(anyString())).thenReturn(Optional.empty());
+
+        var response = controller.getMidlertidigUtilgjengelig("aktørUtenData");
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody() instanceof MidlertidigUtilgjengeligOutboundDto);
+        val actual = ((MidlertidigUtilgjengeligOutboundDto) response.getBody()).getMidlertidigUtilgjengelig();
+        assertThat(actual).isNull();
     }
 
     @Test
     public void postMidlertidigUtilgjengelig__skal_kunne_poste_midlertidig_utilgjengelig() {
         MidlertidigUtilgjengelig midlertidigUtilgjengelig = TestData.enMidlertidigUtilgjengelig("2222222");
 
-        MidlertidigUtilgjengeligDto midlertidigUtilgjengeligDto = new MidlertidigUtilgjengeligDto(midlertidigUtilgjengelig.getAktørId(), midlertidigUtilgjengelig.getTilDato());
-        when(midlertidigUtilgjengeligService.opprettMidlertidigUtilgjengelig(
-                midlertidigUtilgjengeligDto, enVeileder))
+        MidlertidigUtilgjengeligInboundDto dto = new MidlertidigUtilgjengeligInboundDto(midlertidigUtilgjengelig.getAktørId(), midlertidigUtilgjengelig.getTilDato());
+        when(midlertidigUtilgjengeligService.opprettMidlertidigUtilgjengelig(dto, enVeileder))
                 .thenReturn(Optional.of(midlertidigUtilgjengelig));
 
-        var response = controller.postMidlertidigUtilgjengelig(midlertidigUtilgjengeligDto);
+        var response = controller.postMidlertidigUtilgjengelig(dto);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-        assertThat(response.getBody() instanceof MidlertidigUtilgjengelig);
-        assertThat(response.getBody()).isEqualTo(midlertidigUtilgjengelig);
+        assertThat(response.getBody()).isInstanceOf(MidlertidigUtilgjengeligOutboundDto.class);
+        val actual = ((MidlertidigUtilgjengeligOutboundDto) response.getBody()).getMidlertidigUtilgjengelig();
+        assertThat(actual).isEqualTo(midlertidigUtilgjengelig);
     }
 
     @Test
@@ -80,16 +94,18 @@ public class MidlertidigUtilgjengeligControllerTest {
     @Test
     public void putMidlertidigUtilgjengelig__skal_kunne_oppdatere_tildato() {
         MidlertidigUtilgjengelig midlertidigUtilgjengelig = TestData.enMidlertidigUtilgjengelig("333333");
-        MidlertidigUtilgjengeligDto midlertidigUtilgjengeligDto = new MidlertidigUtilgjengeligDto(midlertidigUtilgjengelig.getAktørId(), midlertidigUtilgjengelig.getTilDato());
+        MidlertidigUtilgjengeligInboundDto dto = new MidlertidigUtilgjengeligInboundDto(midlertidigUtilgjengelig.getAktørId(), midlertidigUtilgjengelig.getTilDato());
 
         when(midlertidigUtilgjengeligService.endreMidlertidigTilgjengelig(
                 midlertidigUtilgjengelig.getAktørId(), midlertidigUtilgjengelig.getTilDato(), enVeileder))
                 .thenReturn(Optional.of(midlertidigUtilgjengelig));
 
-        var response = controller.putMidlertidigUtilgjengelig(midlertidigUtilgjengelig.getAktørId(), midlertidigUtilgjengeligDto);
+        var response = controller.putMidlertidigUtilgjengelig(midlertidigUtilgjengelig.getAktørId(), dto);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isEqualTo(midlertidigUtilgjengelig);
+        assertThat(response.getBody()).isInstanceOf(MidlertidigUtilgjengeligOutboundDto.class);
+        val actual = ((MidlertidigUtilgjengeligOutboundDto) response.getBody()).getMidlertidigUtilgjengelig();
+        assertThat(actual).isEqualTo(midlertidigUtilgjengelig);
     }
 
     @Test
@@ -97,9 +113,9 @@ public class MidlertidigUtilgjengeligControllerTest {
         MidlertidigUtilgjengelig midlertidigUtilgjengelig = TestData.enMidlertidigUtilgjengelig("7777722");
         midlertidigUtilgjengelig.setTilDato(LocalDateTime.of(2000, 1, 1, 1, 0, 0));
 
-        MidlertidigUtilgjengeligDto midlertidigUtilgjengeligDto = new MidlertidigUtilgjengeligDto(midlertidigUtilgjengelig.getAktørId(), midlertidigUtilgjengelig.getTilDato());
+        MidlertidigUtilgjengeligInboundDto dto = new MidlertidigUtilgjengeligInboundDto(midlertidigUtilgjengelig.getAktørId(), midlertidigUtilgjengelig.getTilDato());
 
-        var response = controller.putMidlertidigUtilgjengelig(midlertidigUtilgjengelig.getAktørId(), midlertidigUtilgjengeligDto);
+        var response = controller.putMidlertidigUtilgjengelig(midlertidigUtilgjengelig.getAktørId(), dto);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 
@@ -108,9 +124,9 @@ public class MidlertidigUtilgjengeligControllerTest {
         MidlertidigUtilgjengelig midlertidigUtilgjengelig = TestData.enMidlertidigUtilgjengelig("7777722");
         midlertidigUtilgjengelig.setTilDato(LocalDateTime.now().plusDays(31));
 
-        MidlertidigUtilgjengeligDto midlertidigUtilgjengeligDto = new MidlertidigUtilgjengeligDto(midlertidigUtilgjengelig.getAktørId(), midlertidigUtilgjengelig.getTilDato());
+        MidlertidigUtilgjengeligInboundDto dto = new MidlertidigUtilgjengeligInboundDto(midlertidigUtilgjengelig.getAktørId(), midlertidigUtilgjengelig.getTilDato());
 
-        var response = controller.putMidlertidigUtilgjengelig(midlertidigUtilgjengelig.getAktørId(), midlertidigUtilgjengeligDto);
+        var response = controller.putMidlertidigUtilgjengelig(midlertidigUtilgjengelig.getAktørId(), dto);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 }

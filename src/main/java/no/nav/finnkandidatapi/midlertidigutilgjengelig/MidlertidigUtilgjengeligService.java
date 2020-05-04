@@ -25,6 +25,10 @@ public class MidlertidigUtilgjengeligService {
         return repository.hentMidlertidigUtilgjengelig(aktørId);
     }
 
+    public List<MidlertidigUtilgjengelig> hentMidlertidigUtilgjengelig(List<String> aktørIder) {
+        return repository.hentMidlertidigUtilgjengelig(aktørIder);
+    }
+
     public List<MidlertidigUtilgjengelig> hentAlleMidlertidigUtilgjengelig() {
         return repository.hentAlleMidlertidigUtilgjengelig();
     }

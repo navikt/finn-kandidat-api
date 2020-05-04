@@ -7,6 +7,10 @@ public class MidlertidigUtilgjengeligOutboundDto {
 
     private final MidlertidigUtilgjengelig payload;
 
+    public MidlertidigUtilgjengelig getPayload() {
+        return payload;
+    }
+
     public MidlertidigUtilgjengeligOutboundDto(MidlertidigUtilgjengelig payload) {
         this.payload = payload;
     }

@@ -1,16 +1,21 @@
 package no.nav.finnkandidatapi.midlertidigutilgjengelig;
 
+import com.google.common.collect.ImmutableMap;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.finnkandidatapi.DateProvider;
 import no.nav.finnkandidatapi.kandidat.Veileder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Repository
@@ -28,14 +33,16 @@ public class MidlertidigUtilgjengeligRepository {
 
     private JdbcTemplate jdbcTemplate;
     private SimpleJdbcInsert jdbcInsert;
+    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private final MidlertidigUtilgjengeligMapper midlertidigUtilgjengeligMapper;
 
     @Autowired
-    public MidlertidigUtilgjengeligRepository(JdbcTemplate jdbcTemplate, SimpleJdbcInsert simpleJdbcInsert, MidlertidigUtilgjengeligMapper midlertidigUtilgjengeligMapper, DateProvider dateProvider) {
+    public MidlertidigUtilgjengeligRepository(JdbcTemplate jdbcTemplate, SimpleJdbcInsert simpleJdbcInsert, NamedParameterJdbcTemplate namedParameterJdbcTemplate, MidlertidigUtilgjengeligMapper midlertidigUtilgjengeligMapper, DateProvider dateProvider) {
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcInsert = simpleJdbcInsert
                 .withTableName(MIDLERTIDIG_UTILGJENGELIG_TABELL)
                 .usingGeneratedKeyColumns(ID);
+        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
         this.midlertidigUtilgjengeligMapper = midlertidigUtilgjengeligMapper;
     }
 
@@ -102,6 +109,22 @@ public class MidlertidigUtilgjengeligRepository {
                     "SELECT * FROM " + MIDLERTIDIG_UTILGJENGELIG_TABELL,
                     midlertidigUtilgjengeligMapper
             );
+        } catch (EmptyResultDataAccessException e) {
+            return Collections.emptyList();
+        }
+    }
+
+    public List<MidlertidigUtilgjengelig> hentMidlertidigUtilgjengelig(List<String> aktørIder) {
+        MapSqlParameterSource aktørider = new MapSqlParameterSource(
+                ImmutableMap.of("aktørider", aktørIder)
+        );
+
+        try {
+            List<MidlertidigUtilgjengelig> midlertidigUtilgjengeligliste =
+                    namedParameterJdbcTemplate.query("SELECT * FROM " + MIDLERTIDIG_UTILGJENGELIG_TABELL + " WHERE aktor_id IN (:aktørider)",
+                            aktørider, midlertidigUtilgjengeligMapper
+                    );
+            return midlertidigUtilgjengeligliste;
         } catch (EmptyResultDataAccessException e) {
             return Collections.emptyList();
         }

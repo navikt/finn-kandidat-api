@@ -8,6 +8,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -117,6 +118,26 @@ public class MidlertidigUtilgjengeligRepositoryTest {
         assertThat(alleMidlertidigUtilgjengelig).hasSize(2);
         assertThat(alleMidlertidigUtilgjengelig.get(0)).isEqualToIgnoringGivenFields(midlertidigUtilgjengelig1, skalVæreEndret);
         assertThat(alleMidlertidigUtilgjengelig.get(1)).isEqualToIgnoringGivenFields(midlertidigUtilgjengelig2, skalVæreEndret);
+    }
+
+    @Test
+    public void hentMidlertidigUtilgjengelig_med_aktørliste__skal_returnere_alle_midlertidig_utilgjengelig_for_listen() {
+        MidlertidigUtilgjengelig midlertidigUtilgjengelig1 = enMidlertidigUtilgjengelig("1000000000400");
+        MidlertidigUtilgjengelig midlertidigUtilgjengelig2 = enMidlertidigUtilgjengelig("1000000000401");
+        MidlertidigUtilgjengelig midlertidigUtilgjengelig3 = enMidlertidigUtilgjengelig("1000000000402");
+        repository.lagreMidlertidigUtilgjengelig(midlertidigUtilgjengelig1);
+        repository.lagreMidlertidigUtilgjengelig(midlertidigUtilgjengelig2);
+        repository.lagreMidlertidigUtilgjengelig(midlertidigUtilgjengelig3);
+
+        List<MidlertidigUtilgjengelig> liste =
+                repository.hentMidlertidigUtilgjengelig(
+                        Arrays.asList("1000000000400", "1000000000402")
+                );
+
+        String[] skalVæreEndret = {"sistEndretAvIdent", "sistEndretAvNavn"};
+        assertThat(liste).hasSize(2);
+        assertThat(liste.get(0)).isEqualToIgnoringGivenFields(midlertidigUtilgjengelig1, skalVæreEndret);
+        assertThat(liste.get(1)).isEqualToIgnoringGivenFields(midlertidigUtilgjengelig3, skalVæreEndret);
     }
 
 }

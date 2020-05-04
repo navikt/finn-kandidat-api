@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static no.nav.finnkandidatapi.tilgangskontroll.TokenUtils.ISSUER_ISSO;
 import static org.springframework.http.HttpStatus.CREATED;
@@ -56,6 +58,15 @@ public class MidlertidigUtilgjengeligController {
                 map(MidlertidigUtilgjengeligOutboundDto::new).
                 orElse(new MidlertidigUtilgjengeligOutboundDto(null));
         return ok(dto);
+    }
+
+    @PostMapping("/aktører")
+    public ResponseEntity<List<MidlertidigUtilgjengeligOutboundDto>> getMidlertidigUtilgjengelig(@RequestBody List<String> aktørIder) {
+        tilgangskontroll.hentInnloggetVeileder();
+        List<MidlertidigUtilgjengeligOutboundDto> dtoliste = service.hentMidlertidigUtilgjengelig(aktørIder).stream()
+                .map(MidlertidigUtilgjengeligOutboundDto::new)
+                .collect(Collectors.toList());
+        return ok(dtoliste);
     }
 
     @PostMapping

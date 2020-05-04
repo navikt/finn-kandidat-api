@@ -12,6 +12,8 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.context.ApplicationEventPublisher;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -47,6 +49,25 @@ public class MidlertidigUtilgjengeligServiceTest {
 
         Optional<MidlertidigUtilgjengelig> response = service.hentMidlertidigUtilgjengelig(midlertidigUtilgjengelig.getAktørId());
         assertThat(response).isNotEmpty().get().isEqualTo(midlertidigUtilgjengelig);
+    }
+
+    @Test
+    public void hentMidlertidigUtilgjengelig__kan_hente_midlertidig_utilgjengelig_liste() {
+
+        MidlertidigUtilgjengelig midlertidigUtilgjengelig = TestData.enMidlertidigUtilgjengelig("555555");
+        MidlertidigUtilgjengelig midlertidigUtilgjengelig2 = TestData.enMidlertidigUtilgjengelig("666666");
+
+        when(repository.hentMidlertidigUtilgjengelig(
+                Arrays.asList(midlertidigUtilgjengelig.getAktørId())
+        ))
+                .thenReturn(Arrays.asList(midlertidigUtilgjengelig, midlertidigUtilgjengelig2));
+
+        List<MidlertidigUtilgjengelig> response = service.hentMidlertidigUtilgjengelig(
+                Arrays.asList(midlertidigUtilgjengelig.getAktørId()));
+        assertThat(response)
+                .isNotEmpty()
+                .contains(midlertidigUtilgjengelig)
+                .contains(midlertidigUtilgjengelig2);
     }
 
     @Test

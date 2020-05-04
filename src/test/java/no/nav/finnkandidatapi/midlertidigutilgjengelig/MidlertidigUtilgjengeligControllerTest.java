@@ -12,6 +12,9 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -128,5 +131,25 @@ public class MidlertidigUtilgjengeligControllerTest {
 
         var response = controller.putMidlertidigUtilgjengelig(midlertidigUtilgjengelig.getAktørId(), dto);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    public void getMidlertidigUtilgjengelig__skal_kunne_hente_midlertidig_utilgjengelig_liste() {
+        MidlertidigUtilgjengelig midlertidigUtilgjengelig = TestData.enMidlertidigUtilgjengelig("111111");
+        MidlertidigUtilgjengelig midlertidigUtilgjengelig2 = TestData.enMidlertidigUtilgjengelig("222222");
+
+        List<MidlertidigUtilgjengelig> midlertidigUtilgjengeligListe = Arrays.asList(midlertidigUtilgjengelig, midlertidigUtilgjengelig2);
+        when(midlertidigUtilgjengeligService.hentMidlertidigUtilgjengelig(
+                Arrays.asList(midlertidigUtilgjengelig.getAktørId(), midlertidigUtilgjengelig2.getAktørId())))
+                .thenReturn(midlertidigUtilgjengeligListe);
+
+        var response = controller.getMidlertidigUtilgjengelig(
+                Arrays.asList(midlertidigUtilgjengelig.getAktørId(), midlertidigUtilgjengelig2.getAktørId()));
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isInstanceOf(ArrayList.class);
+        assertThat((List) response.getBody()).hasOnlyElementsOfType(MidlertidigUtilgjengeligOutboundDto.class);
+        List<MidlertidigUtilgjengeligOutboundDto> body = response.getBody();
+        assertThat(body.stream().map(b -> b.getMidlertidigUtilgjengelig())).hasSameElementsAs(midlertidigUtilgjengeligListe);
     }
 }

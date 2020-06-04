@@ -3,7 +3,6 @@ package no.nav.finnkandidatapi.tilgangskontroll;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import no.nav.common.abac.Pep;
-import no.nav.common.abac.domain.AbacPersonId;
 import no.nav.common.abac.domain.request.ActionId;
 import no.nav.common.abac.exception.PepException;
 import no.nav.finnkandidatapi.kandidat.Veileder;
@@ -11,6 +10,7 @@ import no.nav.finnkandidatapi.tilgangskontroll.veilarbabac.VeilarbabacClient;
 import no.nav.finnkandidatapi.unleash.FeatureToggleService;
 import org.springframework.stereotype.Service;
 
+import static no.nav.common.abac.domain.AbacPersonId.aktorId;
 import static no.nav.finnkandidatapi.unleash.UnleashConfiguration.ABAC_UTEN_VEILARBABAC;
 
 @Slf4j
@@ -55,8 +55,8 @@ public class TilgangskontrollService {
     private boolean hentTilgang(Veileder veileder, String aktørId, TilgangskontrollAction action) {
         if (featureToggle.isEnabled(ABAC_UTEN_VEILARBABAC)) {
             log.info("Feature toggle enabled: [" + ABAC_UTEN_VEILARBABAC + "]");
-            val actionId = ActionId.valueOf(action.name().toUpperCase());
-            val personId = AbacPersonId.aktorId(aktørId);
+            val actionId = actionId(action);
+            val personId = aktorId(aktørId);
             try {
                 pep.sjekkVeilederTilgangTilBruker(veileder.getNavIdent(), actionId, personId);
             } catch (PepException e) {
@@ -81,5 +81,11 @@ public class TilgangskontrollService {
 
     public Veileder hentInnloggetVeileder() {
         return tokenUtils.hentInnloggetVeileder();
+    }
+
+    private static ActionId actionId(TilgangskontrollAction action) {
+        if (TilgangskontrollAction.update == action) return ActionId.WRITE;
+        else if (TilgangskontrollAction.read == action) return ActionId.READ;
+        else throw new RuntimeException("Uventet enum-verdi: " + action);
     }
 }

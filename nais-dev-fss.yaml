@@ -20,6 +20,9 @@ spec:
     initialDelay: 30
   vault:
     enabled: true
+    paths:
+      - kvPath: /serviceuser/data/dev/srvfinn-kandidat-api
+        mountPath: /secret/serviceuser
   webproxy: false
   prometheus:
     enabled: true

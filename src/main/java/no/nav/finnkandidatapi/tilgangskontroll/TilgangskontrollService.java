@@ -58,7 +58,7 @@ public class TilgangskontrollService {
             val actionId = actionId(action);
             val personId = aktorId(aktørId);
             try {
-                pep.sjekkVeilederTilgangTilBruker(veileder.getNavIdent(), actionId, personId);
+                pep.sjekkVeiledertilgangTilPerson(veileder.getNavIdent(), actionId, personId);
             } catch (PepException e) {
                 val msg = "Veileder " + veileder + " har ikke tilgang " + action + " for aktørId " + aktørId + ".";
                 log.debug(msg, e);

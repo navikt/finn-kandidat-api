@@ -212,12 +212,19 @@
         </dependency>
 
         <dependency>
+            <!-- Lagt til pga runtime feil i no.nav.common:abac:2.2020.06.05_16.22-132f573edaef, som er planlagt fikset.
+             Dvs. denne kan kanskje fjernes når vi oppgraderer no.nav.common:abac-->
+            <groupId>no.nav.common</groupId>
+            <artifactId>util</artifactId>
+            <version>2.2020.06.05_16.22-132f573edaef</version>
+        </dependency>
+        <dependency>
             <groupId>no.nav.common</groupId>
             <artifactId>abac</artifactId>
             <version>2.2020.06.05_16.22-132f573edaef</version>
             <exclusions>
                 <exclusion>
-                    <!-- Skal vanligvis ikke være nødvendig med denne exclusion men det er noe rart med dette prosjektet -->
+                    <!-- Det skal vanligvis ikke være nødvendig med denne exclusion men det er noe rart med dette prosjektet -->
                     <groupId>net.minidev</groupId>
                     <artifactId>json-smart</artifactId>
                 </exclusion>

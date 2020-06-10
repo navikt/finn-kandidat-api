@@ -210,6 +210,19 @@
             <artifactId>shedlock-provider-jdbc-template</artifactId>
             <version>4.5.1</version>
         </dependency>
+
+        <dependency>
+            <groupId>no.nav.common</groupId>
+            <artifactId>abac</artifactId>
+            <version>2.2020.05.28_13.26-8e581baa1ccb</version>
+            <exclusions>
+                <exclusion>
+                    <!-- Det skal vanligvis ikke være nødvendig med denne exclusion men det er noe rart med dette prosjektet -->
+                    <groupId>net.minidev</groupId>
+                    <artifactId>json-smart</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
     </dependencies>
 
     <build>

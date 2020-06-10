@@ -23,6 +23,8 @@ public class UnleashConfiguration {
     public static final String HENT_OPPFØLGINGSBRUKER_VED_OPPRETT_KANDIDAT =
             "finnkandidat.hent-oppfolgingsbruker-ved-opprett-kandidat";
 
+    public static final String ABAC_UTEN_VEILARBABAC = "finn-kandidat-api.abac-uten-veilarbabac";
+
     @Profile({"dev", "prod"})
     @Bean
     public Unleash unleash(
@@ -52,6 +54,7 @@ public class UnleashConfiguration {
         fakeUnleash.enable(HENT_OPPFØLGINGSBRUKER_VED_OPPRETT_KANDIDAT);
         fakeUnleash.enable(TilgangskontrollService.FINN_KANDIDAT_PILOTTILGANG_KONTOR);
         fakeUnleash.enable(PilottilgangController.REGISTRER_TILRETTELEGGINGSBEHOV);
+        fakeUnleash.enable(ABAC_UTEN_VEILARBABAC);
         return fakeUnleash;
     }
 }

@@ -58,6 +58,8 @@ veilarboppfolging.url: ${mock.baseUrl}/veilarboppfolging/api
 
 SERVICEBRUKER_BRUKERNAVN: na
 SERVICEBRUKER_PASSORD: na
+SERVICEUSER_USERNAME: na
+SERVICEUSER_PASSWORD: na
 
 oppfolging-avsluttet.topic: en-kafka-topic
 oppfolging-endret.topic: en-annen-kafka-topic
@@ -113,7 +115,7 @@ nais.cluster-name: ${NAIS_CLUSTER_NAME}
 
 sts.url: https://security-token-service.nais.preprod.local/rest/v1
 veilarbabac.url: https://veilarbabac-q1.nais.preprod.local
-abac.url: https://wasapp-q1.adeo.no/asm-pdp/authorize
+abac.url: https://wasapp-q0.adeo.no/asm-pdp/authorize
 aktørregister.url: https://app-q0.adeo.no/aktoerregister/api/v1
 unleash.url: https://unleash.nais.adeo.no/api/
 veilarbarena.url: https://veilarbarena-q0.nais.preprod.local/veilarbarena/api

@@ -17,6 +17,13 @@ Swagger-dokumentajonen finnes på http://localhost:8080/finn-kandidat-api/swagge
 Bruk Swagger UI til å føst sende en GET til endepunktet token-generator-controller > /local/isso-login. Deretter kall det endepunktet du ønsker å teste.
  
 
+## Manuell test i dev
+Du kan gå inn i "Arbeidsrettet oppfølging" på https://app-q0.adeo.no/veilarbpersonflatefs/10057529976?enhet=0104 og f.eks. registrere tilretteleggingsbehov.
+Brukernavn: Z992822
+
+Hvis du vil registrere på en annen person kan du gå via dekoratøren > Enhetens oversikt > Søke opp en person > Gå inn på personen > Detaljer
+
+
 ## Database for utvikling
 
 Vi bruker `h2` som database under utvikling når du kjører lokalt. For å se, endre og slette kandidater kan du logge deg inn på [localhost:8080/finn-kandidat-api/h2](http://localhost:8080/finn-kandidat-api/h2). Bruk standard brukernavn og passord og følgende URL:

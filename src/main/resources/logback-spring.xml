@@ -8,6 +8,7 @@
         <logger name="jsonLogger" additivity="false" level="DEBUG">
             <appender-ref ref="consoleAppender"/>
         </logger>
+        <logger name="no.nav.finnkandidatapi" level="TRACE"/>
         <root level="INFO">
             <appender-ref ref="consoleAppender"/>
         </root>

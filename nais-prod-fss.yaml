@@ -23,7 +23,7 @@ spec:
   vault:
     enabled: true
     paths:
-      - kvPath: /serviceuser/data/dev/srvfinn-kandidat-api
+      - kvPath: /serviceuser/data/prod/srvfinn-kandidat-api
         mountPath: /secret/serviceuser
   webproxy: false
   prometheus:

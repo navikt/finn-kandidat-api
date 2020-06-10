@@ -12,8 +12,8 @@ spec:
     limits:
       memory: 2048Mi
   ingresses:
-  - https://arbeidsgiver.nais.adeo.no/finn-kandidat-api/
-  - https://app.adeo.no/finn-kandidat-api/
+    - https://arbeidsgiver.nais.adeo.no/finn-kandidat-api/
+    - https://app.adeo.no/finn-kandidat-api/
   liveness:
     path: /finn-kandidat-api/internal/actuator/health
     initialDelay: 30
@@ -22,10 +22,13 @@ spec:
     initialDelay: 30
   vault:
     enabled: true
+    paths:
+      - kvPath: /serviceuser/data/dev/srvfinn-kandidat-api
+        mountPath: /secret/serviceuser
   webproxy: false
   prometheus:
     enabled: true
     path: /finn-kandidat-api/internal/actuator/prometheus
   env:
-  - name: SPRING_PROFILES_ACTIVE
-    value: prod
+    - name: SPRING_PROFILES_ACTIVE
+      value: prod

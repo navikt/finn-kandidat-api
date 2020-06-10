@@ -10,8 +10,8 @@ spec:
   team: {{team}}
   port: 8080
   ingresses:
-  - https://arbeidsgiver.nais.preprod.local/finn-kandidat-api/
-  - https://app-q0.adeo.no/finn-kandidat-api/
+    - https://arbeidsgiver.nais.preprod.local/finn-kandidat-api/
+    - https://app-q0.adeo.no/finn-kandidat-api/
   liveness:
     path: /finn-kandidat-api/internal/actuator/health
     initialDelay: 30
@@ -28,5 +28,5 @@ spec:
     enabled: true
     path: /finn-kandidat-api/internal/actuator/prometheus
   env:
-  - name: SPRING_PROFILES_ACTIVE
-    value: dev
+    - name: SPRING_PROFILES_ACTIVE
+      value: dev

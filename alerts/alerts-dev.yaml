@@ -1,4 +1,4 @@
-apiVersion: "nais.io/v1alpha1"
+apiVersion: "nais.io/v1"
 kind: "Alert"
 metadata:
   name: finn-kandidat-api-alert
@@ -8,46 +8,42 @@ spec:
   receivers:
     slack:
       channel: 'inkludering-alerts-dev'
+      prependText: 'finn-kandidat-api: '
   alerts:
-    - alert: (finn-kandidat-api) Konsumering av avsluttet oppfølging-melding feilet
+    - alert: Konsumering av avsluttet oppfølging-melding feilet
       expr: sum(increase(finnkandidat_avsluttetoppfolging_feilet_total[5m])) > 0
       for: 1m
       action: "Gå i Kibana og søk etter følgende for de siste 10 min: application:finn-kandidat-api AND envclass:q AND level:Error"
-    - alert: (finn-kandidat-api) Publisering av kafkamelding til PAM feilet
+    - alert: Publisering av kafkamelding til PAM feilet
       expr: sum(increase(finnkandidat_hartilretteleggingsbehov_feilet_total{app="finn-kandidat-api"}[10m])) > 0
       for: 1m
       action: "Gå inn i Kibana (https://logs.adeo.no) og søk etter følgende for de siste 15 minutter: application:finn-kandidat-api AND envclass:q AND level:Error"
-    - alert: finn-kandidat-api er nede
+    - alert: Applikasjonen er nede (har ingen Kubernetes-poder oppe)
       expr: sum(up{app="finn-kandidat-api", job="kubernetes-pods"}) == 0
       for: 2m
       description: "{{ $labels.app }} er nede i {{ $labels.kubernetes_namespace }}"
       action: "`kubectl describe pod {{ $labels.kubernetes_pod_name }} -n {{ $labels.kubernetes_namespace }}` for events, og `kubectl logs {{ $labels.kubernetes_pod_name }} -n {{ $labels.kubernetes_namespace }}` for logger"
-    - alert: (finn-kandidat-api) Økning log level ERROR
+    - alert: Økning log level ERROR
       severity: danger
       expr: (100 * sum by (log_app, log_namespace) (rate(logd_messages_total{log_app="finn-kandidat-api",log_level=~"Error"}[3m])) / sum by (log_app, log_namespace) (rate(logd_messages_total{log_app="finn-kandidat-api"}[3m]))) > 1
       for: 3m
       action: "Sjekk loggene til {{ $labels.log_app }} for å se hvorfor det er så mye errors"
-    - alert: (finn-kandidat-api) Høy økning log level WARNING
-      severity: danger
+    - alert: Økning log level WARNING
+      severity: warning
       expr: (100 * sum by (log_app, log_namespace) (rate(logd_messages_total{log_app="finn-kandidat-api",log_level=~"Warning"}[3m])) / sum by (log_app, log_namespace) (rate(logd_messages_total{log_app="finn-kandidat-api"}[3m]))) > 20
       for: 3m
-      action: "Sjekk loggene til {{ $labels.log_app }} for å se hvorfor det er så mye warnings"
-    - alert: (finn-kandidat-api) Lav økning log level WARNING
-      severity: warning
-      expr: (100 * sum by (log_app, log_namespace) (rate(logd_messages_total{log_app="finn-kandidat-api",log_level=~"Warning"}[3m])) / sum by (log_app, log_namespace) (rate(logd_messages_total{log_app="finn-kandidat-api"}[3m]))) > 1
-      for: 3m
-      action: "Sjekk loggene til {{ $labels.log_app }} for å se hvorfor det forekommer warnings"
-    - alert: (finn-kandidat-api) Feil i selftest
+      action: "Sjekk loggene til {{ $labels.log_app }} for å se hvorfor det er så mange warnings"
+    - alert: Feil i selftest
       severity: danger
       expr: selftests_aggregate_result_status{app="finn-kandidat-api"} > 0
       for: 1m
       action: "Sjekk {{ $labels.app }} sine selftest for å se hva som er galt"
-    - alert: (finn-kandidat-api) Økning HTTP serverfeil (5xx responser)
+    - alert: Økning HTTP serverfeil (5xx responser)
       severity: danger
       expr: (100 * (sum by (backend) (rate(traefik_backend_requests_total{code=~"^5\\d\\d", backend=~"arbeidsgiver.nais.*/finn-kandidat-api/*"}[3m])) / sum by (backend) (rate(traefik_backend_requests_total{backend=~"arbeidsgiver.nais.*/finn-kandidat-api/*"}[3m])))) > 1
       for: 3m
       action: "Sjekk loggene for å se hvorfor {{ $labels.backend }} returnerer HTTP feilresponser"
-    - alert: (finn-kandidat-api) Økning HTTP klientfeil (4xx responser andre enn 401)
+    - alert: Økning HTTP klientfeil (4xx responser andre enn 401)
       severity: warning
       expr: (100 * (sum by (backend) (rate(traefik_backend_requests_total{code=~"^4\\d[0,2-9]", backend=~"arbeidsgiver.nais.*/finn-kandidat-api/*"}[3m])) / sum by (backend) (rate(traefik_backend_requests_total{backend=~"arbeidsgiver.nais.*/finn-kandidat-api/*"}[3m])))) > 60
       for: 3m

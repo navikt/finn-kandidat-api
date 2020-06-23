@@ -265,6 +265,10 @@
                     <id>internal-mirror-github-navikt</id>
                     <url>https://repo.adeo.no/repository/github-package-registry-navikt/</url>
                 </repository>
+                <repository>
+                    <id>confluents repo</id>
+                    <url>https://packages.confluent.io/maven/</url>
+                </repository>
             </repositories>
 
         </profile>

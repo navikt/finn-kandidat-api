@@ -19,7 +19,7 @@ Bruk Swagger UI til å føst sende en GET til endepunktet token-generator-contro
 
 ## Manuell test i dev
 Du kan gå inn i "Arbeidsrettet oppfølging" på https://app-q0.adeo.no/veilarbpersonflatefs/10057529976?enhet=0104 og f.eks. registrere tilretteleggingsbehov.
-Brukernavn: Z992822
+Brukernavn: Z994379
 
 Hvis du vil registrere på en annen person kan du gå via dekoratøren > Enhetens oversikt > Søke opp en person > Gå inn på personen > Detaljer
 

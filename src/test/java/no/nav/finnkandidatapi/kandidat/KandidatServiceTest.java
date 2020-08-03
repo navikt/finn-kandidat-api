@@ -7,7 +7,6 @@ import no.nav.finnkandidatapi.kafka.oppfølgingAvsluttet.OppfølgingAvsluttetMel
 import no.nav.finnkandidatapi.metrikker.KandidatEndret;
 import no.nav.finnkandidatapi.metrikker.KandidatOpprettet;
 import no.nav.finnkandidatapi.metrikker.KandidatSlettet;
-import no.nav.finnkandidatapi.unleash.FeatureToggleService;
 import no.nav.finnkandidatapi.veilarbarena.VeilarbArenaClient;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
@@ -23,7 +22,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static no.nav.finnkandidatapi.TestData.*;
-import static no.nav.finnkandidatapi.unleash.UnleashConfiguration.HENT_OPPFØLGINGSBRUKER_VED_OPPRETT_KANDIDAT;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -51,21 +49,16 @@ public class KandidatServiceTest {
     private VeilarbArenaClient veilarbArenaClient;
 
     @Mock
-    private FeatureToggleService featureToggleService;
-
-    @Mock
     private MeterRegistry meterRegistry;
 
     @Before
     public void setUp() {
-        when(featureToggleService.isEnabled(HENT_OPPFØLGINGSBRUKER_VED_OPPRETT_KANDIDAT)).thenReturn(true);
         kandidatService = new KandidatService(
                 repository,
                 eventPublisher,
                 aktørRegisterClient,
                 dateProvider,
                 veilarbArenaClient,
-                featureToggleService,
                 meterRegistry
         );
     }

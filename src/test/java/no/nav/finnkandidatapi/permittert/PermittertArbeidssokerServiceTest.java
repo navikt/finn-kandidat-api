@@ -1,26 +1,18 @@
 package no.nav.finnkandidatapi.permittert;
 
-import io.micrometer.core.instrument.MeterRegistry;
-import no.nav.finnkandidatapi.DateProvider;
-import no.nav.finnkandidatapi.kandidat.KandidatService;
 import no.nav.finnkandidatapi.metrikker.PermittertArbeidssokerEndretEllerOpprettet;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.AdditionalMatchers;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.internal.verification.Times;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.mockito.verification.VerificationMode;
 import org.springframework.context.ApplicationEventPublisher;
 
 import java.util.Optional;
 
 import static no.nav.finnkandidatapi.TestData.*;
-import static no.nav.finnkandidatapi.unleash.UnleashConfiguration.HENT_OPPFØLGINGSBRUKER_VED_OPPRETT_KANDIDAT;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.AdditionalMatchers.not;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -74,7 +66,6 @@ public class PermittertArbeidssokerServiceTest {
     public void behandling_av_registrering_av_ukjent_arbeidssoker_skal_føre_til_opprettelse_av_arbeidssoker_i_db() {
 
         ArbeidssokerRegistrertDTO enRegistrering = enUkjentArbeidssokerRegistrering();
-        PermittertArbeidssoker enArbeidssoker = enPermittertArbeidssoker();
         PermittertArbeidssoker enLagretArbeidssoker = enLagretPermittertArbeidssoker(100);
 
         when(repository.hentNyestePermittertArbeidssoker(eq(enRegistrering.getAktørId()))).thenReturn(Optional.empty());
@@ -95,7 +86,6 @@ public class PermittertArbeidssokerServiceTest {
     public void behandling_av_registrering_av_kjent_arbeidssoker_skal_føre_til_endring_av_arbeidssoker_i_db() {
 
         ArbeidssokerRegistrertDTO enRegistrering = enUkjentArbeidssokerRegistrering();
-        PermittertArbeidssoker enArbeidssoker = enPermittertArbeidssoker();
         PermittertArbeidssoker enLagretArbeidssoker = enLagretPermittertArbeidssoker(100);
 
         when(repository.hentNyestePermittertArbeidssoker(eq(enRegistrering.getAktørId()))).thenReturn(Optional.of(enLagretArbeidssoker));

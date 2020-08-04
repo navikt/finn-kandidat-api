@@ -4,15 +4,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
-import no.finn.unleash.Unleash;
-import no.nav.finnkandidatapi.unleash.FeatureToggleService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Component;
 import org.springframework.util.concurrent.ListenableFuture;
 
-import static no.nav.finnkandidatapi.unleash.UnleashConfiguration.HAR_TILRETTELEGGINGSBEHOV_PRODUCER_FEATURE;
 
 @Component
 @Slf4j
@@ -21,20 +18,18 @@ public class HarTilretteleggingsbehovProducer {
     private static final String HAR_TILRETTELEGGINGSBEHOV_PRODUSENT_SUKSESS = "finnkandidat.hartilretteleggingsbehov.suksess";
     private static final String HAR_TILRETTELEGGINGSBEHOV_PRODUSENT_FEILET = "finnkandidat.hartilretteleggingsbehov.feilet";
 
-    private KafkaTemplate<String, String> kafkaTemplate;
-    private String topic;
-    private MeterRegistry meterRegistry;
-    private FeatureToggleService featureToggleService;
+    private final KafkaTemplate<String, String> kafkaTemplate;
+    private final String topic;
+    private final MeterRegistry meterRegistry;
 
     public HarTilretteleggingsbehovProducer(
             KafkaTemplate<String, String> kafkaTemplate,
             @Value("${kandidat-endret.topic}") String topic,
-            MeterRegistry meterRegistry, FeatureToggleService featureToggleService
+            MeterRegistry meterRegistry
     ) {
         this.kafkaTemplate = kafkaTemplate;
         this.topic = topic;
         this.meterRegistry = meterRegistry;
-        this.featureToggleService = featureToggleService;
         meterRegistry.counter(HAR_TILRETTELEGGINGSBEHOV_PRODUSENT_SUKSESS);
         meterRegistry.counter(HAR_TILRETTELEGGINGSBEHOV_PRODUSENT_FEILET);
     }
@@ -52,11 +47,6 @@ public class HarTilretteleggingsbehovProducer {
     }
 
     private void send(String key, String payload) {
-        if (!featureToggleService.isEnabled(HAR_TILRETTELEGGINGSBEHOV_PRODUCER_FEATURE)) {
-            log.info("Har tilretteleggingsbehov produsent er slått av, skulle publisere aktørId: {}", key);
-            return;
-        }
-
         ListenableFuture<SendResult<String, String>> future = kafkaTemplate.send(topic, key, payload);
         future.addCallback(result -> {
                     log.info(

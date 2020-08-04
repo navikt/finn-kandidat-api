@@ -17,8 +17,6 @@ import static no.nav.finnkandidatapi.unleash.UnleashConfiguration.ABAC_UTEN_VEIL
 @Service
 public class TilgangskontrollService {
 
-    public static final String FINN_KANDIDAT_PILOTTILGANG_KONTOR = "finnkandidat.pilottilgang.kontor";
-
     private final TokenUtils tokenUtils;
     private final VeilarbabacClient veilarbabacClient;
     private final FeatureToggleService featureToggle;

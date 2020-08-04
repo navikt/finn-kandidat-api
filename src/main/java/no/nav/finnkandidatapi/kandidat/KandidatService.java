@@ -18,8 +18,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import static no.nav.finnkandidatapi.unleash.UnleashConfiguration.HENT_OPPFØLGINGSBRUKER_VED_OPPRETT_KANDIDAT;
-
 @Slf4j
 @Service
 public class KandidatService {
@@ -31,7 +29,6 @@ public class KandidatService {
     private final AktørRegisterClient aktørRegisterClient;
     private final DateProvider dateProvider;
     private final VeilarbArenaClient veilarbarenaClient;
-    private final FeatureToggleService featureToggleService;
     private final MeterRegistry meterRegistry;
 
     public KandidatService(
@@ -40,14 +37,13 @@ public class KandidatService {
             AktørRegisterClient aktørRegisterClient,
             DateProvider dateProvider,
             VeilarbArenaClient veilarbarenaClient,
-            FeatureToggleService featureToggleService, MeterRegistry meterRegistry
+            MeterRegistry meterRegistry
     ) {
         this.kandidatRepository = kandidatRepository;
         this.eventPublisher = eventPublisher;
         this.aktørRegisterClient = aktørRegisterClient;
         this.dateProvider = dateProvider;
         this.veilarbarenaClient = veilarbarenaClient;
-        this.featureToggleService = featureToggleService;
         this.meterRegistry = meterRegistry;
         meterRegistry.counter(ENDRET_OPPFØLGING_OPPDATERTE_NAVKONTOR);
     }
@@ -61,13 +57,8 @@ public class KandidatService {
     }
 
     public Optional<Kandidat> opprettKandidat(KandidatDto kandidat, Veileder innloggetVeileder) {
-        String navKontor = null;
-        if (featureToggleService.isEnabled(HENT_OPPFØLGINGSBRUKER_VED_OPPRETT_KANDIDAT)) {
-            Oppfølgingsbruker oppfølgingsbruker = veilarbarenaClient.hentOppfølgingsbruker(kandidat.getFnr(), kandidat.getAktørId());
-            navKontor = oppfølgingsbruker.getNavKontor();
-        } else {
-            log.info("Setter navkontor til null siden {} er slått av", HENT_OPPFØLGINGSBRUKER_VED_OPPRETT_KANDIDAT);
-        }
+        Oppfølgingsbruker oppfølgingsbruker = veilarbarenaClient.hentOppfølgingsbruker(kandidat.getFnr(), kandidat.getAktørId());
+        String navKontor = oppfølgingsbruker.getNavKontor();
 
         Kandidat kandidatTilLagring = Kandidat.opprettKandidat(
                 kandidat,

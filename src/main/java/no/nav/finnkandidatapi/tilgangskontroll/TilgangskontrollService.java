@@ -6,31 +6,19 @@ import no.nav.common.abac.Pep;
 import no.nav.common.abac.domain.request.ActionId;
 import no.nav.common.abac.exception.PepException;
 import no.nav.finnkandidatapi.kandidat.Veileder;
-import no.nav.finnkandidatapi.tilgangskontroll.veilarbabac.VeilarbabacClient;
-import no.nav.finnkandidatapi.unleash.FeatureToggleService;
 import org.springframework.stereotype.Service;
 
 import static no.nav.common.abac.domain.AbacPersonId.aktorId;
-import static no.nav.finnkandidatapi.unleash.UnleashConfiguration.ABAC_UTEN_VEILARBABAC;
 
 @Slf4j
 @Service
 public class TilgangskontrollService {
 
     private final TokenUtils tokenUtils;
-    private final VeilarbabacClient veilarbabacClient;
-    private final FeatureToggleService featureToggle;
     private final Pep pep;
 
-    public TilgangskontrollService(
-            TokenUtils tokenUtils,
-            VeilarbabacClient veilarbabacClient,
-            FeatureToggleService featureToggle,
-            Pep pep
-    ) {
+    public TilgangskontrollService(TokenUtils tokenUtils, Pep pep) {
         this.tokenUtils = tokenUtils;
-        this.veilarbabacClient = veilarbabacClient;
-        this.featureToggle = featureToggle;
         this.pep = pep;
     }
 
@@ -51,30 +39,20 @@ public class TilgangskontrollService {
     }
 
     private boolean hentTilgang(Veileder veileder, String aktørId, TilgangskontrollAction action) {
-        if (featureToggle.isEnabled(ABAC_UTEN_VEILARBABAC)) {
-            log.info("Feature toggle enabled: [" + ABAC_UTEN_VEILARBABAC + "]");
-            val actionId = actionId(action);
-            val personId = aktorId(aktørId);
-            try {
-                pep.sjekkVeilederTilgangTilBruker(veileder.getNavIdent(), actionId, personId);
-            } catch (PepException e) {
-                val msg = "Veileder " + veileder + " har ikke tilgang " + action + " for aktørId " + aktørId + ".";
-                log.debug(msg, e);
-                return false;
-            } catch (Exception e) {
-                val msg = "Forsøkte å sjekke tilgang i ABAC";
-                log.error(msg, e);
-                return false;
-            }
-            return true;
-        } else {
-            log.info("Feature toggle disabled: [" + ABAC_UTEN_VEILARBABAC + "]");
-            return veilarbabacClient.sjekkTilgang(
-                    veileder,
-                    aktørId,
-                    action
-            );
+        val actionId = actionId(action);
+        val personId = aktorId(aktørId);
+        try {
+            pep.sjekkVeilederTilgangTilBruker(veileder.getNavIdent(), actionId, personId);
+        } catch (PepException e) {
+            val msg = "Veileder " + veileder + " har ikke tilgang " + action + " for aktørId " + aktørId + ".";
+            log.debug(msg, e);
+            return false;
+        } catch (Exception e) {
+            val msg = "Forsøkte å sjekke tilgang i ABAC";
+            log.error(msg, e);
+            return false;
         }
+        return true;
     }
 
     public Veileder hentInnloggetVeileder() {

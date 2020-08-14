@@ -16,8 +16,6 @@ public class UnleashConfiguration {
 
     private static final String APP_NAME = "finn-kandidat-api";
 
-    public static final String ABAC_UTEN_VEILARBABAC = "finn-kandidat-api.abac-uten-veilarbabac";
-
     @Profile({"dev", "prod"})
     @Bean
     public Unleash unleash(
@@ -43,7 +41,6 @@ public class UnleashConfiguration {
     @Bean
     public Unleash unleashMock() {
         FakeUnleash fakeUnleash = new FakeUnleash();
-        fakeUnleash.enable(ABAC_UTEN_VEILARBABAC);
         return fakeUnleash;
     }
 }

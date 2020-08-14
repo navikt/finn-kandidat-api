@@ -8,7 +8,6 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.finnkandidatapi.veilarboppfolging.Oppfølgingsstatus;
 import no.nav.finnkandidatapi.sts.STSToken;
-import no.nav.finnkandidatapi.tilgangskontroll.veilarbabac.VeilarbabacClient;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
 
 @Profile("mock")
 @Component
@@ -33,7 +33,7 @@ public class MockServer implements DisposableBean {
     MockServer(
             @Value("${mock.port}") Integer port,
             @Value("${sts.url}") String stsUrl,
-            @Value("${veilarbabac.url}") String veilarbabacUrl,
+            @Value("${abac.url}") String abacUrl,
             @Value("${aktørregister.url}") String aktørregisterUrl,
             @Value("${veilarbarena.url}") String veilarbarenaUrl,
             @Value("${axsys.url}") String axsysUrl,
@@ -43,7 +43,7 @@ public class MockServer implements DisposableBean {
 
         this.server =  new WireMockServer(port);
 
-        mockKall(veilarbabacUrl + "/person", VeilarbabacClient.PERMIT_RESPONSE);
+        mockAbac(abacUrl);
         mockKall(stsUrl + "/sts/token", new STSToken("fdg", "asfsdg", 325));
         mockAktørregister(aktørregisterUrl);
         mockVeilarbarena(veilarbarenaUrl);
@@ -52,6 +52,21 @@ public class MockServer implements DisposableBean {
         mockKall(veilarboppfølgingUrl + "/underoppfolging?fnr=01065500791", Oppfølgingsstatus.builder().underOppfolging(false).build());
 
         server.start();
+    }
+
+    private void mockAbac(String abacUrl) {
+        String path = getPath(abacUrl);
+        server.stubFor(
+                post(WireMock.urlPathEqualTo(path)).willReturn(WireMock.aResponse()
+                        .withHeader("Content-Type", "application/json")
+                        .withStatus(HttpStatus.OK.value())
+                        .withBody("{\n" +
+                                "  \"Response\": {\n" +
+                                "    \"Decision\": \"Permit\"\n" +
+                                "  }\n" +
+                                "}")
+                )
+        );
     }
 
     private void mockAktørregister(String aktørregisterUrl) {

@@ -13,7 +13,6 @@ import java.util.concurrent.TimeUnit;
 public class CacheConfig {
 
     public static final String STS_CACHE = "sts_cache";
-    public static final String ABAC_CACHE = "abac_cache";
     public static final String AXSYS_CACHE = "axsys_cache";
 
     @Bean
@@ -22,16 +21,6 @@ public class CacheConfig {
                 Caffeine.newBuilder()
                         .maximumSize(1)
                         .expireAfterWrite(59, TimeUnit.MINUTES)
-                        .recordStats()
-                        .build());
-    }
-
-    @Bean
-    public CaffeineCache abacCache() {
-        return new CaffeineCache(ABAC_CACHE,
-                Caffeine.newBuilder()
-                        .maximumSize(10000)
-                        .expireAfterWrite(1, TimeUnit.HOURS)
                         .recordStats()
                         .build());
     }

@@ -20,11 +20,8 @@ public class TilgangskontrollConfig {
     @Value(("${SERVICEUSER_PASSWORD}"))
     private String srvPassword;
 
-
     @Bean
     public Pep veilarbPep() {
-        String srvPwLength = srvPassword != null ? String.valueOf(srvPassword.length()) : "null";
-        log.info("ABAC autentisering konfig: URL=[" + abacUrl + "], srvUsername=[" + srvUsername + "], srvPassword.length=" + srvPwLength);
         return new VeilarbPep(abacUrl, srvUsername, srvPassword);
     }
 }

@@ -21,8 +21,8 @@ spec:
     - alert: Applikasjonen er nede (har ingen Kubernetes-poder oppe)
       expr: sum(up{app="finn-kandidat-api", job="kubernetes-pods"}) == 0
       for: 2m
-      description: "{{ $labels.app }} er nede i {{ $labels.kubernetes_namespace }}"
-      action: "`kubectl describe pod {{ $labels.kubernetes_pod_name }} -n {{ $labels.kubernetes_namespace }}` for events, og `kubectl logs {{ $labels.kubernetes_pod_name }} -n {{ $labels.kubernetes_namespace }}` for logger"
+      description: "{{ $labels.app }} er nede i namespace {{ $labels.log_namespace }}"
+      action: "`kubectl describe pod {{ $labels.kubernetes_pod_name }} -n {{ $labels.log_namespace }}` for events, og `kubectl logs {{ $labels.kubernetes_pod_name }} -n {{ $labels.log_namespace }}` for logger"
     - alert: Økning log level ERROR
       severity: danger
       expr: (100 * sum by (log_app, log_namespace) (rate(logd_messages_total{log_app="finn-kandidat-api",log_level=~"Error"}[3m])) / sum by (log_app, log_namespace) (rate(logd_messages_total{log_app="finn-kandidat-api"}[3m]))) > 1
@@ -37,7 +37,7 @@ spec:
       severity: danger
       expr: selftests_aggregate_result_status{app="finn-kandidat-api"} > 0
       for: 1m
-      action: "Sjekk app {{ $labels.app }} i namespace {{ $labels.kubernetes_namespace }} sine selftest for å se hva som er galt"
+      action: "Sjekk app {{ $labels.app }} i namespace {{ $labels.log_namespace }} sin selftest for å se hva som er galt"
     - alert: Økning HTTP serverfeil (5xx responser)
       severity: danger
       expr: (100 * (sum by (backend) (rate(traefik_backend_requests_total{code=~"^5\\d\\d", backend=~"arbeidsgiver.nais.*/finn-kandidat-api/*"}[3m])) / sum by (backend) (rate(traefik_backend_requests_total{backend=~"arbeidsgiver.nais.*/finn-kandidat-api/*"}[3m])))) > 1

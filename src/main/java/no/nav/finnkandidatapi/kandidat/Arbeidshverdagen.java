@@ -5,7 +5,8 @@ public enum Arbeidshverdagen {
     TILRETTELAGTE_ARBEIDSOPPGAVER, OPPGAVER,
     MENTOR, TETT_OPPFØLGING,
     ANNET,
-    STILLE_OG_ROLIG_MILJØ;
+    STILLE_OG_ROLIG_MILJØ,
+    PERSONLIG_BISTAND;
 
     public static final String behovskategori = "arbeidshverdagen";
 }

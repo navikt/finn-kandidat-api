@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -44,14 +43,23 @@ public class VeilarbOppfolgingClient {
         headers.setBearerAuth(stsClient.hentSTSToken().getAccessToken());
         HttpEntity<String> httpEntity = new HttpEntity<>(headers);
 
-        ResponseEntity<Oppfølgingsstatus> respons = restTemplate.exchange(uri, HttpMethod.GET, httpEntity, Oppfølgingsstatus.class);
-        return respons.getBody();
+        try {
+            return restTemplate.exchange(uri, HttpMethod.GET, httpEntity, Oppfølgingsstatus.class).getBody();
+        } catch (Exception e) {
+            String urlUtenFnr = uri.replaceAll("fnr=" + fnr, "fnr=xxxxxxxxxxx");
+            String msg = "Forsøkte å hente oppfølgingsstatus med HTTP GET mot " + urlUtenFnr;
+            throw new RuntimeException(msg, e);
+        }
     }
 
     public Oppfølgingsstatus hentOppfølgingsstatus() {
         URI uri = URI.create(url + "/underoppfolging");
-        ResponseEntity<Oppfølgingsstatus> respons = restTemplate.exchange(uri, HttpMethod.GET, httpEntity(), Oppfølgingsstatus.class);
-        return respons.getBody();
+        try {
+            return restTemplate.exchange(uri, HttpMethod.GET, httpEntity(), Oppfølgingsstatus.class).getBody();
+        } catch (Exception e) {
+            String msg = "Forsøkte å hente oppfølgingsstatus med HTTP GET mot " + uri;
+            throw new RuntimeException(msg, e);
+        }
     }
 
     private HttpEntity<String> httpEntity() {

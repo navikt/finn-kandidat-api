@@ -32,3 +32,5 @@ spec:
   env:
     - name: SPRING_PROFILES_ACTIVE
       value: prod
+  envFrom:
+    - configmap: loginservice-idporten

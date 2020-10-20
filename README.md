@@ -23,6 +23,11 @@ Brukernavn: Z994379
 
 Hvis du vil registrere på en annen person kan du gå via dekoratøren > Enhetens oversikt > Søke opp en person > Gå inn på personen > Detaljer
 
+Du kan verifisere at en kandidat sine tilretteleggingsbehov vises i den personen sin "Din side" på nav.no slik:
+- Hvis di ikke allerede har gjort det, legg til stub-oidc-provider her: http://myapps.microsoft.com/ og vent på at requesten blir godkjent
+- Gå til https://www-q0.nav.no/person/personopplysninger
+- Logg først inn med din egen NAV-ident. Deretter logg inn "Uten IDPorten", fnr: 10108000398, eller med et fnr du har hentet fra Rekrutteringsbistand.
+- Scroll ned til og ekspander/klikk på "Behov for tilrettelegging".
 
 ## Database for utvikling
 

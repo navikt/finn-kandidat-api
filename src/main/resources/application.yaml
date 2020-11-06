@@ -115,7 +115,7 @@ nais.cluster-name: ${NAIS_CLUSTER_NAME}
 sts.url: https://security-token-service.nais.preprod.local/rest/v1
 abac.url: https://wasapp-q0.adeo.no/asm-pdp/authorize
 aktørregister.url: https://app-q0.adeo.no/aktoerregister/api/v1
-unleash.url: https://unleash.nais.adeo.no/api/
+unleash.url: https://unleash.nais.io/api/
 veilarbarena.url: https://veilarbarena-q0.nais.preprod.local/veilarbarena/api
 axsys.url: https://axsys.nais.preprod.local/api/v1/tilgang
 veilarboppfolging.url: http://veilarboppfolging.q0.svc.nais.local/veilarboppfolging/api
@@ -169,7 +169,7 @@ nais.cluster-name: ${NAIS_CLUSTER_NAME}
 sts.url: https://security-token-service.nais.adeo.no/rest/v1
 abac.url: https://wasapp.adeo.no/asm-pdp/authorize
 aktørregister.url: https://app.adeo.no/aktoerregister/api/v1
-unleash.url: https://unleash.nais.adeo.no/api/
+unleash.url: https://unleash.nais.io/api/
 veilarbarena.url: https://veilarbarena.nais.adeo.no/veilarbarena/api
 axsys.url: https://axsys.nais.adeo.no/api/v1/tilgang
 veilarboppfolging.url: http://veilarboppfolging.default.svc.nais.local/veilarboppfolging/api

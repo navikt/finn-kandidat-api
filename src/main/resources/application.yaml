@@ -118,7 +118,7 @@ aktørregister.url: https://app-q0.adeo.no/aktoerregister/api/v1
 unleash.url: https://unleash.nais.io/api/
 veilarbarena.url: https://veilarbarena-q0.nais.preprod.local/veilarbarena/api
 axsys.url: https://axsys.nais.preprod.local/api/v1/tilgang
-veilarboppfolging.url: http://veilarboppfolging.q0.svc.nais.local/veilarboppfolging/api
+veilarboppfolging.url: https://veilarboppfolging-q0.nais.preprod.local/veilarboppfolging/api
 
 ---
 spring:
@@ -172,4 +172,4 @@ aktørregister.url: https://app.adeo.no/aktoerregister/api/v1
 unleash.url: https://unleash.nais.io/api/
 veilarbarena.url: https://veilarbarena.nais.adeo.no/veilarbarena/api
 axsys.url: https://axsys.nais.adeo.no/api/v1/tilgang
-veilarboppfolging.url: http://veilarboppfolging.default.svc.nais.local/veilarboppfolging/api
+veilarboppfolging.url: https://veilarboppfolging.nais.adeo.no/veilarboppfolging/api

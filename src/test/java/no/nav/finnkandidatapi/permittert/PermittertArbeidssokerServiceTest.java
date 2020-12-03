@@ -29,9 +29,7 @@ public class PermittertArbeidssokerServiceTest {
 
     @Before
     public void setUp() {
-        service = new PermittertArbeidssokerService(
-                repository,
-                eventPublisher);
+        service = new PermittertArbeidssokerService(repository, eventPublisher);
     }
 
     @Test

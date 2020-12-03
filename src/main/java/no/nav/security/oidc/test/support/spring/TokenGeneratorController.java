@@ -3,6 +3,7 @@ package no.nav.security.oidc.test.support.spring;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.util.IOUtils;
 import com.nimbusds.jwt.SignedJWT;
+import lombok.val;
 import no.nav.security.oidc.test.support.JwkGenerator;
 import no.nav.security.oidc.test.support.JwtTokenGenerator;
 import no.nav.security.token.support.core.api.Unprotected;
@@ -17,8 +18,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-@RestController
-@RequestMapping("/local")
+// TODO
+//@RestController
+//@RequestMapping("/local")
 public class TokenGeneratorController {
 
     public static final String ISSO_IDTOKEN = "isso-idtoken";
@@ -87,6 +89,7 @@ public class TokenGeneratorController {
                              @RequestParam(value = "expiry", required = false) String expiry,
                              HttpServletResponse response
     ) throws IOException {
+        // TODO: Denne returnerer undefined. Hva betyr det?
         bakeCookie(subject, cookieName, redirect, expiry, response, Collections.singletonMap("NAVident", navIdent), "isso", "aud-isso");
     }
 
@@ -155,5 +158,10 @@ public class TokenGeneratorController {
         public String[] getParams() {
             return params;
         }
+    }
+
+    public Cookie lagCookie() {
+        SignedJWT token = JwtTokenGenerator.createSignedJWT("X123456", "isso", "aud-isso");
+        return new Cookie("isso-idtoken", token.serialize());
     }
 }

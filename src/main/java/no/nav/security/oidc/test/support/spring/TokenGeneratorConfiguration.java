@@ -9,8 +9,9 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-@Configuration
-@Import(TokenGeneratorController.class)
+// TODO: Fjern
+//@Configuration
+//@Import(TokenGeneratorController.class)
 public class TokenGeneratorConfiguration implements WebMvcConfigurer {
     /**
      * To be able to ovverride the oidc validation properties in

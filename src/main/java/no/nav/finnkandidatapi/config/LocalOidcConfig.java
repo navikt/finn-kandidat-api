@@ -7,9 +7,9 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Profile;
 
 // TODO: Sjekk dette er riktig
-@Configuration
 //@Import(TokenGeneratorConfiguration.class)
-@EnableMockOAuth2Server
-@Profile({"local"})
+@Configuration
+@Profile("local")
+//@EnableMockOAuth2Server
 public class LocalOidcConfig {
 }

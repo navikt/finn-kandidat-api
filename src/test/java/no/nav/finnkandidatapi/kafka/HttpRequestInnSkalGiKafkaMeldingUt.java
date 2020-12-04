@@ -4,7 +4,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.HarTilretteleggingsbehov;
 import no.nav.finnkandidatapi.kandidat.*;
+import no.nav.security.mock.oauth2.MockOAuth2Server;
+import no.nav.security.mock.oauth2.token.DefaultOAuth2TokenCallback;
 import no.nav.security.token.support.spring.test.EnableMockOAuth2Server;
+import no.nav.security.token.support.test.JwtTokenGenerator;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -27,7 +30,7 @@ import java.net.URI;
 import java.time.Duration;
 import java.util.*;
 
-import static no.nav.finnkandidatapi.TestData.enKandidatDto;
+import static no.nav.finnkandidatapi.TestData.*;
 import static org.apache.kafka.clients.consumer.ConsumerConfig.*;
 import static org.apache.kafka.clients.consumer.OffsetResetStrategy.EARLIEST;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,6 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles({"local", "mock"})
+@EnableMockOAuth2Server
 @DirtiesContext
 public class HttpRequestInnSkalGiKafkaMeldingUt {
 
@@ -54,10 +58,12 @@ public class HttpRequestInnSkalGiKafkaMeldingUt {
 
     @Before
     public void setUp() {
-        String loginUrl = localBaseUrl() + "/local/isso-login";
+        URI loginUrl = URI.create(localBaseUrl() + "/jejjo/egenmekka-cookie");
         // TODO: Denne funker ikke av en eller annen grunn
-        ResponseEntity<String> respons = restTemplate.getForEntity(URI.create(loginUrl), String.class);
+        ResponseEntity<String> respons = restTemplate.getForEntity(loginUrl, String.class);
         assertThat(respons.getHeaders().get("Set-Cookie")).isNotNull();
+
+//        JwtTokenGenerator.createSignedJWT("");
 
         kafkaConsumer = setupKafkaConsumer();
     }
@@ -68,6 +74,8 @@ public class HttpRequestInnSkalGiKafkaMeldingUt {
         URI uri = URI.create(localBaseUrl() + "/kandidater");
         KandidatDto dto = enKandidatDto();
         dto.setAktørId("1856024171652");
+
+//        System.out.println(token("isso", "12312312", "aud-isso"));
 
         // TODO Er ikke logga inn?
         // When HTTP opprett

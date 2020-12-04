@@ -14,7 +14,11 @@ Kommandolinje: Kjør `mvn spring:boot run` (OBS: Dette funker ikke for meg per a
 Swagger-dokumentajonen finnes på http://localhost:8080/finn-kandidat-api/swagger-ui.html
 
 ### Autentisering når appen kjører lokalt
-Bruk Swagger UI til å føst sende en GET til endepunktet token-generator-controller > /local/cookie. Deretter kall det endepunktet du ønsker å teste.
+Bruk Swagger UI til å føst sende en GET til et av endepunktene i LokalLoginController.
+- For å logge inn som veileder: GET `/local/veileder-cookie`
+- For å logge inn som ektern bruker: GET `/local/ekstern-bruker-cookie`
+
+Deretter kall det endepunktet du ønsker å teste.
  
 
 ## Manuell test i dev

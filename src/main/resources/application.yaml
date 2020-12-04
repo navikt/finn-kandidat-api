@@ -35,11 +35,10 @@ no.nav.security.jwt:
     discoveryurl: http://localhost:${mock-oauth2-server.port}/isso/.well-known/openid-configuration
     accepted_audience: aud-isso
     cookiename: isso-idtoken
-#    todo
-#  issuer.selvbetjening:
-#    discoveryurl: http://metadata-selvbetjening
-#    accepted_audience: aud-selvbetjening
-#    cookiename: selvbetjening-idtoken
+  issuer.selvbetjening:
+    discoveryurl: http://localhost:${mock-oauth2-server.port}/selvbetjening/.well-known/openid-configuration
+    accepted_audience: aud-selvbetjening
+    cookiename: selvbetjening-idtoken
 
 tilgangskontroll.tilbakemeldinger: X12345,Y23456,Z34567,X123456
 tilgangskontroll.republisering: X12345,Y23456,Z34567,X123456

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
+import java.util.Collections;
 import java.util.Map;
 
 @Profile("local")
@@ -28,12 +29,20 @@ public class LokalLoginController {
     @Unprotected
     @GetMapping("/local/veileder-cookie")
     public void hentCookieMedVeilederJwtTokenClaims(HttpServletResponse response) {
-        Cookie cookie = new Cookie("isso-idtoken", token());
+        Cookie cookie = new Cookie("isso-idtoken", veilederToken());
         cookie.setPath("/");
         response.addCookie(cookie);
     }
 
-    private String token(){
+    @Unprotected
+    @GetMapping("/local/ekstern-bruker-cookie")
+    public void hentCookieMedEksternBrukerJwtTokenClaims(HttpServletResponse response) {
+        Cookie cookie = new Cookie("selvbetjening-idtoken", eksternBrukerToken());
+        cookie.setPath("/");
+        response.addCookie(cookie);
+    }
+
+    private String veilederToken(){
         String issuerId = "isso";
         String subject = "00000000000";
         String audience = "aud-isso";
@@ -51,6 +60,23 @@ public class LokalLoginController {
                         subject,
                         audience,
                         claims,
+                        3600
+                )
+        ).serialize();
+    }
+
+    private String eksternBrukerToken(){
+        String issuerId = "selvbetjening";
+        String subject = "28037639429";
+        String audience = "aud-selvbetjening";
+        return server.issueToken(
+                issuerId,
+                "theclientid",
+                new DefaultOAuth2TokenCallback(
+                        issuerId,
+                        subject,
+                        audience,
+                        Collections.emptyMap(),
                         3600
                 )
         ).serialize();

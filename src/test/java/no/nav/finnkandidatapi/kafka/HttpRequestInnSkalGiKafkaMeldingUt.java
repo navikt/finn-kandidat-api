@@ -53,7 +53,7 @@ public class HttpRequestInnSkalGiKafkaMeldingUt {
 
     @Before
     public void setUp() {
-        URI loginUrl = URI.create(localBaseUrl() + "/local/cookie");
+        URI loginUrl = URI.create(localBaseUrl() + "/local/veileder-cookie");
         restTemplate.getForEntity(loginUrl, String.class);
 
         kafkaConsumer = setupKafkaConsumer();

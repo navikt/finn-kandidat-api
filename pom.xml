@@ -38,7 +38,6 @@
         </dependency>
 
         <!-- Må eksplisitt legge til gammel JUnit 4 pga. den er fjernet i Spring Boot 2.4.0 -->
-        <!-- TODO: Fjern JUnit 4 og gå over til JUnit 5 i alle testene  -->
         <dependency>
             <groupId>org.junit.vintage</groupId>
             <artifactId>junit-vintage-engine</artifactId>
@@ -233,8 +232,7 @@
     </build>
 
     <repositories>
-        <!-- Skal brukes hvis bygget kjører utenfor NAV (f.eks. en ekstern maskin, eller Circle CI).
-         Se https://github.com/navikt/utvikling/blob/master/Konsumere%20biblioteker%20fra%20Github%20Package%20Registry.md -->
+        <!-- Se https://github.com/navikt/utvikling/blob/master/Konsumere%20biblioteker%20fra%20Github%20Package%20Registry.md -->
         <repository>
             <id>external-mirror-github-navikt</id>
             <url>https://github-package-registry-mirror.gc.nav.no/cached/maven-release</url>
@@ -244,33 +242,5 @@
             <url>https://packages.confluent.io/maven/</url>
         </repository>
     </repositories>
-
-<!--    <profiles>-->
-        <!--        <profile>-->
-        <!--            <id>external</id>-->
-        <!--            <activation>-->
-<!--                <activeByDefault>false</activeByDefault>-->
-<!--            </activation>-->
-<!--        </profile>-->
-<!--        <profile>-->
-<!--            <id>local</id>-->
-<!--            <activation>-->
-<!--                <activeByDefault>true</activeByDefault>-->
-<!--            </activation>-->
-<!--            <repositories>-->
-<!--                &lt;!&ndash; Skal brukes hvis bygget kjører internt (f.eks. Jenkins, fra utviklerimage, eller via ScaleFT/VPN).-->
-<!--                 Se https://github.com/navikt/utvikling/blob/master/Konsumere%20biblioteker%20fra%20Github%20Package%20Registry.md&ndash;&gt;-->
-<!--                <repository>-->
-<!--                    <id>internal-mirror-github-navikt</id>-->
-<!--                    <url>https://repo.adeo.no/repository/github-package-registry-navikt/</url>-->
-<!--                </repository>-->
-<!--                <repository>-->
-<!--                    <id>confluents repo</id>-->
-<!--                    <url>https://packages.confluent.io/maven/</url>-->
-<!--                </repository>-->
-<!--            </repositories>-->
-
-<!--        </profile>-->
-<!--    </profiles>-->
 
 </project>

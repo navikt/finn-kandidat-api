@@ -32,12 +32,10 @@ import org.springframework.kafka.listener.MessageListener;
 import org.springframework.kafka.listener.SeekToCurrentErrorHandler;
 import org.springframework.kafka.test.utils.ContainerTestUtils;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
-import org.springframework.retry.backoff.ExponentialBackOffPolicy;
-import org.springframework.retry.policy.AlwaysRetryPolicy;
-import org.springframework.retry.support.RetryTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.util.backoff.ExponentialBackOff;
 
 import java.util.Date;
 import java.util.Map;
@@ -88,18 +86,10 @@ public class KafkaConsumerTest {
         ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(cf);
         factory.setConcurrency(1);
-        factory.setErrorHandler(new SeekToCurrentErrorHandler(4));
-        factory.setStatefulRetry(true);
 
-        ExponentialBackOffPolicy backOffPolicy = new ExponentialBackOffPolicy();
-        backOffPolicy.setInitialInterval(20000);
-        backOffPolicy.setMultiplier(20);
-        backOffPolicy.setMaxInterval(172800000);
-
-        RetryTemplate retryTemplate = new RetryTemplate();
-        retryTemplate.setRetryPolicy(new AlwaysRetryPolicy());
-        retryTemplate.setBackOffPolicy(backOffPolicy);
-        factory.setRetryTemplate(retryTemplate);
+        ExponentialBackOff backOff = new ExponentialBackOff(2000, 20);
+        backOff.setMaxInterval(172800000);
+        factory.setErrorHandler(new SeekToCurrentErrorHandler(backOff));
 
         container = factory.createContainer(consumerTopicProps.getTopic());
         container.setupMessageListener((MessageListener<String, String>) record -> {

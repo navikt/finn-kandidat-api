@@ -53,8 +53,8 @@ public class HttpRequestInnSkalGiKafkaMeldingUt {
 
     @Before
     public void setUp() {
-        URI loginUrl = URI.create(localBaseUrl() + "/local/veileder-cookie");
-        restTemplate.getForEntity(loginUrl, String.class);
+        String loginUrl = localBaseUrl() + "/local/veileder-cookie";
+        restTemplate.getForObject(loginUrl, String.class);
 
         kafkaConsumer = setupKafkaConsumer();
     }
@@ -140,9 +140,8 @@ public class HttpRequestInnSkalGiKafkaMeldingUt {
 
     private List<String> readKafkaMessages() {
         final List<String> messages = new ArrayList<>();
-        // TODO ta tilbake slik det var
-        ConsumerRecords<Integer, String> records = KafkaTestUtils.getRecords(kafkaConsumer, Duration.ofSeconds(10).toMillis());
-        records.forEach(record -> messages.add(record.value()));
+        KafkaTestUtils.getRecords(kafkaConsumer, Duration.ofSeconds(10).toMillis())
+                .forEach(record -> messages.add(record.value()));
         return Collections.unmodifiableList(messages);
     }
 }

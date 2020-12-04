@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.Map;
 
 @Profile("local")
+@Unprotected
 @RestController
 @RequestMapping
 public class LokalLoginController {
@@ -26,7 +27,6 @@ public class LokalLoginController {
         this.server = server;
     }
 
-    @Unprotected
     @GetMapping("/local/veileder-cookie")
     public void hentCookieMedVeilederJwtTokenClaims(HttpServletResponse response) {
         Cookie cookie = new Cookie("isso-idtoken", veilederToken());
@@ -34,7 +34,6 @@ public class LokalLoginController {
         response.addCookie(cookie);
     }
 
-    @Unprotected
     @GetMapping("/local/ekstern-bruker-cookie")
     public void hentCookieMedEksternBrukerJwtTokenClaims(HttpServletResponse response) {
         Cookie cookie = new Cookie("selvbetjening-idtoken", eksternBrukerToken());

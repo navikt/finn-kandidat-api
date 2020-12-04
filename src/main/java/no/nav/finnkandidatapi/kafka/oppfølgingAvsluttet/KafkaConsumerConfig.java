@@ -25,6 +25,7 @@ public class KafkaConsumerConfig {
         factory.setConsumerFactory(consumerFactory);
         factory.setConcurrency(1);
 
+        // 20 sek, 400 sek, ~2 timer, ~2 dager
         ExponentialBackOff backOff = new ExponentialBackOff(2000, 20);
         backOff.setMaxInterval(172800000);
         factory.setErrorHandler(new SeekToCurrentErrorHandler(backOff));

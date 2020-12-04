@@ -3,6 +3,7 @@ package no.nav.finnkandidatapi.tilgangskontroll;
 import no.nav.security.mock.oauth2.MockOAuth2Server;
 import no.nav.security.mock.oauth2.token.DefaultOAuth2TokenCallback;
 import no.nav.security.token.support.core.api.Unprotected;
+import no.nav.security.token.support.spring.test.EnableMockOAuth2Server;
 import org.springframework.context.annotation.Profile;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,7 +26,7 @@ public class LokalLoginController {
     }
 
     @Unprotected
-    @GetMapping("/local/cookie")
+    @GetMapping("/local/veileder-cookie")
     public void hentCookieMedVeilederJwtTokenClaims(HttpServletResponse response) {
         Cookie cookie = new Cookie("isso-idtoken", token());
         cookie.setPath("/");

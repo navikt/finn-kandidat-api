@@ -3,7 +3,7 @@ package no.nav.finnkandidatapi.tilgangskontroll;
 import no.nav.security.mock.oauth2.MockOAuth2Server;
 import no.nav.security.mock.oauth2.token.DefaultOAuth2TokenCallback;
 import no.nav.security.token.support.core.api.Unprotected;
-import no.nav.security.token.support.spring.test.EnableMockOAuth2Server;
+import org.springframework.context.annotation.Profile;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,8 +13,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import java.util.Map;
 
+@Profile("local")
 @RestController
-@RequestMapping("/jejjo")
+@RequestMapping
 public class LokalLoginController {
 
     private final MockOAuth2Server server;
@@ -24,8 +25,8 @@ public class LokalLoginController {
     }
 
     @Unprotected
-    @GetMapping("/egenmekka-cookie")
-    public void hentCookie(HttpServletResponse response) {
+    @GetMapping("/local/cookie")
+    public void hentCookieMedVeilederJwtTokenClaims(HttpServletResponse response) {
         Cookie cookie = new Cookie("isso-idtoken", token());
         cookie.setPath("/");
         response.addCookie(cookie);
@@ -33,8 +34,13 @@ public class LokalLoginController {
 
     private String token(){
         String issuerId = "isso";
-        String subject = "123456";
+        String subject = "00000000000";
         String audience = "aud-isso";
+        Map<String, String> claims = Map.of(
+                "NAVident", "X123456",
+                "given_name", "Ola",
+                "family_name", "Nordmann"
+        );
 
         return server.issueToken(
                 issuerId,
@@ -43,11 +49,7 @@ public class LokalLoginController {
                         issuerId,
                         subject,
                         audience,
-                        Map.of(
-                                "NAVident", "Y123456",
-                                "given_name", "Ola",
-                                "family_name", "Nordmann"
-                        ),
+                        claims,
                         3600
                 )
         ).serialize();

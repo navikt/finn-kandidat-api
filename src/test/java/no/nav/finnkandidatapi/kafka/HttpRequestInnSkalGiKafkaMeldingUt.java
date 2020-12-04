@@ -38,7 +38,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles({"local", "mock"})
-@EnableMockOAuth2Server
 @DirtiesContext
 public class HttpRequestInnSkalGiKafkaMeldingUt {
 
@@ -58,12 +57,8 @@ public class HttpRequestInnSkalGiKafkaMeldingUt {
 
     @Before
     public void setUp() {
-        URI loginUrl = URI.create(localBaseUrl() + "/jejjo/egenmekka-cookie");
-        // TODO: Denne funker ikke av en eller annen grunn
-        ResponseEntity<String> respons = restTemplate.getForEntity(loginUrl, String.class);
-        assertThat(respons.getHeaders().get("Set-Cookie")).isNotNull();
-
-//        JwtTokenGenerator.createSignedJWT("");
+        URI loginUrl = URI.create(localBaseUrl() + "/local/cookie");
+        restTemplate.getForEntity(loginUrl, String.class);
 
         kafkaConsumer = setupKafkaConsumer();
     }
@@ -75,13 +70,10 @@ public class HttpRequestInnSkalGiKafkaMeldingUt {
         KandidatDto dto = enKandidatDto();
         dto.setAktørId("1856024171652");
 
-//        System.out.println(token("isso", "12312312", "aud-isso"));
 
-        // TODO Er ikke logga inn?
         // When HTTP opprett
         ResponseEntity<String> respons = restTemplate.postForEntity(uri, dto, String.class);
         assertThat(respons.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-
 
         // Then Kafka opprett
         final List<String> opprettMsgs = readKafkaMessages();

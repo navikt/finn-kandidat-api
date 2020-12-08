@@ -43,14 +43,14 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.6</version>
+            <version>1.18.16</version>
         </dependency>
 
         <!-- database -->
         <dependency>
             <groupId>no.nav</groupId>
             <artifactId>vault-jdbc</artifactId>
-            <version>1.3.1</version>
+            <version>1.3.7</version>
         </dependency>
         <dependency>
             <groupId>org.flywaydb</groupId>
@@ -78,7 +78,7 @@
         <dependency>
             <groupId>com.nimbusds</groupId>
             <artifactId>oauth2-oidc-sdk</artifactId>
-            <version>8.19.1</version>
+            <version>8.26</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -204,44 +204,16 @@
         </plugins>
     </build>
 
-    <profiles>
-        <profile>
-            <id>external</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
-            <repositories>
-                <!-- Skal brukes hvis bygget kjører utenfor NAV (f.eks. en ekstern maskin, eller Circle CI).
-                 Se https://github.com/navikt/utvikling/blob/master/Konsumere%20biblioteker%20fra%20Github%20Package%20Registry.md -->
-                <repository>
-                    <id>external-mirror-github-navikt</id>
-                    <url>https://github-package-registry-mirror.gc.nav.no/cached/maven-release</url>
-                </repository>
-                <repository>
-                    <id>confluents repo</id>
-                    <url>https://packages.confluent.io/maven/</url>
-                </repository>
-            </repositories>
-        </profile>
-        <profile>
-            <id>local</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <repositories>
-                <!-- Skal brukes hvis bygget kjører internt (f.eks. Jenkins, fra utviklerimage, eller via ScaleFT/VPN).
-                 Se https://github.com/navikt/utvikling/blob/master/Konsumere%20biblioteker%20fra%20Github%20Package%20Registry.md-->
-                <repository>
-                    <id>internal-mirror-github-navikt</id>
-                    <url>https://repo.adeo.no/repository/github-package-registry-navikt/</url>
-                </repository>
-                <repository>
-                    <id>confluents repo</id>
-                    <url>https://packages.confluent.io/maven/</url>
-                </repository>
-            </repositories>
-
-        </profile>
-    </profiles>
+    <repositories>
+        <!-- Se https://github.com/navikt/utvikling/blob/master/Konsumere%20biblioteker%20fra%20Github%20Package%20Registry.md -->
+        <repository>
+            <id>external-mirror-github-navikt</id>
+            <url>https://github-package-registry-mirror.gc.nav.no/cached/maven-release</url>
+        </repository>
+        <repository>
+            <id>confluents repo</id>
+            <url>https://packages.confluent.io/maven/</url>
+        </repository>
+    </repositories>
 
 </project>

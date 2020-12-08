@@ -1,20 +1,16 @@
 <configuration scan="true">
     <springProfile name="dev,prod">
-        <appender name="consoleAppender"  class="no.nav.finnkandidatapi.logging.fnrmaskering.MaskingAppender">
+        <appender name="consoleAppender" class="no.nav.finnkandidatapi.logging.fnrmaskering.MaskingAppender">
             <appender name="consoleAppender" class="ch.qos.logback.core.ConsoleAppender">
                 <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
             </appender>
         </appender>
-        <logger name="jsonLogger" additivity="false" level="DEBUG">
-            <appender-ref ref="consoleAppender"/>
-        </logger>
-        <logger name="no.nav.finnkandidatapi" level="TRACE"/>
         <root level="INFO">
             <appender-ref ref="consoleAppender"/>
         </root>
     </springProfile>
     <springProfile name="local">
         <include resource="org/springframework/boot/logging/logback/base.xml"/>
-        <logger name="org.springframework.web" level="DEBUG"/>
+        <logger name="org.springframework.web" level="INFO"/>
     </springProfile>
 </configuration>

@@ -15,6 +15,7 @@ spring:
     consumer:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      auto-offset-reset: earliest
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
@@ -31,22 +32,17 @@ spring.h2.console:
 
 no.nav.security.jwt:
   issuer.isso:
-    discoveryurl: http://localhost:${mock-oauth2-server.port}/isso/.well-known/openid-configuration
+    discoveryurl: http://metadata-isso
     accepted_audience: aud-isso
     cookiename: isso-idtoken
   issuer.selvbetjening:
-    discoveryurl: http://localhost:${mock-oauth2-server.port}/selvbetjening/.well-known/openid-configuration
+    discoveryurl: http://metadata-selvbetjening
     accepted_audience: aud-selvbetjening
     cookiename: selvbetjening-idtoken
 
 tilgangskontroll.tilbakemeldinger: X12345,Y23456,Z34567,X123456
 tilgangskontroll.republisering: X12345,Y23456,Z34567,X123456
 nais.cluster-name: na
-
-spring:
-  kafka:
-    consumer:
-      auto-offset-reset: earliest
 
 mock:
   port: 8081
@@ -84,8 +80,6 @@ spring:
       ssl.truststore:
         location: ${javax.net.ssl.trustStore}
         password: ${javax.net.ssl.trustStorePassword}
-    consumer:
-      auto-offset-reset: none
 
 oppfolging-avsluttet.topic: aapen-fo-endringPaaAvsluttOppfolging-v1-q0
 oppfolging-endret.topic: aapen-fo-endringPaaOppfoelgingsBruker-v1-q0
@@ -140,8 +134,6 @@ spring:
       ssl.truststore:
         location: ${javax.net.ssl.trustStore}
         password: ${javax.net.ssl.trustStorePassword}
-    consumer:
-      auto-offset-reset: none
 
 oppfolging-avsluttet.topic: aapen-fo-endringPaaAvsluttOppfolging-v1-p
 oppfolging-endret.topic: aapen-fo-endringPaaOppfoelgingsBruker-v1-p

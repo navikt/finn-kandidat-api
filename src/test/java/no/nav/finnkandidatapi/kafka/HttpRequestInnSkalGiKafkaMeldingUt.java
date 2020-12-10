@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.HarTilretteleggingsbehov;
 import no.nav.finnkandidatapi.kandidat.*;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.junit.After;
@@ -14,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
@@ -23,7 +26,7 @@ import java.net.URI;
 import java.time.Duration;
 import java.util.*;
 
-import static no.nav.finnkandidatapi.TestData.enKandidatDto;
+import static no.nav.finnkandidatapi.TestData.*;
 import static org.apache.kafka.clients.consumer.ConsumerConfig.*;
 import static org.apache.kafka.clients.consumer.OffsetResetStrategy.EARLIEST;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -33,6 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ActiveProfiles({"local", "mock"})
 @DirtiesContext
 public class HttpRequestInnSkalGiKafkaMeldingUt {
+
     @Autowired
     private EnKafkaMockServer embeddedKafka;
 
@@ -49,7 +53,7 @@ public class HttpRequestInnSkalGiKafkaMeldingUt {
 
     @Before
     public void setUp() {
-        String loginUrl = localBaseUrl() + "/local/isso-login";
+        String loginUrl = localBaseUrl() + "/local/veileder-cookie";
         restTemplate.getForObject(loginUrl, String.class);
 
         kafkaConsumer = setupKafkaConsumer();
@@ -62,11 +66,13 @@ public class HttpRequestInnSkalGiKafkaMeldingUt {
         KandidatDto dto = enKandidatDto();
         dto.setAktørId("1856024171652");
 
+
         // When HTTP opprett
-        restTemplate.postForEntity(uri, dto, String.class);
+        ResponseEntity<String> respons = restTemplate.postForEntity(uri, dto, String.class);
+        assertThat(respons.getStatusCode()).isEqualTo(HttpStatus.CREATED);
 
         // Then Kafka opprett
-        final List<String> opprettMsgs = readKafkaMsgs();
+        final List<String> opprettMsgs = readKafkaMessages();
         assertThat(opprettMsgs).isNotEmpty();
         assertThat(opprettMsgs.size()).isEqualTo(List.of("opprett").size());
         HarTilretteleggingsbehov actualTilretteleggingsbehov = new ObjectMapper().readValue(opprettMsgs.get(0), HarTilretteleggingsbehov.class);
@@ -88,7 +94,7 @@ public class HttpRequestInnSkalGiKafkaMeldingUt {
         restTemplate.put(uri, dto);
 
         // Then Kafka endre
-        final List<String> endreMsgs = readKafkaMsgs();
+        final List<String> endreMsgs = readKafkaMessages();
         assertThat(endreMsgs).isNotEmpty();
         assertThat(endreMsgs.size()).isEqualTo(List.of("endre").size());
         actualTilretteleggingsbehov = new ObjectMapper().readValue(endreMsgs.get(0), HarTilretteleggingsbehov.class);
@@ -108,7 +114,7 @@ public class HttpRequestInnSkalGiKafkaMeldingUt {
         restTemplate.delete(deleteUri);
 
         // Then Kafka slett
-        final List<String> slettMsgs = readKafkaMsgs();
+        final List<String> slettMsgs = readKafkaMessages();
         assertThat(slettMsgs).isNotEmpty();
         assertThat(slettMsgs.size()).isEqualTo(List.of("slett").size());
         actualTilretteleggingsbehov = new ObjectMapper().readValue(slettMsgs.get(0), HarTilretteleggingsbehov.class);
@@ -132,9 +138,10 @@ public class HttpRequestInnSkalGiKafkaMeldingUt {
         return kafkaConsumer;
     }
 
-    private List<String> readKafkaMsgs() {
-        final List<String> msgs = new ArrayList<>();
-        kafkaConsumer.poll(Duration.ofSeconds(10L)).forEach(record -> msgs.add(record.value()));
-        return Collections.unmodifiableList(msgs);
+    private List<String> readKafkaMessages() {
+        final List<String> messages = new ArrayList<>();
+        KafkaTestUtils.getRecords(kafkaConsumer, Duration.ofSeconds(10).toMillis())
+                .forEach(record -> messages.add(record.value()));
+        return Collections.unmodifiableList(messages);
     }
 }

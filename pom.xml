@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.2.0.RELEASE</version>
+        <version>2.3.5.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>no.nav.tag</groupId>
@@ -34,6 +34,23 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+
+        <!-- Må eksplisitt legge til gammel JUnit 4 pga. den er fjernet i Spring Boot 2.4.0 -->
+        <dependency>
+            <groupId>org.junit.vintage</groupId>
+            <artifactId>junit-vintage-engine</artifactId>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.hamcrest</groupId>
+                    <artifactId>hamcrest-core</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-cache</artifactId>
         </dependency>
         <dependency>
@@ -43,14 +60,14 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.6</version>
+            <version>1.18.16</version>
         </dependency>
 
         <!-- database -->
         <dependency>
             <groupId>no.nav</groupId>
             <artifactId>vault-jdbc</artifactId>
-            <version>1.3.1</version>
+            <version>1.3.7</version>
         </dependency>
         <dependency>
             <groupId>org.flywaydb</groupId>
@@ -78,7 +95,7 @@
         <dependency>
             <groupId>com.nimbusds</groupId>
             <artifactId>oauth2-oidc-sdk</artifactId>
-            <version>8.19.1</version>
+            <version>8.26</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -109,12 +126,12 @@
         <dependency>
             <groupId>org.springframework.kafka</groupId>
             <artifactId>spring-kafka</artifactId>
-            <version>2.3.1.RELEASE</version>
+            <version>2.5.9.RELEASE</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.kafka</groupId>
             <artifactId>spring-kafka-test</artifactId>
-            <version>2.3.2.RELEASE</version>
+            <version>2.5.9.RELEASE</version>
         </dependency>
 
         <dependency>
@@ -159,12 +176,22 @@
         <dependency>
             <groupId>no.nav.security</groupId>
             <artifactId>token-validation-spring</artifactId>
-            <version>1.1.4</version>
+            <version>1.3.1</version>
         </dependency>
         <dependency>
             <groupId>no.nav.security</groupId>
-            <artifactId>token-validation-test-support</artifactId>
-            <version>1.1.4</version>
+            <artifactId>token-validation-spring-test</artifactId>
+            <version>1.3.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>mockwebserver</artifactId>
+            <version>4.9.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
+            <version>4.9.0</version>
         </dependency>
 
         <dependency>
@@ -204,44 +231,16 @@
         </plugins>
     </build>
 
-    <profiles>
-        <profile>
-            <id>external</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
-            <repositories>
-                <!-- Skal brukes hvis bygget kjører utenfor NAV (f.eks. en ekstern maskin, eller Circle CI).
-                 Se https://github.com/navikt/utvikling/blob/master/Konsumere%20biblioteker%20fra%20Github%20Package%20Registry.md -->
-                <repository>
-                    <id>external-mirror-github-navikt</id>
-                    <url>https://github-package-registry-mirror.gc.nav.no/cached/maven-release</url>
-                </repository>
-                <repository>
-                    <id>confluents repo</id>
-                    <url>https://packages.confluent.io/maven/</url>
-                </repository>
-            </repositories>
-        </profile>
-        <profile>
-            <id>local</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <repositories>
-                <!-- Skal brukes hvis bygget kjører internt (f.eks. Jenkins, fra utviklerimage, eller via ScaleFT/VPN).
-                 Se https://github.com/navikt/utvikling/blob/master/Konsumere%20biblioteker%20fra%20Github%20Package%20Registry.md-->
-                <repository>
-                    <id>internal-mirror-github-navikt</id>
-                    <url>https://repo.adeo.no/repository/github-package-registry-navikt/</url>
-                </repository>
-                <repository>
-                    <id>confluents repo</id>
-                    <url>https://packages.confluent.io/maven/</url>
-                </repository>
-            </repositories>
-
-        </profile>
-    </profiles>
+    <repositories>
+        <!-- Se https://github.com/navikt/utvikling/blob/master/Konsumere%20biblioteker%20fra%20Github%20Package%20Registry.md -->
+        <repository>
+            <id>external-mirror-github-navikt</id>
+            <url>https://github-package-registry-mirror.gc.nav.no/cached/maven-release</url>
+        </repository>
+        <repository>
+            <id>confluents repo</id>
+            <url>https://packages.confluent.io/maven/</url>
+        </repository>
+    </repositories>
 
 </project>

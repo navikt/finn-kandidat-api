@@ -35,7 +35,7 @@ public class TokenUtils {
     }
 
     private Veileder hentInnloggetVeilederMedAzureAdClaims(JwtTokenClaims claims) {
-        String navIdent = claims.get(NAVIDENT_CLAIM).toString();
+        String navIdent = claims.getStringClaim(NAVIDENT_CLAIM);
         String fullName;
 
         if (claims.get(GIVEN_NAME_CLAIM) == null || claims.get(GIVEN_NAME_CLAIM) == null) {

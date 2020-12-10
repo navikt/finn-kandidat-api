@@ -11,12 +11,12 @@ public class SamtykkeConsumer {
 
     @KafkaListener(
             topics = "aapen-pam-samtykke-endret-v1",
-            groupId = "finn-kandidat-samtykke",
+            groupId = "finn-kandidat-samtykke-test",
             clientIdPrefix = "samtykke"
     )
     public void konsumerMelding(ConsumerRecord<String, String> melding) {
         String json = melding.value();
         log.info("JSON samtykke: " + json);
     }
-	
+
 }

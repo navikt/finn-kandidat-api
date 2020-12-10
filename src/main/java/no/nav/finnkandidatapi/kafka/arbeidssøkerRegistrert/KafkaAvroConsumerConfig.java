@@ -16,8 +16,10 @@ import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
 import org.springframework.kafka.listener.SeekToCurrentErrorHandler;
-import org.springframework.kafka.support.serializer.ErrorHandlingDeserializer;
-import org.springframework.util.backoff.ExponentialBackOff;
+import org.springframework.kafka.support.serializer.ErrorHandlingDeserializer2;
+import org.springframework.retry.backoff.ExponentialBackOffPolicy;
+import org.springframework.retry.policy.AlwaysRetryPolicy;
+import org.springframework.retry.support.RetryTemplate;
 
 import java.util.Map;
 
@@ -30,13 +32,11 @@ public class KafkaAvroConsumerConfig {
     public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, String>> avroKafkaListenerContainerFactory(
             @Qualifier("avroConsumerFactory") ConsumerFactory<String, String> consumerFactory
     ) {
-        ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<>();
-        factory.setConsumerFactory(consumerFactory);
-        factory.setConcurrency(1);
+        ConcurrentKafkaListenerContainerFactory<String, String> factory = configureFactory(consumerFactory);
+        ExponentialBackOffPolicy backOffPolicy = configureBackOffPolicy();
+        RetryTemplate retryTemplate = configureRetryTemplate(backOffPolicy);
 
-        ExponentialBackOff backOff = new ExponentialBackOff(2000, 20);
-        backOff.setMaxInterval(172800000);
-        factory.setErrorHandler(new SeekToCurrentErrorHandler(backOff));
+        factory.setRetryTemplate(retryTemplate);
         return factory;
     }
 
@@ -44,10 +44,41 @@ public class KafkaAvroConsumerConfig {
     public ConsumerFactory<String, String> avroConsumerFactory(KafkaProperties properties) {
         Map<String, Object> consumerProperties = properties.buildConsumerProperties();
         consumerProperties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        consumerProperties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, ErrorHandlingDeserializer.class);
-        consumerProperties.put(ErrorHandlingDeserializer.VALUE_DESERIALIZER_CLASS, KafkaAvroDeserializer.class);
-        consumerProperties.put(ErrorHandlingDeserializer.VALUE_FUNCTION, FaultyArbeidssokerRegistrertProvider.class);
+        consumerProperties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, ErrorHandlingDeserializer2.class);
+        consumerProperties.put(ErrorHandlingDeserializer2.VALUE_DESERIALIZER_CLASS, KafkaAvroDeserializer.class);
+        consumerProperties.put(ErrorHandlingDeserializer2.VALUE_FUNCTION, FaultyArbeidssokerRegistrertProvider.class);
         consumerProperties.put(KafkaAvroDeserializerConfig.SPECIFIC_AVRO_READER_CONFIG, true);
         return new DefaultKafkaConsumerFactory<>(consumerProperties);
     }
+
+    private RetryTemplate configureRetryTemplate(ExponentialBackOffPolicy backOffPolicy) {
+        RetryTemplate retryTemplate = new RetryTemplate();
+        retryTemplate.setRetryPolicy(new AlwaysRetryPolicy());
+        retryTemplate.setBackOffPolicy(backOffPolicy);
+
+        return retryTemplate;
+    }
+
+    private ConcurrentKafkaListenerContainerFactory<String, String> configureFactory(ConsumerFactory<String, String> consumerFactory) {
+        ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<>();
+
+        factory.setConsumerFactory(consumerFactory);
+        factory.setConcurrency(1);
+        factory.setErrorHandler(new SeekToCurrentErrorHandler());
+        factory.setStatefulRetry(true);
+
+        return factory;
+    }
+
+    private ExponentialBackOffPolicy configureBackOffPolicy() {
+        ExponentialBackOffPolicy backOffPolicy = new ExponentialBackOffPolicy();
+
+        // 20 sek, 400 sek, ~2 timer, ~2 dager
+        backOffPolicy.setInitialInterval(20000);
+        backOffPolicy.setMultiplier(20);
+        backOffPolicy.setMaxInterval(172800000);
+
+        return backOffPolicy;
+    }
+
 }

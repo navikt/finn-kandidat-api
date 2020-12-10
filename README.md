@@ -10,7 +10,7 @@ IntelliJ: Kjør klassen FinnKandidatApiApplication.
 Kommandolinje: Kjør `mvn spring:boot run` (OBS: Dette funker ikke for meg per april 2020. Are Husby)
 
 
-## API-dokumentasjon
+## API-dokumentasjon 
 Swagger-dokumentajonen finnes på http://localhost:8080/finn-kandidat-api/swagger-ui.html
 
 ### Autentisering når appen kjører lokalt

@@ -14,10 +14,10 @@ spec:
     - https://app-q0.adeo.no/finn-kandidat-api/
   liveness:
     path: /finn-kandidat-api/internal/actuator/health
-    initialDelay: 30
+    initialDelay: 90
   readiness:
     path: /finn-kandidat-api/internal/actuator/health
-    initialDelay: 30
+    initialDelay: 90
   vault:
     enabled: true
     paths:

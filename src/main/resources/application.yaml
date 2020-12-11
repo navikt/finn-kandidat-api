@@ -85,7 +85,7 @@ spring:
         location: ${javax.net.ssl.trustStore}
         password: ${javax.net.ssl.trustStorePassword}
     consumer:
-      auto-offset-reset: none
+      auto-offset-reset: earliest
 
 oppfolging-avsluttet.topic: aapen-fo-endringPaaAvsluttOppfolging-v1-q0
 oppfolging-endret.topic: aapen-fo-endringPaaOppfoelgingsBruker-v1-q0
@@ -141,7 +141,7 @@ spring:
         location: ${javax.net.ssl.trustStore}
         password: ${javax.net.ssl.trustStorePassword}
     consumer:
-      auto-offset-reset: none
+      auto-offset-reset: earliest
 
 oppfolging-avsluttet.topic: aapen-fo-endringPaaAvsluttOppfolging-v1-p
 oppfolging-endret.topic: aapen-fo-endringPaaOppfoelgingsBruker-v1-p

@@ -16,7 +16,8 @@ public class SamtykkeConsumer implements ConsumerSeekAware {
     @KafkaListener(
             topics = "aapen-pam-samtykke-endret-v1",
             groupId = "finn-kandidat-samtykke-test2",
-            clientIdPrefix = "samtykke"
+            clientIdPrefix = "samtykke",
+            containerFactory = "kafkaListenerContainerFactory"
     )
     public void konsumerMelding(ConsumerRecord<String, String> melding) {
         String json = melding.value();

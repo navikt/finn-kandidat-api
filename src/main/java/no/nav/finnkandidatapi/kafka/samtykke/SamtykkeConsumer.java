@@ -13,12 +13,12 @@ import java.util.Map;
 @Component
 public class SamtykkeConsumer implements ConsumerSeekAware {
 
-    @KafkaListener(
+    /*@KafkaListener(
             topics = "aapen-pam-samtykke-endret-v1",
             groupId = "finn-kandidat-samtykke",
             clientIdPrefix = "samtykke",
             containerFactory = "kafkaListenerContainerFactory"
-    )
+    )*/
     public void konsumerMelding(ConsumerRecord<String, String> melding) {
         String json = melding.value();
         log.info("jsonsamtykke: " + json);

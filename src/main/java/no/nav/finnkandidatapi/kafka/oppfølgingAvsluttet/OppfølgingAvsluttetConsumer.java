@@ -5,16 +5,12 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.finnkandidatapi.kandidat.KandidatService;
 import no.nav.finnkandidatapi.permittert.PermittertArbeidssokerService;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.apache.kafka.common.TopicPartition;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.kafka.listener.ConsumerSeekAware;
 import org.springframework.stereotype.Component;
-
-import java.util.Map;
 
 @Slf4j
 @Component
-public class OppfølgingAvsluttetConsumer implements ConsumerSeekAware {
+public class OppfølgingAvsluttetConsumer {
 
     private static final String AVSLUTTET_OPPFØLGING_FEILET = "finnkandidat.avsluttetoppfolging.feilet";
 
@@ -66,10 +62,4 @@ public class OppfølgingAvsluttetConsumer implements ConsumerSeekAware {
             throw e;
         }
     }
-
-    @Override
-    public void onPartitionsAssigned(Map<TopicPartition, Long> assignments, ConsumerSeekCallback callback) {
-        assignments.forEach((t, o) -> callback.seekToBeginning(t.topic(), t.partition()));
-    }
-
 }

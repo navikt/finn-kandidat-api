@@ -16,17 +16,11 @@ public class SamtykkeConsumer implements ConsumerSeekAware {
     @KafkaListener(
             topics = "aapen-pam-samtykke-endret-v1",
             groupId = "finn-kandidat-samtykke-test2",
-            clientIdPrefix = "samtykke",
-            containerFactory = "kafkaListenerContainerFactory"
+            clientIdPrefix = "samtykke"
     )
     public void konsumerMelding(ConsumerRecord<String, String> melding) {
         String json = melding.value();
         log.info("jsonsamtykke: " + json);
-    }
-
-    @Override
-    public void onPartitionsAssigned(Map<TopicPartition, Long> assignments, ConsumerSeekCallback callback) {
-        assignments.forEach((t, o) -> callback.seekToBeginning(t.topic(), t.partition()));
     }
 
 }

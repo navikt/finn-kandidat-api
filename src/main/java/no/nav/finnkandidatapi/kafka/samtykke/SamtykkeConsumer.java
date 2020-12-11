@@ -16,7 +16,7 @@ public class SamtykkeConsumer implements ConsumerSeekAware {
 
     @KafkaListener(
             topics = "aapen-pam-samtykke-endret-v1",
-            groupId = "finn-kandidat-samtykke",
+            groupId = "finn-kandidat-samtykke-test3",
             clientIdPrefix = "samtykke",
             containerFactory = "kafkaListenerContainerFactory"
     )

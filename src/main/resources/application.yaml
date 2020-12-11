@@ -15,6 +15,7 @@ spring:
     consumer:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      auto-offset-reset: earliest
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
@@ -42,11 +43,6 @@ no.nav.security.jwt:
 tilgangskontroll.tilbakemeldinger: X12345,Y23456,Z34567,X123456
 tilgangskontroll.republisering: X12345,Y23456,Z34567,X123456
 nais.cluster-name: na
-
-spring:
-  kafka:
-    consumer:
-      auto-offset-reset: earliest
 
 mock:
   port: 8081
@@ -84,8 +80,6 @@ spring:
       ssl.truststore:
         location: ${javax.net.ssl.trustStore}
         password: ${javax.net.ssl.trustStorePassword}
-    consumer:
-      auto-offset-reset: earliest
 
 oppfolging-avsluttet.topic: aapen-fo-endringPaaAvsluttOppfolging-v1-q0
 oppfolging-endret.topic: aapen-fo-endringPaaOppfoelgingsBruker-v1-q0

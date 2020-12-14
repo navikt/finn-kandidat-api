@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
+@ToString
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class SamtykkeMelding {
 

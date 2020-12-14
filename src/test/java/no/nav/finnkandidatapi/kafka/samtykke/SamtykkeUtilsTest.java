@@ -35,11 +35,11 @@ class SamtykkeUtilsTest {
             samtykkeUtils.deserialiserMelding(jsonMeldingAktoerIdInneholderTomStreng);
         });
 
-        String jsonMeldingManglerFeltViIkkeTrenger = "{\"aktoerId\":\"1000068432771\",\"meldingType\":\"SAMTYKKE_OPPRETTET\",\"ressurs\":\"CV_HJEMMEL\"}";
+        String jsonMeldingManglerFeltViIkkeTrenger = "{\"aktoerId\":\"AktorId(aktorId=1000068432771)\",\"meldingType\":\"SAMTYKKE_OPPRETTET\",\"ressurs\":\"CV_HJEMMEL\"}";
         samtykkeUtils.deserialiserMelding(jsonMeldingManglerFeltViIkkeTrenger);
     }
 
     private String lagJsonMelding(String aktoerId, String meldingType, String ressurs) {
-        return "{\"aktoerId\":\"" + aktoerId + "\",\"fnr\":\"27075349594\",\"meldingType\":\"" + meldingType + "\",\"ressurs\":\"" + ressurs + "\",\"opprettetDato\":\"2019-01-09T12:36:06+01:00\",\"slettetDato\":null,\"versjon\":1,\"versjonGjeldendeFra\":null,\"versjonGjeldendeTil\":null}";
+        return "{\"aktoerId\":\"AktorId(aktorId=" + aktoerId + ")\",\"fnr\":\"27075349594\",\"meldingType\":\"" + meldingType + "\",\"ressurs\":\"" + ressurs + "\",\"opprettetDato\":\"2019-01-09T12:36:06+01:00\",\"slettetDato\":null,\"versjon\":1,\"versjonGjeldendeFra\":null,\"versjonGjeldendeTil\":null}";
     }
 }

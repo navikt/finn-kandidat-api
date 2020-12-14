@@ -12,26 +12,39 @@ public class SamtykkeUtils {
             ObjectMapper mapper = new ObjectMapper();
 
             SamtykkeMelding samtykkeMelding = mapper.readValue(jsonMelding, SamtykkeMelding.class);
-            Samtykke samtykke = mapFraSamtykkeMelding(samtykkeMelding);
+            validerSamtykkeMelding(samtykkeMelding);
 
-            if (!opprettetSamtykkeErGyldig(samtykke)) {
-                throw new RuntimeException("Samtykkemelding er ugyldig: " + jsonMelding);
-            }
-            return samtykke;
+            return mapFraSamtykkeMelding(samtykkeMelding);
         } catch (IOException e) {
             throw new RuntimeException("Kunne ikke deserialisere samtykkemelding", e);
         }
     }
 
+    private void validerSamtykkeMelding(SamtykkeMelding samtykkeMelding) {
+        if (samtykkeMelding.getAktoerId() == null) {
+            throw new RuntimeException("AktørID er null: " + samtykkeMelding.getAktoerId());
+        }
+
+        if (samtykkeMelding.getMeldingType() == null) {
+            throw new RuntimeException("Meldingtype er null: " + samtykkeMelding.getMeldingType());
+        }
+
+        if (samtykkeMelding.getRessurs() == null) {
+            throw new RuntimeException("Ressurs er null: " + samtykkeMelding.getRessurs());
+        }
+    }
+
     private Samtykke mapFraSamtykkeMelding(SamtykkeMelding samtykkeMelding) {
-        return new Samtykke(samtykkeMelding.getAktoerId(), samtykkeMelding.getRessurs(), samtykkeMelding.getMeldingType());
+        String aktoerId = hentAlleTallFraString(samtykkeMelding.getAktoerId());
+
+        int korrektLengdeAktoerId = 13;
+        if (aktoerId.length() != korrektLengdeAktoerId) {
+            throw new RuntimeException("AktørID må ha 13 tegn :" + samtykkeMelding.getAktoerId());
+        }
+        return new Samtykke(aktoerId, samtykkeMelding.getRessurs(), samtykkeMelding.getMeldingType());
     }
 
-    private boolean opprettetSamtykkeErGyldig(Samtykke samtykke) {
-        return gyldigFeltVerdi(samtykke.getAktoerId()) && gyldigFeltVerdi(samtykke.getEndring()) && gyldigFeltVerdi(samtykke.getGjelder());
-    }
-
-    private boolean gyldigFeltVerdi(String feltVerdi) {
-        return feltVerdi != null && !feltVerdi.isBlank();
+    private String hentAlleTallFraString(String stringMedTall) {
+        return stringMedTall.replaceAll("\\D+", "");
     }
 }

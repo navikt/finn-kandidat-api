@@ -18,7 +18,6 @@ import java.time.LocalDateTime;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class SamtykkeMelding {
 
-    private static final String localDateTimeFormat = "yyyy-MM-dd'T'HH:mm:ss[.SSS][.SSSSSS][xxx]";
     private static final String dateFormat = "yyyy-MM-dd";
 
     private String aktoerId;
@@ -30,7 +29,8 @@ public class SamtykkeMelding {
     @JsonDeserialize(using = CustomLocalDateDeserializer.class)
     private LocalDateTime slettetDato;
     private Integer versjon;
-    @JsonDeserialize(using = CustomLocalDateDeserializer.class)
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = dateFormat)
     private LocalDateTime versjonGjeldendeFra;
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = dateFormat)

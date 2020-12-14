@@ -9,8 +9,8 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Repository
 public class SamtykkeRepository {
@@ -23,26 +23,49 @@ public class SamtykkeRepository {
     private final String AKTOER_ID = "aktor_id";
     private final String ENDRING = "endring";
     private final String GJELDER = "gjelder";
+    private final String SAMTYKKE_CV = "CV_HJEMMEL";
 
     @Autowired
     public SamtykkeRepository(JdbcTemplate jdbcTemplate, SimpleJdbcInsert jdbcInsert) {
         this.jdbcTemplate = jdbcTemplate;
-        this.jdbcInsert = jdbcInsert;
+        this.jdbcInsert = jdbcInsert
+                .withTableName(SAMTYKKE_TABELL);
         samtykkeMapper = new SamtykkeMapper();
     }
 
-    public void lagreSamtykke(Samtykke samtykke) {
-        Map<String, Object> databaseParametre = mapTilDatabaseParametre(samtykke);
-//        jdbcTemplate.execute();
+    public void lagreEllerOppdaterSamtykke(Samtykke samtykke) {
+        String update = String.format("UPDATE " + SAMTYKKE_TABELL +
+                        " SET " + ENDRING + " = '%s'" +
+                        " WHERE " + AKTOER_ID + "= '%s' AND " + GJELDER + "= '%s';",
+                samtykke.getEndring(),
+                samtykke.getAktoerId(),
+                samtykke.getGjelder());
+
+        int raderOppdatert = jdbcTemplate.update(update);
+
+        if (raderOppdatert == 0) {
+            Map<String, Object> samtykkeProps = mapTilDatabaseParametre(samtykke);
+            jdbcInsert.execute(samtykkeProps);
+        }
     }
 
-    public Optional<Samtykke> hentSamtykke(String aktoerId, String samtykkeGjelder) {
+    public boolean harSamtykkeForCV(String aktoerId) {
         try {
-            Samtykke samtykke = jdbcTemplate.queryForObject("SELECT * from " + SAMTYKKE_TABELL + " where " + AKTOER_ID + " = ? and " + GJELDER + " = ? LIMIT 1", new Object[]{aktoerId, samtykkeGjelder}, samtykkeMapper);
-            return Optional.ofNullable(samtykke);
+            Samtykke samtykke = jdbcTemplate.queryForObject("SELECT * from " + SAMTYKKE_TABELL +
+                            " where " + AKTOER_ID + " = ? and " + GJELDER + " = '" + SAMTYKKE_CV + "'",
+                    new Object[]{aktoerId}, samtykkeMapper);
+            return samtykke != null;
         } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
+            return false;
         }
+    }
+
+    List<Samtykke> hentAlleSamtykker() {
+        return jdbcTemplate.query("SELECT * FROM " + SAMTYKKE_TABELL, samtykkeMapper);
+    }
+
+    void slettAlleSamtykker() {
+        jdbcTemplate.execute("DELETE FROM " + SAMTYKKE_TABELL);
     }
 
     private Map<String, Object> mapTilDatabaseParametre(Samtykke samtykke) {

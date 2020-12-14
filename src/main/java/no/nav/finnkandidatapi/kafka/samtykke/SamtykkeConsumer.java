@@ -27,4 +27,13 @@ public class SamtykkeConsumer implements ConsumerSeekAware {
         log.info("mappetsamtykke: " + samtykke);
     }
 
+
+    @Override
+    public void onPartitionsAssigned(Map<TopicPartition, Long> assignments,
+                                     ConsumerSeekCallback callback) {
+        assignments.forEach((tp, offset) -> {
+            log.info("Spoler tilbake til begynnelsen for partisjon {}-{}", tp.topic(), tp.partition());
+            callback.seekToBeginning(tp.topic(), tp.partition());
+        });
+    }
 }

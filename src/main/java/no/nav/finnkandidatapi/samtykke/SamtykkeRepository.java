@@ -49,6 +49,7 @@ public class SamtykkeRepository {
         }
     }
 
+    // TODO: Sjekk at samtykke = SAMTYKKE_OPPRETTET, nå vil true returneres selv om SAMTYKKE_SLETTET
     public boolean harSamtykkeForCV(String aktoerId) {
         try {
             Samtykke samtykke = jdbcTemplate.queryForObject("SELECT * from " + SAMTYKKE_TABELL +

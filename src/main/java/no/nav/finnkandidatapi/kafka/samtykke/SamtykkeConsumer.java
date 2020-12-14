@@ -22,9 +22,7 @@ public class SamtykkeConsumer implements ConsumerSeekAware {
     )
     public void konsumerMelding(ConsumerRecord<String, String> melding) {
         String json = melding.value();
-        log.info("jsonsamtykke: " + json);
         Samtykke samtykke = new SamtykkeUtils().deserialiserMelding(json);
-        log.info("mappetsamtykke: " + samtykke);
     }
 
 

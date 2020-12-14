@@ -48,7 +48,7 @@ public class SamtykkeRepository {
             jdbcInsert.execute(samtykkeProps);
         }
     }
-
+    // TODO: Lagre opprettet dato, og forkast eldre instanser.
     // TODO: Sjekk at samtykke = SAMTYKKE_OPPRETTET, nå vil true returneres selv om SAMTYKKE_SLETTET
     public boolean harSamtykkeForCV(String aktoerId) {
         try {

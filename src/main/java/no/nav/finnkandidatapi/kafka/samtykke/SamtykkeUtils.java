@@ -1,10 +1,12 @@
 package no.nav.finnkandidatapi.kafka.samtykke;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import no.nav.finnkandidatapi.samtykke.Samtykke;
 
 import java.io.IOException;
 
+@Slf4j
 public class SamtykkeUtils {
 
     public Samtykke deserialiserMelding(String jsonMelding) {
@@ -13,6 +15,10 @@ public class SamtykkeUtils {
 
             SamtykkeMelding samtykkeMelding = mapper.readValue(jsonMelding, SamtykkeMelding.class);
             validerSamtykkeMelding(samtykkeMelding);
+            log.info("Samtykke:"
+                    + " Opprettet dato:" + samtykkeMelding.getOpprettetDato()
+                    + " Meldingstype:" + samtykkeMelding.getMeldingType()
+                    + " Ressurs:" + samtykkeMelding.getRessurs());
 
             return mapFraSamtykkeMelding(samtykkeMelding);
         } catch (IOException e) {

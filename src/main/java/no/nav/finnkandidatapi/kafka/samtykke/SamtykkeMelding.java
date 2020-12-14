@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class SamtykkeMelding {
 
-    private static final String format = "yyyy-MM-dd'T'HH:mm:ss[xxx]";
+    private static final String format = "yyyy-MM-dd'T'HH:mm:ss[.SSS][xxx]";
 
     private String aktoerId;
     private String foedselsnummer;

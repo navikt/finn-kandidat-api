@@ -23,7 +23,9 @@ public class SamtykkeRepository {
     private final String AKTOER_ID = "aktor_id";
     private final String ENDRING = "endring";
     private final String GJELDER = "gjelder";
+
     private final String SAMTYKKE_CV = "CV_HJEMMEL";
+    private final String SAMTYKKE_OPPRETTET = "SAMTYKKE_OPPRETTET";
 
     @Autowired
     public SamtykkeRepository(JdbcTemplate jdbcTemplate, SimpleJdbcInsert jdbcInsert) {
@@ -48,12 +50,12 @@ public class SamtykkeRepository {
             jdbcInsert.execute(samtykkeProps);
         }
     }
+
     // TODO: Lagre opprettet dato, og forkast eldre instanser.
-    // TODO: Sjekk at samtykke = SAMTYKKE_OPPRETTET, nå vil true returneres selv om SAMTYKKE_SLETTET
     public boolean harSamtykkeForCV(String aktoerId) {
         try {
             Samtykke samtykke = jdbcTemplate.queryForObject("SELECT * from " + SAMTYKKE_TABELL +
-                            " where " + AKTOER_ID + " = ? and " + GJELDER + " = '" + SAMTYKKE_CV + "'",
+                            " where " + AKTOER_ID + " = ? and " + GJELDER + " = '" + SAMTYKKE_CV + "' and " + ENDRING + " = '" + SAMTYKKE_OPPRETTET + "'",
                     new Object[]{aktoerId}, samtykkeMapper);
             return samtykke != null;
         } catch (EmptyResultDataAccessException e) {

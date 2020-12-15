@@ -1,7 +1,6 @@
 package no.nav.finnkandidatapi.samtykke;
 
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -10,8 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 
 @RunWith(SpringRunner.class)
@@ -31,7 +29,7 @@ public class SamtykkeRepositoryTest {
     public void testHarSamtykkeForCV() {
         String aktoerId = "232432532";
         String gjelder = "CV_HJEMMEL";
-        String endring = "Samtykke opprettet";
+        String endring = "SAMTYKKE_OPPRETTET";
 
         Samtykke samtykke = new Samtykke(aktoerId, gjelder, endring);
         samtykkeRepository.lagreEllerOppdaterSamtykke(samtykke);
@@ -47,23 +45,32 @@ public class SamtykkeRepositoryTest {
     }
 
     @Test
+    public void slettetSamtykkeForCV() {
+        String aktoerId = "232432532";
+        Samtykke samtykke = new Samtykke(aktoerId, "CV_HJEMMEL", "SAMTYKKE_SLETTET");
+        samtykkeRepository.lagreEllerOppdaterSamtykke(samtykke);
+
+        assertFalse(samtykkeRepository.harSamtykkeForCV(aktoerId));
+    }
+
+    @Test
     public void harLagretSamtykkeMenIkkeForCV() {
         String aktoerId = "232432532";
         String gjelder = "IKKE_CV_HJEMMEL";
-        String endring = "Samtykke opprettet";
+        String endring = "SAMTYKKE_OPPRETTET";
 
         Samtykke samtykke = new Samtykke(aktoerId, gjelder, endring);
         samtykkeRepository.lagreEllerOppdaterSamtykke(samtykke);
 
         assertEquals(1, samtykkeRepository.hentAlleSamtykker().size());
-        Assert.assertFalse(samtykkeRepository.harSamtykkeForCV(aktoerId));
+        assertFalse(samtykkeRepository.harSamtykkeForCV(aktoerId));
     }
 
     @Test
     public void nyttSamtykkeForSammePersonOppdatererMenLagrerIkkeNytt() {
         String aktoerId = "232432532";
         String gjelder = "CV_HJEMMEL";
-        String endring = "Samtykke opprettet";
+        String endring = "SAMTYKKE_OPPRETTET";
 
         Samtykke samtykke = new Samtykke(aktoerId, gjelder, endring);
         samtykkeRepository.lagreEllerOppdaterSamtykke(samtykke);
@@ -79,7 +86,7 @@ public class SamtykkeRepositoryTest {
     public void samtykkeForToUlikePersonerGjørAtToSamtykkerBlirLagret() {
         String aktoerId = "232432532";
         String gjelder = "CV_HJEMMEL";
-        String endring = "Samtykke opprettet";
+        String endring = "SAMTYKKE_OPPRETTET";
 
         Samtykke samtykke = new Samtykke(aktoerId, gjelder, endring);
         samtykkeRepository.lagreEllerOppdaterSamtykke(samtykke);

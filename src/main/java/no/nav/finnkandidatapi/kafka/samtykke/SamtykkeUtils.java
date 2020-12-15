@@ -15,7 +15,7 @@ public class SamtykkeUtils {
 
             SamtykkeMelding samtykkeMelding = mapper.readValue(jsonMelding, SamtykkeMelding.class);
             validerSamtykkeMelding(samtykkeMelding);
-            log.info("Samtykke:"
+            log.info("Samtykkemelding:"
                     + " Opprettet dato:" + samtykkeMelding.getOpprettetDato()
                     + " Meldingstype:" + samtykkeMelding.getMeldingType()
                     + " Ressurs:" + samtykkeMelding.getRessurs());

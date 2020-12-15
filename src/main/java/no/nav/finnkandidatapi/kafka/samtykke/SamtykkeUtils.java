@@ -3,13 +3,15 @@ package no.nav.finnkandidatapi.kafka.samtykke;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.finnkandidatapi.samtykke.Samtykke;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
 @Slf4j
+@Component
 public class SamtykkeUtils {
 
-    public Samtykke deserialiserMelding(String jsonMelding) {
+    public static Samtykke deserialiserMelding(String jsonMelding) {
         try {
             ObjectMapper mapper = new ObjectMapper();
 
@@ -26,7 +28,7 @@ public class SamtykkeUtils {
         }
     }
 
-    private void validerSamtykkeMelding(SamtykkeMelding samtykkeMelding) {
+    private static void validerSamtykkeMelding(SamtykkeMelding samtykkeMelding) {
         if (samtykkeMelding.getAktoerId() == null) {
             throw new RuntimeException("AktørID er null: " + samtykkeMelding.getAktoerId());
         }
@@ -40,7 +42,7 @@ public class SamtykkeUtils {
         }
     }
 
-    private Samtykke mapFraSamtykkeMelding(SamtykkeMelding samtykkeMelding) {
+    private static Samtykke mapFraSamtykkeMelding(SamtykkeMelding samtykkeMelding) {
         String aktoerId = hentAlleTallFraString(samtykkeMelding.getAktoerId());
 
         int korrektLengdeAktoerId = 13;
@@ -50,7 +52,7 @@ public class SamtykkeUtils {
         return new Samtykke(aktoerId, samtykkeMelding.getRessurs(), samtykkeMelding.getMeldingType());
     }
 
-    private String hentAlleTallFraString(String stringMedTall) {
+    private static String hentAlleTallFraString(String stringMedTall) {
         return stringMedTall.replaceAll("\\D+", "");
     }
 }

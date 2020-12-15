@@ -34,7 +34,18 @@ public class SamtykkeRepository {
         samtykkeMapper = new SamtykkeMapper();
     }
 
-    public void lagreEllerOppdaterSamtykke(Samtykke samtykke) {
+    public Samtykke hentSamtykkeForCV(String aktoerId) {
+        try {
+            Samtykke samtykke = jdbcTemplate.queryForObject("SELECT * from " + SAMTYKKE_TABELL +
+                            " where " + AKTOER_ID + " = ? and " + GJELDER + " = '" + SAMTYKKE_CV + "'",
+                    new Object[]{aktoerId}, samtykkeMapper);
+            return samtykke;
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
+
+    public void oppdaterSamtykke(Samtykke samtykke) {
         String update = String.format("UPDATE " + SAMTYKKE_TABELL +
                         " SET " + OPPRETTET_TIDSPUNKT + " = timestamp(%s)" +
                         " WHERE " + AKTOER_ID + "= '%s' AND " + GJELDER + "= '%s';",
@@ -42,13 +53,13 @@ public class SamtykkeRepository {
                 samtykke.getAktoerId(),
                 samtykke.getGjelder());
 
-        int raderOppdatert = jdbcTemplate.update(update);
-
-        if (raderOppdatert == 0) {
-            Map<String, Object> samtykkeProps = mapTilDatabaseParametre(samtykke);
-            jdbcInsert.execute(samtykkeProps);
-        }
+        jdbcTemplate.update(update);
     }
+
+    public void lagreSamtykke(Samtykke samtykke) {
+        jdbcInsert.execute(mapTilDatabaseParametre(samtykke));
+    }
+
 
     // TODO: Lagre opprettet dato, og forkast eldre instanser.
     public boolean harSamtykkeForCV(String aktoerId) {
@@ -76,6 +87,11 @@ public class SamtykkeRepository {
                 GJELDER, samtykke.getGjelder(),
                 OPPRETTET_TIDSPUNKT, samtykke.getOpprettetTidspunkt()
         );
+    }
+
+    public void slettSamtykkeForCV(String aktoerId) {
+        String delete = String.format("DELETE FROM " + SAMTYKKE_TABELL + " where " + GJELDER + " = '%s' and " + AKTOER_ID + " = '%s'", SAMTYKKE_CV, aktoerId);
+        jdbcTemplate.execute(delete);
     }
 
     private class SamtykkeMapper implements RowMapper<Samtykke> {

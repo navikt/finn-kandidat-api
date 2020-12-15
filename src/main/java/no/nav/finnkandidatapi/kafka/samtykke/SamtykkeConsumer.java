@@ -25,14 +25,12 @@ public class SamtykkeConsumer implements ConsumerSeekAware {
         Samtykke samtykke = new SamtykkeUtils().deserialiserMelding(json);
     }
 
-
-    @Override
-    // Todo: Må fjernes før bruk av dataene i prod
+    /*@Override
     public void onPartitionsAssigned(Map<TopicPartition, Long> assignments,
                                      ConsumerSeekCallback callback) {
         assignments.forEach((tp, offset) -> {
             log.info("Spoler tilbake til begynnelsen for partisjon {}-{}", tp.topic(), tp.partition());
             callback.seekToBeginning(tp.topic(), tp.partition());
         });
-    }
+    }*/
 }

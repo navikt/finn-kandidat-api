@@ -16,7 +16,7 @@ public class SamtykkeConsumer implements ConsumerSeekAware {
 
     @KafkaListener(
             topics = "aapen-pam-samtykke-endret-v1",
-            groupId = "finn-kandidat-samtykke-test3",
+            groupId = "finn-kandidat-samtykke",
             clientIdPrefix = "samtykke",
             containerFactory = "kafkaListenerContainerFactory"
     )
@@ -27,6 +27,7 @@ public class SamtykkeConsumer implements ConsumerSeekAware {
 
 
     @Override
+    // Todo: Må fjernes før bruk av dataene i prod
     public void onPartitionsAssigned(Map<TopicPartition, Long> assignments,
                                      ConsumerSeekCallback callback) {
         assignments.forEach((tp, offset) -> {

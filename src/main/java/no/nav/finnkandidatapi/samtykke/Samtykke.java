@@ -1,14 +1,12 @@
 package no.nav.finnkandidatapi.samtykke;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class Samtykke {
     private String aktoerId;
     private String gjelder;

@@ -9,6 +9,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.time.ZonedDateTime;
+
 import static org.junit.Assert.*;
 
 
@@ -16,6 +18,8 @@ import static org.junit.Assert.*;
 @SpringBootTest
 @ActiveProfiles(profiles = "local")
 public class SamtykkeRepositoryTest {
+
+    // TODO: Test med ZonedDateTime
 
     @Autowired
     private SamtykkeRepository samtykkeRepository;
@@ -26,75 +30,33 @@ public class SamtykkeRepositoryTest {
     }
 
     @Test
-    public void testHarSamtykkeForCV() {
+    public void testLagringUthentingAvSamtykke() {
         String aktoerId = "232432532";
         String gjelder = "CV_HJEMMEL";
         String endring = "SAMTYKKE_OPPRETTET";
+        ZonedDateTime opprettetTidspunkt = ZonedDateTime.now();
 
-        Samtykke samtykke = new Samtykke(aktoerId, gjelder, endring);
-        samtykkeRepository.lagreEllerOppdaterSamtykke(samtykke);
+        Samtykke samtykke = new Samtykke(aktoerId, gjelder, endring, opprettetTidspunkt);
+        samtykkeRepository.lagreSamtykke(samtykke);
 
         assertEquals(1, samtykkeRepository.hentAlleSamtykker().size());
 
         Samtykke lagretSamtykke = samtykkeRepository.hentAlleSamtykker().get(0);
         assertEquals(samtykke.getAktoerId(), lagretSamtykke.getAktoerId());
-        assertEquals(samtykke.getEndring(), lagretSamtykke.getEndring());
         assertEquals(samtykke.getGjelder(), lagretSamtykke.getGjelder());
+        assertEquals(samtykke.getOpprettetTidspunkt(), lagretSamtykke.getOpprettetTidspunkt());
 
         assertTrue(samtykkeRepository.harSamtykkeForCV(aktoerId));
     }
 
+    // Teste oppdatere samtykke
+
     @Test
     public void slettetSamtykkeForCV() {
         String aktoerId = "232432532";
-        Samtykke samtykke = new Samtykke(aktoerId, "CV_HJEMMEL", "SAMTYKKE_SLETTET");
-        samtykkeRepository.lagreEllerOppdaterSamtykke(samtykke);
+        Samtykke samtykke = new Samtykke(aktoerId, "CV_HJEMMEL", "SAMTYKKE_SLETTET", ZonedDateTime.now());
+        samtykkeRepository.oppdaterSamtykke(samtykke);
 
         assertFalse(samtykkeRepository.harSamtykkeForCV(aktoerId));
-    }
-
-    @Test
-    public void harLagretSamtykkeMenIkkeForCV() {
-        String aktoerId = "232432532";
-        String gjelder = "IKKE_CV_HJEMMEL";
-        String endring = "SAMTYKKE_OPPRETTET";
-
-        Samtykke samtykke = new Samtykke(aktoerId, gjelder, endring);
-        samtykkeRepository.lagreEllerOppdaterSamtykke(samtykke);
-
-        assertEquals(1, samtykkeRepository.hentAlleSamtykker().size());
-        assertFalse(samtykkeRepository.harSamtykkeForCV(aktoerId));
-    }
-
-    @Test
-    public void nyttSamtykkeForSammePersonOppdatererMenLagrerIkkeNytt() {
-        String aktoerId = "232432532";
-        String gjelder = "CV_HJEMMEL";
-        String endring = "SAMTYKKE_OPPRETTET";
-
-        Samtykke samtykke = new Samtykke(aktoerId, gjelder, endring);
-        samtykkeRepository.lagreEllerOppdaterSamtykke(samtykke);
-
-        String nyEndring = "Samtykke avsluttet";
-        Samtykke nyttSamtykke = new Samtykke(aktoerId, gjelder, nyEndring);
-        samtykkeRepository.lagreEllerOppdaterSamtykke(nyttSamtykke);
-
-        assertEquals(1, samtykkeRepository.hentAlleSamtykker().size());
-    }
-
-    @Test
-    public void samtykkeForToUlikePersonerGjørAtToSamtykkerBlirLagret() {
-        String aktoerId = "232432532";
-        String gjelder = "CV_HJEMMEL";
-        String endring = "SAMTYKKE_OPPRETTET";
-
-        Samtykke samtykke = new Samtykke(aktoerId, gjelder, endring);
-        samtykkeRepository.lagreEllerOppdaterSamtykke(samtykke);
-
-        String annenAktoerId = "897632532";
-        Samtykke annetSamtykke = new Samtykke(annenAktoerId, gjelder, endring);
-        samtykkeRepository.lagreEllerOppdaterSamtykke(annetSamtykke);
-
-        assertEquals(2, samtykkeRepository.hentAlleSamtykker().size());
     }
 }

@@ -14,7 +14,6 @@ public class SamtykkeUtils {
     public static Samtykke deserialiserMelding(String jsonMelding) {
         try {
             ObjectMapper mapper = new ObjectMapper();
-
             SamtykkeMelding samtykkeMelding = mapper.readValue(jsonMelding, SamtykkeMelding.class);
             validerSamtykkeMelding(samtykkeMelding);
             log.info("Samtykkemelding:"
@@ -30,15 +29,19 @@ public class SamtykkeUtils {
 
     private static void validerSamtykkeMelding(SamtykkeMelding samtykkeMelding) {
         if (samtykkeMelding.getAktoerId() == null) {
-            throw new RuntimeException("AktørID er null: " + samtykkeMelding.getAktoerId());
+            throw new RuntimeException("AktørID er null");
         }
 
         if (samtykkeMelding.getMeldingType() == null) {
-            throw new RuntimeException("Meldingtype er null: " + samtykkeMelding.getMeldingType());
+            throw new RuntimeException("Meldingtype er null");
         }
 
         if (samtykkeMelding.getRessurs() == null) {
-            throw new RuntimeException("Ressurs er null: " + samtykkeMelding.getRessurs());
+            throw new RuntimeException("Ressurs er null");
+        }
+
+        if (samtykkeMelding.getOpprettetDato() == null) {
+            throw new RuntimeException("OpprettetDato er null");
         }
     }
 
@@ -49,7 +52,7 @@ public class SamtykkeUtils {
         if (aktoerId.length() != korrektLengdeAktoerId) {
             throw new RuntimeException("AktørID må ha 13 tegn :" + samtykkeMelding.getAktoerId());
         }
-        return new Samtykke(aktoerId, samtykkeMelding.getRessurs(), samtykkeMelding.getMeldingType());
+        return new Samtykke(aktoerId, samtykkeMelding.getRessurs(), samtykkeMelding.getMeldingType(), samtykkeMelding.getOpprettetDato());
     }
 
     private static String hentAlleTallFraString(String stringMedTall) {

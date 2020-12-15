@@ -20,4 +20,8 @@ public class SamtykkeService {
         }
 
     }
+
+    private boolean skalBeholdeEksisterendeSamtykke(Samtykke samtykke, Samtykke eksisterendeSamtykke) {
+        return samtykke.getOpprettetTidspunkt().isBefore(eksisterendeSamtykke.getOpprettetTidspunkt());
+    }
 }

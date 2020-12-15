@@ -21,11 +21,10 @@ public class SamtykkeRepository {
 
     static final String SAMTYKKE_TABELL = "samtykke";
     private final String AKTOER_ID = "aktor_id";
-    private final String ENDRING = "endring";
     private final String GJELDER = "gjelder";
+    private final String OPPRETTET_TIDSPUNKT = "opprettet_tidspunkt";
 
     private final String SAMTYKKE_CV = "CV_HJEMMEL";
-    private final String SAMTYKKE_OPPRETTET = "SAMTYKKE_OPPRETTET";
 
     @Autowired
     public SamtykkeRepository(JdbcTemplate jdbcTemplate, SimpleJdbcInsert jdbcInsert) {
@@ -37,9 +36,9 @@ public class SamtykkeRepository {
 
     public void lagreEllerOppdaterSamtykke(Samtykke samtykke) {
         String update = String.format("UPDATE " + SAMTYKKE_TABELL +
-                        " SET " + ENDRING + " = '%s'" +
+                        " SET " + OPPRETTET_TIDSPUNKT + " = timestamp(%s)" +
                         " WHERE " + AKTOER_ID + "= '%s' AND " + GJELDER + "= '%s';",
-                samtykke.getEndring(),
+                samtykke.getOpprettetTidspunkt(),
                 samtykke.getAktoerId(),
                 samtykke.getGjelder());
 
@@ -55,7 +54,7 @@ public class SamtykkeRepository {
     public boolean harSamtykkeForCV(String aktoerId) {
         try {
             Samtykke samtykke = jdbcTemplate.queryForObject("SELECT * from " + SAMTYKKE_TABELL +
-                            " where " + AKTOER_ID + " = ? and " + GJELDER + " = '" + SAMTYKKE_CV + "' and " + ENDRING + " = '" + SAMTYKKE_OPPRETTET + "'",
+                            " where " + AKTOER_ID + " = ? and " + GJELDER + " = '" + SAMTYKKE_CV + "'",
                     new Object[]{aktoerId}, samtykkeMapper);
             return samtykke != null;
         } catch (EmptyResultDataAccessException e) {
@@ -74,8 +73,8 @@ public class SamtykkeRepository {
     private Map<String, Object> mapTilDatabaseParametre(Samtykke samtykke) {
         return Map.of(
                 AKTOER_ID, samtykke.getAktoerId(),
-                ENDRING, samtykke.getEndring(),
-                GJELDER, samtykke.getGjelder()
+                GJELDER, samtykke.getGjelder(),
+                OPPRETTET_TIDSPUNKT, samtykke.getOpprettetTidspunkt()
         );
     }
 
@@ -85,7 +84,6 @@ public class SamtykkeRepository {
         public Samtykke mapRow(ResultSet rs, int i) throws SQLException {
             return Samtykke.builder()
                     .aktoerId(rs.getString(AKTOER_ID))
-                    .endring(rs.getString(ENDRING))
                     .gjelder(rs.getString(GJELDER))
                     .build();
         }

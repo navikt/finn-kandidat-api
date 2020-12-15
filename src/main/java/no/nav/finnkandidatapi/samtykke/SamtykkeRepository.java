@@ -9,6 +9,9 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -98,10 +101,18 @@ public class SamtykkeRepository {
 
         @Override
         public Samtykke mapRow(ResultSet rs, int i) throws SQLException {
+
             return Samtykke.builder()
                     .aktoerId(rs.getString(AKTOER_ID))
                     .gjelder(rs.getString(GJELDER))
+                    .opprettetTidspunkt(konverter(rs.getTimestamp(OPPRETTET_TIDSPUNKT)))
                     .build();
         }
+    }
+
+    private static ZonedDateTime konverter(Timestamp timestamp) {
+        return timestamp != null
+                ? ZonedDateTime.ofLocal(timestamp.toLocalDateTime(), ZoneId.of("Europe/Oslo"), null)
+                : null;
     }
 }

@@ -49,14 +49,15 @@ public class SamtykkeRepository {
     }
 
     public void oppdaterSamtykke(Samtykke samtykke) {
-        String update = String.format("UPDATE " + SAMTYKKE_TABELL +
-                        " SET " + OPPRETTET_TIDSPUNKT + " = timestamp(%s)" +
-                        " WHERE " + AKTOER_ID + "= '%s' AND " + GJELDER + "= '%s';",
+        String update = "UPDATE " + SAMTYKKE_TABELL +
+                " SET " + OPPRETTET_TIDSPUNKT + " = ?" +
+                " WHERE " + AKTOER_ID + "= ? AND " + GJELDER + "= ?;";
+
+
+        jdbcTemplate.update(update,
                 samtykke.getOpprettetTidspunkt(),
                 samtykke.getAktoerId(),
                 samtykke.getGjelder());
-
-        jdbcTemplate.update(update);
     }
 
     public void lagreSamtykke(Samtykke samtykke) {

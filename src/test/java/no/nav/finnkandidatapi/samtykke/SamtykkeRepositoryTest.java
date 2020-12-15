@@ -10,6 +10,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.ZonedDateTime;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -30,7 +31,7 @@ public class SamtykkeRepositoryTest {
     }
 
     @Test
-    public void testLagringUthentingAvSamtykke() {
+    public void skalKunneLagreOgHenteUtSamtykke() {
         String aktoerId = "232432532";
         String gjelder = "CV_HJEMMEL";
         String endring = "SAMTYKKE_OPPRETTET";
@@ -39,14 +40,55 @@ public class SamtykkeRepositoryTest {
         Samtykke samtykke = new Samtykke(aktoerId, gjelder, endring, opprettetTidspunkt);
         samtykkeRepository.lagreSamtykke(samtykke);
 
-        assertEquals(1, samtykkeRepository.hentAlleSamtykker().size());
+        List<Samtykke> samtykker = samtykkeRepository.hentAlleSamtykker();
+        assertEquals(1, samtykker.size());
 
-        Samtykke lagretSamtykke = samtykkeRepository.hentAlleSamtykker().get(0);
+        Samtykke lagretSamtykke = samtykker.get(0);
         assertEquals(samtykke.getAktoerId(), lagretSamtykke.getAktoerId());
         assertEquals(samtykke.getGjelder(), lagretSamtykke.getGjelder());
         assertEquals(samtykke.getOpprettetTidspunkt(), lagretSamtykke.getOpprettetTidspunkt());
 
         assertTrue(samtykkeRepository.harSamtykkeForCV(aktoerId));
+    }
+
+    @Test
+    public void skalKunneOppdatereSamtykke() {
+        ZonedDateTime opprettetTidspunkt = ZonedDateTime.now().minusDays(1);
+        ZonedDateTime opprettetTidspunktOppdatert = opprettetTidspunkt.plusDays(1);
+
+        String aktoerId = "232432532";
+        String gjelder = "CV_HJEMMEL";
+        String endring = "SAMTYKKE_OPPRETTET";
+
+        samtykkeRepository.lagreSamtykke(
+                new Samtykke(aktoerId, gjelder, endring, opprettetTidspunkt));
+
+        samtykkeRepository.oppdaterSamtykke(
+                new Samtykke(aktoerId, gjelder, endring, opprettetTidspunktOppdatert));
+        List<Samtykke> samtykker = samtykkeRepository.hentAlleSamtykker();
+        assertEquals(1, samtykkeRepository.hentAlleSamtykker().size());
+
+        Samtykke oppdatertSamtykke = samtykker.get(0);
+        assertEquals(aktoerId, oppdatertSamtykke.getAktoerId());
+        assertEquals(gjelder, oppdatertSamtykke.getGjelder());
+        assertEquals(opprettetTidspunktOppdatert, oppdatertSamtykke.getOpprettetTidspunkt());
+    }
+
+    @Test
+    public void skalKunneSletteSamtykke() {
+        ZonedDateTime opprettetTidspunkt = ZonedDateTime.now().minusDays(1);
+        ZonedDateTime opprettetTidspunktOppdatert = opprettetTidspunkt.plusDays(1);
+
+        String aktoerId = "232432532";
+        String gjelder = "CV_HJEMMEL";
+        String endring = "SAMTYKKE_OPPRETTET";
+
+        samtykkeRepository.lagreSamtykke(
+                new Samtykke(aktoerId, gjelder, endring, opprettetTidspunkt));
+
+        samtykkeRepository.slettSamtykkeForCV(aktoerId);
+        List<Samtykke> samtykker = samtykkeRepository.hentAlleSamtykker();
+        assertEquals(0, samtykkeRepository.hentAlleSamtykker().size());
     }
 
     // Teste oppdatere samtykke

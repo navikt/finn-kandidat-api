@@ -41,7 +41,7 @@ class SamtykkeUtilsTest {
             samtykkeUtils.deserialiserMelding(jsonMeldingAktoerIdInneholderTomStreng);
         });
 
-        String jsonMeldingManglerFeltViIkkeTrenger = "{\"aktoerId\":\"AktorId(aktorId=1000068432771)\",\"meldingType\":\"SAMTYKKE_OPPRETTET\",\"ressurs\":\"CV_HJEMMEL\"}";
+        String jsonMeldingManglerFeltViIkkeTrenger = "{\"aktoerId\":\"AktorId(aktorId=1000068432771)\",\"meldingType\":\"SAMTYKKE_OPPRETTET\",\"ressurs\":\"CV_HJEMMEL\",\"opprettetDato\":\"2019-04-01T13:17:13.174+02:00\"}";
         samtykkeUtils.deserialiserMelding(jsonMeldingManglerFeltViIkkeTrenger);
     }
 

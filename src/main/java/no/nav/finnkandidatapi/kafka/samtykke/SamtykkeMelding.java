@@ -31,7 +31,7 @@ public class SamtykkeMelding {
     private Integer versjon;
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = dateFormat)
-    private LocalDateTime versjonGjeldendeFra;
+    private LocalDate versjonGjeldendeFra;
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = dateFormat)
     private LocalDate versjonGjeldendeTil;

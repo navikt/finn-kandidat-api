@@ -6,23 +6,23 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoField;
 
-public class CustomLocalDateDeserializer extends StdDeserializer<LocalDateTime> {
+public class CustomZonedDateTimeDeserializer extends StdDeserializer<ZonedDateTime> {
 
-    public CustomLocalDateDeserializer() {
+    public CustomZonedDateTimeDeserializer() {
         this(null);
     }
 
-    protected CustomLocalDateDeserializer(Class<?> vc) {
+    protected CustomZonedDateTimeDeserializer(Class<?> vc) {
         super(vc);
     }
 
     @Override
-    public LocalDateTime deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
+    public ZonedDateTime deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
         DateTimeFormatterBuilder formatter = new DateTimeFormatterBuilder();
 
         formatter.appendOptional(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSSSS[XXX]"))
@@ -39,6 +39,6 @@ public class CustomLocalDateDeserializer extends StdDeserializer<LocalDateTime> 
                 .parseDefaulting(ChronoField.MINUTE_OF_HOUR, 0)
                 .parseDefaulting(ChronoField.SECOND_OF_MINUTE, 0);
 
-        return LocalDateTime.parse(jsonParser.getText(), formatter.toFormatter());
+        return ZonedDateTime.parse(jsonParser.getText(), formatter.toFormatter());
     }
 }

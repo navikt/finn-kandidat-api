@@ -43,11 +43,11 @@ public class SamtykkeMelding {
     private LocalDate versjonGjeldendeTil;
 
 
-
-    public  SamtykkeMelding(String jsonMelding) {
+    public SamtykkeMelding(String jsonMelding) {
         try {
             ObjectMapper mapper = new ObjectMapper();
             SamtykkeMelding samtykkeMelding = mapper.readValue(jsonMelding, SamtykkeMelding.class);
+            BeanUtils.copyProperties(samtykkeMelding, this);
 
             validerSamtykkeMelding(samtykkeMelding);
             aktoerId = aktoerId.replaceAll("\\D+", "");

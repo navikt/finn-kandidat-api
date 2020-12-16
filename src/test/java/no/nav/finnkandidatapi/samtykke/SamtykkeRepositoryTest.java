@@ -9,7 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -33,7 +33,7 @@ public class SamtykkeRepositoryTest {
         String aktoerId = "232432532";
         String gjelder = "CV_HJEMMEL";
         String endring = "SAMTYKKE_OPPRETTET";
-        ZonedDateTime opprettetTidspunkt = ZonedDateTime.now();
+        LocalDateTime opprettetTidspunkt = LocalDateTime.now();
 
         Samtykke samtykke = new Samtykke(aktoerId, gjelder, endring, opprettetTidspunkt);
         samtykkeRepository.lagreSamtykke(samtykke);
@@ -44,15 +44,15 @@ public class SamtykkeRepositoryTest {
         Samtykke lagretSamtykke = samtykker.get(0);
         assertEquals(samtykke.getAktoerId(), lagretSamtykke.getAktoerId());
         assertEquals(samtykke.getGjelder(), lagretSamtykke.getGjelder());
-        assertTrue(samtykke.getOpprettetTidspunkt().isEqual(lagretSamtykke.getOpprettetTidspunkt()));
+        assertEquals(samtykke.getOpprettetTidspunkt(), lagretSamtykke.getOpprettetTidspunkt());
 
         assertTrue(samtykkeRepository.harSamtykkeForCV(aktoerId));
     }
 
     @Test
     public void skalKunneOppdatereSamtykke() {
-        ZonedDateTime opprettetTidspunkt = ZonedDateTime.now().minusDays(1);
-        ZonedDateTime opprettetTidspunktOppdatert = opprettetTidspunkt.plusDays(1);
+        LocalDateTime opprettetTidspunkt = LocalDateTime.now().minusDays(1);
+        LocalDateTime opprettetTidspunktOppdatert = opprettetTidspunkt.plusDays(1);
 
         String aktoerId = "232432532";
         String gjelder = "CV_HJEMMEL";
@@ -74,8 +74,8 @@ public class SamtykkeRepositoryTest {
 
     @Test
     public void skalKunneSletteSamtykke() {
-        ZonedDateTime opprettetTidspunkt = ZonedDateTime.now().minusDays(1);
-        ZonedDateTime opprettetTidspunktOppdatert = opprettetTidspunkt.plusDays(1);
+        LocalDateTime opprettetTidspunkt = LocalDateTime.now().minusDays(1);
+        LocalDateTime opprettetTidspunktOppdatert = opprettetTidspunkt.plusDays(1);
 
         String aktoerId = "232432532";
         String gjelder = "CV_HJEMMEL";
@@ -92,7 +92,7 @@ public class SamtykkeRepositoryTest {
     @Test
     public void slettetSamtykkeForCV() {
         String aktoerId = "232432532";
-        Samtykke samtykke = new Samtykke(aktoerId, "CV_HJEMMEL", "SAMTYKKE_SLETTET", ZonedDateTime.now());
+        Samtykke samtykke = new Samtykke(aktoerId, "CV_HJEMMEL", "SAMTYKKE_SLETTET", LocalDateTime.now());
         samtykkeRepository.oppdaterSamtykke(samtykke);
 
         assertFalse(samtykkeRepository.harSamtykkeForCV(aktoerId));

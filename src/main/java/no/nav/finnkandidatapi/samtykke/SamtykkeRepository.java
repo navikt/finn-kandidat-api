@@ -10,8 +10,7 @@ import org.springframework.stereotype.Repository;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -111,9 +110,9 @@ public class SamtykkeRepository {
         }
     }
 
-    private static ZonedDateTime konverter(Timestamp timestamp) {
+    private static LocalDateTime konverter(Timestamp timestamp) {
         return timestamp != null
-                ? ZonedDateTime.ofLocal(timestamp.toLocalDateTime(), ZoneId.of("Europe/Oslo"), null)
+                ? timestamp.toLocalDateTime()
                 : null;
     }
 }

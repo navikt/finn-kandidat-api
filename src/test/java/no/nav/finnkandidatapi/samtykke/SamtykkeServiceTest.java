@@ -7,7 +7,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SamtykkeServiceTest {
@@ -27,7 +27,7 @@ public class SamtykkeServiceTest {
                 "100001000000",
                 "CV_HJEMMEL",
                 "SAMTYKKE_OPPRETTET",
-                ZonedDateTime.now());
+                LocalDateTime.now());
 
         samtykkeService.behandleSamtykke(samtykke);
         Mockito.verify(samtykkeRepositoryMock, Mockito.times(1)).lagreSamtykke(samtykke);
@@ -40,7 +40,7 @@ public class SamtykkeServiceTest {
                 "100001000000",
                 "ARBEIDSGIVER",
                 "SAMTYKKE_OPPRETTET",
-                ZonedDateTime.now());
+                LocalDateTime.now());
 
         samtykkeService.behandleSamtykke(samtykke);
         Mockito.verify(samtykkeRepositoryMock, Mockito.never()).lagreSamtykke(samtykke);
@@ -53,13 +53,13 @@ public class SamtykkeServiceTest {
                 "100001000000",
                 "CV_HJEMMEL",
                 "SAMTYKKE_OPPRETTET",
-                ZonedDateTime.now());
+                LocalDateTime.now());
 
         Samtykke gammelSamtykke = new Samtykke(
                 "100001000000",
                 "CV_HJEMMEL",
                 "SAMTYKKE_OPPRETTET",
-                ZonedDateTime.now().minusDays(1)
+                LocalDateTime.now().minusDays(1)
         );
 
         Mockito.when(samtykkeRepositoryMock.hentSamtykkeForCV(samtykke.getAktoerId()))
@@ -76,13 +76,13 @@ public class SamtykkeServiceTest {
                 "100001000000",
                 "CV_HJEMMEL",
                 "SAMTYKKE_SLETTET",
-                ZonedDateTime.now());
+                LocalDateTime.now());
 
         Samtykke gammelSamtykke = new Samtykke(
                 "100001000000",
                 "CV_HJEMMEL",
                 "SAMTYKKE_OPPRETTET",
-                ZonedDateTime.now().minusDays(1)
+                LocalDateTime.now().minusDays(1)
         );
 
         Mockito.when(samtykkeRepositoryMock.hentSamtykkeForCV(samtykke.getAktoerId()))
@@ -101,13 +101,13 @@ public class SamtykkeServiceTest {
                 "100001000000",
                 "CV_HJEMMEL",
                 "SAMTYKKE_OPPRETTET",
-                ZonedDateTime.now());
+                LocalDateTime.now());
 
         Samtykke nyttSamtykke = new Samtykke(
                 "100001000000",
                 "CV_HJEMMEL",
                 "SAMTYKKE_OPPRETTET",
-                ZonedDateTime.now().plusDays(1)
+                LocalDateTime.now().plusDays(1)
         );
 
         Mockito.when(samtykkeRepositoryMock.hentSamtykkeForCV(samtykke.getAktoerId()))

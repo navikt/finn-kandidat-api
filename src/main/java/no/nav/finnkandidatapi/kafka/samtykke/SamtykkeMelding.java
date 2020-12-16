@@ -7,7 +7,7 @@ import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 
 @Data
 @Builder
@@ -24,10 +24,10 @@ public class SamtykkeMelding {
     private String foedselsnummer;
     private String meldingType;
     private String ressurs;
-    @JsonDeserialize(using = CustomZonedDateTimeDeserializer.class)
-    private ZonedDateTime opprettetDato;
-    @JsonDeserialize(using = CustomZonedDateTimeDeserializer.class)
-    private ZonedDateTime slettetDato;
+    @JsonDeserialize(using = CustomLocalDateTimeDeserializer.class)
+    private LocalDateTime opprettetDato;
+    @JsonDeserialize(using = CustomLocalDateTimeDeserializer.class)
+    private LocalDateTime slettetDato;
     private Integer versjon;
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = dateFormat)

@@ -3,6 +3,7 @@ package no.nav.finnkandidatapi.kafka.samtykke;
 import no.nav.finnkandidatapi.samtykke.Samtykke;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -24,9 +25,7 @@ class SamtykkeUtilsTest {
         assertEquals(aktoerId, samtykke.getAktoerId());
         assertEquals(meldingType, samtykke.getEndring());
         assertEquals(ressurs, samtykke.getGjelder());
-
-        ZonedDateTime tidspunktFraMappetSamtykke = ZonedDateTime.parse(opprettetTidspunkt);
-        assertEquals(opprettetTidspunkt, tidspunktFraMappetSamtykke.toString());
+        assertEquals(ZonedDateTime.parse(opprettetTidspunkt).toLocalDateTime(), samtykke.getOpprettetTidspunkt());
     }
 
     @Test

@@ -26,6 +26,7 @@ public class SamtykkeMelding {
 
     private static final String dateFormat = "yyyy-MM-dd";
 
+    @JsonDeserialize(using = ExtractNumbersDeserializer.class)
     private String aktoerId;
     private String foedselsnummer;
     private String meldingType;
@@ -48,9 +49,7 @@ public class SamtykkeMelding {
             ObjectMapper mapper = new ObjectMapper();
             SamtykkeMelding samtykkeMelding = mapper.readValue(jsonMelding, SamtykkeMelding.class);
             BeanUtils.copyProperties(samtykkeMelding, this);
-
             validerSamtykkeMelding(samtykkeMelding);
-            aktoerId = aktoerId.replaceAll("\\D+", "");
             log.info("Samtykkemelding:"
                     + " Opprettet dato:" + samtykkeMelding.getOpprettetDato()
                     + " Slettet dato:" + samtykkeMelding.getSlettetDato()
@@ -79,4 +78,6 @@ public class SamtykkeMelding {
             throw new RuntimeException("OpprettetDato eller Slettetdato må ha verdi");
         }
     }
+
+
 }

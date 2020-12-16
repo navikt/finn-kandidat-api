@@ -27,7 +27,7 @@ public class SamtykkeServiceTest {
     @Test
     public void skalLagreSamtykkeDersomGjelderCVHjemmelOgSamtykkeIkkeFinnes() {
         SamtykkeMelding samtykkeMelding = new SamtykkeMelding(
-                "100001000000",
+                "1000010000000",
                 null,
                 "SAMTYKKE_OPPRETTET",
                 "CV_HJEMMEL",
@@ -45,7 +45,7 @@ public class SamtykkeServiceTest {
     @Test
     public void skalIkkeLagreSamtykkeDersomDetIkkeGjelderCVHjemmel() {
         SamtykkeMelding samtykkeMelding = new SamtykkeMelding(
-                "100001000000",
+                "1000010000000",
                         null,
                 "SAMTYKKE_OPPRETTET",
                 "ARBEIDSGIVER",
@@ -63,7 +63,7 @@ public class SamtykkeServiceTest {
     @Test
     public void skalOppdatereSamtykkeDersomGjelderCVHjemmelOgGammeltSamtykkeFinnesOgErOppretting() {
         SamtykkeMelding samtykkeMelding = new SamtykkeMelding(
-                "100001000000",
+                "1000010000000",
                 null,
                 "SAMTYKKE_OPPRETTET",
                 "CV_HJEMMEL",
@@ -74,7 +74,7 @@ public class SamtykkeServiceTest {
                 null);
 
         Samtykke gammelSamtykke = new Samtykke(
-                "100001000000",
+                "1000010000000",
                 "CV_HJEMMEL",
                 "SAMTYKKE_OPPRETTET",
                 LocalDateTime.now().minusDays(1)
@@ -91,7 +91,7 @@ public class SamtykkeServiceTest {
     @Test
     public void skalSletteSamtykkeDersomGjelderCVHjemmelOgGammeltSamtykkeFinnesOgErSletting() {
         SamtykkeMelding samtykkeMelding = new SamtykkeMelding(
-                "100001000000",
+                "1000010000000",
                 null,
                 "SAMTYKKE_SLETTET",
                 "CV_HJEMMEL",
@@ -102,7 +102,7 @@ public class SamtykkeServiceTest {
                 null);
 
         Samtykke gammelSamtykke = new Samtykke(
-                "100001000000",
+                "1000010000000",
                 "CV_HJEMMEL",
                 "SAMTYKKE_OPPRETTET",
                 LocalDateTime.now().minusDays(1)
@@ -121,7 +121,7 @@ public class SamtykkeServiceTest {
     @Test
     public void skalIkkeOppdatereSamtykkeDersomGjelderCVHjemmelOgNyereSamtykkeFinnesAllerede() {
         SamtykkeMelding samtykke = new SamtykkeMelding(
-                "100001000000",
+                "1000010000000",
                 null,
                 "SAMTYKKE_OPPRETTET",
                 "CV_HJEMMEL",
@@ -132,7 +132,7 @@ public class SamtykkeServiceTest {
                 null);
 
         Samtykke nyttSamtykke = new Samtykke(
-                "100001000000",
+                "1000010000000",
                 "CV_HJEMMEL",
                 "SAMTYKKE_OPPRETTET",
                 LocalDateTime.now().plusDays(1)

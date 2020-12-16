@@ -18,7 +18,7 @@ public class SamtykkeUtils {
             validerSamtykkeMelding(samtykkeMelding);
             log.info("Samtykkemelding:"
                     + " Opprettet dato:" + samtykkeMelding.getOpprettetDato()
-                    + " Slettet dato: " + samtykkeMelding.getSlettetDato()
+                    + " Slettet dato:" + samtykkeMelding.getSlettetDato()
                     + " Meldingstype:" + samtykkeMelding.getMeldingType()
                     + " Ressurs:" + samtykkeMelding.getRessurs());
 

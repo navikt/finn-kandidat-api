@@ -33,15 +33,15 @@ public class SamtykkeConsumer implements ConsumerSeekAware {
     public void konsumerMelding(ConsumerRecord<String, String> melding) {
         String json = melding.value();
         Samtykke samtykke = deserialiserMelding(json);
-        samtykkeService.behandleSamtykke(samtykke);
+//        samtykkeService.behandleSamtykke(samtykke);
     }
 
-    /*@Override
+    @Override
     public void onPartitionsAssigned(Map<TopicPartition, Long> assignments,
                                      ConsumerSeekCallback callback) {
         assignments.forEach((tp, offset) -> {
             log.info("Spoler tilbake til begynnelsen for partisjon {}-{}", tp.topic(), tp.partition());
             callback.seekToBeginning(tp.topic(), tp.partition());
         });
-    }*/
+    }
 }

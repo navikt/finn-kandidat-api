@@ -18,6 +18,7 @@ public class SamtykkeUtils {
             validerSamtykkeMelding(samtykkeMelding);
             log.info("Samtykkemelding:"
                     + " Opprettet dato:" + samtykkeMelding.getOpprettetDato()
+                    + " Slettet dato: " + samtykkeMelding.getSlettetDato()
                     + " Meldingstype:" + samtykkeMelding.getMeldingType()
                     + " Ressurs:" + samtykkeMelding.getRessurs());
 
@@ -40,9 +41,9 @@ public class SamtykkeUtils {
             throw new RuntimeException("Ressurs er null");
         }
 
-        if (samtykkeMelding.getOpprettetDato() == null) {
-            throw new RuntimeException("OpprettetDato er null");
-        }
+//        if (samtykkeMelding.getOpprettetDato() == null) {
+//            throw new RuntimeException("OpprettetDato er null");
+//        }
     }
 
     private static Samtykke mapFraSamtykkeMelding(SamtykkeMelding samtykkeMelding) {

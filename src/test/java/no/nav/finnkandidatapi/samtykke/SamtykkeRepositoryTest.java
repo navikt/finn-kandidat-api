@@ -19,9 +19,7 @@ import static org.junit.Assert.*;
 @SpringBootTest
 @ActiveProfiles(profiles = "local")
 public class SamtykkeRepositoryTest {
-
-    // TODO: Test med ZonedDateTime
-
+    
     @Autowired
     private SamtykkeRepository samtykkeRepository;
 
@@ -90,8 +88,6 @@ public class SamtykkeRepositoryTest {
         List<Samtykke> samtykker = samtykkeRepository.hentAlleSamtykker();
         assertEquals(0, samtykkeRepository.hentAlleSamtykker().size());
     }
-
-    // Teste oppdatere samtykke
 
     @Test
     public void slettetSamtykkeForCV() {

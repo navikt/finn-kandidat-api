@@ -23,8 +23,10 @@ public class SamtykkeService {
             } else if ("SAMTYKKE_OPPRETTET".equals(samtykkeMelding.getMeldingType())) {
                 opprettCvSamtykke(samtykkeMelding);
             } else {
-                //log ubehandlet melding
+                log.info("Meldingsype behandles ikke: " + samtykkeMelding.getMeldingType());
             }
+        } else {
+            log.info("Ressurs behandles ikke: " + samtykkeMelding.getRessurs());
         }
     }
 
@@ -37,29 +39,28 @@ public class SamtykkeService {
         Samtykke samtykke = mapOpprettSamtykke(samtykkeMelding);
         if (hentetSamtykke == null) {
             samtykkeRepository.lagreSamtykke(samtykke);
-            log.info("Nytt samtykke");
+            log.info("Nytt samtykke lagres");
         } else {
             if(samtykke.getOpprettetTidspunkt().isAfter(hentetSamtykke.getOpprettetTidspunkt())) {
                 samtykkeRepository.oppdaterSamtykke(samtykke);
                 log.info("Oppdaterer samtykke");
             } else {
-                // log
+                log.info("Samtykke finnes, oppdaterer ikke");
             }
         }
     }
 
     private void slettCvSamtykke(SamtykkeMelding samtykkeMelding) {
-            log.info("Lagrer samtykke" + " " + samtykkeMelding.getMeldingType());
+            log.info("Sletter samtykke" + " " + samtykkeMelding.getMeldingType());
             Samtykke hentetSamtykke = samtykkeRepository.hentSamtykkeForCV(samtykkeMelding.getAktoerId());
             if (hentetSamtykke == null) {
-                // Gjør ingenting
-                log.info("...");
+                log.info("Har mottatt slettemelding, men det er ingenting å slette");
             } else {
                 if(samtykkeMelding.getSlettetDato().isAfter(hentetSamtykke.getOpprettetTidspunkt())) {
                     samtykkeRepository.slettSamtykkeForCV(samtykkeMelding.getAktoerId());
                     log.info("Sletter gammelt samtykke");
                 } else {
-                    // Gjør ingenting
+                    log.info("Det finnes nyere melding, sletter ikke");
                 }
             }
     }

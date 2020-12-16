@@ -1,7 +1,6 @@
 package no.nav.finnkandidatapi.kafka.samtykke;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.finnkandidatapi.samtykke.Samtykke;
 import no.nav.finnkandidatapi.samtykke.SamtykkeService;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.TopicPartition;
@@ -10,8 +9,6 @@ import org.springframework.kafka.listener.ConsumerSeekAware;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
-
-import static no.nav.finnkandidatapi.kafka.samtykke.SamtykkeUtils.deserialiserMelding;
 
 @Slf4j
 @Component
@@ -32,8 +29,8 @@ public class SamtykkeConsumer implements ConsumerSeekAware {
     )
     public void konsumerMelding(ConsumerRecord<String, String> melding) {
         String json = melding.value();
-        Samtykke samtykke = deserialiserMelding(json);
-//        samtykkeService.behandleSamtykke(samtykke);
+        SamtykkeMelding samtykkeMelding = new SamtykkeMelding(json);
+        samtykkeService.behandleSamtykke(samtykkeMelding);
     }
 
     @Override

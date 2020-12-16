@@ -1,5 +1,6 @@
 package no.nav.finnkandidatapi.samtykke;
 
+import no.nav.finnkandidatapi.kafka.samtykke.SamtykkeMelding;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -8,6 +9,8 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.time.LocalDateTime;
+
+import static org.mockito.ArgumentMatchers.any;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SamtykkeServiceTest {
@@ -23,37 +26,52 @@ public class SamtykkeServiceTest {
 
     @Test
     public void skalLagreSamtykkeDersomGjelderCVHjemmelOgSamtykkeIkkeFinnes() {
-        Samtykke samtykke = new Samtykke(
+        SamtykkeMelding samtykkeMelding = new SamtykkeMelding(
                 "100001000000",
-                "CV_HJEMMEL",
+                null,
                 "SAMTYKKE_OPPRETTET",
-                LocalDateTime.now());
+                "CV_HJEMMEL",
+                LocalDateTime.now() ,
+                null,
+                null,
+                null,
+                null);
 
-        samtykkeService.behandleSamtykke(samtykke);
-        Mockito.verify(samtykkeRepositoryMock, Mockito.times(1)).lagreSamtykke(samtykke);
-        Mockito.verify(samtykkeRepositoryMock, Mockito.never()).oppdaterSamtykke(samtykke);
+        samtykkeService.behandleSamtykke(samtykkeMelding);
+        Mockito.verify(samtykkeRepositoryMock, Mockito.times(1)).lagreSamtykke(any());
+        Mockito.verify(samtykkeRepositoryMock, Mockito.never()).oppdaterSamtykke(any());
     }
 
     @Test
     public void skalIkkeLagreSamtykkeDersomDetIkkeGjelderCVHjemmel() {
-        Samtykke samtykke = new Samtykke(
+        SamtykkeMelding samtykkeMelding = new SamtykkeMelding(
                 "100001000000",
-                "ARBEIDSGIVER",
+                        null,
                 "SAMTYKKE_OPPRETTET",
-                LocalDateTime.now());
+                "ARBEIDSGIVER",
+                LocalDateTime.now(),
+        null,
+                null,
+                null,
+                null);
 
-        samtykkeService.behandleSamtykke(samtykke);
-        Mockito.verify(samtykkeRepositoryMock, Mockito.never()).lagreSamtykke(samtykke);
-        Mockito.verify(samtykkeRepositoryMock, Mockito.never()).oppdaterSamtykke(samtykke);
+        samtykkeService.behandleSamtykke(samtykkeMelding);
+        Mockito.verify(samtykkeRepositoryMock, Mockito.never()).lagreSamtykke(any());
+        Mockito.verify(samtykkeRepositoryMock, Mockito.never()).oppdaterSamtykke(any());
     }
 
     @Test
     public void skalOppdatereSamtykkeDersomGjelderCVHjemmelOgGammeltSamtykkeFinnesOgErOppretting() {
-        Samtykke samtykke = new Samtykke(
+        SamtykkeMelding samtykkeMelding = new SamtykkeMelding(
                 "100001000000",
-                "CV_HJEMMEL",
+                null,
                 "SAMTYKKE_OPPRETTET",
-                LocalDateTime.now());
+                "CV_HJEMMEL",
+                LocalDateTime.now(),
+                null,
+                null,
+                null,
+                null);
 
         Samtykke gammelSamtykke = new Samtykke(
                 "100001000000",
@@ -62,21 +80,26 @@ public class SamtykkeServiceTest {
                 LocalDateTime.now().minusDays(1)
         );
 
-        Mockito.when(samtykkeRepositoryMock.hentSamtykkeForCV(samtykke.getAktoerId()))
+        Mockito.when(samtykkeRepositoryMock.hentSamtykkeForCV(samtykkeMelding.getAktoerId()))
                 .thenReturn(gammelSamtykke);
 
-        samtykkeService.behandleSamtykke(samtykke);
-        Mockito.verify(samtykkeRepositoryMock, Mockito.times(1)).oppdaterSamtykke(samtykke);
-        Mockito.verify(samtykkeRepositoryMock, Mockito.never()).lagreSamtykke(samtykke);
+        samtykkeService.behandleSamtykke(samtykkeMelding);
+        Mockito.verify(samtykkeRepositoryMock, Mockito.times(1)).oppdaterSamtykke(any());
+        Mockito.verify(samtykkeRepositoryMock, Mockito.never()).lagreSamtykke(any());
     }
 
     @Test
     public void skalSletteSamtykkeDersomGjelderCVHjemmelOgGammeltSamtykkeFinnesOgErSletting() {
-        Samtykke samtykke = new Samtykke(
+        SamtykkeMelding samtykkeMelding = new SamtykkeMelding(
                 "100001000000",
-                "CV_HJEMMEL",
+                null,
                 "SAMTYKKE_SLETTET",
-                LocalDateTime.now());
+                "CV_HJEMMEL",
+                null,
+                LocalDateTime.now(),
+                null,
+                null,
+                null);
 
         Samtykke gammelSamtykke = new Samtykke(
                 "100001000000",
@@ -85,23 +108,28 @@ public class SamtykkeServiceTest {
                 LocalDateTime.now().minusDays(1)
         );
 
-        Mockito.when(samtykkeRepositoryMock.hentSamtykkeForCV(samtykke.getAktoerId()))
+        Mockito.when(samtykkeRepositoryMock.hentSamtykkeForCV(samtykkeMelding.getAktoerId()))
                 .thenReturn(gammelSamtykke);
 
-        samtykkeService.behandleSamtykke(samtykke);
-        Mockito.verify(samtykkeRepositoryMock, Mockito.times(1)).slettSamtykkeForCV(samtykke.getAktoerId());
-        Mockito.verify(samtykkeRepositoryMock, Mockito.never()).lagreSamtykke(samtykke);
-        Mockito.verify(samtykkeRepositoryMock, Mockito.never()).oppdaterSamtykke(samtykke);
+        samtykkeService.behandleSamtykke(samtykkeMelding);
+        Mockito.verify(samtykkeRepositoryMock, Mockito.times(1)).slettSamtykkeForCV(samtykkeMelding.getAktoerId());
+        Mockito.verify(samtykkeRepositoryMock, Mockito.never()).lagreSamtykke(any());
+        Mockito.verify(samtykkeRepositoryMock, Mockito.never()).oppdaterSamtykke(any());
 
     }
 
     @Test
     public void skalIkkeOppdatereSamtykkeDersomGjelderCVHjemmelOgNyereSamtykkeFinnesAllerede() {
-        Samtykke samtykke = new Samtykke(
+        SamtykkeMelding samtykke = new SamtykkeMelding(
                 "100001000000",
-                "CV_HJEMMEL",
+                null,
                 "SAMTYKKE_OPPRETTET",
-                LocalDateTime.now());
+                "CV_HJEMMEL",
+                LocalDateTime.now(),
+                null,
+                null,
+                null,
+                null);
 
         Samtykke nyttSamtykke = new Samtykke(
                 "100001000000",
@@ -114,7 +142,7 @@ public class SamtykkeServiceTest {
                 .thenReturn(nyttSamtykke);
 
         samtykkeService.behandleSamtykke(samtykke);
-        Mockito.verify(samtykkeRepositoryMock, Mockito.never()).oppdaterSamtykke(samtykke);
-        Mockito.verify(samtykkeRepositoryMock, Mockito.never()).lagreSamtykke(samtykke);
+        Mockito.verify(samtykkeRepositoryMock, Mockito.never()).oppdaterSamtykke(any());
+        Mockito.verify(samtykkeRepositoryMock, Mockito.never()).lagreSamtykke(any());
     }
 }

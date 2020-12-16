@@ -19,7 +19,7 @@ import static org.junit.Assert.*;
 @SpringBootTest
 @ActiveProfiles(profiles = "local")
 public class SamtykkeRepositoryTest {
-    
+
     @Autowired
     private SamtykkeRepository samtykkeRepository;
 
@@ -44,7 +44,7 @@ public class SamtykkeRepositoryTest {
         Samtykke lagretSamtykke = samtykker.get(0);
         assertEquals(samtykke.getAktoerId(), lagretSamtykke.getAktoerId());
         assertEquals(samtykke.getGjelder(), lagretSamtykke.getGjelder());
-        assertEquals(samtykke.getOpprettetTidspunkt(), lagretSamtykke.getOpprettetTidspunkt());
+        assertTrue(samtykke.getOpprettetTidspunkt().isEqual(lagretSamtykke.getOpprettetTidspunkt()));
 
         assertTrue(samtykkeRepository.harSamtykkeForCV(aktoerId));
     }
@@ -69,7 +69,7 @@ public class SamtykkeRepositoryTest {
         Samtykke oppdatertSamtykke = samtykker.get(0);
         assertEquals(aktoerId, oppdatertSamtykke.getAktoerId());
         assertEquals(gjelder, oppdatertSamtykke.getGjelder());
-        assertEquals(opprettetTidspunktOppdatert, oppdatertSamtykke.getOpprettetTidspunkt());
+        assertTrue(opprettetTidspunktOppdatert.isEqual(oppdatertSamtykke.getOpprettetTidspunkt()));
     }
 
     @Test

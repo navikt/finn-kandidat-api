@@ -2,9 +2,11 @@ package no.nav.finnkandidatapi.samtykke;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.finnkandidatapi.kafka.samtykke.SamtykkeMelding;
+import org.apache.zookeeper.Op;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -30,25 +32,27 @@ public class SamtykkeService {
     private void opprettCvSamtykke(SamtykkeMelding samtykkeMelding) {
 
         log.info("Lagrer samtykke" + " " + samtykkeMelding.getMeldingType());
-        Samtykke hentetSamtykke = samtykkeRepository.hentSamtykkeForCV(samtykkeMelding.getAktoerId());
+        Optional<Samtykke> hentetSamtykke = samtykkeRepository.hentSamtykkeForCV(samtykkeMelding.getFoedselsnummer());
 
         Samtykke samtykke = mapOpprettSamtykke(samtykkeMelding);
-        if (hentetSamtykke == null) {
+        hentetSamtykke.ifPresentOrElse(s -> {
+            if(mottattMeldingErNyere(s, samtykke.getOpprettetTidspunkt())) {
+                samtykkeRepository.oppdaterGittSamtykke(s);
+                log.info("Oppdaterer samtykke");
+            }
+        }, () -> {
             samtykkeRepository.lagreSamtykke(samtykke);
             log.info("Nytt samtykke lagres");
-        } else if (mottattMeldingErNyere(hentetSamtykke, samtykke.getOpprettetTidspunkt())) {
-            samtykkeRepository.oppdaterGittSamtykke(samtykke);
-            log.info("Oppdaterer samtykke");
-        }
+        });
     }
 
     private void slettCvSamtykke(SamtykkeMelding samtykkeMelding) {
-        Samtykke hentetSamtykke = samtykkeRepository.hentSamtykkeForCV(samtykkeMelding.getAktoerId());
-        if (hentetSamtykke != null
-                && mottattMeldingErNyere(hentetSamtykke, samtykkeMelding.getSlettetDato())) {
-            samtykkeRepository.slettSamtykkeForCV(samtykkeMelding.getAktoerId());
-            log.info("Sletter gammelt samtykke");
-        }
+        Optional<Samtykke> hentetSamtykke = samtykkeRepository.hentSamtykkeForCV(samtykkeMelding.getFoedselsnummer());
+        hentetSamtykke.filter(s -> mottattMeldingErNyere(s, samtykkeMelding.getSlettetDato()))
+                .ifPresent(s -> {
+                    samtykkeRepository.slettSamtykkeForCV(samtykkeMelding.getFoedselsnummer());
+                    log.info("Sletter gammelt samtykke");
+                });
     }
 
     private boolean mottattMeldingErNyere(Samtykke hentetSamtykke, LocalDateTime opprettetTidspunkt) {
@@ -56,11 +60,11 @@ public class SamtykkeService {
     }
 
     private static Samtykke mapOpprettSamtykke(SamtykkeMelding samtykkeMelding) {
-        String aktoerId = hentAlleTallFraString(samtykkeMelding.getAktoerId());
+        String aktoerId = hentAlleTallFraString(samtykkeMelding.getFoedselsnummer());
 
         int korrektLengdeAktoerId = 13;
         if (aktoerId.length() != korrektLengdeAktoerId) {
-            throw new RuntimeException("AktørID må ha 13 tegn :" + samtykkeMelding.getAktoerId());
+            throw new RuntimeException("AktørID må ha 13 tegn :" + samtykkeMelding.getFoedselsnummer());
         }
         return new Samtykke(aktoerId, samtykkeMelding.getRessurs(), samtykkeMelding.getMeldingType(), samtykkeMelding.getOpprettetDato());
     }

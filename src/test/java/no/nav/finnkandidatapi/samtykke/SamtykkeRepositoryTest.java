@@ -42,7 +42,7 @@ public class SamtykkeRepositoryTest {
         assertEquals(1, samtykker.size());
 
         Samtykke lagretSamtykke = samtykker.get(0);
-        assertEquals(samtykke.getAktoerId(), lagretSamtykke.getAktoerId());
+        assertEquals(samtykke.getFoedselsnummer(), lagretSamtykke.getFoedselsnummer());
         assertEquals(samtykke.getGjelder(), lagretSamtykke.getGjelder());
         assertEquals(samtykke.getOpprettetTidspunkt(), lagretSamtykke.getOpprettetTidspunkt());
 
@@ -61,13 +61,13 @@ public class SamtykkeRepositoryTest {
         samtykkeRepository.lagreSamtykke(
                 new Samtykke(aktoerId, gjelder, endring, opprettetTidspunkt));
 
-        samtykkeRepository.oppdaterSamtykke(
+        samtykkeRepository.oppdaterGittSamtykke(
                 new Samtykke(aktoerId, gjelder, endring, opprettetTidspunktOppdatert));
         List<Samtykke> samtykker = samtykkeRepository.hentAlleSamtykker();
         assertEquals(1, samtykkeRepository.hentAlleSamtykker().size());
 
         Samtykke oppdatertSamtykke = samtykker.get(0);
-        assertEquals(aktoerId, oppdatertSamtykke.getAktoerId());
+        assertEquals(aktoerId, oppdatertSamtykke.getFoedselsnummer());
         assertEquals(gjelder, oppdatertSamtykke.getGjelder());
         assertTrue(opprettetTidspunktOppdatert.isEqual(oppdatertSamtykke.getOpprettetTidspunkt()));
     }
@@ -93,7 +93,7 @@ public class SamtykkeRepositoryTest {
     public void slettetSamtykkeForCV() {
         String aktoerId = "232432532";
         Samtykke samtykke = new Samtykke(aktoerId, "CV_HJEMMEL", "SAMTYKKE_SLETTET", LocalDateTime.now());
-        samtykkeRepository.oppdaterSamtykke(samtykke);
+        samtykkeRepository.oppdaterGittSamtykke(samtykke);
 
         assertFalse(samtykkeRepository.harSamtykkeForCV(aktoerId));
     }

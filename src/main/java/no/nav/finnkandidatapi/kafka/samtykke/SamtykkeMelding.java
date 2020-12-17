@@ -1,17 +1,14 @@
 package no.nav.finnkandidatapi.kafka.samtykke;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 
 import java.io.IOException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
@@ -26,9 +23,6 @@ public class SamtykkeMelding {
 
     private static final String dateFormat = "yyyy-MM-dd";
 
-    @JsonDeserialize(using = ExtractNumbersFromStringDeserializer.class)
-    private String aktoerId;
-
     private String foedselsnummer;
 
     private String meldingType;
@@ -40,16 +34,6 @@ public class SamtykkeMelding {
 
     @JsonDeserialize(using = CustomLocalDateTimeDeserializer.class)
     private LocalDateTime slettetDato;
-
-    private Integer versjon;
-
-    @JsonDeserialize(using = LocalDateDeserializer.class)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = dateFormat)
-    private LocalDate versjonGjeldendeFra;
-
-    @JsonDeserialize(using = LocalDateDeserializer.class)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = dateFormat)
-    private LocalDate versjonGjeldendeTil;
 
     public SamtykkeMelding(String jsonMelding) {
         try {
@@ -69,8 +53,8 @@ public class SamtykkeMelding {
     }
 
     private void validerSamtykkeMelding(SamtykkeMelding samtykkeMelding) {
-        if (StringUtils.isBlank(samtykkeMelding.getAktoerId())) {
-            throw new RuntimeException("AktørID mangler");
+        if (StringUtils.isBlank(samtykkeMelding.getFoedselsnummer())) {
+            throw new RuntimeException("Fødselsnummer mangler");
         }
 
         if (StringUtils.isBlank(samtykkeMelding.getMeldingType())) {

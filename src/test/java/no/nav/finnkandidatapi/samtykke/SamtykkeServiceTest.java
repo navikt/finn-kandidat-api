@@ -31,7 +31,7 @@ public class SamtykkeServiceTest {
                 null,
                 "SAMTYKKE_OPPRETTET",
                 "CV_HJEMMEL",
-                LocalDateTime.now() ,
+                LocalDateTime.now(),
                 null,
                 null,
                 null,
@@ -39,25 +39,25 @@ public class SamtykkeServiceTest {
 
         samtykkeService.behandleSamtykke(samtykkeMelding);
         Mockito.verify(samtykkeRepositoryMock, Mockito.times(1)).lagreSamtykke(any());
-        Mockito.verify(samtykkeRepositoryMock, Mockito.never()).oppdaterSamtykke(any());
+        Mockito.verify(samtykkeRepositoryMock, Mockito.never()).oppdaterGittSamtykke(any());
     }
 
     @Test
     public void skalIkkeLagreSamtykkeDersomDetIkkeGjelderCVHjemmel() {
         SamtykkeMelding samtykkeMelding = new SamtykkeMelding(
                 "1000010000000",
-                        null,
+                null,
                 "SAMTYKKE_OPPRETTET",
                 "ARBEIDSGIVER",
                 LocalDateTime.now(),
-        null,
+                null,
                 null,
                 null,
                 null);
 
         samtykkeService.behandleSamtykke(samtykkeMelding);
         Mockito.verify(samtykkeRepositoryMock, Mockito.never()).lagreSamtykke(any());
-        Mockito.verify(samtykkeRepositoryMock, Mockito.never()).oppdaterSamtykke(any());
+        Mockito.verify(samtykkeRepositoryMock, Mockito.never()).oppdaterGittSamtykke(any());
     }
 
     @Test
@@ -84,7 +84,7 @@ public class SamtykkeServiceTest {
                 .thenReturn(gammelSamtykke);
 
         samtykkeService.behandleSamtykke(samtykkeMelding);
-        Mockito.verify(samtykkeRepositoryMock, Mockito.times(1)).oppdaterSamtykke(any());
+        Mockito.verify(samtykkeRepositoryMock, Mockito.times(1)).oppdaterGittSamtykke(any());
         Mockito.verify(samtykkeRepositoryMock, Mockito.never()).lagreSamtykke(any());
     }
 
@@ -114,7 +114,7 @@ public class SamtykkeServiceTest {
         samtykkeService.behandleSamtykke(samtykkeMelding);
         Mockito.verify(samtykkeRepositoryMock, Mockito.times(1)).slettSamtykkeForCV(samtykkeMelding.getAktoerId());
         Mockito.verify(samtykkeRepositoryMock, Mockito.never()).lagreSamtykke(any());
-        Mockito.verify(samtykkeRepositoryMock, Mockito.never()).oppdaterSamtykke(any());
+        Mockito.verify(samtykkeRepositoryMock, Mockito.never()).oppdaterGittSamtykke(any());
 
     }
 
@@ -142,7 +142,7 @@ public class SamtykkeServiceTest {
                 .thenReturn(nyttSamtykke);
 
         samtykkeService.behandleSamtykke(samtykke);
-        Mockito.verify(samtykkeRepositoryMock, Mockito.never()).oppdaterSamtykke(any());
+        Mockito.verify(samtykkeRepositoryMock, Mockito.never()).oppdaterGittSamtykke(any());
         Mockito.verify(samtykkeRepositoryMock, Mockito.never()).lagreSamtykke(any());
     }
 }

@@ -13,6 +13,7 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Repository
 public class SamtykkeRepository {
@@ -36,26 +37,25 @@ public class SamtykkeRepository {
         samtykkeMapper = new SamtykkeMapper();
     }
 
-    public Samtykke hentSamtykkeForCV(String aktoerId) {
+    public Optional<Samtykke> hentSamtykkeForCV(String aktoerId) {
         try {
             Samtykke samtykke = jdbcTemplate.queryForObject("SELECT * from " + SAMTYKKE_TABELL +
                             " where " + AKTOER_ID + " = ? and " + GJELDER + " = '" + SAMTYKKE_CV + "'",
                     new Object[]{aktoerId}, samtykkeMapper);
-            return samtykke;
+            return Optional.ofNullable(samtykke);
         } catch (EmptyResultDataAccessException e) {
-            return null;
+            return Optional.empty();
         }
     }
 
-    public void oppdaterSamtykke(Samtykke samtykke) {
+    public void oppdaterGittSamtykke(Samtykke samtykke) {
         String update = "UPDATE " + SAMTYKKE_TABELL +
                 " SET " + OPPRETTET_TIDSPUNKT + " = ?" +
                 " WHERE " + AKTOER_ID + "= ? AND " + GJELDER + "= ?;";
 
-
         jdbcTemplate.update(update,
                 samtykke.getOpprettetTidspunkt(),
-                samtykke.getAktoerId(),
+                samtykke.getFoedselsnummer(),
                 samtykke.getGjelder());
     }
 
@@ -63,17 +63,8 @@ public class SamtykkeRepository {
         jdbcInsert.execute(mapTilDatabaseParametre(samtykke));
     }
 
-
-    // TODO: Lagre opprettet dato, og forkast eldre instanser.
     public boolean harSamtykkeForCV(String aktoerId) {
-        try {
-            Samtykke samtykke = jdbcTemplate.queryForObject("SELECT * from " + SAMTYKKE_TABELL +
-                            " where " + AKTOER_ID + " = ? and " + GJELDER + " = '" + SAMTYKKE_CV + "'",
-                    new Object[]{aktoerId}, samtykkeMapper);
-            return samtykke != null;
-        } catch (EmptyResultDataAccessException e) {
-            return false;
-        }
+        return hentSamtykkeForCV(aktoerId).isPresent();
     }
 
     List<Samtykke> hentAlleSamtykker() {
@@ -86,7 +77,7 @@ public class SamtykkeRepository {
 
     private Map<String, Object> mapTilDatabaseParametre(Samtykke samtykke) {
         return Map.of(
-                AKTOER_ID, samtykke.getAktoerId(),
+                AKTOER_ID, samtykke.getFoedselsnummer(),
                 GJELDER, samtykke.getGjelder(),
                 OPPRETTET_TIDSPUNKT, samtykke.getOpprettetTidspunkt()
         );
@@ -103,7 +94,7 @@ public class SamtykkeRepository {
         public Samtykke mapRow(ResultSet rs, int i) throws SQLException {
 
             return Samtykke.builder()
-                    .aktoerId(rs.getString(AKTOER_ID))
+                    .foedselsnummer(rs.getString(AKTOER_ID))
                     .gjelder(rs.getString(GJELDER))
                     .opprettetTidspunkt(konverter(rs.getTimestamp(OPPRETTET_TIDSPUNKT)))
                     .build();

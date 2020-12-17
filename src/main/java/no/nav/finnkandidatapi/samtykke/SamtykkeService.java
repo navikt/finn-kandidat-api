@@ -22,11 +22,7 @@ public class SamtykkeService {
                 slettCvSamtykke(samtykkeMelding);
             } else if ("SAMTYKKE_OPPRETTET".equals(samtykkeMelding.getMeldingType())) {
                 opprettCvSamtykke(samtykkeMelding);
-            } else {
-                log.info("Meldingsype behandles ikke: " + samtykkeMelding.getMeldingType());
             }
-        } else {
-            log.info("Ressurs behandles ikke: " + samtykkeMelding.getRessurs());
         }
     }
 
@@ -41,7 +37,7 @@ public class SamtykkeService {
             samtykkeRepository.lagreSamtykke(samtykke);
             log.info("Nytt samtykke lagres");
         } else if (mottattMeldingErNyere(hentetSamtykke, samtykke.getOpprettetTidspunkt())) {
-            samtykkeRepository.oppdaterSamtykke(samtykke);
+            samtykkeRepository.oppdaterGittSamtykke(samtykke);
             log.info("Oppdaterer samtykke");
         }
     }

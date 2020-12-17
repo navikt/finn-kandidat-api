@@ -7,8 +7,8 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 
 import java.io.IOException;
 
-public class ExtractNumbersDeserializer extends JsonDeserializer<String> {
-    public ExtractNumbersDeserializer() {
+public class ExtractNumbersFromStringDeserializer extends JsonDeserializer<String> {
+    public ExtractNumbersFromStringDeserializer() {
         super();
     }
 

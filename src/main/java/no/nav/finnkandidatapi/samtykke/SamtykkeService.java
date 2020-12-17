@@ -40,29 +40,23 @@ public class SamtykkeService {
         if (hentetSamtykke == null) {
             samtykkeRepository.lagreSamtykke(samtykke);
             log.info("Nytt samtykke lagres");
-        } else {
-            if(samtykke.getOpprettetTidspunkt().isAfter(hentetSamtykke.getOpprettetTidspunkt())) {
-                samtykkeRepository.oppdaterSamtykke(samtykke);
-                log.info("Oppdaterer samtykke");
-            } else {
-                log.info("Samtykke finnes, oppdaterer ikke");
-            }
+        } else if (mottattMeldingErNyere(hentetSamtykke, samtykke.getOpprettetTidspunkt())) {
+            samtykkeRepository.oppdaterSamtykke(samtykke);
+            log.info("Oppdaterer samtykke");
         }
     }
 
     private void slettCvSamtykke(SamtykkeMelding samtykkeMelding) {
-            log.info("Sletter samtykke" + " " + samtykkeMelding.getMeldingType());
-            Samtykke hentetSamtykke = samtykkeRepository.hentSamtykkeForCV(samtykkeMelding.getAktoerId());
-            if (hentetSamtykke == null) {
-                log.info("Har mottatt slettemelding, men det er ingenting å slette");
-            } else {
-                if(samtykkeMelding.getSlettetDato().isAfter(hentetSamtykke.getOpprettetTidspunkt())) {
-                    samtykkeRepository.slettSamtykkeForCV(samtykkeMelding.getAktoerId());
-                    log.info("Sletter gammelt samtykke");
-                } else {
-                    log.info("Det finnes nyere melding, sletter ikke");
-                }
-            }
+        Samtykke hentetSamtykke = samtykkeRepository.hentSamtykkeForCV(samtykkeMelding.getAktoerId());
+        if (hentetSamtykke != null
+                && mottattMeldingErNyere(hentetSamtykke, samtykkeMelding.getSlettetDato())) {
+            samtykkeRepository.slettSamtykkeForCV(samtykkeMelding.getAktoerId());
+            log.info("Sletter gammelt samtykke");
+        }
+    }
+
+    private boolean mottattMeldingErNyere(Samtykke hentetSamtykke, LocalDateTime opprettetTidspunkt) {
+        return opprettetTidspunkt.isAfter(hentetSamtykke.getOpprettetTidspunkt());
     }
 
     private static Samtykke mapOpprettSamtykke(SamtykkeMelding samtykkeMelding) {

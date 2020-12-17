@@ -26,23 +26,30 @@ public class SamtykkeMelding {
 
     private static final String dateFormat = "yyyy-MM-dd";
 
-    @JsonDeserialize(using = ExtractNumbersDeserializer.class)
+    @JsonDeserialize(using = ExtractNumbersFromStringDeserializer.class)
     private String aktoerId;
+
     private String foedselsnummer;
+
     private String meldingType;
+
     private String ressurs;
+
     @JsonDeserialize(using = CustomLocalDateTimeDeserializer.class)
     private LocalDateTime opprettetDato;
+
     @JsonDeserialize(using = CustomLocalDateTimeDeserializer.class)
     private LocalDateTime slettetDato;
+
     private Integer versjon;
+
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = dateFormat)
     private LocalDate versjonGjeldendeFra;
+
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = dateFormat)
     private LocalDate versjonGjeldendeTil;
-
 
     public SamtykkeMelding(String jsonMelding) {
         try {

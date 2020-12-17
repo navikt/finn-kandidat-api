@@ -23,7 +23,7 @@ public class SamtykkeMelding {
 
     private static final String dateFormat = "yyyy-MM-dd";
 
-    private String foedselsnummer;
+    private String fnr;
 
     private String meldingType;
 
@@ -53,7 +53,7 @@ public class SamtykkeMelding {
     }
 
     private void validerSamtykkeMelding(SamtykkeMelding samtykkeMelding) {
-        if (StringUtils.isBlank(samtykkeMelding.getFoedselsnummer())) {
+        if (StringUtils.isBlank(samtykkeMelding.getFnr())) {
             throw new RuntimeException("Fødselsnummer mangler");
         }
 

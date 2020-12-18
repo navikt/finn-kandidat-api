@@ -19,7 +19,7 @@ public class SamtykkeConsumer {
 
     @KafkaListener(
             topics = "aapen-pam-samtykke-endret-v1",
-            groupId = "finn-kandidat-samtykke-v2",
+            groupId = "finn-kandidat-samtykke-v3",
             clientIdPrefix = "samtykke",
             containerFactory = "kafkaListenerContainerFactory"
     )

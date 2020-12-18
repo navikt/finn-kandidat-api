@@ -11,6 +11,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -81,13 +82,15 @@ public class SamtykkeRepository {
     }
 
     private Map<String, Object> mapTilDatabaseParametre(Samtykke samtykke) {
-        return Map.of(
-                AKTOER_ID, samtykke.getAktorId(),
-                FOEDSELSNUMMER, samtykke.getFoedselsnummer(),
-                GJELDER, samtykke.getGjelder(),
-                OPPRETTET_TIDSPUNKT, samtykke.getOpprettetTidspunkt(),
-                ENDRING, samtykke.getEndring()
-        );
+        return new HashMap() {
+            {
+                put(AKTOER_ID, samtykke.getAktorId());
+                put(FOEDSELSNUMMER, samtykke.getFoedselsnummer());
+                put(GJELDER, samtykke.getGjelder());
+                put(OPPRETTET_TIDSPUNKT, samtykke.getOpprettetTidspunkt());
+                put(ENDRING, samtykke.getEndring());
+            }
+        };
     }
 
     public void slettSamtykkeForCV(String aktoerId) {

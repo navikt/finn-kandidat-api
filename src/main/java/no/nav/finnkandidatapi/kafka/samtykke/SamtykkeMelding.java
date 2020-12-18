@@ -42,7 +42,6 @@ public class SamtykkeMelding {
             ObjectMapper mapper = new ObjectMapper();
             SamtykkeMelding samtykkeMelding = mapper.readValue(jsonMelding, SamtykkeMelding.class);
             BeanUtils.copyProperties(samtykkeMelding, this);
-
         } catch (IOException e) {
             throw new RuntimeException("Kunne ikke deserialisere samtykkemelding", e);
         }

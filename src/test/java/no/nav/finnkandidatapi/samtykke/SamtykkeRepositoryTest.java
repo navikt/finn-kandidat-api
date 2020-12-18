@@ -51,6 +51,28 @@ public class SamtykkeRepositoryTest {
     }
 
     @Test
+    public void skalKunneLagreOgHenteUtSamtykkeMedFnrNull() {
+        String aktoerId = "232432532";
+        String foedselsnummer = null;
+        String gjelder = "CV_HJEMMEL";
+        String endring = "SAMTYKKE_OPPRETTET";
+        LocalDateTime opprettetTidspunkt = LocalDateTime.now();
+
+        Samtykke samtykke = new Samtykke(aktoerId, foedselsnummer, gjelder, endring, opprettetTidspunkt);
+        samtykkeRepository.lagreSamtykke(samtykke);
+
+        List<Samtykke> samtykker = samtykkeRepository.hentAlleSamtykker();
+        assertEquals(1, samtykker.size());
+
+        Samtykke lagretSamtykke = samtykker.get(0);
+        assertEquals(samtykke.getFoedselsnummer(), lagretSamtykke.getFoedselsnummer());
+        assertEquals(samtykke.getGjelder(), lagretSamtykke.getGjelder());
+        assertEquals(samtykke.getOpprettetTidspunkt(), lagretSamtykke.getOpprettetTidspunkt());
+
+        assertTrue(samtykkeRepository.harSamtykkeForCV(aktoerId));
+    }
+
+    @Test
     public void skalKunneOppdatereSamtykke() {
         LocalDateTime opprettetTidspunkt = LocalDateTime.now().minusDays(1);
         LocalDateTime opprettetTidspunktOppdatert = opprettetTidspunkt.plusDays(1);

@@ -2,6 +2,7 @@ package no.nav.finnkandidatapi.samtykke;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.finnkandidatapi.kafka.samtykke.SamtykkeMelding;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.zookeeper.Op;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +21,7 @@ public class SamtykkeService {
 
     public void behandleSamtykke(SamtykkeMelding samtykkeMelding) {
         if ("CV_HJEMMEL".equals(samtykkeMelding.getRessurs())) {
+            validerSamtykkeMelding(samtykkeMelding);
             if ("SAMTYKKE_SLETTET".equals(samtykkeMelding.getMeldingType())) {
                 slettCvSamtykke(samtykkeMelding);
             } else if ("SAMTYKKE_OPPRETTET".equals(samtykkeMelding.getMeldingType())) {
@@ -44,6 +46,24 @@ public class SamtykkeService {
             samtykkeRepository.lagreSamtykke(samtykke);
             log.info("Nytt samtykke lagres");
         });
+    }
+
+    private void validerSamtykkeMelding(SamtykkeMelding samtykkeMelding) {
+        if (StringUtils.isBlank(samtykkeMelding.getFnr())) {
+            throw new RuntimeException("Fødselsnummer mangler");
+        }
+
+        if (StringUtils.isBlank(samtykkeMelding.getMeldingType())) {
+            throw new RuntimeException("Meldingtype mangler");
+        }
+
+        if (StringUtils.isBlank(samtykkeMelding.getRessurs())) {
+            throw new RuntimeException("Ressurs mangler");
+        }
+
+        if (samtykkeMelding.getOpprettetDato() == null && samtykkeMelding.getSlettetDato() == null) {
+            throw new RuntimeException("OpprettetDato eller Slettetdato må ha verdi");
+        }
     }
 
     private void slettCvSamtykke(SamtykkeMelding samtykkeMelding) {

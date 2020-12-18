@@ -45,30 +45,10 @@ public class SamtykkeMelding {
                     + " Slettet dato:" + samtykkeMelding.getSlettetDato()
                     + " Meldingstype:" + samtykkeMelding.getMeldingType()
                     + " Ressurs:" + samtykkeMelding.getRessurs());
-            validerSamtykkeMelding(samtykkeMelding);
 
         } catch (IOException e) {
             throw new RuntimeException("Kunne ikke deserialisere samtykkemelding", e);
         }
     }
-
-    private void validerSamtykkeMelding(SamtykkeMelding samtykkeMelding) {
-        if (StringUtils.isBlank(samtykkeMelding.getFnr())) {
-            throw new RuntimeException("Fødselsnummer mangler");
-        }
-
-        if (StringUtils.isBlank(samtykkeMelding.getMeldingType())) {
-            throw new RuntimeException("Meldingtype mangler");
-        }
-
-        if (StringUtils.isBlank(samtykkeMelding.getRessurs())) {
-            throw new RuntimeException("Ressurs mangler");
-        }
-
-        if (samtykkeMelding.getOpprettetDato() == null && samtykkeMelding.getSlettetDato() == null) {
-            throw new RuntimeException("OpprettetDato eller Slettetdato må ha verdi");
-        }
-    }
-
 
 }

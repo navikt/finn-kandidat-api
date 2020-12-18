@@ -29,11 +29,14 @@ public class SamtykkeRepository {
 
     private final String SAMTYKKE_CV = "CV_HJEMMEL";
 
+    static final String ID = "id";
+
     @Autowired
     public SamtykkeRepository(JdbcTemplate jdbcTemplate, SimpleJdbcInsert jdbcInsert) {
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcInsert = jdbcInsert
-                .withTableName(SAMTYKKE_TABELL);
+                .withTableName(SAMTYKKE_TABELL)
+                .usingGeneratedKeyColumns(ID);
         samtykkeMapper = new SamtykkeMapper();
     }
 

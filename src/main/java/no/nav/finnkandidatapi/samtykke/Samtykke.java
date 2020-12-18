@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @ToString
 public class Samtykke {
+    private String aktorId;
     private String foedselsnummer;
     private String gjelder;
     private String endring;

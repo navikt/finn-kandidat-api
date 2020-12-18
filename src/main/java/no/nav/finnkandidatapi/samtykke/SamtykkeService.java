@@ -32,7 +32,7 @@ public class SamtykkeService {
     private void opprettCvSamtykke(SamtykkeMelding samtykkeMelding) {
 
         log.info("Lagrer samtykke" + " " + samtykkeMelding.getMeldingType());
-        Optional<Samtykke> hentetSamtykke = samtykkeRepository.hentSamtykkeForCV(samtykkeMelding.getFnr());
+        Optional<Samtykke> hentetSamtykke = samtykkeRepository.hentSamtykkeForCV(samtykkeMelding.getAktoerId());
 
         Samtykke samtykke = mapOpprettSamtykke(samtykkeMelding);
         hentetSamtykke.ifPresentOrElse(s -> {
@@ -47,10 +47,10 @@ public class SamtykkeService {
     }
 
     private void slettCvSamtykke(SamtykkeMelding samtykkeMelding) {
-        Optional<Samtykke> hentetSamtykke = samtykkeRepository.hentSamtykkeForCV(samtykkeMelding.getFnr());
+        Optional<Samtykke> hentetSamtykke = samtykkeRepository.hentSamtykkeForCV(samtykkeMelding.getAktoerId());
         hentetSamtykke.filter(s -> mottattMeldingErNyere(s, samtykkeMelding.getSlettetDato()))
                 .ifPresent(s -> {
-                    samtykkeRepository.slettSamtykkeForCV(samtykkeMelding.getFnr());
+                    samtykkeRepository.slettSamtykkeForCV(samtykkeMelding.getAktoerId());
                     log.info("Sletter gammelt samtykke");
                 });
     }
@@ -60,17 +60,11 @@ public class SamtykkeService {
     }
 
     private static Samtykke mapOpprettSamtykke(SamtykkeMelding samtykkeMelding) {
-        String aktoerId = hentAlleTallFraString(samtykkeMelding.getFnr());
-
         int korrektLengdeAktoerId = 11;
-        if (aktoerId.length() != korrektLengdeAktoerId) {
-            throw new RuntimeException("Fnr må ha 13 tegn :" + samtykkeMelding.getFnr());
+        if (samtykkeMelding.getAktoerId().length() != korrektLengdeAktoerId) {
+            throw new RuntimeException("Aktør-ID må ha 13 tegn :" + samtykkeMelding.getAktoerId());
         }
-        return new Samtykke(aktoerId, samtykkeMelding.getRessurs(), samtykkeMelding.getMeldingType(), samtykkeMelding.getOpprettetDato());
-    }
-
-    private static String hentAlleTallFraString(String stringMedTall) {
-        return stringMedTall.replaceAll("\\D+", "");
+        return new Samtykke(samtykkeMelding.getAktoerId(), samtykkeMelding.getAktoerId(), samtykkeMelding.getRessurs(), samtykkeMelding.getMeldingType(), samtykkeMelding.getOpprettetDato());
     }
 
 }

@@ -19,6 +19,7 @@ public class SamtykkeServiceTest {
     @Mock
     SamtykkeRepository samtykkeRepositoryMock;
     SamtykkeService samtykkeService;
+    private String aktorId = "1000100000100";
 
     @Before
     public void init() {
@@ -28,6 +29,7 @@ public class SamtykkeServiceTest {
     @Test
     public void skalLagreSamtykkeDersomGjelderCVHjemmelOgSamtykkeIkkeFinnes() {
         SamtykkeMelding samtykkeMelding = new SamtykkeMelding(
+                aktorId,
                 "27075349594",
                 "SAMTYKKE_OPPRETTET",
                 "CV_HJEMMEL",
@@ -42,6 +44,7 @@ public class SamtykkeServiceTest {
     @Test
     public void skalIkkeLagreSamtykkeDersomDetIkkeGjelderCVHjemmel() {
         SamtykkeMelding samtykkeMelding = new SamtykkeMelding(
+                aktorId,
                 "27075349594",
                 "SAMTYKKE_OPPRETTET",
                 "ARBEIDSGIVER",
@@ -56,6 +59,7 @@ public class SamtykkeServiceTest {
     @Test
     public void skalOppdatereSamtykkeDersomGjelderCVHjemmelOgGammeltSamtykkeFinnesOgErOppretting() {
         SamtykkeMelding samtykkeMelding = new SamtykkeMelding(
+                aktorId,
                 "27075349594",
                 "SAMTYKKE_OPPRETTET",
                 "CV_HJEMMEL",
@@ -63,13 +67,14 @@ public class SamtykkeServiceTest {
                 null);
 
         Samtykke gammeltSamtykke = new Samtykke(
+                aktorId,
                 "27075349594",
                 "CV_HJEMMEL",
                 "SAMTYKKE_OPPRETTET",
                 LocalDateTime.now().minusDays(1)
         );
 
-        Mockito.when(samtykkeRepositoryMock.hentSamtykkeForCV(samtykkeMelding.getFnr()))
+        Mockito.when(samtykkeRepositoryMock.hentSamtykkeForCV(samtykkeMelding.getAktoerId()))
                 .thenReturn(Optional.of(gammeltSamtykke));
 
         samtykkeService.behandleSamtykke(samtykkeMelding);
@@ -80,25 +85,27 @@ public class SamtykkeServiceTest {
     @Test
     public void skalSletteSamtykkeDersomGjelderCVHjemmelOgGammeltSamtykkeFinnesOgErSletting() {
         SamtykkeMelding samtykkeMelding = new SamtykkeMelding(
+                aktorId,
                 "27075349594",
                 "SAMTYKKE_SLETTET",
                 "CV_HJEMMEL",
                 null,
                 LocalDateTime.now()
-                );
+        );
 
         Samtykke gammeltSamtykke = new Samtykke(
+                aktorId,
                 "27075349594",
                 "CV_HJEMMEL",
                 "SAMTYKKE_OPPRETTET",
                 LocalDateTime.now().minusDays(1)
         );
 
-        Mockito.when(samtykkeRepositoryMock.hentSamtykkeForCV(samtykkeMelding.getFnr()))
+        Mockito.when(samtykkeRepositoryMock.hentSamtykkeForCV(samtykkeMelding.getAktoerId()))
                 .thenReturn(Optional.of(gammeltSamtykke));
 
         samtykkeService.behandleSamtykke(samtykkeMelding);
-        Mockito.verify(samtykkeRepositoryMock, Mockito.times(1)).slettSamtykkeForCV(samtykkeMelding.getFnr());
+        Mockito.verify(samtykkeRepositoryMock, Mockito.times(1)).slettSamtykkeForCV(samtykkeMelding.getAktoerId());
         Mockito.verify(samtykkeRepositoryMock, Mockito.never()).lagreSamtykke(any());
         Mockito.verify(samtykkeRepositoryMock, Mockito.never()).oppdaterGittSamtykke(any());
 
@@ -107,6 +114,7 @@ public class SamtykkeServiceTest {
     @Test
     public void skalIkkeOppdatereSamtykkeDersomGjelderCVHjemmelOgNyereSamtykkeFinnesAllerede() {
         SamtykkeMelding samtykke = new SamtykkeMelding(
+                aktorId,
                 "27075349594",
                 "SAMTYKKE_OPPRETTET",
                 "CV_HJEMMEL",
@@ -114,13 +122,14 @@ public class SamtykkeServiceTest {
                 null);
 
         Samtykke nyttSamtykke = new Samtykke(
+                aktorId,
                 "27075349594",
                 "CV_HJEMMEL",
                 "SAMTYKKE_OPPRETTET",
                 LocalDateTime.now().plusDays(1)
         );
 
-        Mockito.when(samtykkeRepositoryMock.hentSamtykkeForCV(samtykke.getFnr()))
+        Mockito.when(samtykkeRepositoryMock.hentSamtykkeForCV(samtykke.getAktoerId()))
                 .thenReturn(Optional.of(nyttSamtykke));
 
         samtykkeService.behandleSamtykke(samtykke);

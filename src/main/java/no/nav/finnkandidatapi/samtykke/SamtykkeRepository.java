@@ -22,14 +22,14 @@ public class SamtykkeRepository {
     private final SimpleJdbcInsert jdbcInsert;
     private final SamtykkeMapper samtykkeMapper;
 
+    static final String ID = "id";
+    static final String AKTOER_ID = "aktor_id";
     static final String SAMTYKKE_TABELL = "samtykke";
     private final String FOEDSELSNUMMER = "foedselsnummer";
     private final String GJELDER = "gjelder";
     private final String OPPRETTET_TIDSPUNKT = "opprettet_tidspunkt";
 
     private final String SAMTYKKE_CV = "CV_HJEMMEL";
-
-    static final String ID = "id";
 
     @Autowired
     public SamtykkeRepository(JdbcTemplate jdbcTemplate, SimpleJdbcInsert jdbcInsert) {
@@ -40,11 +40,11 @@ public class SamtykkeRepository {
         samtykkeMapper = new SamtykkeMapper();
     }
 
-    public Optional<Samtykke> hentSamtykkeForCV(String foedselsnummer) {
+    public Optional<Samtykke> hentSamtykkeForCV(String aktorId) {
         try {
             Samtykke samtykke = jdbcTemplate.queryForObject("SELECT * from " + SAMTYKKE_TABELL +
-                            " where " + FOEDSELSNUMMER + " = ? and " + GJELDER + " = '" + SAMTYKKE_CV + "'",
-                    new Object[]{foedselsnummer}, samtykkeMapper);
+                            " where " + AKTOER_ID + " = ? and " + GJELDER + " = '" + SAMTYKKE_CV + "'",
+                    new Object[]{aktorId}, samtykkeMapper);
             return Optional.ofNullable(samtykke);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
@@ -54,11 +54,11 @@ public class SamtykkeRepository {
     public void oppdaterGittSamtykke(Samtykke samtykke) {
         String update = "UPDATE " + SAMTYKKE_TABELL +
                 " SET " + OPPRETTET_TIDSPUNKT + " = ?" +
-                " WHERE " + FOEDSELSNUMMER + "= ? AND " + GJELDER + "= ?;";
+                " WHERE " + AKTOER_ID + "= ? AND " + GJELDER + "= ?;";
 
         jdbcTemplate.update(update,
                 samtykke.getOpprettetTidspunkt(),
-                samtykke.getFoedselsnummer(),
+                samtykke.getAktorId(),
                 samtykke.getGjelder());
     }
 
@@ -80,6 +80,7 @@ public class SamtykkeRepository {
 
     private Map<String, Object> mapTilDatabaseParametre(Samtykke samtykke) {
         return Map.of(
+                AKTOER_ID, samtykke.getAktorId(),
                 FOEDSELSNUMMER, samtykke.getFoedselsnummer(),
                 GJELDER, samtykke.getGjelder(),
                 OPPRETTET_TIDSPUNKT, samtykke.getOpprettetTidspunkt()
@@ -87,7 +88,7 @@ public class SamtykkeRepository {
     }
 
     public void slettSamtykkeForCV(String aktoerId) {
-        String delete = String.format("DELETE FROM " + SAMTYKKE_TABELL + " where " + GJELDER + " = '%s' and " + FOEDSELSNUMMER + " = '%s'", SAMTYKKE_CV, aktoerId);
+        String delete = String.format("DELETE FROM " + SAMTYKKE_TABELL + " where " + GJELDER + " = '%s' and " + AKTOER_ID + " = '%s'", SAMTYKKE_CV, aktoerId);
         jdbcTemplate.execute(delete);
     }
 
@@ -97,6 +98,7 @@ public class SamtykkeRepository {
         public Samtykke mapRow(ResultSet rs, int i) throws SQLException {
 
             return Samtykke.builder()
+                    .aktorId(rs.getString(AKTOER_ID))
                     .foedselsnummer(rs.getString(FOEDSELSNUMMER))
                     .gjelder(rs.getString(GJELDER))
                     .opprettetTidspunkt(konverter(rs.getTimestamp(OPPRETTET_TIDSPUNKT)))

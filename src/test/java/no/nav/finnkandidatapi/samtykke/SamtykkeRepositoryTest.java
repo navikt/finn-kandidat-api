@@ -31,11 +31,12 @@ public class SamtykkeRepositoryTest {
     @Test
     public void skalKunneLagreOgHenteUtSamtykke() {
         String aktoerId = "232432532";
+        String foedselsnummer = "17051422877";
         String gjelder = "CV_HJEMMEL";
         String endring = "SAMTYKKE_OPPRETTET";
         LocalDateTime opprettetTidspunkt = LocalDateTime.now();
 
-        Samtykke samtykke = new Samtykke(aktoerId, gjelder, endring, opprettetTidspunkt);
+        Samtykke samtykke = new Samtykke(aktoerId, foedselsnummer, gjelder, endring, opprettetTidspunkt);
         samtykkeRepository.lagreSamtykke(samtykke);
 
         List<Samtykke> samtykker = samtykkeRepository.hentAlleSamtykker();
@@ -55,14 +56,15 @@ public class SamtykkeRepositoryTest {
         LocalDateTime opprettetTidspunktOppdatert = opprettetTidspunkt.plusDays(1);
 
         String aktoerId = "232432532";
+        String foedselsnummer = "17051422877";
         String gjelder = "CV_HJEMMEL";
         String endring = "SAMTYKKE_OPPRETTET";
 
         samtykkeRepository.lagreSamtykke(
-                new Samtykke(aktoerId, gjelder, endring, opprettetTidspunkt));
+                new Samtykke(aktoerId, foedselsnummer, gjelder, endring, opprettetTidspunkt));
 
         samtykkeRepository.oppdaterGittSamtykke(
-                new Samtykke(aktoerId, gjelder, endring, opprettetTidspunktOppdatert));
+                new Samtykke(aktoerId, foedselsnummer, gjelder, endring, opprettetTidspunktOppdatert));
         List<Samtykke> samtykker = samtykkeRepository.hentAlleSamtykker();
         assertEquals(1, samtykkeRepository.hentAlleSamtykker().size());
 
@@ -78,11 +80,12 @@ public class SamtykkeRepositoryTest {
         LocalDateTime opprettetTidspunktOppdatert = opprettetTidspunkt.plusDays(1);
 
         String aktoerId = "232432532";
+        String foedselsnummer = "17051422877";
         String gjelder = "CV_HJEMMEL";
         String endring = "SAMTYKKE_OPPRETTET";
 
         samtykkeRepository.lagreSamtykke(
-                new Samtykke(aktoerId, gjelder, endring, opprettetTidspunkt));
+                new Samtykke(aktoerId, foedselsnummer, gjelder, endring, opprettetTidspunkt));
 
         samtykkeRepository.slettSamtykkeForCV(aktoerId);
         List<Samtykke> samtykker = samtykkeRepository.hentAlleSamtykker();
@@ -92,7 +95,9 @@ public class SamtykkeRepositoryTest {
     @Test
     public void slettetSamtykkeForCV() {
         String aktoerId = "232432532";
-        Samtykke samtykke = new Samtykke(aktoerId, "CV_HJEMMEL", "SAMTYKKE_SLETTET", LocalDateTime.now());
+        String foedselsnummer = "17051422877";
+
+        Samtykke samtykke = new Samtykke(aktoerId, foedselsnummer, "CV_HJEMMEL", "SAMTYKKE_SLETTET", LocalDateTime.now());
         samtykkeRepository.oppdaterGittSamtykke(samtykke);
 
         assertFalse(samtykkeRepository.harSamtykkeForCV(aktoerId));

@@ -1,14 +1,13 @@
-package no.nav.finnkandidatapi.kafka.samtykke;
+package no.nav.finnkandidatapi.samtykke;
 
+import no.nav.finnkandidatapi.kafka.samtykke.SamtykkeMelding;
 import org.junit.jupiter.api.Test;
 
-import java.time.ZonedDateTime;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class SamtykkeMeldingTest {
+class SamtykkeMeldingValidatorTest {
 
+    private SamtykkeMeldingValidator samtykkeMeldingValidator = new SamtykkeMeldingValidator();
 
     @Test
     public void deserialiserMeldingOK() {
@@ -19,39 +18,40 @@ class SamtykkeMeldingTest {
 
         String jsonMelding = lagJsonMelding(fnr, meldingType, ressurs, opprettetTidspunkt);
         SamtykkeMelding samtykkeMelding = new SamtykkeMelding(jsonMelding);
-
-        assertEquals(fnr, samtykkeMelding.getFnr());
-        assertEquals(meldingType, samtykkeMelding.getMeldingType());
-        assertEquals(ressurs, samtykkeMelding.getRessurs());
-        assertEquals(ZonedDateTime.parse(opprettetTidspunkt).toLocalDateTime(), samtykkeMelding.getOpprettetDato());
+        samtykkeMeldingValidator.validerSamtykkeMelding(samtykkeMelding);
     }
 
     @Test
     public void deserialiserMeldingMedManglendeFelt() {
         String jsonMeldingAktoerIdFeltMangler = "{\"meldingType\":\"SAMTYKKE_OPPRETTET\",\"ressurs\":\"CV_HJEMMEL\",\"opprettetDato\":\"2019-01-09T12:36:06+01:00\",\"slettetDato\":null,\"versjon\":1,\"versjonGjeldendeFra\":null,\"versjonGjeldendeTil\":\"2019-04-08\"}";
         assertThrows(RuntimeException.class, () -> {
-            new SamtykkeMelding(jsonMeldingAktoerIdFeltMangler);
+            SamtykkeMelding samtykkeMelding = new SamtykkeMelding(jsonMeldingAktoerIdFeltMangler);
+            samtykkeMeldingValidator.validerSamtykkeMelding(samtykkeMelding);
         });
 
         String jsonMeldingAktoerIdInneholderTomStreng = "{\"fnr\":\"\",\"meldingType\":\"SAMTYKKE_OPPRETTET\",\"ressurs\":\"CV_HJEMMEL\",\"opprettetDato\":\"2019-01-09T12:36:06+01:00\",\"slettetDato\":null,\"versjon\":1,\"versjonGjeldendeFra\":null,\"versjonGjeldendeTil\":\"2019-04-08\"}";
         assertThrows(RuntimeException.class, () -> {
-            new SamtykkeMelding(jsonMeldingAktoerIdInneholderTomStreng);
+            SamtykkeMelding samtykkeMelding = new SamtykkeMelding(jsonMeldingAktoerIdInneholderTomStreng);
+            samtykkeMeldingValidator.validerSamtykkeMelding(samtykkeMelding);
         });
 
         String jsonMeldingManglerFeltViIkkeTrenger = "{\"fnr\":\"27075349594\",\"meldingType\":\"SAMTYKKE_OPPRETTET\",\"ressurs\":\"CV_HJEMMEL\",\"opprettetDato\":\"2019-04-01T13:17:13.174+02:00\"}";
-        new SamtykkeMelding(jsonMeldingManglerFeltViIkkeTrenger);
+        SamtykkeMelding samtykkeMelding = new SamtykkeMelding(jsonMeldingManglerFeltViIkkeTrenger);
+        samtykkeMeldingValidator.validerSamtykkeMelding(samtykkeMelding);
     }
 
     @Test
     public void deserialiserMeldingMedDatoFormatMedMillisekunder() {
         String jsonMelding = "{\"fnr\":\"27075349594\",\"meldingType\":\"SAMTYKKE_OPPRETTET\",\"ressurs\":\"CV_HJEMMEL\",\"opprettetDato\":\"2019-04-01T13:17:13.174+02:00\",\"slettetDato\":null,\"versjon\":1,\"versjonGjeldendeFra\":null,\"versjonGjeldendeTil\":null}";
-        new SamtykkeMelding(jsonMelding);
+        SamtykkeMelding samtykkeMelding = new SamtykkeMelding(jsonMelding);
+        samtykkeMeldingValidator.validerSamtykkeMelding(samtykkeMelding);
     }
 
     @Test
     public void deserialiserMeldingMedDatoFormat6SifreForMillisekunder() {
         String jsonMelding = "{\"fnr\":\"27075349594\",\"meldingType\":\"SAMTYKKE_OPPRETTET\",\"ressurs\":\"CV_HJEMMEL\",\"opprettetDato\":\"2019-04-01T13:17:13.174+02:00\",\"slettetDato\":\"2019-08-13T14:13:10.203505+02:00\",\"versjon\":1,\"versjonGjeldendeFra\":null,\"versjonGjeldendeTil\":null}";
-        new SamtykkeMelding(jsonMelding);
+        SamtykkeMelding samtykkeMelding = new SamtykkeMelding(jsonMelding);
+        samtykkeMeldingValidator.validerSamtykkeMelding(samtykkeMelding);
     }
 
     private String lagJsonMelding(String fnr, String meldingType, String ressurs, String opprettetDato) {

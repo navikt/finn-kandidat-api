@@ -2,8 +2,6 @@ package no.nav.finnkandidatapi.samtykke;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.finnkandidatapi.kafka.samtykke.SamtykkeMelding;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.zookeeper.Op;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -13,15 +11,17 @@ import java.util.Optional;
 @Slf4j
 public class SamtykkeService {
 
-    SamtykkeRepository samtykkeRepository;
+    private SamtykkeRepository samtykkeRepository;
+    private SamtykkeMeldingValidator samtykkeMeldingValidator;
 
     public SamtykkeService(SamtykkeRepository samtykkeRepository) {
         this.samtykkeRepository = samtykkeRepository;
+        samtykkeMeldingValidator = new SamtykkeMeldingValidator();
     }
 
     public void behandleSamtykke(SamtykkeMelding samtykkeMelding) {
         if ("CV_HJEMMEL".equals(samtykkeMelding.getRessurs())) {
-            validerSamtykkeMelding(samtykkeMelding);
+            samtykkeMeldingValidator.validerSamtykkeMelding(samtykkeMelding);
             if ("SAMTYKKE_SLETTET".equals(samtykkeMelding.getMeldingType())) {
                 slettCvSamtykke(samtykkeMelding);
             } else if ("SAMTYKKE_OPPRETTET".equals(samtykkeMelding.getMeldingType())) {
@@ -38,7 +38,7 @@ public class SamtykkeService {
 
         Samtykke samtykke = mapOpprettSamtykke(samtykkeMelding);
         hentetSamtykke.ifPresentOrElse(s -> {
-            if(mottattMeldingErNyere(s, samtykke.getOpprettetTidspunkt())) {
+            if (mottattMeldingErNyere(s, samtykke.getOpprettetTidspunkt())) {
                 samtykkeRepository.oppdaterGittSamtykke(s);
                 log.info("Oppdaterer samtykke");
             }
@@ -46,24 +46,6 @@ public class SamtykkeService {
             samtykkeRepository.lagreSamtykke(samtykke);
             log.info("Nytt samtykke lagres");
         });
-    }
-
-    private void validerSamtykkeMelding(SamtykkeMelding samtykkeMelding) {
-        if (StringUtils.isBlank(samtykkeMelding.getFnr())) {
-            throw new RuntimeException("Fødselsnummer mangler");
-        }
-
-        if (StringUtils.isBlank(samtykkeMelding.getMeldingType())) {
-            throw new RuntimeException("Meldingtype mangler");
-        }
-
-        if (StringUtils.isBlank(samtykkeMelding.getRessurs())) {
-            throw new RuntimeException("Ressurs mangler");
-        }
-
-        if (samtykkeMelding.getOpprettetDato() == null && samtykkeMelding.getSlettetDato() == null) {
-            throw new RuntimeException("OpprettetDato eller Slettetdato må ha verdi");
-        }
     }
 
     private void slettCvSamtykke(SamtykkeMelding samtykkeMelding) {

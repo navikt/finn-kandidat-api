@@ -60,7 +60,7 @@ public class SamtykkeService {
     }
 
     private static Samtykke mapOpprettSamtykke(SamtykkeMelding samtykkeMelding) {
-        int korrektLengdeAktoerId = 11;
+        int korrektLengdeAktoerId = 13;
         if (samtykkeMelding.getAktoerId().length() != korrektLengdeAktoerId) {
             throw new RuntimeException("Aktør-ID må ha 13 tegn :" + samtykkeMelding.getAktoerId());
         }

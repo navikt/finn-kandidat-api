@@ -69,7 +69,7 @@ public class SamtykkeRepositoryTest {
         assertEquals(1, samtykkeRepository.hentAlleSamtykker().size());
 
         Samtykke oppdatertSamtykke = samtykker.get(0);
-        assertEquals(aktoerId, oppdatertSamtykke.getFoedselsnummer());
+        assertEquals(aktoerId, oppdatertSamtykke.getAktorId());
         assertEquals(gjelder, oppdatertSamtykke.getGjelder());
         assertTrue(opprettetTidspunktOppdatert.isEqual(oppdatertSamtykke.getOpprettetTidspunkt()));
     }

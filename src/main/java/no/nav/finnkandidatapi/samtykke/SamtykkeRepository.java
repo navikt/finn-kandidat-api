@@ -28,6 +28,7 @@ public class SamtykkeRepository {
     private final String FOEDSELSNUMMER = "foedselsnummer";
     private final String GJELDER = "gjelder";
     private final String OPPRETTET_TIDSPUNKT = "opprettet_tidspunkt";
+    private final String ENDRING = "ENDRING";
 
     private final String SAMTYKKE_CV = "CV_HJEMMEL";
 
@@ -53,11 +54,12 @@ public class SamtykkeRepository {
 
     public void oppdaterGittSamtykke(Samtykke samtykke) {
         String update = "UPDATE " + SAMTYKKE_TABELL +
-                " SET " + OPPRETTET_TIDSPUNKT + " = ?" +
+                " SET " + OPPRETTET_TIDSPUNKT + " = ?, " + ENDRING + " = ?" +
                 " WHERE " + AKTOER_ID + "= ? AND " + GJELDER + "= ?;";
 
         jdbcTemplate.update(update,
                 samtykke.getOpprettetTidspunkt(),
+                samtykke.getEndring(),
                 samtykke.getAktorId(),
                 samtykke.getGjelder());
     }
@@ -83,7 +85,8 @@ public class SamtykkeRepository {
                 AKTOER_ID, samtykke.getAktorId(),
                 FOEDSELSNUMMER, samtykke.getFoedselsnummer(),
                 GJELDER, samtykke.getGjelder(),
-                OPPRETTET_TIDSPUNKT, samtykke.getOpprettetTidspunkt()
+                OPPRETTET_TIDSPUNKT, samtykke.getOpprettetTidspunkt(),
+                ENDRING, samtykke.getEndring()
         );
     }
 

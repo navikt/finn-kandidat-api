@@ -64,7 +64,7 @@ public class SamtykkeService {
         if (samtykkeMelding.getAktoerId().length() != korrektLengdeAktoerId) {
             throw new RuntimeException("Aktør-ID må ha 13 tegn :" + samtykkeMelding.getAktoerId());
         }
-        return new Samtykke(samtykkeMelding.getAktoerId(), samtykkeMelding.getAktoerId(), samtykkeMelding.getRessurs(), samtykkeMelding.getMeldingType(), samtykkeMelding.getOpprettetDato());
+        return new Samtykke(samtykkeMelding.getAktoerId(), samtykkeMelding.getFnr(), samtykkeMelding.getRessurs(), samtykkeMelding.getMeldingType(), samtykkeMelding.getOpprettetDato());
     }
 
 }

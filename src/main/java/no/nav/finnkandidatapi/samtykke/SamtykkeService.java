@@ -12,16 +12,15 @@ import java.util.Optional;
 public class SamtykkeService {
 
     private SamtykkeRepository samtykkeRepository;
-    private SamtykkeMeldingValidator samtykkeMeldingValidator;
 
     public SamtykkeService(SamtykkeRepository samtykkeRepository) {
         this.samtykkeRepository = samtykkeRepository;
-        samtykkeMeldingValidator = new SamtykkeMeldingValidator();
     }
 
     public void behandleSamtykke(SamtykkeMelding samtykkeMelding) {
         if ("CV_HJEMMEL".equals(samtykkeMelding.getRessurs())) {
-            samtykkeMeldingValidator.validerSamtykkeMelding(samtykkeMelding);
+            SamtykkeMeldingValidator.valider(samtykkeMelding);
+
             if ("SAMTYKKE_SLETTET".equals(samtykkeMelding.getMeldingType())) {
                 slettCvSamtykke(samtykkeMelding);
             } else if ("SAMTYKKE_OPPRETTET".equals(samtykkeMelding.getMeldingType())) {
@@ -29,7 +28,6 @@ public class SamtykkeService {
             }
         }
     }
-
 
     private void opprettCvSamtykke(SamtykkeMelding samtykkeMelding) {
 

@@ -25,6 +25,7 @@ public class SamtykkeConsumer {
     )
     public void konsumerMelding(ConsumerRecord<String, String> melding) {
         String json = melding.value();
+        log.info("Mottatt samtykkemelding: " + json);
         SamtykkeMelding samtykkeMelding = new SamtykkeMelding(json);
         samtykkeService.behandleSamtykke(samtykkeMelding);
     }

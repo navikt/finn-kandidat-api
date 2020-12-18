@@ -5,7 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 
 public class SamtykkeMeldingValidator {
 
-    public void validerSamtykkeMelding(SamtykkeMelding samtykkeMelding) {
+    public static void valider(SamtykkeMelding samtykkeMelding) {
         if (StringUtils.isBlank(samtykkeMelding.getFnr())) {
             throw new RuntimeException("Fødselsnummer mangler");
         }

@@ -8,10 +8,13 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SamtykkeServiceTest {
@@ -135,5 +138,22 @@ public class SamtykkeServiceTest {
         samtykkeService.behandleSamtykke(samtykke);
         Mockito.verify(samtykkeRepositoryMock, Mockito.never()).oppdaterGittSamtykke(any());
         Mockito.verify(samtykkeRepositoryMock, Mockito.never()).lagreSamtykke(any());
+    }
+
+    @Test
+    public void skalLagreVeldigGammelDatoHvisDatoMangler() {
+        SamtykkeMelding samtykkeMelding = new SamtykkeMelding(
+                aktorId,
+                "27075349594",
+                "SAMTYKKE_OPPRETTET",
+                "CV_HJEMMEL",
+                null,
+                null);
+
+        samtykkeService.behandleSamtykke(samtykkeMelding);
+        Mockito.verify(samtykkeRepositoryMock, Mockito.times(1)).lagreSamtykke(
+                eq(new Samtykke(aktorId,"27075349594", "CV_HJEMMEL", "SAMTYKKE_OPPRETTET",
+                        LocalDateTime.of(LocalDate.of(-999_999_999, 1, 1), LocalTime.of(0,0)))));
+        Mockito.verify(samtykkeRepositoryMock, Mockito.never()).oppdaterGittSamtykke(any());
     }
 }

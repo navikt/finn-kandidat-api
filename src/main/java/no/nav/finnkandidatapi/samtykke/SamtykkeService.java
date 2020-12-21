@@ -5,6 +5,7 @@ import no.nav.finnkandidatapi.kafka.samtykke.SamtykkeMelding;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Optional;
 
 @Service
@@ -64,7 +65,13 @@ public class SamtykkeService {
         if (samtykkeMelding.getAktoerId().length() != korrektLengdeAktoerId) {
             throw new RuntimeException("Aktør-ID må ha 13 tegn :" + samtykkeMelding.getAktoerId());
         }
-        return new Samtykke(samtykkeMelding.getAktoerId(), samtykkeMelding.getFnr(), samtykkeMelding.getRessurs(), samtykkeMelding.getMeldingType(), samtykkeMelding.getOpprettetDato());
+        return new Samtykke(
+                samtykkeMelding.getAktoerId(),
+                samtykkeMelding.getFnr(),
+                samtykkeMelding.getRessurs(),
+                samtykkeMelding.getMeldingType(),
+                samtykkeMelding.getOpprettetDato() != null ? samtykkeMelding.getOpprettetDato() : LocalDateTime.MIN
+        );
     }
 
 }

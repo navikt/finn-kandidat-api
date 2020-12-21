@@ -42,11 +42,11 @@ public class SamtykkeRepository {
         samtykkeMapper = new SamtykkeMapper();
     }
 
-    public Optional<Samtykke> hentSamtykkeForCV(String aktorId) {
+    public Optional<Samtykke> hentSamtykkeForCV(String aktørId) {
         try {
             Samtykke samtykke = jdbcTemplate.queryForObject("SELECT * from " + SAMTYKKE_TABELL +
                             " where " + AKTOER_ID + " = ? and " + GJELDER + " = '" + SAMTYKKE_CV + "'",
-                    new Object[]{aktorId}, samtykkeMapper);
+                    new Object[]{aktørId}, samtykkeMapper);
             return Optional.ofNullable(samtykke);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
@@ -67,10 +67,6 @@ public class SamtykkeRepository {
 
     public void lagreSamtykke(Samtykke samtykke) {
         jdbcInsert.execute(mapTilDatabaseParametre(samtykke));
-    }
-
-    public boolean harSamtykkeForCV(String foedselsnummer) {
-        return hentSamtykkeForCV(foedselsnummer).isPresent();
     }
 
     List<Samtykke> hentAlleSamtykker() {

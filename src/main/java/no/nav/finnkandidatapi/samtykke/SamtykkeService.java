@@ -5,7 +5,6 @@ import no.nav.finnkandidatapi.kafka.samtykke.SamtykkeMelding;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.Optional;
 
 @Service
@@ -16,6 +15,10 @@ public class SamtykkeService {
 
     public SamtykkeService(SamtykkeRepository samtykkeRepository) {
         this.samtykkeRepository = samtykkeRepository;
+    }
+
+    public boolean harSamtykkeForCV(String aktørId) {
+        return samtykkeRepository.hentSamtykkeForCV(aktørId).isPresent();
     }
 
     public void behandleSamtykke(SamtykkeMelding samtykkeMelding) {

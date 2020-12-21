@@ -47,7 +47,7 @@ public class SamtykkeRepositoryTest {
         assertEquals(samtykke.getGjelder(), lagretSamtykke.getGjelder());
         assertEquals(samtykke.getOpprettetTidspunkt(), lagretSamtykke.getOpprettetTidspunkt());
 
-        assertTrue(samtykkeRepository.harSamtykkeForCV(aktoerId));
+        assertTrue(samtykkeRepository.hentSamtykkeForCV(aktoerId).isPresent());
     }
 
     @Test
@@ -69,7 +69,7 @@ public class SamtykkeRepositoryTest {
         assertEquals(samtykke.getGjelder(), lagretSamtykke.getGjelder());
         assertEquals(samtykke.getOpprettetTidspunkt(), lagretSamtykke.getOpprettetTidspunkt());
 
-        assertTrue(samtykkeRepository.harSamtykkeForCV(aktoerId));
+        assertTrue(samtykkeRepository.hentSamtykkeForCV(aktoerId).isPresent());
     }
 
     @Test
@@ -122,6 +122,6 @@ public class SamtykkeRepositoryTest {
         Samtykke samtykke = new Samtykke(aktoerId, foedselsnummer, "CV_HJEMMEL", "SAMTYKKE_SLETTET", LocalDateTime.now());
         samtykkeRepository.oppdaterGittSamtykke(samtykke);
 
-        assertFalse(samtykkeRepository.harSamtykkeForCV(aktoerId));
+        assertFalse(samtykkeRepository.hentSamtykkeForCV(aktoerId).isPresent());
     }
 }

@@ -9,8 +9,12 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Repository
 public class SamtykkeRepository {
@@ -19,48 +23,54 @@ public class SamtykkeRepository {
     private final SimpleJdbcInsert jdbcInsert;
     private final SamtykkeMapper samtykkeMapper;
 
+    static final String ID = "id";
+    static final String AKTOER_ID = "aktor_id";
     static final String SAMTYKKE_TABELL = "samtykke";
-    private final String AKTOER_ID = "aktor_id";
-    private final String ENDRING = "endring";
+    private final String FOEDSELSNUMMER = "foedselsnummer";
     private final String GJELDER = "gjelder";
+    private final String OPPRETTET_TIDSPUNKT = "opprettet_tidspunkt";
+    private final String ENDRING = "ENDRING";
 
     private final String SAMTYKKE_CV = "CV_HJEMMEL";
-    private final String SAMTYKKE_OPPRETTET = "SAMTYKKE_OPPRETTET";
 
     @Autowired
     public SamtykkeRepository(JdbcTemplate jdbcTemplate, SimpleJdbcInsert jdbcInsert) {
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcInsert = jdbcInsert
-                .withTableName(SAMTYKKE_TABELL);
+                .withTableName(SAMTYKKE_TABELL)
+                .usingGeneratedKeyColumns(ID);
         samtykkeMapper = new SamtykkeMapper();
     }
 
-    public void lagreEllerOppdaterSamtykke(Samtykke samtykke) {
-        String update = String.format("UPDATE " + SAMTYKKE_TABELL +
-                        " SET " + ENDRING + " = '%s'" +
-                        " WHERE " + AKTOER_ID + "= '%s' AND " + GJELDER + "= '%s';",
-                samtykke.getEndring(),
-                samtykke.getAktoerId(),
-                samtykke.getGjelder());
-
-        int raderOppdatert = jdbcTemplate.update(update);
-
-        if (raderOppdatert == 0) {
-            Map<String, Object> samtykkeProps = mapTilDatabaseParametre(samtykke);
-            jdbcInsert.execute(samtykkeProps);
+    public Optional<Samtykke> hentSamtykkeForCV(String aktorId) {
+        try {
+            Samtykke samtykke = jdbcTemplate.queryForObject("SELECT * from " + SAMTYKKE_TABELL +
+                            " where " + AKTOER_ID + " = ? and " + GJELDER + " = '" + SAMTYKKE_CV + "'",
+                    new Object[]{aktorId}, samtykkeMapper);
+            return Optional.ofNullable(samtykke);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
         }
     }
 
-    // TODO: Lagre opprettet dato, og forkast eldre instanser.
-    public boolean harSamtykkeForCV(String aktoerId) {
-        try {
-            Samtykke samtykke = jdbcTemplate.queryForObject("SELECT * from " + SAMTYKKE_TABELL +
-                            " where " + AKTOER_ID + " = ? and " + GJELDER + " = '" + SAMTYKKE_CV + "' and " + ENDRING + " = '" + SAMTYKKE_OPPRETTET + "'",
-                    new Object[]{aktoerId}, samtykkeMapper);
-            return samtykke != null;
-        } catch (EmptyResultDataAccessException e) {
-            return false;
-        }
+    public void oppdaterGittSamtykke(Samtykke samtykke) {
+        String update = "UPDATE " + SAMTYKKE_TABELL +
+                " SET " + OPPRETTET_TIDSPUNKT + " = ?, " + ENDRING + " = ?" +
+                " WHERE " + AKTOER_ID + "= ? AND " + GJELDER + "= ?;";
+
+        jdbcTemplate.update(update,
+                samtykke.getOpprettetTidspunkt(),
+                samtykke.getEndring(),
+                samtykke.getAktorId(),
+                samtykke.getGjelder());
+    }
+
+    public void lagreSamtykke(Samtykke samtykke) {
+        jdbcInsert.execute(mapTilDatabaseParametre(samtykke));
+    }
+
+    public boolean harSamtykkeForCV(String foedselsnummer) {
+        return hentSamtykkeForCV(foedselsnummer).isPresent();
     }
 
     List<Samtykke> hentAlleSamtykker() {
@@ -72,22 +82,39 @@ public class SamtykkeRepository {
     }
 
     private Map<String, Object> mapTilDatabaseParametre(Samtykke samtykke) {
-        return Map.of(
-                AKTOER_ID, samtykke.getAktoerId(),
-                ENDRING, samtykke.getEndring(),
-                GJELDER, samtykke.getGjelder()
-        );
+        return new HashMap() {
+            {
+                put(AKTOER_ID, samtykke.getAktorId());
+                put(FOEDSELSNUMMER, samtykke.getFoedselsnummer());
+                put(GJELDER, samtykke.getGjelder());
+                put(OPPRETTET_TIDSPUNKT, samtykke.getOpprettetTidspunkt());
+                put(ENDRING, samtykke.getEndring());
+            }
+        };
+    }
+
+    public void slettSamtykkeForCV(String aktoerId) {
+        String delete = String.format("DELETE FROM " + SAMTYKKE_TABELL + " where " + GJELDER + " = '%s' and " + AKTOER_ID + " = '%s'", SAMTYKKE_CV, aktoerId);
+        jdbcTemplate.execute(delete);
     }
 
     private class SamtykkeMapper implements RowMapper<Samtykke> {
 
         @Override
         public Samtykke mapRow(ResultSet rs, int i) throws SQLException {
+
             return Samtykke.builder()
-                    .aktoerId(rs.getString(AKTOER_ID))
-                    .endring(rs.getString(ENDRING))
+                    .aktorId(rs.getString(AKTOER_ID))
+                    .foedselsnummer(rs.getString(FOEDSELSNUMMER))
                     .gjelder(rs.getString(GJELDER))
+                    .opprettetTidspunkt(konverter(rs.getTimestamp(OPPRETTET_TIDSPUNKT)))
                     .build();
         }
+    }
+
+    private static LocalDateTime konverter(Timestamp timestamp) {
+        return timestamp != null
+                ? timestamp.toLocalDateTime()
+                : null;
     }
 }

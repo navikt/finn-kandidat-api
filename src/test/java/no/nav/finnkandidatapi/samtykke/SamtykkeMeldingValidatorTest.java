@@ -1,57 +1,61 @@
-package no.nav.finnkandidatapi.kafka.samtykke;
+package no.nav.finnkandidatapi.samtykke;
 
-import no.nav.finnkandidatapi.samtykke.Samtykke;
+import no.nav.finnkandidatapi.kafka.samtykke.SamtykkeMelding;
 import org.junit.jupiter.api.Test;
+
+import java.time.ZonedDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class SamtykkeUtilsTest {
-    private SamtykkeUtils samtykkeUtils = new SamtykkeUtils();
+class SamtykkeMeldingValidatorTest {
+
 
     @Test
     public void deserialiserMeldingOK() {
         String aktoerId = "1000068432771";
         String meldingType = "SAMTYKKE_OPPRETTET";
         String ressurs = "CV_HJEMMEL";
-        String jsonMelding = lagJsonMelding(aktoerId, meldingType, ressurs);
+        String opprettetTidspunkt = "2019-04-01T13:17:13.174+02:00";
 
-        Samtykke samtykke = samtykkeUtils.deserialiserMelding(jsonMelding);
+        String jsonMelding = lagJsonMelding(aktoerId, meldingType, ressurs, opprettetTidspunkt);
+        SamtykkeMelding samtykkeMelding = new SamtykkeMelding(jsonMelding);
 
-        assertEquals(aktoerId, samtykke.getAktoerId());
-        assertEquals(meldingType, samtykke.getEndring());
-        assertEquals(ressurs, samtykke.getGjelder());
+        assertEquals(aktoerId, samtykkeMelding.getAktoerId());
+        assertEquals(meldingType, samtykkeMelding.getMeldingType());
+        assertEquals(ressurs, samtykkeMelding.getRessurs());
+        assertEquals(ZonedDateTime.parse(opprettetTidspunkt).toLocalDateTime(), samtykkeMelding.getOpprettetDato());
     }
 
     @Test
     public void deserialiserMeldingMedManglendeFelt() {
         String jsonMeldingAktoerIdFeltMangler = "{\"fnr\":\"27075349594\",\"meldingType\":\"SAMTYKKE_OPPRETTET\",\"ressurs\":\"CV_HJEMMEL\",\"opprettetDato\":\"2019-01-09T12:36:06+01:00\",\"slettetDato\":null,\"versjon\":1,\"versjonGjeldendeFra\":null,\"versjonGjeldendeTil\":\"2019-04-08\"}";
         assertThrows(RuntimeException.class, () -> {
-            samtykkeUtils.deserialiserMelding(jsonMeldingAktoerIdFeltMangler);
+            SamtykkeMeldingValidator.valider(new SamtykkeMelding(jsonMeldingAktoerIdFeltMangler));
         });
 
         String jsonMeldingAktoerIdInneholderTomStreng = "{\"aktoerId\":\" \",\"fnr\":\"27075349594\",\"meldingType\":\"SAMTYKKE_OPPRETTET\",\"ressurs\":\"CV_HJEMMEL\",\"opprettetDato\":\"2019-01-09T12:36:06+01:00\",\"slettetDato\":null,\"versjon\":1,\"versjonGjeldendeFra\":null,\"versjonGjeldendeTil\":\"2019-04-08\"}";
         assertThrows(RuntimeException.class, () -> {
-            samtykkeUtils.deserialiserMelding(jsonMeldingAktoerIdInneholderTomStreng);
+            SamtykkeMeldingValidator.valider(new SamtykkeMelding(jsonMeldingAktoerIdInneholderTomStreng));
         });
 
-        String jsonMeldingManglerFeltViIkkeTrenger = "{\"aktoerId\":\"AktorId(aktorId=1000068432771)\",\"meldingType\":\"SAMTYKKE_OPPRETTET\",\"ressurs\":\"CV_HJEMMEL\"}";
-        samtykkeUtils.deserialiserMelding(jsonMeldingManglerFeltViIkkeTrenger);
+        String jsonMeldingManglerFeltViIkkeTrenger = "{\"aktoerId\":\"AktorId(aktorId=1000068432771)\",\"meldingType\":\"SAMTYKKE_OPPRETTET\",\"ressurs\":\"CV_HJEMMEL\",\"opprettetDato\":\"2019-04-01T13:17:13.174+02:00\"}";
+        SamtykkeMeldingValidator.valider(new SamtykkeMelding(jsonMeldingManglerFeltViIkkeTrenger));
     }
 
     @Test
     public void deserialiserMeldingMedDatoFormatMedMillisekunder() {
         String jsonMelding = "{\"aktoerId\":\"AktorId(aktorId=1000068432771)\",\"fnr\":\"27075349594\",\"meldingType\":\"SAMTYKKE_OPPRETTET\",\"ressurs\":\"CV_HJEMMEL\",\"opprettetDato\":\"2019-04-01T13:17:13.174+02:00\",\"slettetDato\":null,\"versjon\":1,\"versjonGjeldendeFra\":null,\"versjonGjeldendeTil\":null}";
-        samtykkeUtils.deserialiserMelding(jsonMelding);
+        SamtykkeMeldingValidator.valider(new SamtykkeMelding(jsonMelding));
     }
 
     @Test
     public void deserialiserMeldingMedDatoFormat6SifreForMillisekunder() {
         String jsonMelding = "{\"aktoerId\":\"AktorId(aktorId=1000068432771)\",\"fnr\":\"27075349594\",\"meldingType\":\"SAMTYKKE_OPPRETTET\",\"ressurs\":\"CV_HJEMMEL\",\"opprettetDato\":\"2019-04-01T13:17:13.174+02:00\",\"slettetDato\":\"2019-08-13T14:13:10.203505+02:00\",\"versjon\":1,\"versjonGjeldendeFra\":null,\"versjonGjeldendeTil\":null}";
-        samtykkeUtils.deserialiserMelding(jsonMelding);
+        SamtykkeMeldingValidator.valider(new SamtykkeMelding(jsonMelding));
     }
 
-    private String lagJsonMelding(String aktoerId, String meldingType, String ressurs) {
-        return "{\"aktoerId\":\"AktorId(aktorId=" + aktoerId + ")\",\"fnr\":\"27075349594\",\"meldingType\":\"" + meldingType + "\",\"ressurs\":\"" + ressurs + "\",\"opprettetDato\":\"2019-01-09T12:36:06+01:00\",\"slettetDato\":null,\"versjon\":1,\"versjonGjeldendeFra\":null,\"versjonGjeldendeTil\":\"2019-04-08\"}";
+    private String lagJsonMelding(String aktoerId, String meldingType, String ressurs, String opprettetDato) {
+        return "{\"aktoerId\":\"AktorId(aktorId=" + aktoerId + ")\",\"fnr\":\"27075349594\",\"meldingType\":\"" + meldingType + "\",\"ressurs\":\"" + ressurs + "\",\"opprettetDato\":\"" + opprettetDato + "\",\"slettetDato\":null,\"versjon\":1,\"versjonGjeldendeFra\":null,\"versjonGjeldendeTil\":\"2019-04-08\"}";
     }
 }

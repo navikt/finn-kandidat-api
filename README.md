@@ -3,7 +3,7 @@
 En backend for Finn kandidat, skrevet i Spring.
 
 
-## Kjøre applikasjonen lokalt
+## Kjøre applikasjonen lokalt 
 
 IntelliJ: Kjør klassen FinnKandidatApiApplication. 
 

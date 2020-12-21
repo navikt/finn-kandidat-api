@@ -18,6 +18,10 @@ public class SamtykkeService {
         this.samtykkeRepository = samtykkeRepository;
     }
 
+    public boolean harSamtykkeForCV(String aktørId) {
+        return samtykkeRepository.harSamtykkeForCV(aktørId);
+    }
+
     public void behandleSamtykke(SamtykkeMelding samtykkeMelding) {
         if ("CV_HJEMMEL".equals(samtykkeMelding.getRessurs())) {
             SamtykkeMeldingValidator.valider(samtykkeMelding);

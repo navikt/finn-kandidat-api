@@ -69,8 +69,8 @@ public class SamtykkeRepository {
         jdbcInsert.execute(mapTilDatabaseParametre(samtykke));
     }
 
-    public boolean harSamtykkeForCV(String foedselsnummer) {
-        return hentSamtykkeForCV(foedselsnummer).isPresent();
+    public boolean harSamtykkeForCV(String samtykke) {
+        return hentSamtykkeForCV(samtykke).isPresent();
     }
 
     List<Samtykke> hentAlleSamtykker() {

@@ -16,12 +16,7 @@ public class KandidatTest {
         Veileder veileder = enVeileder();
         LocalDateTime nå = now();
 
-        Kandidat opprettetKandidat = Kandidat.opprettKandidat(
-                kandidatDto,
-                veileder,
-                nå,
-                etNavKontor()
-        );
+        Kandidat opprettetKandidat = Kandidat.opprettKandidat(kandidatDto, veileder, nå);
 
         SoftAssertions.assertSoftly(softly -> {
             softly.assertThat(opprettetKandidat.getId()).isEqualTo(kandidat.getId());
@@ -33,7 +28,6 @@ public class KandidatTest {
             softly.assertThat(opprettetKandidat.getFysisk()).isEqualTo(kandidatDto.getFysisk());
             softly.assertThat(opprettetKandidat.getArbeidshverdagen()).isEqualTo(kandidatDto.getArbeidshverdagen());
             softly.assertThat(opprettetKandidat.getUtfordringerMedNorsk()).isEqualTo(kandidatDto.getUtfordringerMedNorsk());
-            softly.assertThat(opprettetKandidat.getNavKontor()).isEqualTo(kandidat.getNavKontor());
         });
     }
 
@@ -56,7 +50,6 @@ public class KandidatTest {
             softly.assertThat(endretKandidat.getFysisk()).isEqualTo(kandidatDto.getFysisk());
             softly.assertThat(endretKandidat.getArbeidshverdagen()).isEqualTo(kandidatDto.getArbeidshverdagen());
             softly.assertThat(endretKandidat.getUtfordringerMedNorsk()).isEqualTo(kandidatDto.getUtfordringerMedNorsk());
-            softly.assertThat(endretKandidat.getNavKontor()).isEqualTo(kandidat.getNavKontor());
         });
     }
 

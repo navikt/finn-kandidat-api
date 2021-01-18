@@ -6,10 +6,8 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.finnkandidatapi.kafka.oppfølgingAvsluttet.OppfolgingAvsluttetConfig;
 import no.nav.finnkandidatapi.kafka.oppfølgingAvsluttet.OppfølgingAvsluttetMelding;
-import no.nav.finnkandidatapi.kafka.oppfølgingEndret.OppfolgingEndretConfig;
 import no.nav.finnkandidatapi.kandidat.Kandidat;
 import no.nav.finnkandidatapi.kandidat.KandidatRepository;
-import no.nav.finnkandidatapi.veilarbarena.Oppfølgingsbruker;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -51,10 +49,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class KafkaConsumerTest {
 
     private static final String AKTØR_ID = "1856024171652";
-    private static final String FNR = "01234567890";
-
-    @Autowired
-    private OppfolgingEndretConfig config;
 
     @Autowired
     private OppfolgingAvsluttetConfig consumerTopicProps;
@@ -127,38 +121,6 @@ public class KafkaConsumerTest {
                 .sluttdato(new Date()).build();
         ObjectMapper objectMapper = new ObjectMapper();
         return objectMapper.writeValueAsString(oppfølgingAvsluttetMelding);
-    }
-
-    @Test(timeout = 2000)
-    @SneakyThrows
-    public void skal_oppdatere_nav_kontor_ved_mottatt_oppfolging_endret_melding() {
-        Kandidat kandidat = enKandidat();
-        kandidat.setFnr(FNR);
-        repository.lagreKandidatSomVeileder(kandidat);
-        sendOppfølgingsbrukerMelding();
-
-        boolean kandidatErEndret = false;
-        while(!kandidatErEndret) {
-            Thread.sleep(10);
-            Kandidat endretKandidat = repository.hentNyesteKandidat(kandidat.getAktørId()).get();
-            kandidatErEndret = endretKandidat.getNavKontor().equals("1337");
-        }
-
-        assertThat(kandidatErEndret).isTrue();
-    }
-
-    private void sendOppfølgingsbrukerMelding() throws JsonProcessingException {
-        String melding = lagOppfølgingsbruker(FNR, "1337");
-        producer.send(new ProducerRecord<>(config.getTopic(), "123", melding));
-    }
-
-    private String lagOppfølgingsbruker(String fnr, String navKontor) throws JsonProcessingException {
-        Oppfølgingsbruker oppfølgingsbruker = Oppfølgingsbruker.builder()
-                .fnr(fnr)
-                .navKontor(navKontor)
-                .build();
-        ObjectMapper objectMapper = new ObjectMapper();
-        return objectMapper.writeValueAsString(oppfølgingsbruker);
     }
 
     @After

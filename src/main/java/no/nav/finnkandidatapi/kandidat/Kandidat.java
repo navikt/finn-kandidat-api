@@ -22,13 +22,11 @@ public class Kandidat {
     private Set<Fysisk> fysisk;
     private Set<Arbeidshverdagen> arbeidshverdagen;
     private Set<UtfordringerMedNorsk> utfordringerMedNorsk;
-    private String navKontor;
 
     public static Kandidat opprettKandidat(
             KandidatDto kandidat,
             Veileder veileder,
-            LocalDateTime sistEndret,
-            String navKontor
+            LocalDateTime sistEndret
     ) {
         return Kandidat.builder()
                 .fnr(kandidat.getFnr())
@@ -39,7 +37,6 @@ public class Kandidat {
                 .fysisk(kandidat.getFysisk())
                 .arbeidshverdagen(kandidat.getArbeidshverdagen())
                 .utfordringerMedNorsk(kandidat.getUtfordringerMedNorsk())
-                .navKontor(navKontor)
                 .build();
     }
 
@@ -59,7 +56,6 @@ public class Kandidat {
                 .fysisk(kandidatDto.getFysisk())
                 .arbeidshverdagen(kandidatDto.getArbeidshverdagen())
                 .utfordringerMedNorsk(kandidatDto.getUtfordringerMedNorsk())
-                .navKontor(kandidat.getNavKontor())
                 .build();
     }
 

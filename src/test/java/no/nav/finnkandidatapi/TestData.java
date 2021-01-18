@@ -16,7 +16,6 @@ import no.nav.finnkandidatapi.sts.STSToken;
 import no.nav.finnkandidatapi.tilbakemelding.Behov;
 import no.nav.finnkandidatapi.tilbakemelding.Tilbakemelding;
 import no.nav.finnkandidatapi.vedtak.Vedtak;
-import no.nav.finnkandidatapi.veilarbarena.Oppfølgingsbruker;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -128,7 +127,6 @@ public class TestData {
                 .fysisk(Set.of(ARBEIDSSTILLING, ERGONOMI))
                 .arbeidshverdagen(Set.of(MENTOR, TILRETTELAGTE_ARBEIDSOPPGAVER))
                 .utfordringerMedNorsk(Set.of(SNAKKE_NORSK, SKRIVE_NORSK, LESE_NORSK))
-                .navKontor(etNavKontor())
                 .build();
     }
 
@@ -170,14 +168,6 @@ public class TestData {
                 .arbeidshverdagen(Set.of(MENTOR, TILRETTELAGTE_ARBEIDSOPPGAVER, ANNET))
                 .utfordringerMedNorsk(Set.of(SNAKKE_NORSK, LESE_NORSK))
                 .build();
-    }
-
-    public static String etNavKontor() {
-        return "0325";
-    }
-
-    public static Oppfølgingsbruker enOppfølgingsbruker() {
-        return new Oppfølgingsbruker(etFnr(), etNavKontor());
     }
 
     public static Kandidat enKandidat(String aktørId) {

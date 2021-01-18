@@ -55,7 +55,6 @@ mock:
 sts.url: ${mock.baseUrl}/sts
 abac.url: ${mock.baseUrl}/abac
 aktørregister.url: ${mock.baseUrl}/aktoerregister/api/v1
-veilarbarena.url: ${mock.baseUrl}/veilarbarena/api
 axsys.url: ${mock.baseUrl}/axsys
 veilarboppfolging.url: ${mock.baseUrl}/veilarboppfolging/api
 
@@ -65,9 +64,7 @@ SERVICEUSER_USERNAME: na
 SERVICEUSER_PASSWORD: na
 
 oppfolging-avsluttet.topic: en-kafka-topic
-oppfolging-endret.topic: en-annen-kafka-topic
 arbeidssoker-registrert.topic: en-tredje-kafka-topic
-
 vedtak-replikert.topic: en-fjerde-kafka-topic
 
 ---
@@ -86,7 +83,6 @@ spring:
         password: ${javax.net.ssl.trustStorePassword}
 
 oppfolging-avsluttet.topic: aapen-fo-endringPaaAvsluttOppfolging-v1-q0
-oppfolging-endret.topic: aapen-fo-endringPaaOppfoelgingsBruker-v1-q0
 arbeidssoker-registrert.topic: aapen-arbeid-arbeidssoker-registrert-q0
 vedtak-replikert.topic: gg-arena-vedtak-dagpenger-v1-q
 
@@ -120,7 +116,6 @@ sts.url: https://security-token-service.nais.preprod.local/rest/v1
 abac.url: https://wasapp-q0.adeo.no/asm-pdp/authorize
 aktørregister.url: https://app-q0.adeo.no/aktoerregister/api/v1
 unleash.url: https://unleash.nais.io/api/
-veilarbarena.url: https://veilarbarena-q0.nais.preprod.local/veilarbarena/api
 axsys.url: https://axsys.nais.preprod.local/api/v1/tilgang
 veilarboppfolging.url: https://veilarboppfolging-q0.nais.preprod.local/veilarboppfolging/api
 
@@ -140,7 +135,6 @@ spring:
         password: ${javax.net.ssl.trustStorePassword}
 
 oppfolging-avsluttet.topic: aapen-fo-endringPaaAvsluttOppfolging-v1-p
-oppfolging-endret.topic: aapen-fo-endringPaaOppfoelgingsBruker-v1-p
 arbeidssoker-registrert.topic: aapen-arbeid-arbeidssoker-registrert-p
 vedtak-replikert.topic: gg-arena-vedtak-dagpenger-v1-p
 
@@ -174,6 +168,5 @@ sts.url: https://security-token-service.nais.adeo.no/rest/v1
 abac.url: https://wasapp.adeo.no/asm-pdp/authorize
 aktørregister.url: https://app.adeo.no/aktoerregister/api/v1
 unleash.url: https://unleash.nais.io/api/
-veilarbarena.url: https://veilarbarena.nais.adeo.no/veilarbarena/api
 axsys.url: https://axsys.nais.adeo.no/api/v1/tilgang
 veilarboppfolging.url: https://veilarboppfolging.nais.adeo.no/veilarboppfolging/api

@@ -35,7 +35,6 @@ public class MockServer implements DisposableBean {
             @Value("${sts.url}") String stsUrl,
             @Value("${abac.url}") String abacUrl,
             @Value("${aktørregister.url}") String aktørregisterUrl,
-            @Value("${veilarbarena.url}") String veilarbarenaUrl,
             @Value("${axsys.url}") String axsysUrl,
             @Value("${veilarboppfolging.url}") String veilarboppfølgingUrl
     ) {
@@ -46,7 +45,6 @@ public class MockServer implements DisposableBean {
         mockAbac(abacUrl);
         mockKall(stsUrl + "/sts/token", new STSToken("fdg", "asfsdg", 325));
         mockAktørregister(aktørregisterUrl);
-        mockVeilarbarena(veilarbarenaUrl);
         mockAxsys(axsysUrl);
         mockKall(veilarboppfølgingUrl + "/underoppfolging", Oppfølgingsstatus.builder().underOppfolging(true).build());
         mockKall(veilarboppfølgingUrl + "/underoppfolging?fnr=01065500791", Oppfølgingsstatus.builder().underOppfolging(false).build());
@@ -104,40 +102,6 @@ public class MockServer implements DisposableBean {
                 "   \"feilmelding\": null\n" +
                 " }\n" +
                 "}");
-    }
-
-    private void mockVeilarbarena(String veilarbarenaUrl) {
-        String body = (
-            "{\n" +
-                "\"aktoerid\": null," +
-                "\"fodselsnr\": \"01065500791\"," +
-                "\"formidlingsgruppekode\": \"ARBS\"," +
-                "\"iserv_fra_dato\": null," +
-                "\"etternavn\": null," +
-                "\"fornavn\": null," +
-                "\"nav_kontor\": \"0101\"," +
-                "\"kvalifiseringsgruppekode\": \"BFORM\"," +
-                "\"rettighetsgruppekode\": \"DAGP\"," +
-                "\"hovedmaalkode\": \"SKAFFEA\"," +
-                "\"sikkerhetstiltak_type_kode\": null," +
-                "\"fr_kode\": null," +
-                "\"har_oppfolgingssak\": true," +
-                "\"sperret_ansatt\": false," +
-                "\"er_doed\": false," +
-                "\"doed_fra_dato\": null," +
-                "\"endret_dato\": null" +
-            "}"
-        );
-
-        String path = getPath(veilarbarenaUrl + "/oppfolgingsbruker");
-        server.stubFor(
-                get(WireMock.urlPathMatching(path + "/[0-9]+")).willReturn(WireMock.aResponse()
-                        .withHeader("Content-Type", "application/json")
-                        .withStatus(HttpStatus.OK.value())
-                        .withBody(body)
-                )
-        );
-
     }
 
     private void mockAxsys(String axsysUrl) {

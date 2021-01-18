@@ -3,7 +3,6 @@ package no.nav.finnkandidatapi.kandidat;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.HarTilretteleggingsbehov;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -34,7 +33,6 @@ public class KandidatRepository {
     static final String UTFORDRINGERMEDNORSK_BEHOV = "utfordringerMedNorsk_behov";
     static final String SLETTET = "slettet";
     static final String OPPRETTET = "opprettet";
-    static final String NAV_KONTOR = "nav_kontor";
 
     private JdbcTemplate jdbcTemplate;
     private SimpleJdbcInsert jdbcInsert;
@@ -139,7 +137,6 @@ public class KandidatRepository {
         parameters.put(FYSISKE_BEHOV, enumSetTilString(kandidat.getFysisk()));
         parameters.put(ARBEIDSHVERDAGEN_BEHOV, enumSetTilString(kandidat.getArbeidshverdagen()));
         parameters.put(UTFORDRINGERMEDNORSK_BEHOV, enumSetTilString(kandidat.getUtfordringerMedNorsk()));
-        parameters.put(NAV_KONTOR, kandidat.getNavKontor());
         parameters.put(SLETTET, false);
         parameters.put(OPPRETTET, LocalDateTime.now());
 
@@ -173,20 +170,6 @@ public class KandidatRepository {
             parameters.put(OPPRETTET, LocalDateTime.now());
             parameters.put(SLETTET, true);
             return Optional.ofNullable(jdbcInsert.executeAndReturnKey(parameters).intValue());
-        }
-    }
-
-
-    public int oppdaterNavKontor(String fnr, String navKontor) {
-        if (fnr == null) {
-            log.warn("Prøvde å oppdatere navkontor, men fnr er null");
-            return 0;
-        } else {
-            try {
-                return jdbcTemplate.update("UPDATE kandidat SET nav_kontor = ? WHERE fnr = ?", navKontor, fnr);
-            } catch (DataAccessException e) {
-                throw new FinnKandidatException("Klarte ikke å oppdatere rad med NAV-kontor");
-            }
         }
     }
 }

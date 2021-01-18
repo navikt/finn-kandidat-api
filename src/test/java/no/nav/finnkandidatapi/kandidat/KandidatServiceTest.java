@@ -1,13 +1,11 @@
 package no.nav.finnkandidatapi.kandidat;
 
-import io.micrometer.core.instrument.MeterRegistry;
 import no.nav.finnkandidatapi.DateProvider;
 import no.nav.finnkandidatapi.aktørregister.AktørRegisterClient;
 import no.nav.finnkandidatapi.kafka.oppfølgingAvsluttet.OppfølgingAvsluttetMelding;
 import no.nav.finnkandidatapi.metrikker.KandidatEndret;
 import no.nav.finnkandidatapi.metrikker.KandidatOpprettet;
 import no.nav.finnkandidatapi.metrikker.KandidatSlettet;
-import no.nav.finnkandidatapi.veilarbarena.VeilarbArenaClient;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
@@ -45,21 +43,13 @@ public class KandidatServiceTest {
     @Mock
     private AktørRegisterClient aktørRegisterClient;
 
-    @Mock
-    private VeilarbArenaClient veilarbArenaClient;
-
-    @Mock
-    private MeterRegistry meterRegistry;
-
     @Before
     public void setUp() {
         kandidatService = new KandidatService(
                 repository,
                 eventPublisher,
                 aktørRegisterClient,
-                dateProvider,
-                veilarbArenaClient,
-                meterRegistry
+                dateProvider
         );
     }
 
@@ -94,12 +84,10 @@ public class KandidatServiceTest {
         Kandidat kandidatTilOpprettelse = Kandidat.opprettKandidat(
                 kandidatDto,
                 veileder,
-                kandidat.getSistEndretAvVeileder(),
-                etNavKontor()
+                kandidat.getSistEndretAvVeileder()
         );
 
         when(dateProvider.now()).thenReturn(kandidat.getSistEndretAvVeileder());
-        when(veilarbArenaClient.hentOppfølgingsbruker(kandidat.getFnr(), kandidat.getAktørId())).thenReturn(enOppfølgingsbruker());
         when(repository.lagreKandidatSomVeileder(kandidat)).thenReturn(1);
         when(repository.hentKandidat(1)).thenReturn(Optional.of(kandidatTilOpprettelse));
 
@@ -116,7 +104,6 @@ public class KandidatServiceTest {
         kandidat.setSistEndretAv(veileder.getNavIdent());
 
         when(dateProvider.now()).thenReturn(kandidat.getSistEndretAvVeileder());
-        when(veilarbArenaClient.hentOppfølgingsbruker(kandidat.getFnr(), kandidat.getAktørId())).thenReturn(enOppfølgingsbruker());
         when(repository.lagreKandidatSomVeileder(kandidat)).thenReturn(1);
         when(repository.hentKandidat(1)).thenReturn(Optional.empty());
 
@@ -134,7 +121,6 @@ public class KandidatServiceTest {
         when(dateProvider.now()).thenReturn(kandidat.getSistEndretAvVeileder());
         when(repository.lagreKandidatSomVeileder(any(Kandidat.class))).thenReturn(kandidatId);
         when(repository.hentKandidat(kandidatId)).thenReturn(Optional.of(kandidat));
-        when(veilarbArenaClient.hentOppfølgingsbruker(kandidat.getFnr(), kandidat.getAktørId())).thenReturn(enOppfølgingsbruker());
 
         kandidatService.opprettKandidat(kandidatDto, enVeileder());
         verify(eventPublisher).publishEvent(new KandidatOpprettet(kandidat));

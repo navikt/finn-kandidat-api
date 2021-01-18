@@ -336,30 +336,4 @@ public class KandidatRepositoryTest {
         Optional<Integer> id = repository.slettKandidatSomVeileder(kandidat.getAktørId(), enVeileder(), now());
         assertThat(id).isEmpty();
     }
-
-    @Test
-    public void oppdaterNavKontor__skal_oppdatere_nav_kontor_på_alle_rader() {
-        Kandidat kandidat = enKandidat();
-        repository.lagreKandidatSomVeileder(kandidat);
-        repository.lagreKandidatSomVeileder(kandidat);
-
-        int antallOppdaterteRader = repository.oppdaterNavKontor(kandidat.getFnr(), "1337");
-        Kandidat kandidatMedNyttKontor = repository.hentNyesteKandidat(kandidat.getAktørId()).get();
-
-        assertThat(antallOppdaterteRader).isEqualTo(2);
-        assertThat(kandidatMedNyttKontor.getNavKontor()).isEqualTo("1337");
-        assertThat(kandidatMedNyttKontor).isEqualToIgnoringGivenFields(kandidat, "id", "navKontor");
-    }
-
-    @Test
-    public void oppdaterNavKontor__skal_ikke_oppdatere_navKontor_hvis_fnr_er_null() {
-        Kandidat kandidat = enKandidat();
-        kandidat.setFnr(null);
-        repository.lagreKandidatSomVeileder(kandidat);
-
-        int antallOppdaterteRader = repository.oppdaterNavKontor(null, "1337");
-        assertThat(antallOppdaterteRader).isEqualTo(0);
-    }
-
-
 }

@@ -66,7 +66,6 @@ public class HttpRequestInnSkalGiKafkaMeldingUt {
         KandidatDto dto = enKandidatDto();
         dto.setAktørId("1856024171652");
 
-
         // When HTTP opprett
         ResponseEntity<String> respons = restTemplate.postForEntity(uri, dto, String.class);
         assertThat(respons.getStatusCode()).isEqualTo(HttpStatus.CREATED);

@@ -4,11 +4,10 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import no.nav.common.abac.Pep;
 import no.nav.common.abac.domain.request.ActionId;
-import no.nav.common.abac.exception.PepException;
+import no.nav.common.types.identer.AktorId;
+import no.nav.common.types.identer.NavIdent;
 import no.nav.finnkandidatapi.kandidat.Veileder;
 import org.springframework.stereotype.Service;
-
-import static no.nav.common.abac.domain.AbacPersonId.aktorId;
 
 @Slf4j
 @Service
@@ -30,29 +29,17 @@ public class TilgangskontrollService {
         sjekkTilgang(aktørId, TilgangskontrollAction.update);
     }
 
-    private void sjekkTilgang(String aktørId, TilgangskontrollAction action) {
-        val innloggetVeileder = hentInnloggetVeileder();
-        if (!hentTilgang(innloggetVeileder, aktørId, action)) {
+    private void sjekkTilgang(String aktørIdString, TilgangskontrollAction action) {
+        val innloggetVeileder = tokenUtils.hentInnloggetVeileder();
+        val navIdent = new NavIdent(innloggetVeileder.getNavIdent());
+        val actionId = actionId(action);
+        val aktørId = new AktorId(aktørIdString);
+
+        boolean harTilgang = pep.harVeilederTilgangTilPerson(navIdent, actionId, aktørId);
+        if (!harTilgang) {
             val msg = "Veileder " + innloggetVeileder + " har ikke tilgang " + action + " for aktørId " + aktørId + ".";
             throw new TilgangskontrollException(msg);
         }
-    }
-
-    private boolean hentTilgang(Veileder veileder, String aktørId, TilgangskontrollAction action) {
-        val actionId = actionId(action);
-        val personId = aktorId(aktørId);
-        try {
-            pep.sjekkVeilederTilgangTilBruker(veileder.getNavIdent(), actionId, personId);
-        } catch (PepException e) {
-            val msg = "Veileder " + veileder + " har ikke tilgang " + action + " for aktørId " + aktørId + ".";
-            log.debug(msg, e);
-            return false;
-        } catch (Exception e) {
-            val msg = "Forsøkte å sjekke tilgang i ABAC";
-            log.error(msg, e);
-            return false;
-        }
-        return true;
     }
 
     public Veileder hentInnloggetVeileder() {

@@ -1,7 +1,7 @@
 package no.nav.finnkandidatapi.tilgangskontroll;
 
-import com.nimbusds.jwt.JWTClaimsSet;
-import no.nav.security.mock.oauth2.token.OAuth2TokenProvider;
+import no.nav.security.mock.oauth2.MockOAuth2Server;
+import no.nav.security.mock.oauth2.token.DefaultOAuth2TokenCallback;
 import no.nav.security.token.support.core.context.TokenValidationContext;
 import no.nav.security.token.support.core.context.TokenValidationContextHolder;
 import no.nav.security.token.support.core.jwt.JwtToken;
@@ -31,9 +31,12 @@ public class TokenUtilsTest {
     @Mock
     private TokenValidationContextHolder contextHolder;
 
+    private final MockOAuth2Server oAuth2Server = new MockOAuth2Server();
+
     @Test
     public void hentInnloggetVeileder__skal_returnere_riktig_veileder_med_azureAD_token() {
         Veileder veileder = enVeileder();
+
         værInnloggetMedAzureAD(veileder);
         assertThat(tokenUtils.hentInnloggetVeileder()).isEqualTo(veileder);
     }
@@ -62,10 +65,7 @@ public class TokenUtilsTest {
     }
 
     private void værInnloggetMedSelvBetjening(String fnr) {
-        JWTClaimsSet.Builder builder = new JWTClaimsSet.Builder();
-        builder.claim("sub", fnr);
-        String encodedToken = new OAuth2TokenProvider().createSignedJWT(builder.build()).serialize();
-
+        String encodedToken = oAuth2Server.issueToken(ISSUER_ISSO, fnr).serialize();
         JwtToken jwtToken = new JwtToken(encodedToken);
         TokenValidationContext context = new TokenValidationContext(Map.of(ISSUER_SELVBETJENING, jwtToken));
         contextHolder.setTokenValidationContext(context);
@@ -74,12 +74,26 @@ public class TokenUtilsTest {
     }
 
     private void værInnloggetMedAzureAD(Veileder veileder) {
-        JWTClaimsSet.Builder builder = new JWTClaimsSet.Builder();
-        builder.claim("NAVident", veileder.getNavIdent());
-        builder.claim("given_name", etFornavn());
-        builder.claim("family_name", etEtternavn());
+        String subject = "00000000000";
+        String audience = "aud-isso";
+        Map<String, String> claims = Map.of(
+                "NAVident", veileder.getNavIdent(),
+                "given_name", etFornavn(),
+                "family_name", etEtternavn()
+        );
 
-        String encodedToken = new OAuth2TokenProvider().createSignedJWT(builder.build()).serialize();
+        String encodedToken = oAuth2Server.issueToken(
+                ISSUER_ISSO,
+                "theclientid",
+                new DefaultOAuth2TokenCallback(
+                        ISSUER_ISSO,
+                        subject,
+                        Collections.singletonList(audience),
+                        claims,
+                        3600
+                )
+        ).serialize();
+
         JwtToken jwtToken = new JwtToken(encodedToken);
         TokenValidationContext context = new TokenValidationContext(Map.of(ISSUER_ISSO, jwtToken));
         contextHolder.setTokenValidationContext(context);

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 
@@ -57,7 +58,7 @@ public class LokalLoginController {
                 new DefaultOAuth2TokenCallback(
                         issuerId,
                         subject,
-                        audience,
+                        Collections.singletonList(audience),
                         claims,
                         3600
                 )
@@ -74,7 +75,7 @@ public class LokalLoginController {
                 new DefaultOAuth2TokenCallback(
                         issuerId,
                         subject,
-                        audience,
+                        Collections.singletonList(audience),
                         Collections.emptyMap(),
                         3600
                 )

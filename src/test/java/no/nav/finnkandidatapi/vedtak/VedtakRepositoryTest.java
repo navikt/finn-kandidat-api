@@ -15,7 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@ActiveProfiles(profiles = "local" )
+@ActiveProfiles(profiles = "local")
 public class VedtakRepositoryTest {
 
     @Autowired

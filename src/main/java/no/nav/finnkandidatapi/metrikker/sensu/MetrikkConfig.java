@@ -1,16 +1,39 @@
 package no.nav.finnkandidatapi.metrikker.sensu;
 
-import no.nav.metrics.MetricsClient;
-import no.nav.metrics.MetricsConfig;
+import no.nav.common.metrics.Event;
+import no.nav.common.metrics.InfluxClient;
+import no.nav.common.metrics.MetricsClient;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 
+import java.util.Map;
+
 @Configuration
-@Profile({ "dev", "prod" })
 public class MetrikkConfig {
 
-    public MetrikkConfig() {
-        String miljø = System.getenv("NAIS_CLUSTER_NAME");
-        MetricsClient.enableMetrics(MetricsConfig.resolveNaisConfig().withEnvironment(miljø));
+    // TODO: Skal denne være profilstyrt?
+    @Bean
+    @Primary
+    @Profile({ "dev", "prod" })
+    public MetricsClient metricsClient() {
+        return new InfluxClient();
+    }
+
+    @Bean
+    @Profile("local")
+    public static MetricsClient metricsClientFake() {
+        return new MetricsClient() {
+            @Override
+            public void report(Event event) {
+                // Ikke gjør noe
+            }
+
+            @Override
+            public void report(String eventName, Map<String, Object> fields, Map<String, String> tags, long timestampInMilliseconds) {
+                // Ikke gjør noe
+            }
+        };
     }
 }

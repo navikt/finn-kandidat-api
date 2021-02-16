@@ -1,12 +1,14 @@
 package no.nav.finnkandidatapi.kafka.arbeidssøkerRegistrert;
 
+import com.yammer.metrics.core.MetricsRegistry;
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.arbeid.soker.registrering.ArbeidssokerRegistrertEvent;
+import no.nav.common.metrics.Event;
+import no.nav.common.metrics.MetricsClient;
 import no.nav.finnkandidatapi.permittert.ArbeidssokerRegistrertDTO;
 import no.nav.finnkandidatapi.permittert.DinSituasjonSvarFraVeilarbReg;
 import no.nav.finnkandidatapi.permittert.PermittertArbeidssokerService;
-import no.nav.metrics.MetricsFactory;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.context.annotation.Profile;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -24,19 +26,21 @@ public class ArbeidssokerRegistrertConsumer {
     private static final String REGISTRERT_ARBEIDSSOKER_DROPPET = "finnkandidat.registrertarbeidssoker.droppet";
     private static final String REGISTRERT_ARBEIDSSOKER_AKSEPTERT = "finnkandidat.registrertarbeidssoker.akseptert";
 
-    private PermittertArbeidssokerService permittertArbeidssokerService;
+    private final PermittertArbeidssokerService permittertArbeidssokerService;
     @SuppressWarnings({"unused", "FieldCanBeLocal"})
-    private ArbeidssokerRegistrertConfig arbeidssokerRegistrertConfig;
-    private MeterRegistry meterRegistry;
+    private final ArbeidssokerRegistrertConfig arbeidssokerRegistrertConfig;
+    private final MeterRegistry meterRegistry;
+    private final MetricsClient metricsClient;
 
     public ArbeidssokerRegistrertConsumer(
             PermittertArbeidssokerService permittertArbeidssokerService,
             ArbeidssokerRegistrertConfig arbeidssokerRegistrertConfig,
-            MeterRegistry meterRegistry
-    ) {
+            MeterRegistry meterRegistry,
+            MetricsClient metricsClient) {
         this.permittertArbeidssokerService = permittertArbeidssokerService;
         this.arbeidssokerRegistrertConfig = arbeidssokerRegistrertConfig;
         this.meterRegistry = meterRegistry;
+        this.metricsClient = metricsClient;
         meterRegistry.counter(REGISTRERT_ARBEIDSSOKER_FEILET);
     }
 
@@ -56,9 +60,9 @@ public class ArbeidssokerRegistrertConsumer {
 
         ArbeidssokerRegistrertEvent arbeidssokerRegistrert = melding.value();
 
-        MetricsFactory.createEvent("finn-kandidat.permittertas.mottatt" )
-                .addTagToReport("status", arbeidssokerRegistrert.getBrukersSituasjon())
-                .report();
+        Event event = new Event("finn-kandidat.permittertas.mottatt" )
+                .addTagToReport("status", arbeidssokerRegistrert.getBrukersSituasjon());
+        metricsClient.report(event);
 
         if (arbeidssokerRegistrert instanceof FaultyArbeidssokerRegistrert) {
             FailedDeserializationInfo failedDeserializationInfo = ((FaultyArbeidssokerRegistrert) arbeidssokerRegistrert).getFailedDeserializationInfo();

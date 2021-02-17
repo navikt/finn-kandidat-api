@@ -10,8 +10,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class SamtykkeConsumer {
 
-    SamtykkeService samtykkeService;
-
+    private final SamtykkeService samtykkeService;
 
     public SamtykkeConsumer(SamtykkeService samtykkeService) {
         this.samtykkeService = samtykkeService;

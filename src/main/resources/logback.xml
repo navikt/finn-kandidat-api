@@ -1,6 +1,6 @@
 <configuration scan="true">
     <springProfile name="dev,prod">
-        <appender name="consoleAppender" class="no.nav.finnkandidatapi.logging.fnrmaskering.MaskingAppender">
+        <appender name="consoleAppender" class="no.nav.finnkandidatapi.fnrmaskering.MaskingAppender">
             <appender name="consoleAppender" class="ch.qos.logback.core.ConsoleAppender">
                 <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
             </appender>

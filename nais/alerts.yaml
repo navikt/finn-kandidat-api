@@ -2,22 +2,15 @@ apiVersion: "nais.io/v1"
 kind: "Alert"
 metadata:
   name: finn-kandidat-api-alert
+  namespace: arbeidsgiver
   labels:
     team: arbeidsgiver
 spec:
   receivers:
     slack:
-      channel: 'inkludering-alerts-dev'
+      channel: 'inkludering-alerts-prod'
       prependText: 'finn-kandidat-api: '
   alerts:
-    - alert: Konsumering av avsluttet oppfølging-melding feilet
-      expr: sum(increase(finnkandidat_avsluttetoppfolging_feilet_total[5m])) > 0
-      for: 1m
-      action: "Gå i Kibana og søk etter følgende for de siste 10 min: application:finn-kandidat-api AND envclass:q AND level:Error"
-    - alert: Publisering av kafkamelding til PAM feilet
-      expr: sum(increase(finnkandidat_hartilretteleggingsbehov_feilet_total{app="finn-kandidat-api"}[10m])) > 0
-      for: 1m
-      action: "Gå inn i Kibana (https://logs.adeo.no) og søk etter følgende for de siste 15 minutter: application:finn-kandidat-api AND envclass:q AND level:Error"
     - alert: Applikasjonen er nede (har ingen Kubernetes-poder oppe)
       expr: sum(up{app="finn-kandidat-api", job="kubernetes-pods"}) == 0
       for: 2m

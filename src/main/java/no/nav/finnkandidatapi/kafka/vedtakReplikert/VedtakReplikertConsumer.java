@@ -1,6 +1,5 @@
 package no.nav.finnkandidatapi.kafka.vedtakReplikert;
 
-import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.finnkandidatapi.vedtak.VedtakService;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -13,22 +12,16 @@ import static no.nav.finnkandidatapi.kafka.vedtakReplikert.VedtakReplikertUtils.
 @Component
 public class VedtakReplikertConsumer {
 
-    private static final String REPLIKERTVEDTAK_FEILET = "finnkandidat.replikertvedtak.feilet";
-
     private VedtakService vedtakService;
     @SuppressWarnings({"unused", "FieldCanBeLocal"})
     private VedtakReplikertConfig vedtakReplikertConfig;
-    private MeterRegistry meterRegistry;
 
     public VedtakReplikertConsumer(
             VedtakService vedtakService,
-            VedtakReplikertConfig vedtakReplikertConfig,
-            MeterRegistry meterRegistry
+            VedtakReplikertConfig vedtakReplikertConfig
     ) {
         this.vedtakService = vedtakService;
         this.vedtakReplikertConfig = vedtakReplikertConfig;
-        this.meterRegistry = meterRegistry;
-        meterRegistry.counter(REPLIKERTVEDTAK_FEILET);
     }
 
     @KafkaListener(
@@ -50,7 +43,6 @@ public class VedtakReplikertConsumer {
             vedtakService.behandleVedtakReplikert(vedtakReplikert);
 
         } catch (RuntimeException e) {
-            meterRegistry.counter(REPLIKERTVEDTAK_FEILET).increment();
             log.error("Feil ved konsumering av vedtak replikert melding. id {}, offset: {}, partition: {}",
                     melding.key(),
                     melding.offset(),

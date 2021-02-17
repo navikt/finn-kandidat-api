@@ -2,8 +2,8 @@ package no.nav.finnkandidatapi.logging;
 
 import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONObject;
-import no.nav.common.metrics.Event;
-import no.nav.common.metrics.MetricsClient;
+import no.nav.metrics.Event;
+import no.nav.metrics.MetricsFactory;
 import no.nav.security.token.support.core.api.Protected;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,12 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/events")
 public class LoggingController {
 
-    private final MetricsClient metricsClient;
-
-    public LoggingController(MetricsClient metricsClient) {
-        this.metricsClient = metricsClient;
-    }
-
     @PostMapping
     public ResponseEntity sendEvent(@RequestBody LoggEvent loggEvent) {
         log.info(
@@ -35,11 +29,11 @@ public class LoggingController {
             return ResponseEntity.badRequest().body("Tags kan kun inneholde strings");
         }
 
-        Event event = new Event(loggEvent.getName());
+        Event event = MetricsFactory.createEvent(loggEvent.getName());
         leggTilTags(loggEvent.getTags(), event);
         leggTilFields(loggEvent.getFields(), event);
 
-        metricsClient.report(event);
+        event.report();
         return ResponseEntity.ok().build();
     }
 

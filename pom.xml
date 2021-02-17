@@ -208,7 +208,7 @@
         <dependency>
             <groupId>no.nav.common</groupId>
             <artifactId>metrics</artifactId>
-            <version>2.2021.02.15_13.11-6bd95e3c97c9</version>
+            <version>1.2020.05.06_16.29-028d26fc1c42</version>
         </dependency>
         <dependency>
             <groupId>no.bekk.bekkopen</groupId>

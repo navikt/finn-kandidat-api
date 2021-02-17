@@ -2,12 +2,13 @@ package no.nav.finnkandidatapi.kafka.vedtakReplikert;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.common.metrics.Event;
-import no.nav.common.metrics.MetricsClient;
 import no.nav.finnkandidatapi.vedtak.VedtakService;
+import no.nav.metrics.MetricsFactory;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static no.nav.finnkandidatapi.kafka.vedtakReplikert.VedtakReplikertUtils.deserialiserMelding;
 
@@ -17,21 +18,19 @@ public class VedtakReplikertConsumer {
 
     private static final String REPLIKERTVEDTAK_FEILET = "finnkandidat.replikertvedtak.feilet";
 
-    private final VedtakService vedtakService;
+    private VedtakService vedtakService;
     @SuppressWarnings({"unused", "FieldCanBeLocal"})
-    private final VedtakReplikertConfig vedtakReplikertConfig;
-    private final MeterRegistry meterRegistry;
-    private final MetricsClient metricsClient;
+    private VedtakReplikertConfig vedtakReplikertConfig;
+    private MeterRegistry meterRegistry;
 
     public VedtakReplikertConsumer(
             VedtakService vedtakService,
             VedtakReplikertConfig vedtakReplikertConfig,
-            MeterRegistry meterRegistry,
-            MetricsClient metricsClient) {
+            MeterRegistry meterRegistry
+    ) {
         this.vedtakService = vedtakService;
         this.vedtakReplikertConfig = vedtakReplikertConfig;
         this.meterRegistry = meterRegistry;
-        this.metricsClient = metricsClient;
         meterRegistry.counter(REPLIKERTVEDTAK_FEILET);
     }
 
@@ -51,9 +50,9 @@ public class VedtakReplikertConsumer {
         try {
             VedtakReplikert vedtakReplikert = deserialiserMelding(json);
 
-            Event event = new Event("finn-kandidat.vedtak.mottatt" )
-                    .addTagToReport("operasjon", vedtakReplikert.getOp_type());
-            metricsClient.report(event);
+            MetricsFactory.createEvent("finn-kandidat.vedtak.mottatt" )
+                    .addTagToReport("operasjon", vedtakReplikert.getOp_type())
+                    .report();
 
             vedtakService.behandleVedtakReplikert(vedtakReplikert);
 

@@ -1,6 +1,5 @@
 package no.nav.finnkandidatapi.tilbakemelding;
 
-import no.nav.common.metrics.MetricsClient;
 import no.nav.finnkandidatapi.kandidat.Veileder;
 import no.nav.finnkandidatapi.tilgangskontroll.TilgangskontrollException;
 import no.nav.finnkandidatapi.tilgangskontroll.TilgangskontrollService;
@@ -32,14 +31,11 @@ public class TilbakemeldingControllerTest {
     @Mock
     private TilbakemeldingConfig tilbakemeldingConfig;
 
-    @Mock
-    private MetricsClient metricsClient;
-
     private TilbakemeldingController tilbakemeldingController;
 
     @Before
     public void setUp() {
-        tilbakemeldingController = new TilbakemeldingController(repository, tilgangskontrollService, tilbakemeldingConfig, metricsClient);
+        tilbakemeldingController = new TilbakemeldingController(repository, tilgangskontrollService, tilbakemeldingConfig);
     }
 
     @Test

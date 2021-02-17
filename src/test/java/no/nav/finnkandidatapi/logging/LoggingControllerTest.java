@@ -7,7 +7,6 @@ import org.springframework.http.ResponseEntity;
 
 import static no.nav.finnkandidatapi.TestData.enLoggEvent;
 import static no.nav.finnkandidatapi.TestData.enLoggEventMedIntTag;
-import static no.nav.finnkandidatapi.metrikker.sensu.MetrikkConfig.metricsClientFake;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 public class LoggingControllerTest {
@@ -16,7 +15,7 @@ public class LoggingControllerTest {
 
     @Before
     public void setUp() {
-       loggingController = new LoggingController(metricsClientFake());
+       loggingController = new LoggingController();
     }
 
     @Test

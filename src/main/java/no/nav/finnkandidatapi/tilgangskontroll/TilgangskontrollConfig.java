@@ -2,7 +2,7 @@ package no.nav.finnkandidatapi.tilgangskontroll;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.common.abac.Pep;
-import no.nav.common.abac.VeilarbPep;
+import no.nav.common.abac.VeilarbPepFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,6 +22,6 @@ public class TilgangskontrollConfig {
 
     @Bean
     public Pep veilarbPep() {
-        return new VeilarbPep(abacUrl, srvUsername, srvPassword);
+        return VeilarbPepFactory.get(abacUrl, srvUsername, srvPassword);
     }
 }

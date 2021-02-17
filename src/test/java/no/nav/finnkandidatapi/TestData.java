@@ -7,7 +7,6 @@ import no.nav.finnkandidatapi.kafka.vedtakReplikert.VedtakReplikert;
 import no.nav.finnkandidatapi.kandidat.Kandidat;
 import no.nav.finnkandidatapi.kandidat.KandidatDto;
 import no.nav.finnkandidatapi.kandidat.Veileder;
-import no.nav.finnkandidatapi.logging.LoggEvent;
 import no.nav.finnkandidatapi.midlertidigutilgjengelig.MidlertidigUtilgjengelig;
 import no.nav.finnkandidatapi.permittert.ArbeidssokerRegistrertDTO;
 import no.nav.finnkandidatapi.permittert.DinSituasjonSvarFraVeilarbReg;
@@ -232,20 +231,6 @@ public class TestData {
                 Behov.ARBEIDSTID,
                 "kul tilbakemelding"
         );
-    }
-
-    public static LoggEvent enLoggEvent() {
-        String name = "eventnavn";
-        JSONObject tags = new JSONObject(Map.of("tag1", "verdi1", "tag2", "verdi2"));
-        JSONObject fields = new JSONObject(Map.of("field1", "verdi1", "field2", 2));
-        return new LoggEvent(name, tags, fields);
-    }
-
-    public static LoggEvent enLoggEventMedIntTag() {
-        String name = "eventnavn";
-        JSONObject tags = new JSONObject(Map.of("tag1", 1, "tag2", "verdi2"));
-        JSONObject fields = new JSONObject(Map.of("field1", "verdi1", "field2", 2));
-        return new LoggEvent(name, tags, fields);
     }
 
     private static final Clock milliesClock = Clock.tickMillis(ZoneId.systemDefault());

@@ -1,10 +1,9 @@
-package no.nav.finnkandidatapi.logging.fnrmaskering;
+package no.nav.finnkandidatapi.fnrmaskering;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.IThrowableProxy;
 import ch.qos.logback.classic.spi.LoggerContextVO;
-import no.nav.log.MaskedThrowableProxy;
 import org.slf4j.Marker;
 
 import java.util.HashMap;

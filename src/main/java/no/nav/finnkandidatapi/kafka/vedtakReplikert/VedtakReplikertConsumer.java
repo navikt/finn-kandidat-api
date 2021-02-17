@@ -3,12 +3,9 @@ package no.nav.finnkandidatapi.kafka.vedtakReplikert;
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.finnkandidatapi.vedtak.VedtakService;
-import no.nav.metrics.MetricsFactory;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
-
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static no.nav.finnkandidatapi.kafka.vedtakReplikert.VedtakReplikertUtils.deserialiserMelding;
 
@@ -49,10 +46,6 @@ public class VedtakReplikertConsumer {
         String json = melding.value();
         try {
             VedtakReplikert vedtakReplikert = deserialiserMelding(json);
-
-            MetricsFactory.createEvent("finn-kandidat.vedtak.mottatt" )
-                    .addTagToReport("operasjon", vedtakReplikert.getOp_type())
-                    .report();
 
             vedtakService.behandleVedtakReplikert(vedtakReplikert);
 

@@ -6,7 +6,6 @@ import no.nav.arbeid.soker.registrering.ArbeidssokerRegistrertEvent;
 import no.nav.finnkandidatapi.permittert.ArbeidssokerRegistrertDTO;
 import no.nav.finnkandidatapi.permittert.DinSituasjonSvarFraVeilarbReg;
 import no.nav.finnkandidatapi.permittert.PermittertArbeidssokerService;
-import no.nav.metrics.MetricsFactory;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.context.annotation.Profile;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -55,10 +54,6 @@ public class ArbeidssokerRegistrertConsumer {
         );
 
         ArbeidssokerRegistrertEvent arbeidssokerRegistrert = melding.value();
-
-        MetricsFactory.createEvent("finn-kandidat.permittertas.mottatt" )
-                .addTagToReport("status", arbeidssokerRegistrert.getBrukersSituasjon())
-                .report();
 
         if (arbeidssokerRegistrert instanceof FaultyArbeidssokerRegistrert) {
             FailedDeserializationInfo failedDeserializationInfo = ((FaultyArbeidssokerRegistrert) arbeidssokerRegistrert).getFailedDeserializationInfo();

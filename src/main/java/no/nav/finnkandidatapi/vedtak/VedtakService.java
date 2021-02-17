@@ -1,6 +1,5 @@
 package no.nav.finnkandidatapi.vedtak;
 
-import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.finnkandidatapi.aktørregister.AktørRegisterClient;
 import no.nav.finnkandidatapi.kafka.vedtakReplikert.VedtakReplikert;
@@ -14,22 +13,16 @@ import java.util.Optional;
 @Service
 public class VedtakService {
 
-    private static final String VEDTAK_LAGRET = "finnkandidat.vedtak.lagret";
-    private static final String VEDTAK_SLETTET = "finnkandidat.vedtak.slettet";
-
     private final VedtakRepository vedtakRepository;
     private final AktørRegisterClient aktørRegisterClient;
     private final ApplicationEventPublisher eventPublisher;
-    private final MeterRegistry meterRegistry;
 
     public VedtakService(VedtakRepository vedtakRepository,
                          AktørRegisterClient aktørRegisterClient,
-                         ApplicationEventPublisher eventPublisher,
-                         MeterRegistry meterRegistry) {
+                         ApplicationEventPublisher eventPublisher) {
         this.vedtakRepository = vedtakRepository;
         this.aktørRegisterClient = aktørRegisterClient;
         this.eventPublisher = eventPublisher;
-        this.meterRegistry = meterRegistry;
     }
 
     public Optional<Vedtak> hentNyesteVedtakForAktør(String aktørId) {
@@ -78,7 +71,6 @@ public class VedtakService {
             throw new RuntimeException("Sletting av vedtak feilet");
         }
         eventPublisher.publishEvent(new VedtakSlettet(vedtak));
-        meterRegistry.counter(VEDTAK_SLETTET).increment();
     }
 
     private void behandleUpdate(VedtakReplikert vedtakReplikert, String aktørId) {
@@ -88,7 +80,6 @@ public class VedtakService {
         Long id = vedtakRepository.lagreVedtak(vedtak);
         vedtak.setId(id);
         eventPublisher.publishEvent(new VedtakEndret(vedtak));
-        meterRegistry.counter(VEDTAK_LAGRET).increment();
     }
 
     private void behandleInsert(VedtakReplikert vedtakReplikert, String aktørId) {
@@ -99,7 +90,6 @@ public class VedtakService {
         Long id = vedtakRepository.lagreVedtak(vedtak);
         vedtak.setId(id);
         eventPublisher.publishEvent(new VedtakOpprettet(vedtak));
-        meterRegistry.counter(VEDTAK_LAGRET).increment();
     }
 
     private String hentAktørId(VedtakReplikert vedtakReplikert) {

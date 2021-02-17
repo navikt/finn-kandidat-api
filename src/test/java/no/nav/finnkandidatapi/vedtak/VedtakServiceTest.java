@@ -2,7 +2,6 @@ package no.nav.finnkandidatapi.vedtak;
 
 
 import io.micrometer.core.instrument.Counter;
-import io.micrometer.core.instrument.MeterRegistry;
 import no.nav.finnkandidatapi.aktørregister.AktørRegisterClient;
 import no.nav.finnkandidatapi.kafka.vedtakReplikert.VedtakReplikert;
 import org.junit.Before;
@@ -17,7 +16,6 @@ import static no.nav.finnkandidatapi.TestData.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -35,16 +33,12 @@ public class VedtakServiceTest {
     private ApplicationEventPublisher eventPublisher;
 
     @Mock
-    private MeterRegistry meterRegistry;
-
-    @Mock
     private Counter counter;
 
     @Before
     public void setUp() {
-        when(meterRegistry.counter(anyString())).thenReturn(counter);
         when(aktørRegisterClient.tilAktørId(any())).thenReturn("1000000000001");
-        vedtakService = new VedtakService(vedtakRepository, aktørRegisterClient, eventPublisher, meterRegistry);
+        vedtakService = new VedtakService(vedtakRepository, aktørRegisterClient, eventPublisher);
     }
 
     @Test
@@ -92,6 +86,5 @@ public class VedtakServiceTest {
         verify(vedtakRepository, times(1)).lagreVedtak(any());
         verify(vedtakRepository, times(1)).logiskSlettVedtak(any());
         verifyNoInteractions(eventPublisher);
-        verifyNoInteractions(meterRegistry);
     }
 }

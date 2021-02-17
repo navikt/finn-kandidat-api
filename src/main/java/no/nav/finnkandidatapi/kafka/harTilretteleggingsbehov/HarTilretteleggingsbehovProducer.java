@@ -2,7 +2,6 @@ package no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -15,23 +14,15 @@ import org.springframework.util.concurrent.ListenableFuture;
 @Slf4j
 public class HarTilretteleggingsbehovProducer {
 
-    private static final String HAR_TILRETTELEGGINGSBEHOV_PRODUSENT_SUKSESS = "finnkandidat.hartilretteleggingsbehov.suksess";
-    private static final String HAR_TILRETTELEGGINGSBEHOV_PRODUSENT_FEILET = "finnkandidat.hartilretteleggingsbehov.feilet";
-
     private final KafkaTemplate<String, String> kafkaTemplate;
     private final String topic;
-    private final MeterRegistry meterRegistry;
 
     public HarTilretteleggingsbehovProducer(
             KafkaTemplate<String, String> kafkaTemplate,
-            @Value("${kandidat-endret.topic}") String topic,
-            MeterRegistry meterRegistry
+            @Value("${kandidat-endret.topic}") String topic
     ) {
         this.kafkaTemplate = kafkaTemplate;
         this.topic = topic;
-        this.meterRegistry = meterRegistry;
-        meterRegistry.counter(HAR_TILRETTELEGGINGSBEHOV_PRODUSENT_SUKSESS);
-        meterRegistry.counter(HAR_TILRETTELEGGINGSBEHOV_PRODUSENT_FEILET);
     }
 
     public void sendKafkamelding(HarTilretteleggingsbehov melding) {
@@ -40,7 +31,6 @@ public class HarTilretteleggingsbehovProducer {
             payload = new ObjectMapper().writeValueAsString(melding);
         } catch (JsonProcessingException e) {
             log.error("Kunne ikke serialisere HarTilretteleggingsbehov", e);
-            meterRegistry.counter(HAR_TILRETTELEGGINGSBEHOV_PRODUSENT_FEILET).increment();
             return;
         }
         send(melding.getAktoerId(), payload);
@@ -54,11 +44,9 @@ public class HarTilretteleggingsbehovProducer {
                             key,
                             result.getRecordMetadata().offset()
                     );
-                    meterRegistry.counter(HAR_TILRETTELEGGINGSBEHOV_PRODUSENT_SUKSESS).increment();
                 },
                 exception -> {
                     log.error("Kunne ikke sende kandidat på Kafka-topic, aktørId: {}", key, exception);
-                    meterRegistry.counter(HAR_TILRETTELEGGINGSBEHOV_PRODUSENT_FEILET).increment();
                 });
     }
 }

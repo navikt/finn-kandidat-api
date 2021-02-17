@@ -1,6 +1,5 @@
 package no.nav.finnkandidatapi.kafka.arbeidssøkerRegistrert;
 
-import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.arbeid.soker.registrering.ArbeidssokerRegistrertEvent;
 import no.nav.finnkandidatapi.permittert.ArbeidssokerRegistrertDTO;
@@ -19,24 +18,16 @@ import static no.nav.finnkandidatapi.kafka.arbeidssøkerRegistrert.VeilArbRegist
 @Profile("!local" )
 public class ArbeidssokerRegistrertConsumer {
 
-    private static final String REGISTRERT_ARBEIDSSOKER_FEILET = "finnkandidat.registrertarbeidssoker.feilet";
-    private static final String REGISTRERT_ARBEIDSSOKER_DROPPET = "finnkandidat.registrertarbeidssoker.droppet";
-    private static final String REGISTRERT_ARBEIDSSOKER_AKSEPTERT = "finnkandidat.registrertarbeidssoker.akseptert";
-
     private PermittertArbeidssokerService permittertArbeidssokerService;
     @SuppressWarnings({"unused", "FieldCanBeLocal"})
     private ArbeidssokerRegistrertConfig arbeidssokerRegistrertConfig;
-    private MeterRegistry meterRegistry;
 
     public ArbeidssokerRegistrertConsumer(
             PermittertArbeidssokerService permittertArbeidssokerService,
-            ArbeidssokerRegistrertConfig arbeidssokerRegistrertConfig,
-            MeterRegistry meterRegistry
+            ArbeidssokerRegistrertConfig arbeidssokerRegistrertConfig
     ) {
         this.permittertArbeidssokerService = permittertArbeidssokerService;
         this.arbeidssokerRegistrertConfig = arbeidssokerRegistrertConfig;
-        this.meterRegistry = meterRegistry;
-        meterRegistry.counter(REGISTRERT_ARBEIDSSOKER_FEILET);
     }
 
     @KafkaListener(
@@ -57,7 +48,6 @@ public class ArbeidssokerRegistrertConsumer {
 
         if (arbeidssokerRegistrert instanceof FaultyArbeidssokerRegistrert) {
             FailedDeserializationInfo failedDeserializationInfo = ((FaultyArbeidssokerRegistrert) arbeidssokerRegistrert).getFailedDeserializationInfo();
-            meterRegistry.counter(REGISTRERT_ARBEIDSSOKER_FEILET).increment();
             log.error("Feil ved konsumering av registrert arbeidssøker-melding. id {}, offset: {}, partition: {}, årsak: {}",
                     melding.key(),
                     melding.offset(),
@@ -71,9 +61,6 @@ public class ArbeidssokerRegistrertConsumer {
 
         if (harBrukerRegistrertSegSomPermittert(arbeidssokerRegistrertDTO)) {
             permittertArbeidssokerService.behandleArbeidssokerRegistrert(arbeidssokerRegistrertDTO);
-            meterRegistry.counter(REGISTRERT_ARBEIDSSOKER_AKSEPTERT).increment();
-        } else {
-            meterRegistry.counter(REGISTRERT_ARBEIDSSOKER_DROPPET).increment();
         }
     }
 

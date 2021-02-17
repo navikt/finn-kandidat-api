@@ -1,6 +1,5 @@
 package no.nav.finnkandidatapi;
 
-import net.minidev.json.JSONObject;
 import no.nav.finnkandidatapi.kafka.vedtakReplikert.Tokens;
 import no.nav.finnkandidatapi.kafka.vedtakReplikert.VedtakRad;
 import no.nav.finnkandidatapi.kafka.vedtakReplikert.VedtakReplikert;
@@ -20,7 +19,6 @@ import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Collections;
-import java.util.Map;
 import java.util.Set;
 
 import static no.nav.finnkandidatapi.kandidat.Arbeidshverdagen.*;

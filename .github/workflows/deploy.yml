@@ -26,10 +26,7 @@ jobs:
   deploy-to-dev:
     name: Deploy to dev
     needs: test
-    #########################
-    ### DEVELOPERS: Insert your feature branch name below (in addition to master) if you want to deploy it to dev
-    #########################
-    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/oppgrader-avhengigheter'
+    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/fjern-unødvendige-prometheus-metrikker'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
@@ -56,7 +53,7 @@ jobs:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: dev-fss
           VAR: version=${{ env.IMAGE }}
-          RESOURCE: nais-dev-fss.yaml
+          RESOURCE: nais/nais-dev.yaml
 
   deploy-to-prod:
     name: Deploy to prod
@@ -70,4 +67,16 @@ jobs:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: prod-fss
           VAR: version=${{ env.IMAGE }}
-          RESOURCE: nais-prod-fss.yaml
+          RESOURCE: nais/nais-prod.yaml
+
+  deploy-alerts:
+    name: Deploy alerts to prod
+    if: github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: nais/deploy/actions/deploy@v1
+        env:
+          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
+          CLUSTER: prod-fss
+          RESOURCE: nais/alerts.yaml

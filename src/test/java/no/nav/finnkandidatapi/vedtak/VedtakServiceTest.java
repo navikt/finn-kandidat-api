@@ -32,9 +32,6 @@ public class VedtakServiceTest {
     @Mock
     private ApplicationEventPublisher eventPublisher;
 
-    @Mock
-    private Counter counter;
-
     @Before
     public void setUp() {
         when(aktørRegisterClient.tilAktørId(any())).thenReturn("1000000000001");
@@ -86,5 +83,26 @@ public class VedtakServiceTest {
         verify(vedtakRepository, times(1)).lagreVedtak(any());
         verify(vedtakRepository, times(1)).logiskSlettVedtak(any());
         verifyNoInteractions(eventPublisher);
+    }
+
+    @Test
+    public void skal_ignorere_update_vedtak_med_utfallskode_nei() {
+        VedtakReplikert vedtak = etAvslåttUpdateVedtakReplikert();
+        vedtakService.behandleVedtakReplikert(vedtak);
+        verify(vedtakRepository, times(0)).lagreVedtak(any());
+    }
+
+    @Test
+    public void skal_ignorere_delete_vedtak_med_utfallskode_nei() {
+        VedtakReplikert vedtak = etAvslåttDeleteVedtakReplikert();
+        vedtakService.behandleVedtakReplikert(vedtak);
+        verify(vedtakRepository, times(0)).lagreVedtak(any());
+    }
+
+    @Test
+    public void skal_ignorere_insert_vedtak_med_utfallskode_nei() {
+        VedtakReplikert vedtak = etAvslåttInsertVedtakReplikert();
+        vedtakService.behandleVedtakReplikert(vedtak);
+        verify(vedtakRepository, times(0)).lagreVedtak(any());
     }
 }

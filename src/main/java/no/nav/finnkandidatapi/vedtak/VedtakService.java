@@ -2,6 +2,7 @@ package no.nav.finnkandidatapi.vedtak;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.finnkandidatapi.aktørregister.AktørRegisterClient;
+import no.nav.finnkandidatapi.kafka.vedtakReplikert.VedtakRad;
 import no.nav.finnkandidatapi.kafka.vedtakReplikert.VedtakReplikert;
 import no.nav.finnkandidatapi.kandidat.AktorRegisteretUkjentFnrException;
 import org.springframework.context.ApplicationEventPublisher;
@@ -30,21 +31,21 @@ public class VedtakService {
     }
 
     public void behandleVedtakReplikert(VedtakReplikert vedtakReplikert) {
-        //Kan evt sjekke om senesteVedtak finnes og evt har nyere pos/timestamp, isåfall abort og evt log?
-        //kan være aktuelt pga replay av gamle Kafka-meldinger..
-
         String aktørId = hentAktørId(vedtakReplikert);
         if (aktørId == null) {
             return;
         }
 
         if (vedtakReplikert.getOp_type().equalsIgnoreCase("I")) {
+            if (erVedtakAvslått(vedtakReplikert.getAfter())) return;
             behandleInsert(vedtakReplikert, aktørId);
 
         } else if (vedtakReplikert.getOp_type().equalsIgnoreCase("U")) {
+            if (erVedtakAvslått(vedtakReplikert.getAfter())) return;
             behandleUpdate(vedtakReplikert, aktørId);
 
         } else if (vedtakReplikert.getOp_type().equalsIgnoreCase("D")) {
+            if (erVedtakAvslått(vedtakReplikert.getBefore())) return;
             behandleDelete(vedtakReplikert, aktørId);
 
         } else {
@@ -60,8 +61,7 @@ public class VedtakService {
     }
 
     private void behandleDelete(VedtakReplikert vedtakReplikert, String aktørId) {
-        //Vi vil neppe få disse, da vedtak ikke slettes i Arena og hvis de slettes så er det fra en tilstand som er filtrert bort fra oss
-        log.info("Fikk en slettemelding!");
+        // Vi vil neppe få disse, da vedtak ikke slettes i Arena og hvis de slettes så er det fra en tilstand som er filtrert bort fra oss
 
         Vedtak vedtak = Vedtak.opprettFraBefore(aktørId, vedtakReplikert);
         Long id = vedtakRepository.lagreVedtak(vedtak);
@@ -74,8 +74,6 @@ public class VedtakService {
     }
 
     private void behandleUpdate(VedtakReplikert vedtakReplikert, String aktørId) {
-        log.info("Fikk en updatemelding!");
-
         Vedtak vedtak = Vedtak.opprettFraAfter(aktørId, vedtakReplikert);
         Long id = vedtakRepository.lagreVedtak(vedtak);
         vedtak.setId(id);
@@ -84,7 +82,6 @@ public class VedtakService {
 
     private void behandleInsert(VedtakReplikert vedtakReplikert, String aktørId) {
         //Vi vil nok sjelden/aldri få Inserts, da vedtakene blir opprettet i Arena i en tilstand som blir filtrert vekk av GG.
-        log.info("Fikk en insertmelding!");
 
         Vedtak vedtak = Vedtak.opprettFraAfter(aktørId, vedtakReplikert);
         Long id = vedtakRepository.lagreVedtak(vedtak);
@@ -108,5 +105,9 @@ public class VedtakService {
 
     private String hentAktørId(String fnr) {
         return aktørRegisterClient.tilAktørId(fnr);
+    }
+
+    private boolean erVedtakAvslått(VedtakRad vedtakRad) {
+        return vedtakRad.getUtfallkode() != null && vedtakRad.getUtfallkode().equals("NEI");
     }
 }

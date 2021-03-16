@@ -68,19 +68,19 @@ public class Vedtak {
 
     private boolean riktigVedtakStatusKode() {
         return statusKode != null
-                && statusKode.equalsIgnoreCase("IVERK" );
+                && statusKode.equalsIgnoreCase("IVERK");
     }
 
     private boolean riktigUtfall() {
         return utfallKode != null
-                && utfallKode.equalsIgnoreCase("JA" );
+                && utfallKode.equalsIgnoreCase("JA");
     }
 
     private boolean riktigVedtakTypeKode() {
         return typeKode != null
-                && (typeKode.equalsIgnoreCase("E" )
-                || typeKode.equalsIgnoreCase("G" )
-                || typeKode.equalsIgnoreCase("O" ));
+                && (typeKode.equalsIgnoreCase("E")
+                || typeKode.equalsIgnoreCase("G")
+                || typeKode.equalsIgnoreCase("O"));
     }
 
     public boolean erPermittert() {

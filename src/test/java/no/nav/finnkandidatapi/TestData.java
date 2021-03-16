@@ -52,6 +52,43 @@ public class TestData {
                 .build();
     }
 
+    public static VedtakReplikert etAvslåttUpdateVedtakReplikert() {
+        return VedtakReplikert.builder()
+                .op_type("U")
+                .tokens(Tokens.builder().fodselsnr("01010112345").build())
+                .after(VedtakRad.builder()
+                        .vedtak_id(45L)
+                        .rettighetkode("PERM")
+                        .utfallkode("NEI")
+                        .build())
+                .build();
+    }
+
+    public static VedtakReplikert etAvslåttDeleteVedtakReplikert() {
+        return VedtakReplikert.builder()
+                .op_type("D")
+                .tokens(Tokens.builder().fodselsnr("01010112345").build())
+                .before(VedtakRad.builder()
+                        .vedtak_id(45L)
+                        .rettighetkode("PERM")
+                        .utfallkode("NEI")
+                        .build())
+                .build();
+    }
+
+    public static VedtakReplikert etAvslåttInsertVedtakReplikert() {
+        return VedtakReplikert.builder()
+                .op_type("I")
+                .tokens(Tokens.builder().fodselsnr("01010112345").build())
+                .after(VedtakRad.builder()
+                        .vedtak_id(45L)
+                        .rettighetkode("PERM")
+                        .utfallkode("NEI")
+                        .build())
+                .build();
+    }
+
+
     public static Vedtak etVedtak() {
         return Vedtak.builder()
                 .aktørId("1000000000001")

@@ -26,7 +26,7 @@ jobs:
   deploy-to-dev:
     name: Deploy to dev
     needs: test
-    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/fjern-unødvendige-prometheus-metrikker'
+    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/eksplisitt-issuer-endepunkt'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1

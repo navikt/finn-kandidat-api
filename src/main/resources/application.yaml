@@ -55,7 +55,6 @@ mock:
 sts.url: ${mock.baseUrl}/sts
 abac.url: ${mock.baseUrl}/abac
 aktørregister.url: ${mock.baseUrl}/aktoerregister/api/v1
-axsys.url: ${mock.baseUrl}/axsys
 veilarboppfolging.url: ${mock.baseUrl}/veilarboppfolging/api
 
 SERVICEBRUKER_BRUKERNAVN: na
@@ -116,7 +115,6 @@ sts.url: https://security-token-service.nais.preprod.local/rest/v1
 abac.url: https://wasapp-q0.adeo.no/asm-pdp/authorize
 aktørregister.url: https://app-q0.adeo.no/aktoerregister/api/v1
 unleash.url: https://unleash.nais.io/api/
-axsys.url: https://axsys.nais.preprod.local/api/v1/tilgang
 veilarboppfolging.url: https://veilarboppfolging-q0.nais.preprod.local/veilarboppfolging/api
 
 ---
@@ -168,5 +166,4 @@ sts.url: https://security-token-service.nais.adeo.no/rest/v1
 abac.url: https://wasapp.adeo.no/asm-pdp/authorize
 aktørregister.url: https://app.adeo.no/aktoerregister/api/v1
 unleash.url: https://unleash.nais.io/api/
-axsys.url: https://axsys.nais.adeo.no/api/v1/tilgang
 veilarboppfolging.url: https://veilarboppfolging.nais.adeo.no/veilarboppfolging/api

@@ -64,17 +64,6 @@ public class KandidatServiceTest {
     }
 
     @Test
-    public void hentKandidater__skal_returnere_kandidater() {
-        Kandidat kandidat1 = enKandidat("1000000000001");
-        Kandidat kandidat2 = enKandidat("1000000000002");
-        when(repository.hentKandidater()).thenReturn(List.of(kandidat1, kandidat2));
-
-        List<Kandidat> hentedeKandidater = kandidatService.hentKandidater();
-
-        Assertions.assertThat(hentedeKandidater).containsExactly(kandidat1, kandidat2);
-    }
-
-    @Test
     public void opprettKandidat__skal_opprette_kandidat_med_riktige_felter() {
         Kandidat kandidat = enKandidat();
         KandidatDto kandidatDto = enKandidatDto(kandidat);

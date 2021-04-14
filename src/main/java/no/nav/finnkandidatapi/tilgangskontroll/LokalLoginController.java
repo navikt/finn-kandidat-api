@@ -3,7 +3,6 @@ package no.nav.finnkandidatapi.tilgangskontroll;
 import no.nav.security.mock.oauth2.MockOAuth2Server;
 import no.nav.security.mock.oauth2.token.DefaultOAuth2TokenCallback;
 import no.nav.security.token.support.core.api.Unprotected;
-import no.nav.security.token.support.spring.test.EnableMockOAuth2Server;
 import org.springframework.context.annotation.Profile;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 
@@ -51,62 +49,26 @@ public class LokalLoginController {
 
     private String veilederToken(){
         String issuerId = "isso";
-        String subject = "00000000000";
-        String audience = "aud-isso";
+        String subject = "ikke-i-bruk";
+        String audience = "default";
         Map<String, String> claims = Map.of(
                 "NAVident", "X123456",
                 "given_name", "Ola",
                 "family_name", "Nordmann"
         );
 
-        return server.issueToken(
-                issuerId,
-                "theclientid",
-                new DefaultOAuth2TokenCallback(
-                        issuerId,
-                        subject,
-                        Collections.singletonList(audience),
-                        claims,
-                        3600
-                )
-        ).serialize();
+        return server.issueToken(issuerId, subject, audience, claims).serialize();
     }
 
     private String eksternBrukerToken(){
         String issuerId = "selvbetjening";
         String subject = "28037639429";
-        String audience = "aud-selvbetjening";
-        return server.issueToken(
-                issuerId,
-                "theclientid",
-                new DefaultOAuth2TokenCallback(
-                        issuerId,
-                        subject,
-                        Collections.singletonList(audience),
-                        Collections.emptyMap(),
-                        3600
-                )
-        ).serialize();
+        return server.issueToken(issuerId, subject).serialize();
     }
 
     private String openAMToken(){
         String issuerId = "openam";
         String subject = "X123456";
-        String audience = "aud-openam";
-        Map<String, String> claims = Map.of();
-
-//        server.issueToken(issuerId, subject)
-
-        return server.issueToken(
-                issuerId,
-                "theclientid",
-                new DefaultOAuth2TokenCallback(
-                        issuerId,
-                        subject,
-                        Collections.singletonList(audience),
-                        claims,
-                        3600
-                )
-        ).serialize();
+        return server.issueToken(issuerId, subject).serialize();
     }
 }

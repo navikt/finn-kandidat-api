@@ -7,7 +7,7 @@ import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.SammenstillBehov;
 import no.nav.finnkandidatapi.kandidat.KandidatRepository;
 import no.nav.finnkandidatapi.tilgangskontroll.TilgangskontrollException;
 import no.nav.finnkandidatapi.tilgangskontroll.TilgangskontrollService;
-import no.nav.security.token.support.core.api.Protected;
+import no.nav.security.token.support.core.api.ProtectedWithClaims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -17,9 +17,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+import static no.nav.finnkandidatapi.tilgangskontroll.TokenUtils.ISSUER_ISSO;
+
 @RestController
 @Component
-@Protected
+@ProtectedWithClaims(issuer = ISSUER_ISSO)
 @Slf4j
 public class KafkaRepublisher {
     private final HarTilretteleggingsbehovProducer harTilretteleggingsbehovProducer;

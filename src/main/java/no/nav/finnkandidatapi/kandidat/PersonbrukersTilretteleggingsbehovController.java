@@ -10,7 +10,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Optional;
 
-@ProtectedWithClaims(issuer = "selvbetjening")
+import static no.nav.finnkandidatapi.tilgangskontroll.TokenUtils.ISSUER_SELVBETJENING;
+
+@ProtectedWithClaims(issuer = ISSUER_SELVBETJENING)
 @RestController
 public class PersonbrukersTilretteleggingsbehovController {
 

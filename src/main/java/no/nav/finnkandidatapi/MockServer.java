@@ -35,7 +35,6 @@ public class MockServer implements DisposableBean {
             @Value("${sts.url}") String stsUrl,
             @Value("${abac.url}") String abacUrl,
             @Value("${aktørregister.url}") String aktørregisterUrl,
-            @Value("${axsys.url}") String axsysUrl,
             @Value("${veilarboppfolging.url}") String veilarboppfølgingUrl
     ) {
         log.info("Starter mockserver");
@@ -45,7 +44,6 @@ public class MockServer implements DisposableBean {
         mockAbac(abacUrl);
         mockKall(stsUrl + "/sts/token", new STSToken("fdg", "asfsdg", 325));
         mockAktørregister(aktørregisterUrl);
-        mockAxsys(axsysUrl);
         mockKall(veilarboppfølgingUrl + "/underoppfolging", Oppfølgingsstatus.builder().underOppfolging(true).build());
         mockKall(veilarboppfølgingUrl + "/underoppfolging?fnr=01065500791", Oppfølgingsstatus.builder().underOppfolging(false).build());
 
@@ -102,16 +100,6 @@ public class MockServer implements DisposableBean {
                 "   \"feilmelding\": null\n" +
                 " }\n" +
                 "}");
-    }
-
-    private void mockAxsys(String axsysUrl) {
-        server.stubFor(
-                get(WireMock.urlPathMatching(getPath(axsysUrl) + "/[A-Z][0-9]{6}")).willReturn(WireMock.aResponse()
-                        .withHeader("Content-Type", "application/json")
-                        .withStatus(HttpStatus.OK.value())
-                        .withBody("{\"enheter\":[{\"enhetId\":\"0213\",\"fagomrader\":[\"ABC\",\"DEF\",\"GHI\",\"JKL\",\"MNO\",\"PQR\",\"STU\",\"WXY\"],\"navn\":\"NAV Ski\"},{\"enhetId\":\"0315\",\"fagomrader\":[\"ABC\",\"DEF\",\"GHI\",\"JKL\",\"MNO\",\"PQR\",\"STU\",\"WXY\"],\"navn\":\"NAV Grünerløkka\"}]}")
-                )
-        );
     }
 
     @SneakyThrows

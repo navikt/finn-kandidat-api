@@ -39,10 +39,6 @@ public class KandidatService {
         return kandidatRepository.hentNyesteKandidat(aktørId);
     }
 
-    public List<Kandidat> hentKandidater() {
-        return kandidatRepository.hentKandidater();
-    }
-
     public Optional<Kandidat> opprettKandidat(KandidatDto kandidat, Veileder innloggetVeileder) {
         Kandidat kandidatTilLagring = Kandidat.opprettKandidat(
                 kandidat,

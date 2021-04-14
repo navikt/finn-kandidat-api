@@ -2,39 +2,33 @@ package no.nav.finnkandidatapi.tilbakemelding;
 
 import no.nav.finnkandidatapi.tilgangskontroll.TilgangskontrollException;
 import no.nav.finnkandidatapi.tilgangskontroll.TilgangskontrollService;
-import no.nav.security.token.support.core.api.Protected;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import no.nav.security.token.support.core.api.ProtectedWithClaims;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Protected
+import static no.nav.finnkandidatapi.tilgangskontroll.TokenUtils.ISSUER_ISSO;
+
 @RestController
-@RequestMapping("/tilbakemeldinger")
-public class TilbakemeldingController {
+@RequestMapping
+@ProtectedWithClaims(issuer = ISSUER_ISSO)
+public class HentTilbakemeldingerController {
 
     private final TilbakemeldingRepository repository;
     private final TilgangskontrollService tilgangskontrollService;
     private final TilbakemeldingConfig config;
 
-    public TilbakemeldingController(
+    public HentTilbakemeldingerController(
             TilbakemeldingRepository repository,
             TilgangskontrollService tilgangskontrollService,
-            TilbakemeldingConfig config) {
+            TilbakemeldingConfig config
+    ) {
         this.repository = repository;
         this.tilgangskontrollService = tilgangskontrollService;
         this.config = config;
     }
 
-    // TODO: Flytt til egen controller som er sikret for én issuer
-    @PostMapping
-    public ResponseEntity giTilbakemelding(@RequestBody Tilbakemelding tilbakemelding) {
-        repository.lagreTilbakemelding(tilbakemelding);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
-    }
-
-    @GetMapping
+    @GetMapping("/tilbakemeldinger")
     public List<Tilbakemelding> hentAlleTilbakemeldinger() {
         sjekkLesetilgangTilTilbakemeldinger();
         return repository.hentAlleTilbakemeldinger();

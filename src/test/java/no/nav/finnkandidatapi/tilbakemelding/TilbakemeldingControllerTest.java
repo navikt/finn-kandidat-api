@@ -31,24 +31,26 @@ public class TilbakemeldingControllerTest {
     @Mock
     private TilbakemeldingConfig tilbakemeldingConfig;
 
-    private TilbakemeldingController tilbakemeldingController;
+    private HentTilbakemeldingerController hentTilbakemeldingerController;
+    private LagreTilbakemeldingController lagreTilbakemeldingController;
 
     @Before
     public void setUp() {
-        tilbakemeldingController = new TilbakemeldingController(repository, tilgangskontrollService, tilbakemeldingConfig);
+        hentTilbakemeldingerController = new HentTilbakemeldingerController(repository, tilgangskontrollService, tilbakemeldingConfig);
+        lagreTilbakemeldingController = new LagreTilbakemeldingController(repository);
     }
 
     @Test
     public void giTilbakemelding__skal_lagre_tilbakemelding() {
         Tilbakemelding tilbakemelding = enTilbakemelding();
-        tilbakemeldingController.giTilbakemelding(tilbakemelding);
+        lagreTilbakemeldingController.giTilbakemelding(tilbakemelding);
         verify(repository, times(1)).lagreTilbakemelding(tilbakemelding);
     }
 
     @Test
     public void giTilbakemelding__skal_returnere_201_created() {
         Tilbakemelding tilbakemelding = enTilbakemelding();
-        assertThat(tilbakemeldingController.giTilbakemelding(tilbakemelding).getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        assertThat(lagreTilbakemeldingController.giTilbakemelding(tilbakemelding).getStatusCode()).isEqualTo(HttpStatus.CREATED);
     }
 
     @Test
@@ -62,14 +64,14 @@ public class TilbakemeldingControllerTest {
         );
         when(repository.hentAlleTilbakemeldinger()).thenReturn(alleTilbakemeldinger);
 
-        assertThat(tilbakemeldingController.hentAlleTilbakemeldinger()).isEqualTo(alleTilbakemeldinger);
+        assertThat(hentTilbakemeldingerController.hentAlleTilbakemeldinger()).isEqualTo(alleTilbakemeldinger);
     }
 
     @Test(expected = TilgangskontrollException.class)
     public void hentAlleTilbakemeldinger__skal_returnere_403_hvis_bruker_ikke_har_tilgang() {
         giLesetilgangTil("Z99999");
         værInnloggetSom("X12345");
-        tilbakemeldingController.hentAlleTilbakemeldinger();
+        hentTilbakemeldingerController.hentAlleTilbakemeldinger();
     }
 
     private void giLesetilgangTil(String ... identer) {

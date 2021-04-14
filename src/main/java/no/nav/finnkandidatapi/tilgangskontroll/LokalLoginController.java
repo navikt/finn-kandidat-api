@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
-import java.util.Collections;
 import java.util.Map;
 
 @Profile("local")
@@ -33,20 +32,6 @@ public class LokalLoginController {
         response.addCookie(cookie);
     }
 
-    @GetMapping("/local/ekstern-bruker-cookie")
-    public void hentCookieMedEksternBrukerJwtTokenClaims(HttpServletResponse response) {
-        Cookie cookie = new Cookie("selvbetjening-idtoken", eksternBrukerToken());
-        cookie.setPath("/");
-        response.addCookie(cookie);
-    }
-
-    @GetMapping("/local/veileder-openam-cookie")
-    public void hentCookieMedVeilederOpenAMJwtTokenClaims(HttpServletResponse response) {
-        Cookie cookie = new Cookie("ID_token", openAMToken());
-        cookie.setPath("/");
-        response.addCookie(cookie);
-    }
-
     private String veilederToken(){
         String issuerId = "isso";
         String subject = "ikke-i-bruk";
@@ -60,10 +45,24 @@ public class LokalLoginController {
         return server.issueToken(issuerId, subject, audience, claims).serialize();
     }
 
+    @GetMapping("/local/ekstern-bruker-cookie")
+    public void hentCookieMedEksternBrukerJwtTokenClaims(HttpServletResponse response) {
+        Cookie cookie = new Cookie("selvbetjening-idtoken", eksternBrukerToken());
+        cookie.setPath("/");
+        response.addCookie(cookie);
+    }
+
     private String eksternBrukerToken(){
         String issuerId = "selvbetjening";
         String subject = "28037639429";
         return server.issueToken(issuerId, subject).serialize();
+    }
+
+    @GetMapping("/local/veileder-openam-cookie")
+    public void hentCookieMedVeilederOpenAMJwtTokenClaims(HttpServletResponse response) {
+        Cookie cookie = new Cookie("ID_token", openAMToken());
+        cookie.setPath("/");
+        response.addCookie(cookie);
     }
 
     private String openAMToken(){

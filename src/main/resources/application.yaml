@@ -43,6 +43,11 @@ no.nav.security.jwt:
     discoveryurl: http://localhost:${mock-oauth2-server.port}/selvbetjening/.well-known/openid-configuration
     accepted_audience: aud-selvbetjening
     cookiename: selvbetjening-idtoken
+  issuer.openam:
+    discoveryurl: http://localhost:${mock-oauth2-server.port}/openam/.well-known/openid-configuration
+    accepted_audience: aud-openam # TODO: Bytte til default audience?
+    cookiename: ID_token
+
 
 tilgangskontroll.tilbakemeldinger: X12345,Y23456,Z34567,X123456
 tilgangskontroll.republisering: X12345,Y23456,Z34567,X123456

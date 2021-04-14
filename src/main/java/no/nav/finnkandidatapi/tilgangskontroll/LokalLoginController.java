@@ -42,6 +42,13 @@ public class LokalLoginController {
         response.addCookie(cookie);
     }
 
+    @GetMapping("/local/veileder-openam-cookie")
+    public void hentCookieMedVeilederOpenAMJwtTokenClaims(HttpServletResponse response) {
+        Cookie cookie = new Cookie("ID_token", openAMToken());
+        cookie.setPath("/");
+        response.addCookie(cookie);
+    }
+
     private String veilederToken(){
         String issuerId = "isso";
         String subject = "00000000000";
@@ -77,6 +84,27 @@ public class LokalLoginController {
                         subject,
                         Collections.singletonList(audience),
                         Collections.emptyMap(),
+                        3600
+                )
+        ).serialize();
+    }
+
+    private String openAMToken(){
+        String issuerId = "openam";
+        String subject = "X123456";
+        String audience = "aud-openam";
+        Map<String, String> claims = Map.of();
+
+//        server.issueToken(issuerId, subject)
+
+        return server.issueToken(
+                issuerId,
+                "theclientid",
+                new DefaultOAuth2TokenCallback(
+                        issuerId,
+                        subject,
+                        Collections.singletonList(audience),
+                        claims,
                         3600
                 )
         ).serialize();

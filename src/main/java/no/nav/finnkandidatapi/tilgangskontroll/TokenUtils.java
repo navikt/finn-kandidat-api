@@ -15,8 +15,8 @@ import java.util.Optional;
 public class TokenUtils {
 
     public final static String ISSUER_ISSO = "isso";
-    final static String ISSUER_OPENAM = "openam";
-    final static String ISSUER_SELVBETJENING = "selvbetjening";
+    public final static String ISSUER_OPENAM = "openam";
+    public final static String ISSUER_SELVBETJENING = "selvbetjening";
 
     final static String NAVIDENT_CLAIM = "NAVident";
     final static String GIVEN_NAME_CLAIM = "given_name";

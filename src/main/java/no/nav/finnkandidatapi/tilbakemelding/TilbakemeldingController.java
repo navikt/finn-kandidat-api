@@ -27,6 +27,7 @@ public class TilbakemeldingController {
         this.config = config;
     }
 
+    // TODO: Flytt til egen controller som er sikret for én issuer
     @PostMapping
     public ResponseEntity giTilbakemelding(@RequestBody Tilbakemelding tilbakemelding) {
         repository.lagreTilbakemelding(tilbakemelding);

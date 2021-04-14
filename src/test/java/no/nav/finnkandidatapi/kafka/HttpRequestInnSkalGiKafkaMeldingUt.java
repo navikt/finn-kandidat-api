@@ -53,7 +53,7 @@ public class HttpRequestInnSkalGiKafkaMeldingUt {
 
     @Before
     public void setUp() {
-        String loginUrl = localBaseUrl() + "/local/veileder-cookie";
+        String loginUrl = localBaseUrl() + "/local/veileder-openam-cookie";
         restTemplate.getForObject(loginUrl, String.class);
 
         kafkaConsumer = setupKafkaConsumer();
@@ -68,6 +68,7 @@ public class HttpRequestInnSkalGiKafkaMeldingUt {
 
         // When HTTP opprett
         ResponseEntity<String> respons = restTemplate.postForEntity(uri, dto, String.class);
+        // TODO: Må skaffe token med OpenAM-issuer
         assertThat(respons.getStatusCode()).isEqualTo(HttpStatus.CREATED);
 
         // Then Kafka opprett

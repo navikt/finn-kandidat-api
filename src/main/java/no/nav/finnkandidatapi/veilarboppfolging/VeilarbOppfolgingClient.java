@@ -1,6 +1,5 @@
 package no.nav.finnkandidatapi.veilarboppfolging;
 
-import no.nav.finnkandidatapi.sts.STSClient;
 import no.nav.finnkandidatapi.tilgangskontroll.TokenUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -37,7 +36,7 @@ public class VeilarbOppfolgingClient {
 
     private HttpEntity<String> httpEntity() {
         HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(tokenUtils.hentOidcTokenSelvbetjening());
+        headers.setBearerAuth(tokenUtils.hentOidcTokenTokenX());
         return new HttpEntity<>(headers);
     }
 }

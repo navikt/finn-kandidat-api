@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Optional;
 
-import static no.nav.finnkandidatapi.tilgangskontroll.TokenUtils.ISSUER_SELVBETJENING;
+import static no.nav.finnkandidatapi.tilgangskontroll.TokenUtils.ISSUER_TOKENX;
 
-@ProtectedWithClaims(issuer = ISSUER_SELVBETJENING)
+@ProtectedWithClaims(issuer = ISSUER_TOKENX)
 @RestController
 public class PersonbrukersTilretteleggingsbehovController {
 
@@ -32,7 +32,7 @@ public class PersonbrukersTilretteleggingsbehovController {
 
     @GetMapping("/tilretteleggingsbehov")
     public ResponseEntity<Kandidat> hentTilretteleggingsbehov() {
-        String fnr = tokenUtils.hentInnloggetBruker();
+        String fnr = tokenUtils.hentInnloggetBrukersFødselsnummer();
         String aktørId = kandidatService.hentAktørId(fnr);
         Optional<Kandidat> kandidat = kandidatService.hentNyesteKandidat(aktørId);
         return kandidat

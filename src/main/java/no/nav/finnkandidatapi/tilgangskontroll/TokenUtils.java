@@ -2,7 +2,6 @@ package no.nav.finnkandidatapi.tilgangskontroll;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.security.token.support.core.context.TokenValidationContextHolder;
-import no.nav.security.token.support.core.jwt.JwtToken;
 import no.nav.security.token.support.core.jwt.JwtTokenClaims;
 import no.nav.finnkandidatapi.kandidat.Veileder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +15,7 @@ public class TokenUtils {
 
     public final static String ISSUER_ISSO = "isso";
     public final static String ISSUER_OPENAM = "openam";
-    public final static String ISSUER_SELVBETJENING = "selvbetjening";
+    public final static String ISSUER_TOKENX = "tokenx";
 
     final static String NAVIDENT_CLAIM = "NAVident";
     final static String GIVEN_NAME_CLAIM = "given_name";
@@ -64,14 +63,14 @@ public class TokenUtils {
         }
     }
 
-    public String hentInnloggetBruker() {
-        return contextHolder.getTokenValidationContext().getJwtTokenAsOptional(ISSUER_SELVBETJENING)
-                .map(JwtToken::getSubject)
+    public String hentInnloggetBrukersFødselsnummer() {
+        return contextHolder.getTokenValidationContext().getJwtTokenAsOptional(ISSUER_TOKENX)
+                .map(jwtToken -> jwtToken.getJwtTokenClaims().getStringClaim("pid"))
                 .orElseThrow(() -> new TilgangskontrollException("Bruker er ikke innlogget"));
     }
 
-    public String hentOidcTokenSelvbetjening() {
-        return contextHolder.getTokenValidationContext().getJwtToken(ISSUER_SELVBETJENING).getTokenAsString();
+    public String hentOidcTokenTokenX() {
+        return contextHolder.getTokenValidationContext().getJwtToken(ISSUER_TOKENX).getTokenAsString();
     }
 
     private boolean erInnloggetMedAzureAD() {

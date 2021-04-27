@@ -40,7 +40,7 @@ public class PersonbrukersTilretteleggingsbehovControllerTest {
     public void hentTilretteleggingsbehov__skal_returnere_mine_tilretteleggingsbehov() {
         Kandidat kandidat = enKandidat();
 
-        when(tokenUtils.hentInnloggetBruker()).thenReturn(enKandidat().getFnr());
+        when(tokenUtils.hentInnloggetBrukersFødselsnummer()).thenReturn(enKandidat().getFnr());
         when(service.hentAktørId(kandidat.getFnr())).thenReturn(kandidat.getAktørId());
         when(service.hentNyesteKandidat(kandidat.getAktørId())).thenReturn(Optional.of(kandidat));
 

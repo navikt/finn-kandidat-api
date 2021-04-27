@@ -26,6 +26,8 @@ spec:
     paths:
       - kvPath: /serviceuser/data/prod/srvfinn-kandidat-api
         mountPath: /secret/serviceuser
+  tokenx:
+    enabled: true
   webproxy: false
   prometheus:
     enabled: true

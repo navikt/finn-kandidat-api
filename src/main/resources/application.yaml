@@ -62,6 +62,7 @@ abac.url: ${mock.baseUrl}/abac
 aktørregister.url: ${mock.baseUrl}/aktoerregister/api/v1
 veilarboppfolging.url: ${mock.baseUrl}/veilarboppfolging/api
 
+
 SERVICEBRUKER_BRUKERNAVN: na
 SERVICEBRUKER_PASSORD: na
 SERVICEUSER_USERNAME: na
@@ -121,6 +122,7 @@ abac.url: https://wasapp-q0.adeo.no/asm-pdp/authorize
 aktørregister.url: https://app-q0.adeo.no/aktoerregister/api/v1
 unleash.url: https://unleash.nais.io/api/
 veilarboppfolging.url: https://veilarboppfolging-q0.nais.preprod.local/veilarboppfolging/api
+pdl.url: https://pdl-api.dev.intern.nav.no/graphql
 
 ---
 spring:
@@ -172,3 +174,4 @@ abac.url: https://wasapp.adeo.no/asm-pdp/authorize
 aktørregister.url: https://app.adeo.no/aktoerregister/api/v1
 unleash.url: https://unleash.nais.io/api/
 veilarboppfolging.url: https://veilarboppfolging.nais.adeo.no/veilarboppfolging/api
+pdl.url: https://pdl-api.nais.adeo.no/graphql

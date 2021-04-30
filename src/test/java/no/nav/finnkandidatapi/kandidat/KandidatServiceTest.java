@@ -1,7 +1,7 @@
 package no.nav.finnkandidatapi.kandidat;
 
+import no.nav.common.client.aktoroppslag.AktorOppslagClient;
 import no.nav.finnkandidatapi.DateProvider;
-import no.nav.finnkandidatapi.aktørregister.AktørRegisterClient;
 import no.nav.finnkandidatapi.kafka.oppfølgingAvsluttet.OppfølgingAvsluttetMelding;
 import no.nav.finnkandidatapi.metrikker.KandidatEndret;
 import no.nav.finnkandidatapi.metrikker.KandidatOpprettet;
@@ -16,7 +16,6 @@ import org.springframework.context.ApplicationEventPublisher;
 
 import java.time.LocalDateTime;
 import java.util.Date;
-import java.util.List;
 import java.util.Optional;
 
 import static no.nav.finnkandidatapi.TestData.*;
@@ -41,14 +40,14 @@ public class KandidatServiceTest {
     private DateProvider dateProvider;
 
     @Mock
-    private AktørRegisterClient aktørRegisterClient;
+    private AktorOppslagClient aktorOppslagClient;
 
     @Before
     public void setUp() {
         kandidatService = new KandidatService(
                 repository,
                 eventPublisher,
-                aktørRegisterClient,
+                aktorOppslagClient,
                 dateProvider
         );
     }
@@ -218,40 +217,6 @@ public class KandidatServiceTest {
         kandidatService.behandleOppfølgingAvsluttet(new OppfølgingAvsluttetMelding(aktørId, new Date()));
 
         verify(eventPublisher).publishEvent(new KandidatSlettet(slettetKey.get(), aktørId, Brukertype.SYSTEM, datetime));
-    }
-
-    @Test
-    public void hentAktørId__skal_returnere_aktørId() {
-        String fnr = "12345678901";
-        String aktørId = "1856024171652";
-        when(aktørRegisterClient.tilAktørId(fnr)).thenReturn(aktørId);
-
-        String hentetAktørId = kandidatService.hentAktørId(fnr);
-        assertThat(hentetAktørId).isEqualTo(aktørId);
-    }
-
-    @Test(expected = FinnKandidatException.class)
-    public void hentAktørId__skal_kaste_exception_hvis_aktørregister_ikke_finner_aktørId() {
-        String fnr = "12345678901";
-        when(aktørRegisterClient.tilAktørId(fnr)).thenThrow(FinnKandidatException.class);
-        kandidatService.hentAktørId(fnr);
-    }
-
-    @Test
-    public void hentFnr__skal_returnere_fnr() {
-        String aktørId = "1856024171652";
-        String fnr = "12345678901";
-        when(aktørRegisterClient.tilFnr(aktørId)).thenReturn(fnr);
-
-        String hentetFnr = kandidatService.hentFnr(aktørId);
-        assertThat(hentetFnr).isEqualTo(fnr);
-    }
-
-    @Test(expected = FinnKandidatException.class)
-    public void hentFnr__skal_kaste_exception_hvis_aktørregister_ikke_finner_fnr() {
-        String aktørId = "1856024171652";
-        when(aktørRegisterClient.tilFnr(aktørId)).thenThrow(FinnKandidatException.class);
-        kandidatService.hentFnr(aktørId);
     }
 
     @Test

@@ -1,8 +1,8 @@
 package no.nav.finnkandidatapi.vedtak;
 
 
-import io.micrometer.core.instrument.Counter;
-import no.nav.finnkandidatapi.aktørregister.AktørRegisterClient;
+import no.nav.common.client.aktoroppslag.AktorOppslagClient;
+import no.nav.common.types.identer.AktorId;
 import no.nav.finnkandidatapi.kafka.vedtakReplikert.VedtakReplikert;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,15 +27,15 @@ public class VedtakServiceTest {
     private VedtakRepository vedtakRepository;
 
     @Mock
-    private AktørRegisterClient aktørRegisterClient;
+    private AktorOppslagClient aktorOppslagClient;
 
     @Mock
     private ApplicationEventPublisher eventPublisher;
 
     @Before
     public void setUp() {
-        when(aktørRegisterClient.tilAktørId(any())).thenReturn("1000000000001");
-        vedtakService = new VedtakService(vedtakRepository, aktørRegisterClient, eventPublisher);
+        when(aktorOppslagClient.hentAktorId(any())).thenReturn(new AktorId("1000000000001"));
+        vedtakService = new VedtakService(vedtakRepository, aktorOppslagClient, eventPublisher);
     }
 
     @Test

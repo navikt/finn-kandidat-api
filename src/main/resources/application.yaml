@@ -87,8 +87,8 @@ spring:
         location: ${javax.net.ssl.trustStore}
         password: ${javax.net.ssl.trustStorePassword}
 
-oppfolging-avsluttet.topic: aapen-fo-endringPaaAvsluttOppfolging-v1-q1
-arbeidssoker-registrert.topic: aapen-arbeid-arbeidssoker-registrert-q1
+oppfolging-avsluttet.topic: aapen-fo-endringPaaAvsluttOppfolging-v1-q0
+arbeidssoker-registrert.topic: aapen-arbeid-arbeidssoker-registrert-q0
 vedtak-replikert.topic: gg-arena-vedtak-dagpenger-v1-q
 
 database:

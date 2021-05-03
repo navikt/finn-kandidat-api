@@ -59,7 +59,6 @@ mock:
 sts.url: ${mock.baseUrl}/sts
 abac.url: ${mock.baseUrl}/abac
 pdl.url: ${mock.baseUrl}
-veilarboppfolging.url: ${mock.baseUrl}/veilarboppfolging/api
 
 
 SERVICEBRUKER_BRUKERNAVN: na
@@ -117,7 +116,6 @@ nais.cluster-name: ${NAIS_CLUSTER_NAME}
 sts.url: https://security-token-service.nais.preprod.local/rest/v1
 abac.url: https://wasapp-q1.adeo.no/asm-pdp/authorize
 unleash.url: https://unleash.nais.io/api/
-veilarboppfolging.url: https://veilarboppfolging-q1.nais.preprod.local/veilarboppfolging/api
 pdl.url: https://pdl-api.dev.intern.nav.no
 
 ---
@@ -166,5 +164,4 @@ nais.cluster-name: ${NAIS_CLUSTER_NAME}
 sts.url: https://security-token-service.nais.adeo.no/rest/v1
 abac.url: https://wasapp.adeo.no/asm-pdp/authorize
 unleash.url: https://unleash.nais.io/api/
-veilarboppfolging.url: https://veilarboppfolging.nais.adeo.no/veilarboppfolging/api
 pdl.url: https://pdl-api.nais.adeo.no

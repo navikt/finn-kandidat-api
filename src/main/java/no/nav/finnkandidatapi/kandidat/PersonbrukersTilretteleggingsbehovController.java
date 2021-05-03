@@ -1,8 +1,6 @@
 package no.nav.finnkandidatapi.kandidat;
 
 import no.nav.finnkandidatapi.tilgangskontroll.TokenUtils;
-import no.nav.finnkandidatapi.veilarboppfolging.Oppfølgingsstatus;
-import no.nav.finnkandidatapi.veilarboppfolging.VeilarbOppfolgingClient;
 import no.nav.security.token.support.core.api.ProtectedWithClaims;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,16 +16,10 @@ public class PersonbrukersTilretteleggingsbehovController {
 
     private final KandidatService kandidatService;
     private final TokenUtils tokenUtils;
-    private final VeilarbOppfolgingClient veilarbOppfolgingClient;
 
-    public PersonbrukersTilretteleggingsbehovController(
-            KandidatService kandidatService,
-            TokenUtils tokenUtils,
-            VeilarbOppfolgingClient veilarbOppfolgingClient
-    ) {
+    public PersonbrukersTilretteleggingsbehovController(KandidatService kandidatService, TokenUtils tokenUtils) {
         this.kandidatService = kandidatService;
         this.tokenUtils = tokenUtils;
-        this.veilarbOppfolgingClient = veilarbOppfolgingClient;
     }
 
     @GetMapping("/tilretteleggingsbehov")
@@ -38,14 +30,5 @@ public class PersonbrukersTilretteleggingsbehovController {
         return kandidat
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
-    }
-
-    /**
-     * Returnerer om en bruker er registrert som arbeidssøker.
-     */
-    @GetMapping("/oppfolgingsstatus")
-    public ResponseEntity<Oppfølgingsstatus> hentOppfølgingsstatus() {
-        Oppfølgingsstatus oppfølgingsstatus = veilarbOppfolgingClient.hentOppfølgingsstatus();
-        return ResponseEntity.ok(oppfølgingsstatus);
     }
 }

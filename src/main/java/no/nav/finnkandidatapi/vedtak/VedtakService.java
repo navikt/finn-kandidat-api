@@ -107,11 +107,10 @@ public class VedtakService {
 
             if (fantIkkePersonIPdl) {
                 log.error("Fant ikke person i PDL fra vedtak replikert-melding med ID " + vedtakId, e);
+                return null;
             } else {
-                log.error("Funksjonell feil mot aktørregisteret fra vedtak replikert-melding med ID " + vedtakId, e);
+                throw e;
             }
-
-            return null;
         }
     }
 

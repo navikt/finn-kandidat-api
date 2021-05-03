@@ -1,10 +1,11 @@
 package no.nav.finnkandidatapi.vedtak;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.finnkandidatapi.aktørregister.AktørRegisterClient;
+import no.nav.common.client.aktoroppslag.AktorOppslagClient;
+import no.nav.common.client.utils.graphql.GraphqlErrorException;
+import no.nav.common.types.identer.Fnr;
 import no.nav.finnkandidatapi.kafka.vedtakReplikert.VedtakRad;
 import no.nav.finnkandidatapi.kafka.vedtakReplikert.VedtakReplikert;
-import no.nav.finnkandidatapi.kandidat.AktorRegisteretUkjentFnrException;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
@@ -15,14 +16,16 @@ import java.util.Optional;
 public class VedtakService {
 
     private final VedtakRepository vedtakRepository;
-    private final AktørRegisterClient aktørRegisterClient;
+    private final AktorOppslagClient aktorOppslagClient;
     private final ApplicationEventPublisher eventPublisher;
 
-    public VedtakService(VedtakRepository vedtakRepository,
-                         AktørRegisterClient aktørRegisterClient,
-                         ApplicationEventPublisher eventPublisher) {
+    public VedtakService(
+            VedtakRepository vedtakRepository,
+            AktorOppslagClient aktorOppslagClient,
+            ApplicationEventPublisher eventPublisher
+    ) {
         this.vedtakRepository = vedtakRepository;
-        this.aktørRegisterClient = aktørRegisterClient;
+        this.aktorOppslagClient = aktorOppslagClient;
         this.eventPublisher = eventPublisher;
     }
 
@@ -95,16 +98,24 @@ public class VedtakService {
             log.error("Ingen fødselsnummer i Vedtak replikert meldingen, dropper videre behandling. {}", vedtakReplikert);
             return null;
         }
+
         try {
             return hentAktørId(fodselsnr);
-        } catch (AktorRegisteretUkjentFnrException e) {
-            log.error("Funksjonell feil mot aktørregisteret, dropper videre behandling", e);
-            return null;
+        } catch (GraphqlErrorException e) {
+            boolean fantIkkePersonIPdl = e.getErrors().stream().anyMatch(error -> error.getExtensions().getCode().equals("not_found"));
+            String vedtakId = vedtakReplikert.getAfter().getVedtak_id().toString();
+
+            if (fantIkkePersonIPdl) {
+                log.error("Fant ikke person i PDL fra vedtak replikert-melding med ID " + vedtakId + ". Ignorerer melding.", e);
+                return null;
+            } else {
+                throw e;
+            }
         }
     }
 
     private String hentAktørId(String fnr) {
-        return aktørRegisterClient.tilAktørId(fnr);
+        return aktorOppslagClient.hentAktorId(new Fnr(fnr)).get();
     }
 
     private boolean erVedtakAvslått(VedtakRad vedtakRad) {

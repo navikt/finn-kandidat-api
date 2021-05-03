@@ -16,11 +16,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import java.net.URL;
-import java.util.HashMap;
 import java.util.Map;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
 
 @Profile("mock")
 @Component
@@ -34,7 +32,6 @@ public class MockServer implements DisposableBean {
             @Value("${mock.port}") Integer port,
             @Value("${sts.url}") String stsUrl,
             @Value("${abac.url}") String abacUrl,
-            @Value("${aktørregister.url}") String aktørregisterUrl,
             @Value("${veilarboppfolging.url}") String veilarboppfølgingUrl
     ) {
         log.info("Starter mockserver");
@@ -43,7 +40,7 @@ public class MockServer implements DisposableBean {
 
         mockAbac(abacUrl);
         mockKall(stsUrl + "/sts/token", new STSToken("fdg", "asfsdg", 325));
-        mockAktørregister(aktørregisterUrl);
+        mockPdl();
         mockKall(veilarboppfølgingUrl + "/underoppfolging", Oppfølgingsstatus.builder().underOppfolging(true).build());
         mockKall(veilarboppfølgingUrl + "/underoppfolging?fnr=01065500791", Oppfølgingsstatus.builder().underOppfolging(false).build());
 
@@ -53,7 +50,7 @@ public class MockServer implements DisposableBean {
     private void mockAbac(String abacUrl) {
         String path = getPath(abacUrl);
         server.stubFor(
-                post(WireMock.urlPathEqualTo(path)).willReturn(WireMock.aResponse()
+                post(urlPathEqualTo(path)).willReturn(WireMock.aResponse()
                         .withHeader("Content-Type", "application/json")
                         .withStatus(HttpStatus.OK.value())
                         .withBody("{\n" +
@@ -65,41 +62,29 @@ public class MockServer implements DisposableBean {
         );
     }
 
-    private void mockAktørregister(String aktørregisterUrl) {
-        Map<String, StringValuePattern> aktørId = new HashMap<>();
-        aktørId.put("identgruppe", WireMock.equalTo("AktoerId"));
+    private void mockPdl() {
 
-        mockKall(aktørregisterUrl + "/identer" + "?identgruppe=AktoerId&gjeldende=true",
-                aktørId,
-                "{\n" +
-                " \"01065500791\": {\n" +
-                "   \"identer\": [\n" +
-                "     {\n" +
-                "       \"ident\": \"1856024171652\",\n" +
-                "       \"identgruppe\": \"AktoerId\",\n" +
-                "       \"gjeldende\": true\n" +
-                "     }\n" +
-                "   ],\n" +
-                "   \"feilmelding\": null\n" +
-                " }\n" +
-                "}");
+        // fnr til aktørId
+        server.stubFor(
+                post(urlPathEqualTo("/graphql"))
+                        .withRequestBody(equalToJson("{\"query\":\"query($ident: ID!) {    hentIdenter(ident: $ident, grupper: [AKTORID], historikk: false) {        identer {            ident        }    }}\",\"variables\":{\"ident\":\"01065500791\"}}"))
+                        .willReturn(WireMock.aResponse()
+                                .withHeader("Content-Type", "application/json")
+                                .withStatus(HttpStatus.OK.value())
+                                .withBody("{\"data\": {\"hentIdenter\": {\"identer\": [{\"ident\": \"1856024171652\"}]}}}")
+                        )
+        );
 
-        Map<String, StringValuePattern> norskIdent = new HashMap<>();
-        norskIdent.put("identgruppe", WireMock.equalTo("NorskIdent"));
-        mockKall(aktørregisterUrl + "/identer" + "?identgruppe=NorskIdent&gjeldende=true",
-                norskIdent,
-                "{\n" +
-                " \"1856024171652\": {\n" +
-                "   \"identer\": [\n" +
-                "     {\n" +
-                "       \"ident\": \"01065500791\",\n" +
-                "       \"identgruppe\": \"NorskIdent\",\n" +
-                "       \"gjeldende\": true\n" +
-                "     }\n" +
-                "   ],\n" +
-                "   \"feilmelding\": null\n" +
-                " }\n" +
-                "}");
+        // aktørId til fnr
+        server.stubFor(
+                post(urlPathEqualTo("/graphql"))
+                        .withRequestBody(equalToJson("{\"query\":\"query($ident: ID!) {    hentIdenter(ident: $ident, grupper: [FOLKEREGISTERIDENT], historikk: false) {        identer {            ident        }    }}\",\"variables\":{\"ident\":\"1856024171652\"}}"))
+                        .willReturn(WireMock.aResponse()
+                                .withHeader("Content-Type", "application/json")
+                                .withStatus(HttpStatus.OK.value())
+                                .withBody("{\"data\": {\"hentIdenter\": {\"identer\": [{\"ident\": \"01065500791\"}]}}}")
+                        )
+        );
     }
 
     @SneakyThrows
@@ -111,18 +96,7 @@ public class MockServer implements DisposableBean {
     private void mockKall(String url, String body) {
         String path = getPath(url);
         server.stubFor(
-                get(WireMock.urlPathEqualTo(path)).willReturn(WireMock.aResponse()
-                        .withHeader("Content-Type", "application/json")
-                        .withStatus(HttpStatus.OK.value())
-                        .withBody(body)
-                )
-        );
-    }
-
-    private void mockKall(String url, Map<String, StringValuePattern> params, String body) {
-        String path = getPath(url);
-        server.stubFor(
-                get(WireMock.urlPathEqualTo(path)).withQueryParams(params).willReturn(WireMock.aResponse()
+                get(urlPathEqualTo(path)).willReturn(WireMock.aResponse()
                         .withHeader("Content-Type", "application/json")
                         .withStatus(HttpStatus.OK.value())
                         .withBody(body)

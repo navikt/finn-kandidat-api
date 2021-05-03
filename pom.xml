@@ -229,7 +229,7 @@
         <dependency>
             <groupId>no.nav.common</groupId>
             <artifactId>client</artifactId>
-            <version>2.2021.04.28_15.11-2e99e9de5b32</version>
+            <version>2.2021.05.03_09.21-91f2fc8f059e</version>
         </dependency>
     </dependencies>
 

@@ -2,10 +2,10 @@ package no.nav.finnkandidatapi.vedtak;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.common.client.aktoroppslag.AktorOppslagClient;
+import no.nav.common.client.utils.graphql.GraphqlErrorException;
 import no.nav.common.types.identer.Fnr;
 import no.nav.finnkandidatapi.kafka.vedtakReplikert.VedtakRad;
 import no.nav.finnkandidatapi.kafka.vedtakReplikert.VedtakReplikert;
-import no.nav.finnkandidatapi.kandidat.AktorRegisteretUkjentFnrException;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
@@ -98,10 +98,18 @@ public class VedtakService {
             log.error("Ingen fødselsnummer i Vedtak replikert meldingen, dropper videre behandling. {}", vedtakReplikert);
             return null;
         }
+
         try {
             return hentAktørId(fodselsnr);
-        } catch (AktorRegisteretUkjentFnrException e) {
-            log.error("Funksjonell feil mot aktørregisteret, dropper videre behandling", e);
+        } catch (GraphqlErrorException e) {
+            boolean fantIkkePersonIPdl = e.getErrors().stream().anyMatch(error -> error.getExtensions().getCode().equals("not_found"));
+
+            if (fantIkkePersonIPdl) {
+                log.error("Fant ikke person i PDL fra vedtak replikert-melding", e);
+            } else {
+                log.error("Funksjonell feil mot aktørregisteret, dropper videre behandling", e);
+            }
+
             return null;
         }
     }

@@ -1,8 +1,10 @@
 package no.nav.finnkandidatapi.kandidat;
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.common.client.aktoroppslag.AktorOppslagClient;
+import no.nav.common.types.identer.AktorId;
+import no.nav.common.types.identer.Fnr;
 import no.nav.finnkandidatapi.DateProvider;
-import no.nav.finnkandidatapi.aktørregister.AktørRegisterClient;
 import no.nav.finnkandidatapi.kafka.oppfølgingAvsluttet.OppfølgingAvsluttetMelding;
 import no.nav.finnkandidatapi.metrikker.KandidatEndret;
 import no.nav.finnkandidatapi.metrikker.KandidatOpprettet;
@@ -11,7 +13,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -20,18 +21,18 @@ public class KandidatService {
 
     private final KandidatRepository kandidatRepository;
     private final ApplicationEventPublisher eventPublisher;
-    private final AktørRegisterClient aktørRegisterClient;
+    private final AktorOppslagClient aktorOppslagClient;
     private final DateProvider dateProvider;
 
     public KandidatService(
             KandidatRepository kandidatRepository,
             ApplicationEventPublisher eventPublisher,
-            AktørRegisterClient aktørRegisterClient,
+            AktorOppslagClient aktorOppslagClient,
             DateProvider dateProvider
     ) {
         this.kandidatRepository = kandidatRepository;
         this.eventPublisher = eventPublisher;
-        this.aktørRegisterClient = aktørRegisterClient;
+        this.aktorOppslagClient = aktorOppslagClient;
         this.dateProvider = dateProvider;
     }
 
@@ -80,11 +81,11 @@ public class KandidatService {
     }
 
     public String hentAktørId(String fnr) {
-        return aktørRegisterClient.tilAktørId(fnr);
+        return aktorOppslagClient.hentAktorId(new Fnr(fnr)).get();
     }
 
     public String hentFnr(String aktørId) {
-        return aktørRegisterClient.tilFnr(aktørId);
+        return aktorOppslagClient.hentFnr(new AktorId(aktørId)).get();
     }
 
     Optional<Integer> slettKandidat(String aktørId, Veileder innloggetVeileder) {

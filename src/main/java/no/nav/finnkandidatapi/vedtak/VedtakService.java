@@ -106,7 +106,7 @@ public class VedtakService {
             String vedtakId = vedtakReplikert.getAfter().getVedtak_id().toString();
 
             if (fantIkkePersonIPdl) {
-                log.error("Fant ikke person i PDL fra vedtak replikert-melding med ID " + vedtakId, e);
+                log.error("Fant ikke person i PDL fra vedtak replikert-melding med ID " + vedtakId + ". Ignorerer melding.", e);
                 return null;
             } else {
                 throw e;

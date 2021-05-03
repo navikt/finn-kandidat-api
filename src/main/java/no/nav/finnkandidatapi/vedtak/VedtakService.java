@@ -103,11 +103,12 @@ public class VedtakService {
             return hentAktørId(fodselsnr);
         } catch (GraphqlErrorException e) {
             boolean fantIkkePersonIPdl = e.getErrors().stream().anyMatch(error -> error.getExtensions().getCode().equals("not_found"));
+            String vedtakId = vedtakReplikert.getAfter().getVedtak_id().toString();
 
             if (fantIkkePersonIPdl) {
-                log.error("Fant ikke person i PDL fra vedtak replikert-melding", e);
+                log.error("Fant ikke person i PDL fra vedtak replikert-melding med ID " + vedtakId, e);
             } else {
-                log.error("Funksjonell feil mot aktørregisteret, dropper videre behandling", e);
+                log.error("Funksjonell feil mot aktørregisteret fra vedtak replikert-melding med ID " + vedtakId, e);
             }
 
             return null;

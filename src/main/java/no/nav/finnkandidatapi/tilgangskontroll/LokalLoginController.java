@@ -44,19 +44,6 @@ public class LokalLoginController {
         return server.issueToken(issuerId, subject, audience, claims).serialize();
     }
 
-    @GetMapping("/local/ekstern-bruker-cookie")
-    public void hentCookieMedEksternBrukerJwtTokenClaims(HttpServletResponse response) {
-        Cookie cookie = new Cookie("selvbetjening-idtoken", eksternBrukerToken());
-        cookie.setPath("/");
-        response.addCookie(cookie);
-    }
-
-    private String eksternBrukerToken(){
-        String issuerId = "selvbetjening";
-        String subject = "28037639429";
-        return server.issueToken(issuerId, subject).serialize();
-    }
-
     @GetMapping("/local/veileder-openam-cookie")
     public void hentCookieMedVeilederOpenAMJwtTokenClaims(HttpServletResponse response) {
         Cookie cookie = new Cookie("ID_token", openAMToken());

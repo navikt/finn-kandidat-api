@@ -3,10 +3,8 @@ package no.nav.finnkandidatapi;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
-import com.github.tomakehurst.wiremock.matching.StringValuePattern;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.finnkandidatapi.veilarboppfolging.Oppfølgingsstatus;
 import no.nav.finnkandidatapi.sts.STSToken;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import java.net.URL;
-import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 
@@ -31,8 +28,7 @@ public class MockServer implements DisposableBean {
     MockServer(
             @Value("${mock.port}") Integer port,
             @Value("${sts.url}") String stsUrl,
-            @Value("${abac.url}") String abacUrl,
-            @Value("${veilarboppfolging.url}") String veilarboppfølgingUrl
+            @Value("${abac.url}") String abacUrl
     ) {
         log.info("Starter mockserver");
 
@@ -41,8 +37,6 @@ public class MockServer implements DisposableBean {
         mockAbac(abacUrl);
         mockKall(stsUrl + "/sts/token", new STSToken("fdg", "asfsdg", 325));
         mockPdl();
-        mockKall(veilarboppfølgingUrl + "/underoppfolging", Oppfølgingsstatus.builder().underOppfolging(true).build());
-        mockKall(veilarboppfølgingUrl + "/underoppfolging?fnr=01065500791", Oppfølgingsstatus.builder().underOppfolging(false).build());
 
         server.start();
     }

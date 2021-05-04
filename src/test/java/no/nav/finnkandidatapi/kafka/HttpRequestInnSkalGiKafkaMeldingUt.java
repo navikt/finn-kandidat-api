@@ -68,7 +68,6 @@ public class HttpRequestInnSkalGiKafkaMeldingUt {
 
         // When HTTP opprett
         ResponseEntity<String> respons = restTemplate.postForEntity(uri, dto, String.class);
-        // TODO: Må skaffe token med OpenAM-issuer
         assertThat(respons.getStatusCode()).isEqualTo(HttpStatus.CREATED);
 
         // Then Kafka opprett

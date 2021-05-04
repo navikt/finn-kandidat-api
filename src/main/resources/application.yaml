@@ -39,14 +39,13 @@ no.nav.security.jwt:
     discoveryurl: http://localhost:${mock-oauth2-server.port}/isso/.well-known/openid-configuration
     accepted_audience: default
     cookiename: isso-idtoken
-  issuer.selvbetjening:
-    discoveryurl: http://localhost:${mock-oauth2-server.port}/selvbetjening/.well-known/openid-configuration
-    accepted_audience: default
-    cookiename: selvbetjening-idtoken
   issuer.openam:
     discoveryurl: http://localhost:${mock-oauth2-server.port}/openam/.well-known/openid-configuration
     accepted_audience: default
     cookiename: ID_token
+  issuer.tokenx:
+    discoveryurl: http://localhost:${mock-oauth2-server.port}/tokenx/.well-known/openid-configuration
+    accepted_audience: default
 
 
 tilgangskontroll.tilbakemeldinger: X12345,Y23456,Z34567,X123456
@@ -60,7 +59,6 @@ mock:
 sts.url: ${mock.baseUrl}/sts
 abac.url: ${mock.baseUrl}/abac
 pdl.url: ${mock.baseUrl}
-veilarboppfolging.url: ${mock.baseUrl}/veilarboppfolging/api
 
 
 SERVICEBRUKER_BRUKERNAVN: na
@@ -107,11 +105,9 @@ no.nav.security.jwt:
     discoveryurl: https://isso-q.adeo.no/isso/oauth2/.well-known/openid-configuration
     accepted_audience: veilarblogin-q0, veilarblogin-q1
     cookiename: ID_token
-  issuer.selvbetjening:
-    discoveryurl: ${LOGINSERVICE_IDPORTEN_DISCOVERY_URL}
-    accepted_audience: ${LOGINSERVICE_IDPORTEN_AUDIENCE}
-    cookiename: selvbetjening-idtoken
-    proxyurl: http://webproxy.nais:8088
+  issuer.tokenx:
+    discoveryurl: ${TOKEN_X_WELL_KNOWN_URL}
+    accepted_audience: ${TOKEN_X_CLIENT_ID}
 
 tilgangskontroll.tilbakemeldinger: ${TILGANGSKONTROLL_TILBAKEMELDINGER}
 tilgangskontroll.republisering: ${TILGANGSKONTROLL_REPUBLISERING}
@@ -120,7 +116,6 @@ nais.cluster-name: ${NAIS_CLUSTER_NAME}
 sts.url: https://security-token-service.nais.preprod.local/rest/v1
 abac.url: https://wasapp-q1.adeo.no/asm-pdp/authorize
 unleash.url: https://unleash.nais.io/api/
-veilarboppfolging.url: https://veilarboppfolging-q1.nais.preprod.local/veilarboppfolging/api
 pdl.url: https://pdl-api.dev.intern.nav.no
 
 ---
@@ -158,11 +153,9 @@ no.nav.security.jwt:
     discoveryurl: https://isso.adeo.no/isso/oauth2/.well-known/openid-configuration
     accepted_audience: veilarblogin-p, modiabrukerdialog-p, fpsak-frontend-p
     cookiename: ID_token
-  issuer.selvbetjening:
-    discoveryurl: ${LOGINSERVICE_IDPORTEN_DISCOVERY_URL}
-    accepted_audience: ${LOGINSERVICE_IDPORTEN_AUDIENCE}
-    cookiename: selvbetjening-idtoken
-    proxyurl: http://webproxy.nais:8088
+  issuer.tokenx:
+    discoveryurl: ${TOKEN_X_WELL_KNOWN_URL}
+    accepted_audience: ${TOKEN_X_CLIENT_ID}
 
 tilgangskontroll.tilbakemeldinger: ${TILGANGSKONTROLL_TILBAKEMELDINGER}
 tilgangskontroll.republisering: ${TILGANGSKONTROLL_REPUBLISERING}
@@ -171,5 +164,4 @@ nais.cluster-name: ${NAIS_CLUSTER_NAME}
 sts.url: https://security-token-service.nais.adeo.no/rest/v1
 abac.url: https://wasapp.adeo.no/asm-pdp/authorize
 unleash.url: https://unleash.nais.io/api/
-veilarboppfolging.url: https://veilarboppfolging.nais.adeo.no/veilarboppfolging/api
 pdl.url: https://pdl-api.nais.adeo.no

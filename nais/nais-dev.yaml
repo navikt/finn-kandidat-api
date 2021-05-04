@@ -12,6 +12,7 @@ spec:
   ingresses:
     - https://arbeidsgiver.nais.preprod.local/finn-kandidat-api/
     - https://app-q1.adeo.no/finn-kandidat-api/
+    - https://finn-kandidat-api.dev-fss-pub.nais.io/finn-kandidat-api/
   liveness:
     path: /finn-kandidat-api/internal/actuator/health
     initialDelay: 90
@@ -37,5 +38,3 @@ spec:
   env:
     - name: SPRING_PROFILES_ACTIVE
       value: dev
-  envFrom:
-    - configmap: loginservice-idporten

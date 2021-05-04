@@ -17,7 +17,7 @@ import java.util.Map;
 
 import static no.nav.finnkandidatapi.TestData.*;
 import static no.nav.finnkandidatapi.tilgangskontroll.TokenUtils.ISSUER_ISSO;
-import static no.nav.finnkandidatapi.tilgangskontroll.TokenUtils.ISSUER_SELVBETJENING;
+import static no.nav.finnkandidatapi.tilgangskontroll.TokenUtils.ISSUER_TOKENX;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
@@ -52,22 +52,27 @@ public class TokenUtilsTest {
     @Test
     public void hentInnloggetBruker__skal_returnere_riktig_bruker() {
         String fnr = etFnr();
-        værInnloggetMedSelvBetjening(fnr);
-        assertThat(tokenUtils.hentInnloggetBruker()).isEqualTo(fnr);
+        værInnloggetMedIdPorten(fnr);
+        assertThat(tokenUtils.hentInnloggetBrukersFødselsnummer()).isEqualTo(fnr);
     }
 
     @Test
     public void hentInnloggetBruker__skal_kaste_exception_hvis_ikke_innlogget() {
         værUinnlogget();
         assertThrows(TilgangskontrollException.class, () ->
-                tokenUtils.hentInnloggetBruker()
+                tokenUtils.hentInnloggetBrukersFødselsnummer()
         );
     }
 
-    private void værInnloggetMedSelvBetjening(String fnr) {
-        String encodedToken = oAuth2Server.issueToken(ISSUER_ISSO, fnr).serialize();
+    private void værInnloggetMedIdPorten(String fnr) {
+        String encodedToken = oAuth2Server.issueToken(
+                ISSUER_TOKENX,
+                fnr,
+                "default",
+                Map.of("pid", fnr)
+        ).serialize();
         JwtToken jwtToken = new JwtToken(encodedToken);
-        TokenValidationContext context = new TokenValidationContext(Map.of(ISSUER_SELVBETJENING, jwtToken));
+        TokenValidationContext context = new TokenValidationContext(Map.of(ISSUER_TOKENX, jwtToken));
         contextHolder.setTokenValidationContext(context);
 
         when(contextHolder.getTokenValidationContext()).thenReturn(context);

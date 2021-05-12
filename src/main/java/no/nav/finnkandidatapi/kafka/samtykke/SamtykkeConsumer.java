@@ -17,10 +17,10 @@ public class SamtykkeConsumer {
     }
 
     @KafkaListener(
-            topics = "aapen-pam-samtykke-endret-v1",
+            topics = "teampam.samtykke-status-1",
             groupId = "finn-kandidat-samtykke-v4",
             clientIdPrefix = "samtykke",
-            containerFactory = "kafkaListenerContainerFactory"
+            containerFactory = "aivenKafkaListenerContainerFactory"
     )
     public void konsumerMelding(ConsumerRecord<String, String> melding) {
         String json = melding.value();

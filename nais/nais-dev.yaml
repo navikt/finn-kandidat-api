@@ -24,6 +24,8 @@ spec:
     paths:
       - kvPath: /serviceuser/data/dev/srvfinn-kandidat-api
         mountPath: /secret/serviceuser
+  kafka:
+    pool: nav-dev
   tokenx:
     enabled: true
   webproxy: false

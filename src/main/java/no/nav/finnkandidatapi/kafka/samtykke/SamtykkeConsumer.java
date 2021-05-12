@@ -18,7 +18,7 @@ public class SamtykkeConsumer {
 
     @KafkaListener(
             topics = "teampam.samtykke-status-1",
-            groupId = "finn-kandidat-samtykke-v4",
+            groupId = "finn-kandidat-samtykke-v5",
             clientIdPrefix = "samtykke",
             containerFactory = "aivenKafkaListenerContainerFactory"
     )

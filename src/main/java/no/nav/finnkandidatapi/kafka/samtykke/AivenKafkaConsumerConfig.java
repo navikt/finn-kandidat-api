@@ -39,7 +39,7 @@ public class AivenKafkaConsumerConfig {
 
     @Bean
     public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, String>> aivenKafkaListenerContainerFactory(
-            @Qualifier("consumerFactory") ConsumerFactory<String, String> consumerFactory
+            @Qualifier("aivenConsumerFactory") ConsumerFactory<String, String> consumerFactory
     ) {
         ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory);
@@ -54,7 +54,7 @@ public class AivenKafkaConsumerConfig {
     }
 
     @Bean
-    public ConsumerFactory<String, String> consumerFactory(KafkaProperties properties) {
+    public ConsumerFactory<String, String> aivenConsumerFactory(KafkaProperties properties) {
         Map<String, Object> consumerProperties = properties.buildConsumerProperties();
 
         consumerProperties.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SSL");

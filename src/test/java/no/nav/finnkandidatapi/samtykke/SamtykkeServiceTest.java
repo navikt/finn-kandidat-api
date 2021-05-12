@@ -34,7 +34,6 @@ public class SamtykkeServiceTest {
         SamtykkeMelding samtykkeMelding = new SamtykkeMelding(
                 aktorId,
                 "27075349594",
-                "SAMTYKKE_OPPRETTET",
                 "CV_HJEMMEL",
                 LocalDateTime.now(),
                 null);
@@ -49,7 +48,6 @@ public class SamtykkeServiceTest {
         SamtykkeMelding samtykkeMelding = new SamtykkeMelding(
                 aktorId,
                 "27075349594",
-                "SAMTYKKE_OPPRETTET",
                 "ARBEIDSGIVER",
                 LocalDateTime.now(),
                 null);
@@ -64,7 +62,6 @@ public class SamtykkeServiceTest {
         SamtykkeMelding samtykkeMelding = new SamtykkeMelding(
                 aktorId,
                 "27075349594",
-                "SAMTYKKE_OPPRETTET",
                 "CV_HJEMMEL",
                 LocalDateTime.now(),
                 null);
@@ -90,7 +87,6 @@ public class SamtykkeServiceTest {
         SamtykkeMelding samtykkeMelding = new SamtykkeMelding(
                 aktorId,
                 "27075349594",
-                "SAMTYKKE_SLETTET",
                 "CV_HJEMMEL",
                 null,
                 LocalDateTime.now()
@@ -119,7 +115,6 @@ public class SamtykkeServiceTest {
         SamtykkeMelding samtykke = new SamtykkeMelding(
                 aktorId,
                 "27075349594",
-                "SAMTYKKE_OPPRETTET",
                 "CV_HJEMMEL",
                 LocalDateTime.now(),
                 null);
@@ -145,7 +140,6 @@ public class SamtykkeServiceTest {
         SamtykkeMelding samtykkeMelding = new SamtykkeMelding(
                 aktorId,
                 "27075349594",
-                "SAMTYKKE_OPPRETTET",
                 "CV_HJEMMEL",
                 null,
                 null);

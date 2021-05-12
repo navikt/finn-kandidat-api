@@ -27,8 +27,6 @@ public class SamtykkeMelding {
 
     private String fnr;
 
-    private String meldingType;
-
     private String ressurs;
 
     @JsonDeserialize(using = CustomLocalDateTimeDeserializer.class)
@@ -45,6 +43,13 @@ public class SamtykkeMelding {
         } catch (IOException e) {
             throw new RuntimeException("Kunne ikke deserialisere samtykkemelding", e);
         }
+    }
+
+    public String getMeldingType() {
+        if(slettetDato != null)
+            return "SAMTYKKE_SLETTET";
+        else
+            return "SAMTYKKE_OPPRETTET";
     }
 
 }

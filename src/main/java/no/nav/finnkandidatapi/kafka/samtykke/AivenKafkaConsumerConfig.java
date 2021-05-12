@@ -1,6 +1,7 @@
 package no.nav.finnkandidatapi.kafka.samtykke;
 
 import lombok.val;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.config.SslConfigs;
@@ -25,16 +26,16 @@ import java.util.Map;
 @Configuration
 public class AivenKafkaConsumerConfig {
 
-    @Value("${KAFKA_BROKERS:http://dummyurl}")
+    @Value("${KAFKA_BROKERS:http://dummyurl.com:0000}")
     private String brokersUrl;
 
-    @Value("${KAFKA_KEYSTORE_PATH:/dev/zero}")
+    @Value("${KAFKA_KEYSTORE_PATH:}")
     private String keystorePath;
 
-    @Value("${KAFKA_TRUSTSTORE_PATH:/dev/zero}")
+    @Value("${KAFKA_TRUSTSTORE_PATH:}")
     private String truststorePath;
 
-    @Value("${KAFKA_CREDSTORE_PASSWORD:pwd}")
+    @Value("${KAFKA_CREDSTORE_PASSWORD:}")
     private String credstorePassword;
 
     @Bean
@@ -60,10 +61,12 @@ public class AivenKafkaConsumerConfig {
         consumerProperties.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SSL");
         consumerProperties.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, brokersUrl);
 
-        consumerProperties.put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, credstorePassword);
-        consumerProperties.put(SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG, credstorePassword);
-        consumerProperties.put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, truststorePath);
-        consumerProperties.put(SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG, keystorePath);
+        if(StringUtils.isNotEmpty(keystorePath)) {
+            consumerProperties.put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, credstorePassword);
+            consumerProperties.put(SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG, credstorePassword);
+            consumerProperties.put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, truststorePath);
+            consumerProperties.put(SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG, keystorePath);
+        }
 
         consumerProperties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         consumerProperties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);

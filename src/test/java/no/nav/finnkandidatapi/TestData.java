@@ -275,22 +275,15 @@ public class TestData {
      * <p>
      * Metoden gir timestamps med millisekunds presisjon hvor nanosekunder er trunkert. Nødvendig fordi ulike
      * maskiner og operativsystemer har ulik støtte for nanoskeunders presisjon. Det har ført til at tester har vært
-     * grønne på Mac og røde på Windows. Se
+     * grønne på Mac og røde på Windows og Linux. Se
      * https://stackoverflow.com/questions/52029920/localdatetime-now-has-different-levels-of-precision-on-windows-and-mac-machine
      * </p><p>
      * Bruker metodenavnet now() for å gjøre det vanskeligere å bruke java.time.now() ved en feiltagelse.
-     * </p><p>
-     * Returnert timestamp vil være garantert unik også ved flere kall innenfor samme millisekund, fordi metoden pauser tråden i ett millisekund.
      * </p>
      *
      * @return Et unikt tidspunkt nært nå med millisekunders presisisjon, uten nanosekunder.
      */
-    public static LocalDateTime now() {
-        try {
-            Thread.sleep(1L); // Sikre unike millisekund timestamps
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+    public static synchronized LocalDateTime now() {
         return LocalDateTime.now(milliesClock);
     }
 }

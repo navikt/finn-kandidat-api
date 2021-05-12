@@ -12,6 +12,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static no.nav.finnkandidatapi.TestData.now;
 import static org.junit.Assert.*;
 
 
@@ -34,7 +35,7 @@ public class SamtykkeRepositoryTest {
         String foedselsnummer = "17051422877";
         String gjelder = "CV_HJEMMEL";
         String endring = "SAMTYKKE_OPPRETTET";
-        LocalDateTime opprettetTidspunkt = LocalDateTime.now();
+        LocalDateTime opprettetTidspunkt = now();
 
         Samtykke samtykke = new Samtykke(aktoerId, foedselsnummer, gjelder, endring, opprettetTidspunkt);
         samtykkeRepository.lagreSamtykke(samtykke);
@@ -56,7 +57,7 @@ public class SamtykkeRepositoryTest {
         String foedselsnummer = null;
         String gjelder = "CV_HJEMMEL";
         String endring = "SAMTYKKE_OPPRETTET";
-        LocalDateTime opprettetTidspunkt = LocalDateTime.now();
+        LocalDateTime opprettetTidspunkt = now();
 
         Samtykke samtykke = new Samtykke(aktoerId, foedselsnummer, gjelder, endring, opprettetTidspunkt);
         samtykkeRepository.lagreSamtykke(samtykke);
@@ -74,7 +75,7 @@ public class SamtykkeRepositoryTest {
 
     @Test
     public void skalKunneOppdatereSamtykke() {
-        LocalDateTime opprettetTidspunkt = LocalDateTime.now().minusDays(1);
+        LocalDateTime opprettetTidspunkt = now().minusDays(1);
         LocalDateTime opprettetTidspunktOppdatert = opprettetTidspunkt.plusDays(1);
 
         String aktoerId = "232432532";

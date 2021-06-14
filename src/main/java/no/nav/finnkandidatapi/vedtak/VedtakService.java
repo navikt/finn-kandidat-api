@@ -39,27 +39,14 @@ public class VedtakService {
             return;
         }
 
-        if (vedtakReplikert.getOp_type().equalsIgnoreCase("I")) {
-            if (erVedtakAvslått(vedtakReplikert.getAfter())) return;
+        if (vedtakReplikert.getOp_type().equalsIgnoreCase("I") && erVedtakGodkjent(vedtakReplikert.getAfter())) {
             behandleInsert(vedtakReplikert, aktørId);
-
-        } else if (vedtakReplikert.getOp_type().equalsIgnoreCase("U")) {
-            if (erVedtakAvslått(vedtakReplikert.getAfter())) return;
+        } else if (vedtakReplikert.getOp_type().equalsIgnoreCase("U") && erVedtakGodkjent(vedtakReplikert.getAfter())) {
             behandleUpdate(vedtakReplikert, aktørId);
-
-        } else if (vedtakReplikert.getOp_type().equalsIgnoreCase("D")) {
-            if (erVedtakAvslått(vedtakReplikert.getBefore())) return;
+        } else if (vedtakReplikert.getOp_type().equalsIgnoreCase("D") && erVedtakGodkjent(vedtakReplikert.getBefore())) {
             behandleDelete(vedtakReplikert, aktørId);
-
         } else {
-            log.warn("Ukjent operasjon {}", vedtakReplikert.getOp_type());
-            if (vedtakReplikert.getAfter() != null) {
-                behandleUpdate(vedtakReplikert, aktørId);
-            } else if (vedtakReplikert.getBefore() != null) {
-                behandleDelete(vedtakReplikert, aktørId);
-            } else {
-                log.error("Hverken before eller after er satt for {}", vedtakReplikert);
-            }
+            log.info("Mottatt  melding som vi forkaster opType:{} before:{} after:{}", vedtakReplikert.getOp_type(), vedtakReplikert.getBefore(), vedtakReplikert.getAfter());
         }
     }
 
@@ -118,7 +105,7 @@ public class VedtakService {
         return aktorOppslagClient.hentAktorId(new Fnr(fnr)).get();
     }
 
-    private boolean erVedtakAvslått(VedtakRad vedtakRad) {
-        return vedtakRad.getUtfallkode() != null && vedtakRad.getUtfallkode().equals("NEI");
+    private boolean erVedtakGodkjent(VedtakRad vedtakRad) {
+        return vedtakRad.getUtfallkode() != null && vedtakRad.getUtfallkode().equals("JA");
     }
 }

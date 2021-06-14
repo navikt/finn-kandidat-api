@@ -117,6 +117,7 @@ sts.url: https://security-token-service.nais.preprod.local/rest/v1
 abac.url: https://wasapp-q1.adeo.no/asm-pdp/authorize
 unleash.url: https://unleash.nais.io/api/
 pdl.url: https://pdl-api.dev.intern.nav.no
+arbeidssoker.url: https://pam-cv-api.dev.adeo.no
 
 ---
 spring:
@@ -165,3 +166,4 @@ sts.url: https://security-token-service.nais.adeo.no/rest/v1
 abac.url: https://wasapp.adeo.no/asm-pdp/authorize
 unleash.url: https://unleash.nais.io/api/
 pdl.url: https://pdl-api.nais.adeo.no
+arbeidssoker.url: https://pam-cv-api.nais.adeo.no

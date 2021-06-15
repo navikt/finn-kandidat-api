@@ -98,8 +98,8 @@ public class SynlighetController {
 
     @RequiredArgsConstructor
     private static class HarCvOgJobbønskerResponse {
-        private final boolean harCv;
-        private final boolean harJobbprofil;
+        public final boolean harCv;
+        public final boolean harJobbprofil;
 
         static ResponseEntity<HarCvOgJobbønskerResponse> manglerCv() {
             return harCvOgJobbønskerResponse(false, false);
@@ -114,7 +114,9 @@ public class SynlighetController {
         }
 
         private static ResponseEntity<HarCvOgJobbønskerResponse> response(HarCvOgJobbønskerResponse response) {
-            return new ResponseEntity<>(response, HttpStatus.OK);
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(response);
         }
     }
 

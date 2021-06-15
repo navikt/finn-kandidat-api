@@ -1,7 +1,5 @@
 package no.nav.finnkandidatapi.synlighet;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -35,11 +33,10 @@ public class SynlighetController {
     private final String arbeidssokerUrl;
     private final STSClient stsClient;
     private final AktorOppslagClient aktorOppslagClient;
-    private static ObjectMapper objectMapper = new ObjectMapper();
 
     public SynlighetController(
             TilgangskontrollService tilgangskontroll,
-            @Value("arbeidssoker.url") String arbeidssokerUrl,
+            @Value("${arbeidssoker.url}") String arbeidssokerUrl,
             STSClient stsClient,
             AktorOppslagClient aktorOppslagClient
     ) {
@@ -50,8 +47,8 @@ public class SynlighetController {
     }
 
     @GetMapping("/{aktørId}")
-    public ResponseEntity<?> harCvOgJobbønsker(@PathVariable("aktørId") String aktørId) throws JsonProcessingException {
-        loggBrukAvEndepunkt("synlighet");
+    public ResponseEntity<?> harCvOgJobbønsker(@PathVariable("aktørId") String aktørId) {
+        loggBrukAvEndepunkt();
         tilgangskontroll.sjekkLesetilgangTilKandidat(aktørId);
 
         Fnr fnr = aktorOppslagClient.hentFnr(new AktorId(aktørId));
@@ -60,7 +57,7 @@ public class SynlighetController {
 
         try {
             ResponseEntity<ArbeidssøkerResponse> response = restTemplate.exchange(
-                    arbeidssokerUrl + "/rest/v2/arbeidssoker/" + fnr.get() + "?erManuell=true", // TODO Sjekk at dette er greit
+                    arbeidssokerUrl + "/rest/v2/arbeidssoker/" + fnr.get() + "?erManuell=false",
                     HttpMethod.GET,
                     bearerToken(),
                     ArbeidssøkerResponse.class
@@ -70,15 +67,25 @@ public class SynlighetController {
 
         } catch (HttpClientErrorException exception) {
             if (exception.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
-                return ResponseEntity
-                        .status(HttpStatus.NOT_FOUND)
-                        .body(exception.getResponseBodyAsString());
+                return fraFeilmelding(exception.getResponseBodyAsString());
+
             } else {
                 return ResponseEntity
                         .status(HttpStatus.INTERNAL_SERVER_ERROR)
                         .body(exception.getResponseBodyAsString());
             }
         }
+    }
+
+    private ResponseEntity<?> fraFeilmelding(String body) {
+        if (!body.contains("CV finnes ikke")) {
+            val feilmelding = "Uventet respons i kall mot arbeidssoker: " + body;
+            log.error(feilmelding);
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(feilmelding);
+        }
+        return HarCvOgJobbønskerResponse.manglerCv();
     }
 
     private HttpEntity<?> bearerToken() {
@@ -91,6 +98,10 @@ public class SynlighetController {
     private static class HarCvOgJobbønskerResponse {
         private final boolean harCv;
         private final boolean harJobbprofil;
+
+        static ResponseEntity<HarCvOgJobbønskerResponse> manglerCv() {
+            return harCvOgJobbønskerResponse(false, false);
+        }
 
         public static ResponseEntity<HarCvOgJobbønskerResponse> fra(ArbeidssøkerResponse arbeidssøkerResponse) {
             return harCvOgJobbønskerResponse(true, arbeidssøkerResponse.jobbprofil != null);
@@ -112,11 +123,10 @@ public class SynlighetController {
     private static class Jobbprofil {
     }
 
-    private void loggBrukAvEndepunkt(String endepunkt) {
+    private void loggBrukAvEndepunkt() {
         log.info(
-                "Bruker med ident {} kaller endepunktet {}.",
-                tilgangskontroll.hentInnloggetVeileder().getNavIdent(),
-                endepunkt
+                "Bruker med ident {} kaller endepunktet synlighet.",
+                tilgangskontroll.hentInnloggetVeileder().getNavIdent()
         );
     }
 }

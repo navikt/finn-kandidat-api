@@ -91,6 +91,7 @@ public class SynlighetController {
     private HttpEntity<?> bearerToken() {
         Map<String, String> headers = new HashMap<>();
         headers.put(HttpHeaders.AUTHORIZATION, "Bearer " + stsClient.hentSTSToken().getAccessToken());
+        log.info("Header cv " + headers);
         return new HttpEntity<>(headers);
     }
 

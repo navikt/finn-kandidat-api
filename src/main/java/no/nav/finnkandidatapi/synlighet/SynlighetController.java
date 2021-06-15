@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static no.nav.finnkandidatapi.tilgangskontroll.TokenUtils.ISSUER_OPENAM;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Slf4j
 @ProtectedWithClaims(issuer = ISSUER_OPENAM)
@@ -91,7 +92,7 @@ public class SynlighetController {
     private HttpEntity<?> bearerToken() {
         Map<String, String> headers = new HashMap<>();
         headers.put(HttpHeaders.AUTHORIZATION, "Bearer " + stsClient.hentSTSToken().getAccessToken());
-        log.info("Header cv " + headers);
+        headers.put(HttpHeaders.ACCEPT, APPLICATION_JSON_VALUE);
         return new HttpEntity<>(headers);
     }
 

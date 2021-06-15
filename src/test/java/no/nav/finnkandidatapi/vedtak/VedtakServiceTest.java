@@ -87,21 +87,42 @@ public class VedtakServiceTest {
 
     @Test
     public void skal_ignorere_update_vedtak_med_utfallskode_nei() {
-        VedtakReplikert vedtak = etAvslåttUpdateVedtakReplikert();
+        VedtakReplikert vedtak = etVedtakAfterReplikert("U", "NEI");
         vedtakService.behandleVedtakReplikert(vedtak);
         verify(vedtakRepository, times(0)).lagreVedtak(any());
     }
 
     @Test
     public void skal_ignorere_delete_vedtak_med_utfallskode_nei() {
-        VedtakReplikert vedtak = etAvslåttDeleteVedtakReplikert();
+        VedtakReplikert vedtak = etVedtakBeforeReplikert("D", "NEI");
         vedtakService.behandleVedtakReplikert(vedtak);
         verify(vedtakRepository, times(0)).lagreVedtak(any());
     }
 
     @Test
     public void skal_ignorere_insert_vedtak_med_utfallskode_nei() {
-        VedtakReplikert vedtak = etAvslåttInsertVedtakReplikert();
+        VedtakReplikert vedtak = etVedtakAfterReplikert("I", "NEI");
+        vedtakService.behandleVedtakReplikert(vedtak);
+        verify(vedtakRepository, times(0)).lagreVedtak(any());
+    }
+
+    @Test
+    public void skal_ignorere_update_vedtak_med_utfallskode_avbrutt() {
+        VedtakReplikert vedtak = etVedtakAfterReplikert("U", "AVBRUTT");
+        vedtakService.behandleVedtakReplikert(vedtak);
+        verify(vedtakRepository, times(0)).lagreVedtak(any());
+    }
+
+    @Test
+    public void skal_ignorere_delete_vedtak_med_utfallskode_avbrutt() {
+        VedtakReplikert vedtak = etVedtakBeforeReplikert("D", "AVBRUTT");
+        vedtakService.behandleVedtakReplikert(vedtak);
+        verify(vedtakRepository, times(0)).lagreVedtak(any());
+    }
+
+    @Test
+    public void skal_ignorere_insert_vedtak_med_utfallskode_avbrutt() {
+        VedtakReplikert vedtak = etVedtakAfterReplikert("I", "AVBRUTT");
         vedtakService.behandleVedtakReplikert(vedtak);
         verify(vedtakRepository, times(0)).lagreVedtak(any());
     }

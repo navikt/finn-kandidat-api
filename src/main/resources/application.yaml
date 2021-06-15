@@ -59,6 +59,7 @@ mock:
 sts.url: ${mock.baseUrl}/sts
 abac.url: ${mock.baseUrl}/abac
 pdl.url: ${mock.baseUrl}
+arbeidssoker.url: ${mock.baseUrl}
 
 
 SERVICEBRUKER_BRUKERNAVN: na

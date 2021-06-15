@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import no.nav.common.client.aktoroppslag.AktorOppslagClient;
+import no.nav.common.sts.SystemUserTokenProvider;
 import no.nav.common.types.identer.AktorId;
 import no.nav.common.types.identer.Fnr;
 import no.nav.finnkandidatapi.sts.STSClient;
@@ -33,18 +34,21 @@ public class SynlighetController {
     private final TilgangskontrollService tilgangskontroll;
     private final String arbeidssokerUrl;
     private final STSClient stsClient;
+    private final SystemUserTokenProvider systemUserTokenProvider;
     private final AktorOppslagClient aktorOppslagClient;
 
     public SynlighetController(
             TilgangskontrollService tilgangskontroll,
             @Value("${arbeidssoker.url}") String arbeidssokerUrl,
             STSClient stsClient,
+            SystemUserTokenProvider systemUserTokenProvider,
             AktorOppslagClient aktorOppslagClient
     ) {
         this.tilgangskontroll = tilgangskontroll;
         this.arbeidssokerUrl = arbeidssokerUrl;
         this.stsClient = stsClient;
         this.aktorOppslagClient = aktorOppslagClient;
+        this.systemUserTokenProvider = systemUserTokenProvider;
     }
 
     @GetMapping("/{aktørId}")
@@ -91,7 +95,7 @@ public class SynlighetController {
 
     private HttpEntity<?> bearerToken() {
         Map<String, String> headers = new HashMap<>();
-        headers.put(HttpHeaders.AUTHORIZATION, "Bearer " + stsClient.hentSTSToken().getAccessToken());
+        headers.put(HttpHeaders.AUTHORIZATION, "Bearer " + systemUserTokenProvider.getSystemUserToken());
         headers.put(HttpHeaders.ACCEPT, APPLICATION_JSON_VALUE);
         return new HttpEntity<>(headers);
     }

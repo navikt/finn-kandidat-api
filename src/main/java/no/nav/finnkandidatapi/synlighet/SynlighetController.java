@@ -95,8 +95,9 @@ public class SynlighetController {
 
     private HttpEntity<?> bearerToken() {
         Map<String, String> headers = new HashMap<>();
+        String systemUserToken = null;
         try {
-            String systemUserToken = systemUserTokenProvider.getSystemUserToken();
+            systemUserToken = systemUserTokenProvider.getSystemUserToken();
             String stsToken = stsClient.hentSTSToken().getAccessToken();
             log.info("systemUserToken:" + systemUserToken);
             log.info("stsToken:" + stsToken);

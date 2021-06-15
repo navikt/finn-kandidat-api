@@ -99,8 +99,8 @@ public class SynlighetController {
         try {
             systemUserToken = systemUserTokenProvider.getSystemUserToken();
             String stsToken = stsClient.hentSTSToken().getAccessToken();
-            log.info("systemUserToken:" + systemUserToken);
-            log.info("stsToken:" + stsToken);
+            log.info("systemUserToken " + systemUserToken);
+            log.info("stsToken " + stsToken);
         } catch (Exception e) {
             log.error("Klarte ikke hente token for sts", e);
         }

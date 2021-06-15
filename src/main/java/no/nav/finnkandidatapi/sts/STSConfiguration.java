@@ -32,7 +32,7 @@ public class STSConfiguration {
     @Bean
     @Profile("!local")
     public SystemUserTokenProvider systemUserTokenProvider() {
-        return new NaisSystemUserTokenProvider(stsUrl, brukernavn, passord);
+        return new NaisSystemUserTokenProvider(stsUrl + "/sts/.well-known/openid-configuration", brukernavn, passord);
     }
 
     @Bean

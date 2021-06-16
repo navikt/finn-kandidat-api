@@ -61,10 +61,16 @@ public class SynlighetController {
         RestTemplate restTemplate = new RestTemplate();
 
         try {
+
+            String url = arbeidssokerUrl + "/rest/v2/arbeidssoker/" + fnr.get() + "?erManuell=false";
+            HttpEntity<?> headers = bearerToken();
+
+            log.info("Kaller pam-cv-api på URL {} med headers {}", url, headers);
+
             ResponseEntity<ArbeidssøkerResponse> response = restTemplate.exchange(
-                    arbeidssokerUrl + "/rest/v2/arbeidssoker/" + fnr.get() + "?erManuell=false",
+                    url,
                     HttpMethod.GET,
-                    bearerToken(),
+                    headers,
                     ArbeidssøkerResponse.class
             );
 
@@ -95,15 +101,8 @@ public class SynlighetController {
 
     private HttpEntity<?> bearerToken() {
         Map<String, String> headers = new HashMap<>();
-        String systemUserToken = null;
-        try {
-            String stsToken = stsClient.hentSTSToken().getAccessToken();
-            log.info("stsToken " + stsToken);
-            systemUserToken = systemUserTokenProvider.getSystemUserToken();
-            log.info("systemUserToken " + systemUserToken);
-        } catch (Exception e) {
-            log.error("Klarte ikke hente token for sts", e);
-        }
+        String systemUserToken = systemUserTokenProvider.getSystemUserToken();
+        log.info("systemUserToken " + systemUserToken);
         headers.put(HttpHeaders.AUTHORIZATION, "Bearer " + systemUserToken);
         headers.put(HttpHeaders.ACCEPT, APPLICATION_JSON_VALUE);
         return new HttpEntity<>(headers);

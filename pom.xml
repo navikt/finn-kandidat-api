@@ -231,6 +231,11 @@
             <artifactId>client</artifactId>
             <version>2.2021.05.03_09.21-91f2fc8f059e</version>
         </dependency>
+        <dependency>
+            <groupId>no.nav.common</groupId>
+            <artifactId>sts</artifactId>
+            <version>2.2021.01.26_14.08-0d410b34f6a3</version>
+        </dependency>
     </dependencies>
 
     <build>

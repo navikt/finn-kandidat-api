@@ -19,11 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import static no.nav.finnkandidatapi.tilgangskontroll.TokenUtils.ISSUER_OPENAM;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Slf4j
 @ProtectedWithClaims(issuer = ISSUER_OPENAM)
@@ -33,20 +29,17 @@ public class SynlighetController {
 
     private final TilgangskontrollService tilgangskontroll;
     private final String arbeidssokerUrl;
-    private final STSClient stsClient;
     private final SystemUserTokenProvider systemUserTokenProvider;
     private final AktorOppslagClient aktorOppslagClient;
 
     public SynlighetController(
             TilgangskontrollService tilgangskontroll,
             @Value("${arbeidssoker.url}") String arbeidssokerUrl,
-            STSClient stsClient,
             SystemUserTokenProvider systemUserTokenProvider,
             AktorOppslagClient aktorOppslagClient
     ) {
         this.tilgangskontroll = tilgangskontroll;
         this.arbeidssokerUrl = arbeidssokerUrl;
-        this.stsClient = stsClient;
         this.aktorOppslagClient = aktorOppslagClient;
         this.systemUserTokenProvider = systemUserTokenProvider;
     }
@@ -62,15 +55,10 @@ public class SynlighetController {
 
         try {
 
-            String url = arbeidssokerUrl + "/rest/v2/arbeidssoker/" + fnr.get() + "?erManuell=false";
-            HttpEntity<?> headers = bearerToken();
-
-            log.info("Kaller pam-cv-api på URL {} med headers {}", url, headers);
-
             ResponseEntity<ArbeidssøkerResponse> response = restTemplate.exchange(
-                    url,
+                    arbeidssokerUrl + "/rest/v2/arbeidssoker/" + fnr.get() + "?erManuell=false",
                     HttpMethod.GET,
-                    headers,
+                    bearerToken(),
                     ArbeidssøkerResponse.class
             );
 
@@ -100,11 +88,8 @@ public class SynlighetController {
     }
 
     private HttpEntity<?> bearerToken() {
-        Map<String, String> headers = new HashMap<>();
-        String systemUserToken = systemUserTokenProvider.getSystemUserToken();
-        log.info("systemUserToken " + systemUserToken);
-        headers.put(HttpHeaders.AUTHORIZATION, "Bearer " + systemUserToken);
-        headers.put(HttpHeaders.ACCEPT, APPLICATION_JSON_VALUE);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(systemUserTokenProvider.getSystemUserToken());
         return new HttpEntity<>(headers);
     }
 

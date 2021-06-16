@@ -1,8 +1,9 @@
 package no.nav.finnkandidatapi.synlighet;
 
-import lombok.RequiredArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
-import lombok.val;
 import no.nav.common.client.aktoroppslag.AktorOppslagClient;
 import no.nav.common.sts.SystemUserTokenProvider;
 import no.nav.common.types.identer.AktorId;
@@ -116,6 +117,7 @@ public class SynlighetController {
         }
     }
 
+    @Data
     private static class ArbeidssøkerResponse {
         Jobbprofil jobbprofil;
     }

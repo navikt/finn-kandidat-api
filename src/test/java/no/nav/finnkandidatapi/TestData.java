@@ -10,7 +10,6 @@ import no.nav.finnkandidatapi.midlertidigutilgjengelig.MidlertidigUtilgjengelig;
 import no.nav.finnkandidatapi.permittert.ArbeidssokerRegistrertDTO;
 import no.nav.finnkandidatapi.permittert.DinSituasjonSvarFraVeilarbReg;
 import no.nav.finnkandidatapi.permittert.PermittertArbeidssoker;
-import no.nav.finnkandidatapi.sts.STSToken;
 import no.nav.finnkandidatapi.tilbakemelding.Behov;
 import no.nav.finnkandidatapi.tilbakemelding.Tilbakemelding;
 import no.nav.finnkandidatapi.vedtak.Vedtak;
@@ -244,10 +243,6 @@ public class TestData {
 
     public static Kandidat enKandidatMedBareNull() {
         return Kandidat.builder().build();
-    }
-
-    public static STSToken etStsToken() {
-        return new STSToken("-", "-", 100);
     }
 
     public static Tilbakemelding enTilbakemelding() {

@@ -5,7 +5,6 @@ import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.finnkandidatapi.sts.STSToken;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,17 +24,12 @@ public class MockServer implements DisposableBean {
     private final WireMockServer server;
 
     @Autowired
-    MockServer(
-            @Value("${mock.port}") Integer port,
-            @Value("${sts.url}") String stsUrl,
-            @Value("${abac.url}") String abacUrl
-    ) {
+    MockServer(@Value("${mock.port}") Integer port, @Value("${abac.url}") String abacUrl) {
         log.info("Starter mockserver");
 
         this.server =  new WireMockServer(port);
 
         mockAbac(abacUrl);
-        mockKall(stsUrl + "/sts/token", new STSToken("fdg", "asfsdg", 325));
         mockPdl();
 
         server.start();

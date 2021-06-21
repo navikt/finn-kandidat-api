@@ -24,9 +24,9 @@ spring:
 kandidat-endret.topic: aapen-tag-kandidatEndret-v1-default
 
 ---
-spring.profiles: local
 
 spring:
+  config.activate.on-profile: local
   h2.console:
     enabled: true
     path: /h2
@@ -73,7 +73,7 @@ vedtak-replikert.topic: en-fjerde-kafka-topic
 
 ---
 spring:
-  profiles: dev
+  config.activate.on-profile: dev
   kafka:
     bootstrap-servers: b27apvl00045.preprod.local:8443, b27apvl00046.preprod.local:8443, b27apvl00047.preprod.local:8443
     properties:
@@ -122,7 +122,7 @@ arbeidssoker.url: https://pam-cv-api.dev.adeo.no/pam-cv-api
 
 ---
 spring:
-  profiles: prod
+  config.activate.on-profile: prod
   kafka:
     bootstrap-servers: a01apvl00145.adeo.no:8443, a01apvl00146.adeo.no:8443, a01apvl00147.adeo.no:8443, a01apvl00148.adeo.no:8443, a01apvl00149.adeo.no:8443, a01apvl00150.adeo.no:8443
     properties:

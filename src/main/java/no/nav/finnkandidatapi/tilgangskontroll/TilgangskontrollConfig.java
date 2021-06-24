@@ -21,7 +21,7 @@ public class TilgangskontrollConfig {
     private String srvPassword;
 
     @Bean
-    public Pep veilarbPep() {
-        return VeilarbPepFactory.get(abacUrl, srvUsername, srvPassword);
+    public Pep arbeidsgiverInkluderingPep() {
+        return ArbeidsgiverInkluderingPepFactory.get(abacUrl, srvUsername, srvPassword);
     }
 }

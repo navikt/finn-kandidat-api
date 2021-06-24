@@ -115,7 +115,7 @@ tilgangskontroll.republisering: ${TILGANGSKONTROLL_REPUBLISERING}
 nais.cluster-name: ${NAIS_CLUSTER_NAME}
 
 sts.url: https://security-token-service.nais.preprod.local/rest/v1
-abac.url: https://wasapp-q1.adeo.no/asm-pdp/authorize
+abac.url: https://abac-arbeidsgiver-inkludering.dev.intern.nav.no/application/asm-pdp/authorize
 unleash.url: https://unleash.nais.io/api/
 pdl.url: https://pdl-api.dev.intern.nav.no
 arbeidssoker.url: https://pam-cv-api.dev.adeo.no/pam-cv-api
@@ -164,7 +164,7 @@ tilgangskontroll.republisering: ${TILGANGSKONTROLL_REPUBLISERING}
 nais.cluster-name: ${NAIS_CLUSTER_NAME}
 
 sts.url: https://security-token-service.nais.adeo.no/rest/v1
-abac.url: https://wasapp.adeo.no/asm-pdp/authorize
+abac.url: https://abac-arbeidsgiver-inkludering.intern.nav.no/application/asm-pdp/authorize
 unleash.url: https://unleash.nais.io/api/
 pdl.url: https://pdl-api.nais.adeo.no
 arbeidssoker.url: https://pam-cv-api.nais.adeo.no/pam-cv-api

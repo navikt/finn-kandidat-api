@@ -184,8 +184,10 @@ public class ArbeidsgiverInkluderingPep implements Pep {
     }
 
     private void printRespons(XacmlResponse response) {
-        response.getResponse().stream().forEach((Response res) -> {
-            log.info("{}", res);
+        response.getResponse().forEach((Response res) -> {
+            log.info("Decision: {}", res.getDecision());
+            log.info("Advice: {}", res.getAssociatedAdvice());
+            log.info("Category: {}", res.getCategory());
         });
     }
 

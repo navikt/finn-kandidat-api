@@ -8,6 +8,7 @@ import no.nav.common.abac.cef.CefAbacResponseMapper;
 import no.nav.common.abac.constants.NavAttributter;
 import no.nav.common.abac.domain.Attribute;
 import no.nav.common.abac.domain.request.*;
+import no.nav.common.abac.domain.response.Response;
 import no.nav.common.abac.domain.response.XacmlResponse;
 import no.nav.common.types.identer.EksternBrukerId;
 import no.nav.common.types.identer.EnhetId;
@@ -170,6 +171,9 @@ public class ArbeidsgiverInkluderingPep implements Pep {
 
     private boolean harTilgang(XacmlRequest xacmlRequest, Supplier<CefAbacEventContext> cefEventContext) {
         XacmlResponse xacmlResponse = this.abacClient.sendRequest(xacmlRequest);
+
+        printRespons(xacmlResponse);
+
         if (cefEventContext != null && this.skalLogges(xacmlRequest, xacmlResponse)) {
             this.getAuditLogger().ifPresent((auditLogger) -> {
                 auditLogger.logCef(xacmlRequest, xacmlResponse, (CefAbacEventContext) cefEventContext.get());
@@ -177,6 +181,12 @@ public class ArbeidsgiverInkluderingPep implements Pep {
         }
 
         return XacmlResponseParser.harTilgang(xacmlResponse);
+    }
+
+    private void printRespons(XacmlResponse response) {
+        response.getResponse().stream().forEach((Response res) -> {
+            log.info("{}", res);
+        });
     }
 
     private boolean skalLogges(XacmlRequest xacmlRequest, XacmlResponse xacmlResponse) {

@@ -1,5 +1,6 @@
 package no.nav.finnkandidatapi.tilgangskontroll;
 
+import lombok.extern.slf4j.Slf4j;
 import no.nav.common.abac.*;
 import no.nav.common.abac.audit.*;
 import no.nav.common.abac.cef.CefAbacEventContext;
@@ -16,7 +17,9 @@ import no.nav.common.utils.EnvironmentUtils;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+@Slf4j
 public class ArbeidsgiverInkluderingPep implements Pep {
+
     private final AbacClient abacClient;
     private final String srvUsername;
     private final SubjectProvider subjectProvider;
@@ -73,6 +76,9 @@ public class ArbeidsgiverInkluderingPep implements Pep {
     }
 
     public boolean harVeilederTilgangTilPerson(NavIdent veilederIdent, ActionId actionId, EksternBrukerId eksternBrukerId) {
+
+        log.info("Forsøker å spørre ABAC om veileder har tilgang til person");
+
         Resource resource = XacmlRequestBuilder.lagPersonResource(eksternBrukerId, "arbeidsgiver-inkludering");
         addPepid(resource);
         XacmlRequest xacmlRequest = XacmlRequestBuilder.buildRequest(XacmlRequestBuilder.lagEnvironment(this.srvUsername), XacmlRequestBuilder.lagAction(actionId), XacmlRequestBuilder.lagVeilederAccessSubject(veilederIdent), resource);
@@ -80,7 +86,11 @@ public class ArbeidsgiverInkluderingPep implements Pep {
             CefAbacResponseMapper mapper = CefAbacResponseMapper.personIdMapper(eksternBrukerId, actionId, resource);
             return this.lagCefEventContext(mapper, veilederIdent.get());
         };
-        return this.harTilgang(xacmlRequest, cefEventContext);
+        boolean harTilgang = this.harTilgang(xacmlRequest, cefEventContext);
+
+        log.info("Fikk svar fra ABAC om veileder har tilgang til person: {}", harTilgang);
+
+        return harTilgang;
     }
 
     public boolean harTilgangTilPerson(String innloggetBrukerIdToken, ActionId actionId, EksternBrukerId eksternBrukerId) {

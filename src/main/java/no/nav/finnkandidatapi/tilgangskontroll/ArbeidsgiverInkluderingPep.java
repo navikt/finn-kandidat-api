@@ -17,6 +17,11 @@ import no.nav.common.utils.EnvironmentUtils;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+/**
+ * De færreste metodene i denne klassen blir brukt, men de er beholdt her i tilfelle vi en vakker dag trenger å
+ * gjøre tilgangskontroll på andre ting enn i dag (august 2021). Regner med at vi ikke kommer til å ha noen ABAC-ekspert
+ * på teamet som vet hvordan man skriver slike ting fra scratch.
+ */
 @Slf4j
 public class ArbeidsgiverInkluderingPep implements Pep {
 
@@ -47,7 +52,6 @@ public class ArbeidsgiverInkluderingPep implements Pep {
     }
 
 
-
     public boolean harTilgangTilEnhet(String innloggetBrukerIdToken, EnhetId enhetId) {
         String oidcTokenBody = AbacUtils.extractOidcTokenBody(innloggetBrukerIdToken);
         Resource resource = XacmlRequestBuilder.lagEnhetResource(enhetId, "arbeidsgiver-inkludering");
@@ -76,8 +80,7 @@ public class ArbeidsgiverInkluderingPep implements Pep {
     }
 
     public boolean harVeilederTilgangTilPerson(NavIdent veilederIdent, ActionId actionId, EksternBrukerId eksternBrukerId) {
-
-        log.info("Forsøker å spørre ABAC om veileder har tilgang til person");
+        log.debug("Forsøker å spørre ABAC om veileder har tilgang til person");
 
         Resource resource = XacmlRequestBuilder.lagPersonResource(eksternBrukerId, "arbeidsgiver-inkludering");
         addPepid(resource);
@@ -88,7 +91,7 @@ public class ArbeidsgiverInkluderingPep implements Pep {
         };
         boolean harTilgang = this.harTilgang(xacmlRequest, cefEventContext);
 
-        log.info("Fikk svar fra ABAC om veileder har tilgang til person: {}", harTilgang);
+        log.debug("Fikk svar fra ABAC om veileder har tilgang til person: {}", harTilgang);
 
         return harTilgang;
     }
@@ -214,7 +217,7 @@ public class ArbeidsgiverInkluderingPep implements Pep {
                 .build();
     }
 
-    private boolean addPepid(Resource resource) {
-        return resource.getAttribute().add(new Attribute(NavAttributter.ENVIRONMENT_FELLES_PEP_ID, PEP_ID));
+    private void addPepid(Resource resource) {
+        resource.getAttribute().add(new Attribute(NavAttributter.ENVIRONMENT_FELLES_PEP_ID, PEP_ID));
     }
 }

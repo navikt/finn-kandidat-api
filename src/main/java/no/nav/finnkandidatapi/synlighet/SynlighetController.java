@@ -73,7 +73,7 @@ public class SynlighetController {
                 if (responseBody.contains("CV finnes ikke")) {
                     return HarCvOgJobbønskerResponse.manglerCv();
                 } else {
-                    val msg = baseMsg + " Uventet tekst i body i 404 respons: " + responseBody;
+                    val msg = baseMsg + ". Uventet tekst i body i 404 respons: " + responseBody;
                     log.error(msg, e);
                     return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(msg);
                 }

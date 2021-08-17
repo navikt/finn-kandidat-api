@@ -1,9 +1,9 @@
 package no.nav.finnkandidatapi.synlighet;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.*;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import no.nav.common.client.aktoroppslag.AktorOppslagClient;
 import no.nav.common.sts.SystemUserTokenProvider;
 import no.nav.common.types.identer.AktorId;
@@ -11,7 +11,10 @@ import no.nav.common.types.identer.Fnr;
 import no.nav.finnkandidatapi.tilgangskontroll.TilgangskontrollService;
 import no.nav.security.token.support.core.api.ProtectedWithClaims;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +23,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import static no.nav.finnkandidatapi.tilgangskontroll.TokenUtils.ISSUER_OPENAM;
+import static org.springframework.http.HttpStatus.*;
 
 @Slf4j
 @ProtectedWithClaims(issuer = ISSUER_OPENAM)
@@ -50,41 +54,39 @@ public class SynlighetController {
         tilgangskontroll.sjekkLesetilgangTilKandidat(aktørId);
 
         Fnr fnr = aktorOppslagClient.hentFnr(new AktorId(aktørId));
-
         RestTemplate restTemplate = new RestTemplate();
-
+        final String url = arbeidssokerUrl + "/rest/v2/arbeidssoker/" + fnr.get() + "?erManuell=false";
+        final HttpMethod httpMethod = HttpMethod.GET;
         try {
-
             ResponseEntity<ArbeidssøkerResponse> response = restTemplate.exchange(
-                    arbeidssokerUrl + "/rest/v2/arbeidssoker/" + fnr.get() + "?erManuell=false",
-                    HttpMethod.GET,
+                    url,
+                    httpMethod,
                     bearerToken(),
                     ArbeidssøkerResponse.class
             );
-
             return HarCvOgJobbønskerResponse.fra(response.getBody());
 
-        } catch (HttpClientErrorException exception) {
-            if (exception.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
-                return fraFeilmelding(exception.getResponseBodyAsString());
-
+        } catch (HttpClientErrorException e) {
+            final String baseMsg = "Forsøkte å spørre Arbeidsplassen om en kandidat har CV og jobbønsker. Brukte HTTP-metode " + httpMethod + " på URL [" + maskerFnr(url) + "]";
+            final String responseBody = e.getResponseBodyAsString();
+            if (e.getStatusCode().equals(NOT_FOUND)) {
+                if (responseBody.contains("CV finnes ikke")) {
+                    return HarCvOgJobbønskerResponse.manglerCv();
+                } else {
+                    val msg = baseMsg + " Uventet tekst i body i 404 respons: " + responseBody;
+                    log.error(msg, e);
+                    return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(msg);
+                }
             } else {
-                return ResponseEntity
-                        .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                        .body(exception.getResponseBodyAsString());
+                String msg = baseMsg + ". " + responseBody;
+                log.error(msg, e);
+                return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(msg);
             }
         }
     }
 
-    private ResponseEntity<?> fraFeilmelding(String body) {
-        if (!body.contains("CV finnes ikke")) {
-            val feilmelding = "Uventet respons i kall mot arbeidssoker: " + body;
-            log.error(feilmelding);
-            return ResponseEntity
-                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(feilmelding);
-        }
-        return HarCvOgJobbønskerResponse.manglerCv();
+    private static String maskerFnr(String url) {
+        return url.replaceAll("/\\d\\d\\d\\d\\d\\d\\d\\d\\d\\d\\d", "/***********");
     }
 
     private HttpEntity<?> bearerToken() {
@@ -112,7 +114,7 @@ public class SynlighetController {
 
         private static ResponseEntity<HarCvOgJobbønskerResponse> response(HarCvOgJobbønskerResponse response) {
             return ResponseEntity
-                    .status(HttpStatus.OK)
+                    .status(OK)
                     .body(response);
         }
     }

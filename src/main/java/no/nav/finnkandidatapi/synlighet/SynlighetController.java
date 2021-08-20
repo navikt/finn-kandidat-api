@@ -57,6 +57,7 @@ public class SynlighetController {
         RestTemplate restTemplate = new RestTemplate();
         final String url = arbeidssokerUrl + "/rest/v2/arbeidssoker/" + fnr.get() + "?erManuell=false";
         final HttpMethod httpMethod = HttpMethod.GET;
+        final String baseMsg = "Forsøkte å spørre Arbeidsplassen om en kandidat har CV og jobbønsker. Brukte HTTP-metode " + httpMethod + " på URL [" + maskerFnr(url) + "]";
         try {
             ResponseEntity<ArbeidssøkerResponse> response = restTemplate.exchange(
                     url,
@@ -67,10 +68,10 @@ public class SynlighetController {
             return HarCvOgJobbønskerResponse.fra(response.getBody());
 
         } catch (HttpClientErrorException e) {
-            final String baseMsg = "Forsøkte å spørre Arbeidsplassen om en kandidat har CV og jobbønsker. Brukte HTTP-metode " + httpMethod + " på URL [" + maskerFnr(url) + "]";
             final String responseBody = e.getResponseBodyAsString();
             if (e.getStatusCode().equals(NOT_FOUND)) {
                 if (responseBody.contains("CV finnes ikke")) {
+                    log.debug(baseMsg + ". CV finnes ikke.");
                     return HarCvOgJobbønskerResponse.manglerCv();
                 } else {
                     val msg = baseMsg + ". Uventet tekst i body i 404 respons: " + responseBody;

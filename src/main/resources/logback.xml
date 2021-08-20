@@ -5,14 +5,19 @@
                 <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
             </appender>
         </appender>
+
         <logger name="jsonLogger" additivity="false" level="INFO">
             <appender-ref ref="consoleAppender"/>
         </logger>
+
         <logger name="no.nav.finnkandidatapi" level="INFO"/>
+        <logger name="no.nav.finnkandidatapi.synlighet.SynlighetController" level="DEBUG"/>
+
         <root level="INFO">
             <appender-ref ref="consoleAppender"/>
         </root>
     </springProfile>
+
     <springProfile name="local">
         <include resource="org/springframework/boot/logging/logback/base.xml"/>
         <logger name="org.springframework.web" level="INFO"/>

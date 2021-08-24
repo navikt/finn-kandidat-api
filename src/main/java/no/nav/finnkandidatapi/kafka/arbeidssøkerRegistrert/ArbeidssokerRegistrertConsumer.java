@@ -73,7 +73,7 @@ public class ArbeidssokerRegistrertConsumer implements ApplicationContextAware {
 
     @EventListener
     public void eventHandler(ConsumerStoppedEvent event) {
-        log.error("En Kafka-konsument har stoppet. Stopper hele applikasjonen. " + event);
+        log.warn("En Kafka-konsument har stoppet. Stopper hele applikasjonen. " + event);
         ((ConfigurableApplicationContext) appCtxt).close();
     }
 

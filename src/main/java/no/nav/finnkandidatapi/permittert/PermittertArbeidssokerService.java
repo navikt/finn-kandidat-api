@@ -8,6 +8,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+import static no.nav.finnkandidatapi.permittert.PermittertArbeidssoker.endrePermittertArbeidssoker;
+import static no.nav.finnkandidatapi.permittert.PermittertArbeidssoker.opprettPermittertArbeidssoker;
+
 @Slf4j
 @Service
 public class PermittertArbeidssokerService {
@@ -26,20 +29,20 @@ public class PermittertArbeidssokerService {
 
     public void behandleOppfølgingAvsluttet(OppfølgingAvsluttetMelding oppfølgingAvsluttetMelding) {
         Optional<Integer> slettetKey = repository.slettPermittertArbeidssoker(oppfølgingAvsluttetMelding.getAktørId());
-        if (slettetKey.isPresent()) {
-            log.info("Slettet Permittert Arbeidssoker med id {} pga. avsluttet oppfølging", slettetKey.get());
-        }
+        slettetKey.ifPresent(id -> log.info("Slettet Permittert Arbeidssoker med id {} pga. avsluttet oppfølging", id));
     }
 
-    public void behandleArbeidssokerRegistrert(ArbeidssokerRegistrertDTO arbeidssokerRegistrertDTO) {
+    public void behandleArbeidssokerRegistrert(ArbeidssokerRegistrertDTO dto) {
         PermittertArbeidssoker permittertArbeidssoker =
-                repository.hentNyestePermittertArbeidssoker(arbeidssokerRegistrertDTO.getAktørId())
-                        .map(arbeidssoker -> PermittertArbeidssoker.endrePermittertArbeidssoker(arbeidssoker, arbeidssokerRegistrertDTO))
-                        .orElse(PermittertArbeidssoker.opprettPermittertArbeidssoker(arbeidssokerRegistrertDTO));
+                repository.hentNyestePermittertArbeidssoker(dto.getAktørId())
+                        .map(arbeidssoker -> endrePermittertArbeidssoker(arbeidssoker, dto))
+                        .orElse(opprettPermittertArbeidssoker(dto));
+
         Integer id = repository.lagrePermittertArbeidssoker(permittertArbeidssoker);
+
         Optional<PermittertArbeidssoker> lagretPermittertArbeidssoker = repository.hentPermittertArbeidssoker(id);
         lagretPermittertArbeidssoker.ifPresent(value ->
-            eventPublisher.publishEvent(new PermittertArbeidssokerEndretEllerOpprettet(value))
+                eventPublisher.publishEvent(new PermittertArbeidssokerEndretEllerOpprettet(value))
         );
     }
 }

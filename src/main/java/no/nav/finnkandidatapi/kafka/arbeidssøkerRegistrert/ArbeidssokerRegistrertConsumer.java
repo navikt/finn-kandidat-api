@@ -3,24 +3,31 @@ package no.nav.finnkandidatapi.kafka.arbeidssøkerRegistrert;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.arbeid.soker.registrering.ArbeidssokerRegistrertEvent;
 import no.nav.finnkandidatapi.permittert.ArbeidssokerRegistrertDTO;
-import no.nav.finnkandidatapi.permittert.DinSituasjonSvarFraVeilarbReg;
 import no.nav.finnkandidatapi.permittert.PermittertArbeidssokerService;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Profile;
+import org.springframework.context.event.EventListener;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.event.ConsumerStoppedEvent;
 import org.springframework.kafka.support.serializer.FailedDeserializationInfo;
 import org.springframework.stereotype.Component;
 
 import static no.nav.finnkandidatapi.kafka.arbeidssøkerRegistrert.VeilArbRegistreringOpprettetParser.parseTidspunkt;
+import static no.nav.finnkandidatapi.permittert.DinSituasjonSvarFraVeilarbReg.ER_PERMITTERT;
 
 @Slf4j
 @Component
-@Profile("!local" )
-public class ArbeidssokerRegistrertConsumer {
+@Profile("!local")
+public class ArbeidssokerRegistrertConsumer implements ApplicationContextAware {
 
     private PermittertArbeidssokerService permittertArbeidssokerService;
     @SuppressWarnings({"unused", "FieldCanBeLocal"})
     private ArbeidssokerRegistrertConfig arbeidssokerRegistrertConfig;
+    private ApplicationContext appCtxt;
 
     public ArbeidssokerRegistrertConsumer(
             PermittertArbeidssokerService permittertArbeidssokerService,
@@ -57,15 +64,21 @@ public class ArbeidssokerRegistrertConsumer {
             throw new RuntimeException("Kunne ikke deserialisere ArbeidssokerRegistrertEvent", failedDeserializationInfo.getException());
         }
 
-        ArbeidssokerRegistrertDTO arbeidssokerRegistrertDTO = mapEventTilDto(arbeidssokerRegistrert);
+        ArbeidssokerRegistrertDTO dto = mapEventTilDto(arbeidssokerRegistrert);
 
-        if (harBrukerRegistrertSegSomPermittert(arbeidssokerRegistrertDTO)) {
-            permittertArbeidssokerService.behandleArbeidssokerRegistrert(arbeidssokerRegistrertDTO);
+        if (brukerHarRegistrertSegSomPermittert(dto)) {
+            permittertArbeidssokerService.behandleArbeidssokerRegistrert(dto);
         }
     }
 
-    private boolean harBrukerRegistrertSegSomPermittert(ArbeidssokerRegistrertDTO arbeidssokerRegistrertDTO) {
-        return arbeidssokerRegistrertDTO.getStatus().equalsIgnoreCase(DinSituasjonSvarFraVeilarbReg.ER_PERMITTERT.name());
+    @EventListener
+    public void eventHandler(ConsumerStoppedEvent event) {
+        log.error("En Kafka-konsument har stoppet. Stopper hele applikasjonen. " + event);
+        ((ConfigurableApplicationContext) appCtxt).close();
+    }
+
+    private boolean brukerHarRegistrertSegSomPermittert(ArbeidssokerRegistrertDTO dto) {
+        return dto.getStatus().equalsIgnoreCase(ER_PERMITTERT.name());
     }
 
     private ArbeidssokerRegistrertDTO mapEventTilDto(ArbeidssokerRegistrertEvent arbeidssokerRegistrert) {
@@ -74,5 +87,10 @@ public class ArbeidssokerRegistrertConsumer {
                 .status(arbeidssokerRegistrert.getBrukersSituasjon())
                 .registreringTidspunkt(parseTidspunkt(arbeidssokerRegistrert.getRegistreringOpprettet()))
                 .build();
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        appCtxt = applicationContext;
     }
 }

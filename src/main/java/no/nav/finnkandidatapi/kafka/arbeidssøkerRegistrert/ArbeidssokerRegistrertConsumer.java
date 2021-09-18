@@ -25,20 +25,15 @@ import static no.nav.finnkandidatapi.permittert.DinSituasjonSvarFraVeilarbReg.ER
 public class ArbeidssokerRegistrertConsumer implements ApplicationContextAware {
 
     private PermittertArbeidssokerService permittertArbeidssokerService;
-    @SuppressWarnings({"unused", "FieldCanBeLocal"})
-    private ArbeidssokerRegistrertConfig arbeidssokerRegistrertConfig;
+
     private ApplicationContext appCtxt;
 
-    public ArbeidssokerRegistrertConsumer(
-            PermittertArbeidssokerService permittertArbeidssokerService,
-            ArbeidssokerRegistrertConfig arbeidssokerRegistrertConfig
-    ) {
+    public ArbeidssokerRegistrertConsumer(PermittertArbeidssokerService permittertArbeidssokerService) {
         this.permittertArbeidssokerService = permittertArbeidssokerService;
-        this.arbeidssokerRegistrertConfig = arbeidssokerRegistrertConfig;
     }
 
     @KafkaListener(
-            topics = "#{arbeidssokerRegistrertConfig.getTopic()}",
+            topics = "paw.arbeidssoker-registrert-v1",
             groupId = "finn-kandidat-arbeidssoker-registrert",
             clientIdPrefix = "arbeidssoker-registrert",
             containerFactory = "avroKafkaListenerContainerFactory"

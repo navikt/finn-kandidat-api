@@ -36,7 +36,7 @@ public class ArbeidssokerRegistrertConsumer implements ApplicationContextAware {
             topics = "paw.arbeidssoker-registrert-v1",
             groupId = "finn-kandidat-arbeidssoker-registrert",
             clientIdPrefix = "arbeidssoker-registrert",
-            containerFactory = "avroKafkaListenerContainerFactory"
+            containerFactory = "avroAivenKafkaListenerContainerFactory"
     )
     public void konsumerMelding(ConsumerRecord<String, ArbeidssokerRegistrertEvent> melding) {
         log.info(

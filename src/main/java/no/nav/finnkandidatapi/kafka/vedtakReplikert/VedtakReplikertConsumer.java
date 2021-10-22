@@ -40,7 +40,6 @@ public class VedtakReplikertConsumer {
         try {
             VedtakReplikert vedtakReplikert = deserialiserMelding(json);
 
-            log.debug("Skal behandle vedtak", json);
             vedtakService.behandleVedtakReplikert(vedtakReplikert);
 
         } catch (RuntimeException e) {

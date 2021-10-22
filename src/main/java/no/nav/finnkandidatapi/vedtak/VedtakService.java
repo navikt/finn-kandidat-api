@@ -80,7 +80,9 @@ public class VedtakService {
     }
 
     private String hentAktørId(VedtakReplikert vedtakReplikert) {
-        String fodselsnr = vedtakReplikert.getTokens().getFodselsnr();
+        var tokens = vedtakReplikert.getTokens();
+        String fodselsnr = tokens != null ? tokens.getFodselsnr() : "";
+
         if (fodselsnr == null || fodselsnr.isEmpty()) {
             log.error("Ingen fødselsnummer i Vedtak replikert meldingen, dropper videre behandling. {}", vedtakReplikert);
             return null;

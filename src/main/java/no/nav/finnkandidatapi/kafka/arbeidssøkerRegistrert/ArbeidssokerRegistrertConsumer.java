@@ -5,6 +5,7 @@ import no.nav.arbeid.soker.registrering.ArbeidssokerRegistrertEvent;
 import no.nav.finnkandidatapi.permittert.ArbeidssokerRegistrertDTO;
 import no.nav.finnkandidatapi.permittert.PermittertArbeidssokerService;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -23,8 +24,9 @@ import static no.nav.finnkandidatapi.permittert.DinSituasjonSvarFraVeilarbReg.ER
 @Component
 @Profile("!local")
 public class ArbeidssokerRegistrertConsumer implements ApplicationContextAware {
+    private final String topicName = "paw.arbeidssoker-registrert-v1";
 
-    private PermittertArbeidssokerService permittertArbeidssokerService;
+    private final PermittertArbeidssokerService permittertArbeidssokerService;
 
     private ApplicationContext appCtxt;
 
@@ -33,14 +35,15 @@ public class ArbeidssokerRegistrertConsumer implements ApplicationContextAware {
     }
 
     @KafkaListener(
-            topics = "paw.arbeidssoker-registrert-v1",
+            topics = topicName,
             groupId = "finn-kandidat-arbeidssoker-registrert",
             clientIdPrefix = "arbeidssoker-registrert",
             containerFactory = "avroAivenKafkaListenerContainerFactory"
     )
     public void konsumerMelding(ConsumerRecord<String, ArbeidssokerRegistrertEvent> melding) {
         log.info(
-                "Konsumerer registrert Arbeidssøker-melding for id {}, offset: {}, partition: {}",
+                "Konsumerer registrert Arbeidssøker-melding fra topic {}, for id {}, offset: {}, partition: {}",
+                topicName,
                 melding.key(),
                 melding.offset(),
                 melding.partition()
@@ -50,7 +53,8 @@ public class ArbeidssokerRegistrertConsumer implements ApplicationContextAware {
 
         if (arbeidssokerRegistrert instanceof FaultyArbeidssokerRegistrert) {
             FailedDeserializationInfo failedDeserializationInfo = ((FaultyArbeidssokerRegistrert) arbeidssokerRegistrert).getFailedDeserializationInfo();
-            log.error("Feil ved konsumering av registrert arbeidssøker-melding. id {}, offset: {}, partition: {}, årsak: {}",
+            log.error("Feil ved konsumering av registrert arbeidssøker-melding. Topic {}, id {}, offset: {}, partition: {}, årsak: {}",
+                    topicName,
                     melding.key(),
                     melding.offset(),
                     melding.partition(),
@@ -85,7 +89,7 @@ public class ArbeidssokerRegistrertConsumer implements ApplicationContextAware {
     }
 
     @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+    public void setApplicationContext(@NotNull ApplicationContext applicationContext) throws BeansException {
         appCtxt = applicationContext;
     }
 }

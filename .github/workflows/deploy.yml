@@ -21,7 +21,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-cache-
       - name: Run tests
-        run: mvn test -P external
+        run: mvn verify -P external
 
   deploy-to-dev:
     name: Deploy to dev

@@ -68,7 +68,6 @@ SERVICEUSER_USERNAME: na
 SERVICEUSER_PASSWORD: na
 
 oppfolging-avsluttet.topic: en-kafka-topic
-arbeidssoker-registrert.topic: en-tredje-kafka-topic
 vedtak-replikert.topic: en-fjerde-kafka-topic
 
 ---
@@ -87,7 +86,6 @@ spring:
         password: ${javax.net.ssl.trustStorePassword}
 
 oppfolging-avsluttet.topic: aapen-fo-endringPaaAvsluttOppfolging-v1-q0
-arbeidssoker-registrert.topic: aapen-arbeid-arbeidssoker-registrert-q0
 vedtak-replikert.topic: gg-arena-vedtak-dagpenger-v1-q
 
 database:
@@ -136,7 +134,6 @@ spring:
         password: ${javax.net.ssl.trustStorePassword}
 
 oppfolging-avsluttet.topic: aapen-fo-endringPaaAvsluttOppfolging-v1-p
-arbeidssoker-registrert.topic: aapen-arbeid-arbeidssoker-registrert-p
 vedtak-replikert.topic: gg-arena-vedtak-dagpenger-v1-p
 
 database:

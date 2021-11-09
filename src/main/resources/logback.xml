@@ -12,6 +12,10 @@
 
         <logger name="no.nav.finnkandidatapi" level="INFO"/>
         <logger name="no.nav.finnkandidatapi.synlighet.SynlighetController" level="DEBUG"/>
+        <logger name="org.apache.kafka.clients.consumer.ConsumerConfig" level="ERROR">
+            <!-- For å bli kvitt masse warnings i apploggen som sier "The configuration 'schema.registry.url' was supplied but isn't a known config."
+            Se https://github.com/apache/kafka/pull/5876 -->
+        </logger>
 
         <root level="INFO">
             <appender-ref ref="consoleAppender"/>

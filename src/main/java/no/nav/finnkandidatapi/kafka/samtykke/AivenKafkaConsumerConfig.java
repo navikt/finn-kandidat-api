@@ -1,6 +1,5 @@
 package no.nav.finnkandidatapi.kafka.samtykke;
 
-import lombok.val;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -61,7 +60,7 @@ public class AivenKafkaConsumerConfig {
         consumerProperties.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SSL");
         consumerProperties.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, brokersUrl);
 
-        if(StringUtils.isNotEmpty(keystorePath)) {
+        if (StringUtils.isNotEmpty(keystorePath)) {
             consumerProperties.put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, credstorePassword);
             consumerProperties.put(SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG, credstorePassword);
             consumerProperties.put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, truststorePath);

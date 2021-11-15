@@ -1,4 +1,4 @@
-package no.nav.finnkandidatapi.kafka.samtykke;
+package no.nav.finnkandidatapi.kafka;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.clients.CommonClientConfigs;

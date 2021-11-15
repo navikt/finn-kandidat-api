@@ -86,7 +86,7 @@ spring:
         password: ${javax.net.ssl.trustStorePassword}
 
 oppfolging-avsluttet.topic: aapen-fo-endringPaaAvsluttOppfolging-v1-q0
-vedtak-replikert.topic: gg-arena-vedtak-dagpenger-v1-q
+vedtak-replikert.topic: teamarenanais.gg-arena-vedtak-dagpenger-v2-q
 
 database:
   navn: finn-kandidat-dev
@@ -134,7 +134,7 @@ spring:
         password: ${javax.net.ssl.trustStorePassword}
 
 oppfolging-avsluttet.topic: aapen-fo-endringPaaAvsluttOppfolging-v1-p
-vedtak-replikert.topic: gg-arena-vedtak-dagpenger-v1-p
+vedtak-replikert.topic: teamarenanais.gg-arena-vedtak-dagpenger-v2-p
 
 database:
   navn: finn-kandidat-prod

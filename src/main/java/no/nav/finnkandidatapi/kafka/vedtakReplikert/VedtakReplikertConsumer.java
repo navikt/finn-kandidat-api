@@ -28,7 +28,7 @@ public class VedtakReplikertConsumer {
             topics = "#{vedtakReplikertConfig.getTopic()}",
             groupId = "finn-kandidat-vedtak-replikert1",
             clientIdPrefix = "vedtak-replikert",
-            containerFactory = "avroAivenKafkaListenerContainerFactory"
+            containerFactory = "aivenKafkaListenerContainerFactory"
     )
     public void konsumerMelding(ConsumerRecord<String, String> melding) {
         log.info(

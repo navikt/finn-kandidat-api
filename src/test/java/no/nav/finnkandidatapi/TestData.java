@@ -1,6 +1,5 @@
 package no.nav.finnkandidatapi;
 
-import no.nav.finnkandidatapi.kafka.vedtakReplikert.Tokens;
 import no.nav.finnkandidatapi.kafka.vedtakReplikert.VedtakRad;
 import no.nav.finnkandidatapi.kafka.vedtakReplikert.VedtakReplikert;
 import no.nav.finnkandidatapi.kandidat.Kandidat;
@@ -32,7 +31,7 @@ public class TestData {
     public static VedtakReplikert etUpdateVedtakReplikert() {
         return VedtakReplikert.builder()
                 .op_type("U")
-                .tokens(Tokens.builder().fodselsnr("01010112345").build())
+                .fodselsnr("01010112345")
                 .after(VedtakRad.builder()
                         .utfallkode("JA")
                         .vedtak_id(45L)
@@ -44,7 +43,7 @@ public class TestData {
     public static VedtakReplikert etDeleteVedtakReplikert() {
         return VedtakReplikert.builder()
                 .op_type("D")
-                .tokens(Tokens.builder().fodselsnr("01010112345").build())
+                .fodselsnr("01010112345")
                 .before(VedtakRad.builder()
                         .utfallkode("JA")
                         .vedtak_id(45L)
@@ -56,7 +55,7 @@ public class TestData {
     public static VedtakReplikert etVedtakAfterReplikert(String opType, String utfallKode) {
         return VedtakReplikert.builder()
                 .op_type(opType)
-                .tokens(Tokens.builder().fodselsnr("01010112345").build())
+                .fodselsnr("01010112345")
                 .after(VedtakRad.builder()
                         .vedtak_id(45L)
                         .rettighetkode("PERM")
@@ -68,7 +67,7 @@ public class TestData {
     public static VedtakReplikert etVedtakBeforeReplikert(String opType, String utfallKode) {
         return VedtakReplikert.builder()
                 .op_type(opType)
-                .tokens(Tokens.builder().fodselsnr("01010112345").build())
+                .fodselsnr("01010112345")
                 .before(VedtakRad.builder()
                         .vedtak_id(45L)
                         .rettighetkode("PERM")

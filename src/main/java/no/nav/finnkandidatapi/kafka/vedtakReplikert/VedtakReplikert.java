@@ -20,7 +20,7 @@ public class VedtakReplikert {
     @JsonDeserialize(using = VedtakReplikertCustomDateDeserializer.class)
     private LocalDateTime current_ts;
     private String pos;
-    private Tokens tokens;
+    private String fodselsnr;
     private VedtakRad before;
     private VedtakRad after;
 }

@@ -1,9 +1,10 @@
-package no.nav.finnkandidatapi.kafka.arbeidssøkerRegistrert;
+package no.nav.finnkandidatapi.kafka;
 
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClientConfig;
 import io.confluent.kafka.serializers.KafkaAvroDeserializer;
 import io.confluent.kafka.serializers.KafkaAvroDeserializerConfig;
 import io.confluent.kafka.serializers.KafkaAvroSerializerConfig;
+import no.nav.finnkandidatapi.kafka.arbeidssøkerRegistrert.FaultyArbeidssokerRegistrertProvider;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -29,8 +30,7 @@ import java.util.Map;
 
 @EnableKafka
 @Configuration
-@Profile("!local")
-public class KafkaAvroConsumerConfig {
+public class AivenKafkaAvroConsumerConfig {
 
     @Value("${KAFKA_BROKERS:http://dummyurl.com:0000}")
     private String brokersUrl;
@@ -44,7 +44,7 @@ public class KafkaAvroConsumerConfig {
     @Value("${KAFKA_CREDSTORE_PASSWORD:}")
     private String credstorePassword;
 
-    @Value("${KAFKA_SCHEMA_REGISTRY:}")
+    @Value("${KAFKA_SCHEMA_REGISTRY:http://dummyurl.com:0000}")
     private String schemaRegistryUrl;
 
     @Value("${KAFKA_SCHEMA_REGISTRY_USER:}")

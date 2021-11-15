@@ -41,7 +41,7 @@ public class Vedtak {
     private static Vedtak opprett(String aktørId, VedtakReplikert vedtakReplikert, VedtakRad rad, boolean slettet) {
         return Vedtak.builder()
                 .aktørId(aktørId)
-                .fnr(vedtakReplikert.getTokens().getFodselsnr())
+                .fnr(vedtakReplikert.getFodselsnr())
                 .vedtakId(rad.getVedtak_id())
                 .personId(rad.getPerson_id())
                 .typeKode(rad.getVedtaktypekode())

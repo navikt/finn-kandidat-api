@@ -44,12 +44,14 @@ public class VedtakReplikertConsumer {
             vedtakService.behandleVedtakReplikert(vedtakReplikert);
 
         } catch (RuntimeException e) {
-            log.error("Feil ved konsumering av vedtak replikert melding. id {}, offset: {}, partition: {}",
-                    melding.key(),
-                    melding.offset(),
-                    melding.partition()
-            );
-            log.error("Vedtak replikert meldingen som feilet: {}", json);
+            StringBuilder sb = new StringBuilder("Forsøkte å konsumere Kafka-melding vedtak replikert. ");
+            sb.append("topic=" + vedtakReplikertConfig.getTopic());
+            sb.append(", id=" + melding.key());
+            sb.append(", offset=" + melding.offset());
+            sb.append(", partition=" + melding.partition());
+            sb.append(", payload=" + json);
+            String msg = sb.toString();
+            log.error(msg, e);
             throw e;
         }
     }

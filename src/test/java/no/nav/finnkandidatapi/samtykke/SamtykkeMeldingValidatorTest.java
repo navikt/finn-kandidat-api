@@ -29,29 +29,29 @@ class SamtykkeMeldingValidatorTest {
 
     @Test
     public void deserialiserMeldingMedManglendeFelt() {
-        String jsonMeldingAktoerIdFeltMangler = "{\"fnr\":\"27075349594\",\"meldingType\":\"SAMTYKKE_OPPRETTET\",\"ressurs\":\"CV_HJEMMEL\",\"opprettetDato\":\"2019-01-09T12:36:06+01:00\",\"slettetDato\":null,\"versjon\":1,\"versjonGjeldendeFra\":null,\"versjonGjeldendeTil\":\"2019-04-08\"}";
+        String jsonMeldingAktoerIdFeltMangler = "{\"fnr\":\"27075349594\",\"ressurs\":\"CV_HJEMMEL\",\"opprettetDato\":\"2019-01-09T12:36:06+01:00\",\"slettetDato\":null,\"versjon\":1,\"versjonGjeldendeFra\":null,\"versjonGjeldendeTil\":\"2019-04-08\"}";
         assertThrows(RuntimeException.class, () -> {
             SamtykkeMeldingValidator.valider(new SamtykkeMelding(jsonMeldingAktoerIdFeltMangler));
         });
 
-        String jsonMeldingAktoerIdInneholderTomStreng = "{\"aktoerId\":\" \",\"fnr\":\"27075349594\",\"meldingType\":\"SAMTYKKE_OPPRETTET\",\"ressurs\":\"CV_HJEMMEL\",\"opprettetDato\":\"2019-01-09T12:36:06+01:00\",\"slettetDato\":null,\"versjon\":1,\"versjonGjeldendeFra\":null,\"versjonGjeldendeTil\":\"2019-04-08\"}";
+        String jsonMeldingAktoerIdInneholderTomStreng = "{\"aktoerId\":\" \",\"fnr\":\"27075349594\",\"ressurs\":\"CV_HJEMMEL\",\"opprettetDato\":\"2019-01-09T12:36:06+01:00\",\"slettetDato\":null,\"versjon\":1,\"versjonGjeldendeFra\":null,\"versjonGjeldendeTil\":\"2019-04-08\"}";
         assertThrows(RuntimeException.class, () -> {
             SamtykkeMeldingValidator.valider(new SamtykkeMelding(jsonMeldingAktoerIdInneholderTomStreng));
         });
 
-        String jsonMeldingManglerFeltViIkkeTrenger = "{\"aktoerId\":\"AktorId(aktorId=1000068432771)\",\"meldingType\":\"SAMTYKKE_OPPRETTET\",\"ressurs\":\"CV_HJEMMEL\",\"opprettetDato\":\"2019-04-01T13:17:13.174+02:00\"}";
+        String jsonMeldingManglerFeltViIkkeTrenger = "{\"aktoerId\":\"AktorId(aktorId=1000068432771)\",\"ressurs\":\"CV_HJEMMEL\",\"opprettetDato\":\"2019-04-01T13:17:13.174+02:00\"}";
         SamtykkeMeldingValidator.valider(new SamtykkeMelding(jsonMeldingManglerFeltViIkkeTrenger));
     }
 
     @Test
     public void deserialiserMeldingMedDatoFormatMedMillisekunder() {
-        String jsonMelding = "{\"aktoerId\":\"AktorId(aktorId=1000068432771)\",\"fnr\":\"27075349594\",\"meldingType\":\"SAMTYKKE_OPPRETTET\",\"ressurs\":\"CV_HJEMMEL\",\"opprettetDato\":\"2019-04-01T13:17:13.174+02:00\",\"slettetDato\":null,\"versjon\":1,\"versjonGjeldendeFra\":null,\"versjonGjeldendeTil\":null}";
+        String jsonMelding = "{\"aktoerId\":\"AktorId(aktorId=1000068432771)\",\"fnr\":\"27075349594\",\"ressurs\":\"CV_HJEMMEL\",\"opprettetDato\":\"2019-04-01T13:17:13.174+02:00\",\"slettetDato\":null,\"versjon\":1,\"versjonGjeldendeFra\":null,\"versjonGjeldendeTil\":null}";
         SamtykkeMeldingValidator.valider(new SamtykkeMelding(jsonMelding));
     }
 
     @Test
     public void deserialiserMeldingMedDatoFormat6SifreForMillisekunder() {
-        String jsonMelding = "{\"aktoerId\":\"AktorId(aktorId=1000068432771)\",\"fnr\":\"27075349594\",\"meldingType\":\"SAMTYKKE_OPPRETTET\",\"ressurs\":\"CV_HJEMMEL\",\"opprettetDato\":\"2019-04-01T13:17:13.174+02:00\",\"slettetDato\":\"2019-08-13T14:13:10.203505+02:00\",\"versjon\":1,\"versjonGjeldendeFra\":null,\"versjonGjeldendeTil\":null}";
+        String jsonMelding = "{\"aktoerId\":\"AktorId(aktorId=1000068432771)\",\"fnr\":\"27075349594\",\"ressurs\":\"CV_HJEMMEL\",\"opprettetDato\":\"2019-04-01T13:17:13.174+02:00\",\"slettetDato\":\"2019-08-13T14:13:10.203505+02:00\",\"versjon\":1,\"versjonGjeldendeFra\":null,\"versjonGjeldendeTil\":null}";
         SamtykkeMeldingValidator.valider(new SamtykkeMelding(jsonMelding));
     }
 

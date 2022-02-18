@@ -40,7 +40,10 @@ KafkaRepublisherTest {
     private HarTilretteleggingsbehovProducer producer;
 
     @Mock
-    private KandidatRepository repository;
+    private KandidatRepository kandidatRepository;
+
+    @Mock
+    private RepublisherRepository republisherRepository;
 
     @Mock
     private TilgangskontrollService tilgangskontrollService;
@@ -61,8 +64,8 @@ KafkaRepublisherTest {
 
     @Before
     public void setUp() {
-        this.sammenstillBehov = new SammenstillBehov(repository, permittertArbeidssokerService, vedtakService, midlertidigUtilgjengeligService);
-        this.kafkaRepublisher = new KafkaRepublisher(producer, repository,  tilgangskontrollService, sammenstillBehov, config);
+        this.sammenstillBehov = new SammenstillBehov(kandidatRepository, permittertArbeidssokerService, vedtakService, midlertidigUtilgjengeligService);
+        this.kafkaRepublisher = new KafkaRepublisher(producer, kandidatRepository,  republisherRepository, tilgangskontrollService, sammenstillBehov, config);
     }
 
     @Test(expected = TilgangskontrollException.class)
@@ -92,7 +95,7 @@ KafkaRepublisherTest {
         when(config.getNavIdenterSomKanRepublisere()).thenReturn(Arrays.asList(veileder.getNavIdent()));
         HarTilretteleggingsbehov harTilretteleggingsbehovTrue = new HarTilretteleggingsbehov("1000000000001", true, List.of(Fysisk.behovskategori));
         HarTilretteleggingsbehov harTilretteleggingsbehovFalse = new HarTilretteleggingsbehov("1000000000002", false, List.of());
-        when(repository.hentHarTilretteleggingsbehov()).thenReturn(Arrays.asList(
+        when(kandidatRepository.hentHarTilretteleggingsbehov()).thenReturn(Arrays.asList(
                 harTilretteleggingsbehovTrue,
                 harTilretteleggingsbehovFalse
         ));
@@ -119,7 +122,7 @@ KafkaRepublisherTest {
 
         when(tilgangskontrollService.hentInnloggetVeileder()).thenReturn(veileder);
         when(config.getNavIdenterSomKanRepublisere()).thenReturn(Arrays.asList(veileder.getNavIdent()));
-        when(repository.hentHarTilretteleggingsbehov(aktørId)).thenReturn(
+        when(kandidatRepository.hentHarTilretteleggingsbehov(aktørId)).thenReturn(
                 Optional.empty()
         );
 
@@ -134,7 +137,7 @@ KafkaRepublisherTest {
 
         when(tilgangskontrollService.hentInnloggetVeileder()).thenReturn(veileder);
         when(config.getNavIdenterSomKanRepublisere()).thenReturn(Arrays.asList(veileder.getNavIdent()));
-        when(repository.hentHarTilretteleggingsbehov(enAktørId())).thenReturn(
+        when(kandidatRepository.hentHarTilretteleggingsbehov(enAktørId())).thenReturn(
                 Optional.of(new HarTilretteleggingsbehov(aktørId, true, List.of(Fysisk.behovskategori)))
         );
 
@@ -150,7 +153,7 @@ KafkaRepublisherTest {
         when(tilgangskontrollService.hentInnloggetVeileder()).thenReturn(veileder);
         when(config.getNavIdenterSomKanRepublisere()).thenReturn(Arrays.asList(veileder.getNavIdent()));
         HarTilretteleggingsbehov harTilretteleggingsbehov = new HarTilretteleggingsbehov(aktørId, true, List.of(Fysisk.behovskategori));
-        when(repository.hentHarTilretteleggingsbehov(aktørId)).thenReturn(
+        when(kandidatRepository.hentHarTilretteleggingsbehov(aktørId)).thenReturn(
                 Optional.of(harTilretteleggingsbehov)
         );
 
@@ -167,7 +170,7 @@ KafkaRepublisherTest {
         when(tilgangskontrollService.hentInnloggetVeileder()).thenReturn(veileder);
         when(config.getNavIdenterSomKanRepublisere()).thenReturn(Arrays.asList(veileder.getNavIdent()));
         HarTilretteleggingsbehov harTilretteleggingsbehov = new HarTilretteleggingsbehov(aktørId, true, List.of(Fysisk.behovskategori));
-        when(repository.hentHarTilretteleggingsbehov(aktørId)).thenReturn(
+        when(kandidatRepository.hentHarTilretteleggingsbehov(aktørId)).thenReturn(
                 Optional.of(harTilretteleggingsbehov)
         );
         when(permittertArbeidssokerService.hentNyestePermitterteArbeidssoker(aktørId)).thenReturn(
@@ -192,7 +195,7 @@ KafkaRepublisherTest {
         when(tilgangskontrollService.hentInnloggetVeileder()).thenReturn(veileder);
         when(config.getNavIdenterSomKanRepublisere()).thenReturn(Arrays.asList(veileder.getNavIdent()));
         HarTilretteleggingsbehov harTilretteleggingsbehov = new HarTilretteleggingsbehov(aktørId, true, List.of(Fysisk.behovskategori));
-        when(repository.hentHarTilretteleggingsbehov(aktørId)).thenReturn(
+        when(kandidatRepository.hentHarTilretteleggingsbehov(aktørId)).thenReturn(
                 Optional.of(harTilretteleggingsbehov)
         );
         when(midlertidigUtilgjengeligService.hentMidlertidigUtilgjengelig(aktørId))

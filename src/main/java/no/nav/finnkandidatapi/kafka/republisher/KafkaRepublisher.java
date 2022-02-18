@@ -26,6 +26,7 @@ import static no.nav.finnkandidatapi.tilgangskontroll.TokenUtils.ISSUER_ISSO;
 public class KafkaRepublisher {
     private final HarTilretteleggingsbehovProducer harTilretteleggingsbehovProducer;
     private final KandidatRepository kandidatRepository;
+    private final RepublisherRepository republisherRepository;
     private final SammenstillBehov sammenstillBehov;
     private final TilgangskontrollService tilgangskontrollService;
     private final KafkaRepublisherConfig config;
@@ -34,12 +35,14 @@ public class KafkaRepublisher {
     public KafkaRepublisher(
             HarTilretteleggingsbehovProducer harTilretteleggingsbehovProducer,
             KandidatRepository kandidatRepository,
+            RepublisherRepository republisherRepository,
             TilgangskontrollService tilgangskontrollService,
             SammenstillBehov sammenstillBehov,
             KafkaRepublisherConfig config
     ) {
         this.harTilretteleggingsbehovProducer = harTilretteleggingsbehovProducer;
         this.kandidatRepository = kandidatRepository;
+        this.republisherRepository = republisherRepository;
         this.sammenstillBehov = sammenstillBehov;
         this.tilgangskontrollService = tilgangskontrollService;
         this.config = config;
@@ -61,6 +64,29 @@ public class KafkaRepublisher {
             harTilretteleggingsbehovProducer.sendKafkamelding(
                     sammenstillBehov.lagbehovKandidat(oppdatering)
             );
+
+        });
+
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * Republiser alle kandidater til Kafka. Brukes bare i spesielle tilfeller.
+     *
+     * @return 200 OK hvis kandidater ble republisert.
+     */
+    @PostMapping("/internal/kafka/republish")
+    public ResponseEntity republiser() {
+        String ident = sjekkTilgangTilRepublisher();
+
+        var aktørider = republisherRepository.hentAktørider();
+
+
+        log.warn("Bruker med ident {} republiserer alle {} kandidatdata!", ident, aktørider.size());
+        aktørider.forEach(aktørId -> {
+            HarTilretteleggingsbehov behov = sammenstillBehov.lagbehov(aktørId, null, null, null, null);
+            log.info("Republiser (mock): " + behov);
+            //harTilretteleggingsbehovProducer.sendKafkamelding(behov);
         });
 
         return ResponseEntity.ok().build();

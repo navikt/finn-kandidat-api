@@ -55,12 +55,12 @@ public class SjekkPermittertUtil {
     }
 
     static boolean harArbeidssokerRegistrertSegSomPermittert(Optional<PermittertArbeidssoker> permittertArbeidssoker) {
-        log.info("Sjekker arbeidssøkers registrering");
+        //log.info("Sjekker arbeidssøkers registrering");
         return permittertArbeidssoker.get().erPermittert();
     }
 
     static boolean erVedtakGyldigOgForPermittering(Vedtak vedtak) {
-        log.info("Sjekker gyldighet av vedtak");
+        //log.info("Sjekker gyldighet av vedtak");
         return vedtak.erGyldig() && vedtak.erPermittert();
     }
 }

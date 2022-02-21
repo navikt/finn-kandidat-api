@@ -83,7 +83,7 @@ public class KafkaRepublisher {
 
         var aktørider = republisherRepository.hentAktørider();
 
-        log.warn("Bruker med ident {} republiserer alle {} kandidatdata!", ident, aktørider.size());
+        log.warn("Bruker med ident {} republiserer alle {} kandidatdata", ident, aktørider.size());
         for(int i =0; i< aktørider.size(); i++) {
             HarTilretteleggingsbehov behov = sammenstillBehov.lagbehov(aktørider.get(i), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
             log.info("Republiser (mock) index " + i + ": " + behov);

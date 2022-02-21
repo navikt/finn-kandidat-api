@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static no.nav.finnkandidatapi.tilgangskontroll.TokenUtils.ISSUER_ISSO;
 
@@ -84,11 +85,16 @@ public class KafkaRepublisher {
         var aktørider = republisherRepository.hentAktørider();
 
         log.warn("Bruker med ident {} republiserer alle {} kandidatdata", ident, aktørider.size());
-        /*for(int i =0; i< aktørider.size(); i++) {
-            HarTilretteleggingsbehov behov = sammenstillBehov.lagbehov(aktørider.get(i), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
-            log.info("Republiser (mock) index " + i + ": " + behov);
-            //harTilretteleggingsbehovProducer.sendKafkamelding(behov);
-        }*/
+        var filtrerteTilretteleggingsbehov = aktørider.stream().map(aktørId ->
+                sammenstillBehov.lagbehov(aktørId, Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty())
+        ).filter(harTilretteleggingsbehov ->
+                harTilretteleggingsbehov.isHarTilretteleggingsbehov() || !harTilretteleggingsbehov.getBehov().isEmpty()
+        ).collect(Collectors.toList());
+
+        log.info("Antall filtrerte tilretteleggingsbehov " + filtrerteTilretteleggingsbehov.size());
+
+        //filtrerteTilretteleggingsbehov.forEach(harTilretteleggingsbehovProducer::sendKafkamelding);
+
         return ResponseEntity.ok().build();
     }
 

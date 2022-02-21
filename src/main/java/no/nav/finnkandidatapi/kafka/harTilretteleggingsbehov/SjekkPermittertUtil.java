@@ -15,16 +15,16 @@ public class SjekkPermittertUtil {
         Optional<LocalDateTime> datoForVeilarbRegistrering = hentDatoForRegistrering(permittertArbeidssoker);
 
         if (harHverkenVedtakEllerRegistrering(datoForVedtak, datoForVeilarbRegistrering)) {
-            log.info("Har hverken vedtak eller registrering");
+            //log.info("Har hverken vedtak eller registrering");
             return false;
         } else if (harVedtakMenIkkeRegistrering(datoForVedtak, datoForVeilarbRegistrering)) {
-            log.info("Har vedtak");
+            //log.info("Har vedtak");
             return erVedtakGyldigOgForPermittering(vedtak.get());
         } else if (harRegistreringMenIkkeVedtak(datoForVedtak, datoForVeilarbRegistrering)) {
-            log.info("Har registrering");
+            //log.info("Har registrering");
             return harArbeidssokerRegistrertSegSomPermittert(permittertArbeidssoker);
         } else {
-            log.info("Har både vedtak og registrering");
+            //log.info("Har både vedtak og registrering");
             //har både vedtak og registrering
             if (datoForVeilarbRegistrering.get().isBefore(datoForVedtak.get())) {
                 return erVedtakGyldigOgForPermittering(vedtak.get());

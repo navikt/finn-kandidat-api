@@ -83,15 +83,12 @@ public class KafkaRepublisher {
 
         var aktørider = republisherRepository.hentAktørider();
 
-        var komprimert = new HashSet<>(aktørider).size();
-
-        log.warn("Bruker med ident {} republiserer alle {} kandidatdata! komprimert {}", ident, aktørider.size(), komprimert);
-        aktørider.forEach(aktørId -> {
-            HarTilretteleggingsbehov behov = sammenstillBehov.lagbehov(aktørId, Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
-            log.info("Republiser (mock): " + behov);
+        log.warn("Bruker med ident {} republiserer alle {} kandidatdata!", ident, aktørider.size());
+        for(int i =0; i< aktørider.size(); i++) {
+            HarTilretteleggingsbehov behov = sammenstillBehov.lagbehov(aktørider.get(i), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
+            log.info("Republiser (mock) index " + i + ": " + behov);
             //harTilretteleggingsbehovProducer.sendKafkamelding(behov);
-        });
-
+        }
         return ResponseEntity.ok().build();
     }
 

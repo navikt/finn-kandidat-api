@@ -27,7 +27,7 @@ public class RepublisherRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Set<String> hentAktørider() {
+    public List<String> hentAktørider() {
         String query = lagHentAktøridQuery();
         var liste =  jdbcTemplate.query(query, new RowMapper<String>() {
             @Override
@@ -35,7 +35,7 @@ public class RepublisherRepository {
                 return rs.getString("aktor_id");
             }
         });
-        return new HashSet<>(liste);
+        return liste;
     }
 
     private String lagHentAktøridQuery() {

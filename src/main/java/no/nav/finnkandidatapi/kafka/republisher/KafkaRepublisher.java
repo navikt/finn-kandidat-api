@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 
 import static no.nav.finnkandidatapi.tilgangskontroll.TokenUtils.ISSUER_ISSO;
 
@@ -81,10 +83,11 @@ public class KafkaRepublisher {
 
         var aktørider = republisherRepository.hentAktørider();
 
+        var komprimert = new HashSet<>(aktørider).size();
 
-        log.warn("Bruker med ident {} republiserer alle {} kandidatdata!", ident, aktørider.size());
+        log.warn("Bruker med ident {} republiserer alle {} kandidatdata! komprimert {}", ident, aktørider.size(), komprimert);
         aktørider.forEach(aktørId -> {
-            HarTilretteleggingsbehov behov = sammenstillBehov.lagbehov(aktørId, null, null, null, null);
+            HarTilretteleggingsbehov behov = sammenstillBehov.lagbehov(aktørId, Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
             log.info("Republiser (mock): " + behov);
             //harTilretteleggingsbehovProducer.sendKafkamelding(behov);
         });

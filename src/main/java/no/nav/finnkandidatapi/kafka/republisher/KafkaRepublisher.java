@@ -1,6 +1,7 @@
 package no.nav.finnkandidatapi.kafka.republisher;
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.AivenHarTilretteleggingsbehovProducer;
 import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.HarTilretteleggingsbehov;
 import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.HarTilretteleggingsbehovProducer;
 import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.SammenstillBehov;
@@ -27,7 +28,7 @@ import static no.nav.finnkandidatapi.tilgangskontroll.TokenUtils.ISSUER_ISSO;
 @ProtectedWithClaims(issuer = ISSUER_ISSO)
 @Slf4j
 public class KafkaRepublisher {
-    private final HarTilretteleggingsbehovProducer harTilretteleggingsbehovProducer;
+    private final AivenHarTilretteleggingsbehovProducer harTilretteleggingsbehovProducer;
     private final KandidatRepository kandidatRepository;
     private final RepublisherRepository republisherRepository;
     private final SammenstillBehov sammenstillBehov;
@@ -36,7 +37,7 @@ public class KafkaRepublisher {
 
     @Autowired
     public KafkaRepublisher(
-            HarTilretteleggingsbehovProducer harTilretteleggingsbehovProducer,
+            AivenHarTilretteleggingsbehovProducer harTilretteleggingsbehovProducer,
             KandidatRepository kandidatRepository,
             RepublisherRepository republisherRepository,
             TilgangskontrollService tilgangskontrollService,

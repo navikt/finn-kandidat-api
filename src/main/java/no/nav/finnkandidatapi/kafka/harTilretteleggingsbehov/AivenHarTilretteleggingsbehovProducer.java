@@ -13,14 +13,14 @@ import org.springframework.util.concurrent.ListenableFuture;
 
 @Component
 @Slf4j
-public class HarTilretteleggingsbehovProducer {
+public class AivenHarTilretteleggingsbehovProducer {
 
     private final KafkaTemplate<String, String> kafkaTemplate;
     private final String topic;
 
-    public HarTilretteleggingsbehovProducer(
-            @Qualifier("onPremKafkaTemplate") KafkaTemplate<String, String> kafkaTemplate,
-            @Value("${kandidat-endret.topic}") String topic
+    public AivenHarTilretteleggingsbehovProducer(
+            @Qualifier("aivenKafkaTemplate") KafkaTemplate<String, String> kafkaTemplate,
+            @Value("${tillretteleggingsbehov.topic}") String topic
     ) {
         this.kafkaTemplate = kafkaTemplate;
         this.topic = topic;

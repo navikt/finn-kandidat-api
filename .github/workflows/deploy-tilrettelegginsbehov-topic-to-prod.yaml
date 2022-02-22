@@ -1,11 +1,12 @@
-name: Deploy rapid-topic to prod
+name: Deploy tilretteleggingsbehov-topic to prod
 
 on:
   push:
     branches:
-      - main
+      - master
     paths:
       - topic-tilrettelegginsbehov-prod.yaml
+      - .github/workflows/deploy-tilrettelegginsbehov-topic-to-prod.yaml
 
 jobs:
   deploy-rapid-to-prod:

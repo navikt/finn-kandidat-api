@@ -1,9 +1,11 @@
-name: Deploy rapid-topic to dev
+name: Deploy tilretteleggingsbehov-topic to dev
 
 on:
   push:
     paths:
       - topic-tilrettelegginsbehov-dev.yaml
+      - .github/workflows/deploy-tilrettelegginsbehov-topic-to-dev.yaml
+
 
 jobs:
   deploy-rapid-to-dev:

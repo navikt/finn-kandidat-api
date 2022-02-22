@@ -15,6 +15,6 @@ jobs:
       - uses: actions/checkout@master
       - uses: nais/deploy/actions/deploy@master
         env:
-          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
+          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY_TOI }}
           CLUSTER: prod-gcp
           RESOURCE: topic-tilrettelegginsbehov-prod.yaml

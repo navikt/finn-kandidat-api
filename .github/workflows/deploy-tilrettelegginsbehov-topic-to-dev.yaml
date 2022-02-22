@@ -2,8 +2,6 @@ name: Deploy rapid-topic to dev
 
 on:
   push:
-    branches:
-      - main
     paths:
       - topic-tilrettelegginsbehov-dev.yaml
 

@@ -1,0 +1,25 @@
+apiVersion: kafka.nais.io/v1
+kind: Topic
+metadata:
+  name: toi-tillretteleggingsbehov-1
+  namespace: toi
+  labels:
+    team: toi
+  annotations:
+    kafka.nais.io/removeDataWhenResourceIsDeleted: "false"
+spec:
+  pool: nav-prod
+  config:
+    cleanupPolicy: compact,delete
+    minimumInSyncReplicas: 1
+    partitions: 1
+    replication: 2
+    retentionBytes: -1
+    retentionHours: 4385000 #Litt over 500 år
+  acl:
+    - team: arbeidsgiver
+      application: finn-kandidat-api
+      access: readwrite
+    - team: toi
+      application: toi-tilretteleggingsbehov
+      access: read

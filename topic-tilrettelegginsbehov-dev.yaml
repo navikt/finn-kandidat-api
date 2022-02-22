@@ -15,7 +15,7 @@ spec:
     partitions: 1
     replication: 2
     retentionBytes: -1
-    retentionHours: 4385000 #Litt over 500 år
+    retentionHours: 438500 #Litt over 50 år
   acl:
     - team: arbeidsgiver
       application: finn-kandidat-api

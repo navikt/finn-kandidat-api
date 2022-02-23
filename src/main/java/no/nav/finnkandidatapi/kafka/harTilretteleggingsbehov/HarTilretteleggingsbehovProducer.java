@@ -39,13 +39,7 @@ public class HarTilretteleggingsbehovProducer {
 
     private void send(String key, String payload) {
         ListenableFuture<SendResult<String, String>> future = kafkaTemplate.send(topic, key, payload);
-        future.addCallback(result -> {
-                    log.info(
-                            "Kandidats behov for tilrettelegging sendt på Kafka-topic, aktørId: {}, offset: {}",
-                            key,
-                            result.getRecordMetadata().offset()
-                    );
-                },
+        future.addCallback(result -> {},
                 exception -> {
                     log.error("Kunne ikke sende kandidat på Kafka-topic, aktørId: {}", key, exception);
                 });

@@ -86,17 +86,20 @@ public class KafkaRepublisher {
 
         log.warn("Bruker med ident {} republiserer alle {} kandidatdata", ident, aktørider.size());
         AtomicInteger totalCounter = new AtomicInteger();
-        AtomicInteger filtrertCounter = new AtomicInteger();
         aktørider.stream().forEach(aktørId -> {
-                    var behov = sammenstillBehov.lagbehov(aktørId, Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
-                    if (behov.isHarTilretteleggingsbehov() || !behov.getBehov().isEmpty()) {
-                        aivenHarTilretteleggingsbehovProducer.sendKafkamelding(behov);
-                        filtrertCounter.getAndIncrement();
-                    }
+                    var behov = sammenstillBehov.lagbehov(
+                            aktørId,
+                            Optional.empty(),
+                            Optional.empty(),
+                            Optional.empty(),
+                            Optional.empty()
+                    );
+
+                    aivenHarTilretteleggingsbehovProducer.sendKafkamelding(behov);
                     totalCounter.getAndIncrement();
                 });
 
-        log.info("Antall behov totalt: " + totalCounter.get() + " Antall behov filtrert: " + filtrertCounter.get());
+        log.info("Antall behov som er publisert: " + totalCounter.get());
 
         return ResponseEntity.ok().build();
     }

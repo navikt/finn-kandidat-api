@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import static no.nav.finnkandidatapi.tilgangskontroll.TokenUtils.ISSUER_ISSO;
@@ -84,15 +85,18 @@ public class KafkaRepublisher {
         var aktørider = republisherRepository.hentAktørider();
 
         log.warn("Bruker med ident {} republiserer alle {} kandidatdata", ident, aktørider.size());
-        var filtrerteTilretteleggingsbehov = aktørider.stream().map(aktørId ->
-                sammenstillBehov.lagbehov(aktørId, Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty())
-        ).filter(harTilretteleggingsbehov ->
-                harTilretteleggingsbehov.isHarTilretteleggingsbehov() || !harTilretteleggingsbehov.getBehov().isEmpty()
-        ).collect(Collectors.toList());
+        AtomicInteger totalCounter = new AtomicInteger();
+        AtomicInteger filtrertCounter = new AtomicInteger();
+        aktørider.stream().forEach(aktørId -> {
+                    var behov = sammenstillBehov.lagbehov(aktørId, Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
+                    if (behov.isHarTilretteleggingsbehov() || !behov.getBehov().isEmpty()) {
+                        aivenHarTilretteleggingsbehovProducer.sendKafkamelding(behov);
+                        filtrertCounter.getAndIncrement();
+                    }
+                    totalCounter.getAndIncrement();
+                });
 
-        log.info("Antall filtrerte tilretteleggingsbehov " + filtrerteTilretteleggingsbehov.size());
-
-        filtrerteTilretteleggingsbehov.forEach(aivenHarTilretteleggingsbehovProducer::sendKafkamelding);
+        log.info("Antall behov totalt: " + totalCounter.get() + " Antall behov filtrert: " + filtrertCounter.get());
 
         return ResponseEntity.ok().build();
     }

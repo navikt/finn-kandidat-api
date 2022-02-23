@@ -26,7 +26,7 @@ public class VedtakReplikertConsumer {
 
     @KafkaListener(
             topics = "#{vedtakReplikertConfig.getTopic()}",
-            groupId = "finn-kandidat-vedtak-replikert2",
+            groupId = "finn-kandidat-vedtak-replikert",
             clientIdPrefix = "vedtak-replikert",
             containerFactory = "aivenKafkaListenerContainerFactory"
     )

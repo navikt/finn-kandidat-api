@@ -22,6 +22,7 @@ spring:
             retries: 25
 
 kandidat-endret.topic: aapen-tag-kandidatEndret-v1-default
+tillretteleggingsbehov.topic: toi.tillretteleggingsbehov-1
 
 ---
 spring:

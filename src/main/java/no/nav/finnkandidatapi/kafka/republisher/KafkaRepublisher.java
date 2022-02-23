@@ -1,8 +1,8 @@
 package no.nav.finnkandidatapi.kafka.republisher;
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.AivenHarTilretteleggingsbehovProducer;
 import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.HarTilretteleggingsbehov;
-import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.HarTilretteleggingsbehovProducer;
 import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.SammenstillBehov;
 import no.nav.finnkandidatapi.kandidat.KandidatRepository;
 import no.nav.finnkandidatapi.tilgangskontroll.TilgangskontrollException;
@@ -15,9 +15,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import static no.nav.finnkandidatapi.tilgangskontroll.TokenUtils.ISSUER_ISSO;
@@ -27,7 +27,7 @@ import static no.nav.finnkandidatapi.tilgangskontroll.TokenUtils.ISSUER_ISSO;
 @ProtectedWithClaims(issuer = ISSUER_ISSO)
 @Slf4j
 public class KafkaRepublisher {
-    private final HarTilretteleggingsbehovProducer harTilretteleggingsbehovProducer;
+    private final AivenHarTilretteleggingsbehovProducer aivenHarTilretteleggingsbehovProducer;
     private final KandidatRepository kandidatRepository;
     private final RepublisherRepository republisherRepository;
     private final SammenstillBehov sammenstillBehov;
@@ -36,14 +36,14 @@ public class KafkaRepublisher {
 
     @Autowired
     public KafkaRepublisher(
-            HarTilretteleggingsbehovProducer harTilretteleggingsbehovProducer,
+            AivenHarTilretteleggingsbehovProducer aivenHarTilretteleggingsbehovProducer,
             KandidatRepository kandidatRepository,
             RepublisherRepository republisherRepository,
             TilgangskontrollService tilgangskontrollService,
             SammenstillBehov sammenstillBehov,
             KafkaRepublisherConfig config
     ) {
-        this.harTilretteleggingsbehovProducer = harTilretteleggingsbehovProducer;
+        this.aivenHarTilretteleggingsbehovProducer = aivenHarTilretteleggingsbehovProducer;
         this.kandidatRepository = kandidatRepository;
         this.republisherRepository = republisherRepository;
         this.sammenstillBehov = sammenstillBehov;
@@ -64,7 +64,7 @@ public class KafkaRepublisher {
 
         log.warn("Bruker med ident {} republiserer alle {} kandidater!", ident, kandidatoppdateringer.size());
         kandidatoppdateringer.forEach(oppdatering -> {
-            harTilretteleggingsbehovProducer.sendKafkamelding(
+            aivenHarTilretteleggingsbehovProducer.sendKafkamelding(
                     sammenstillBehov.lagbehovKandidat(oppdatering)
             );
 
@@ -85,15 +85,21 @@ public class KafkaRepublisher {
         var aktørider = republisherRepository.hentAktørider();
 
         log.warn("Bruker med ident {} republiserer alle {} kandidatdata", ident, aktørider.size());
-        var filtrerteTilretteleggingsbehov = aktørider.stream().map(aktørId ->
-                sammenstillBehov.lagbehov(aktørId, Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty())
-        ).filter(harTilretteleggingsbehov ->
-                harTilretteleggingsbehov.isHarTilretteleggingsbehov() || !harTilretteleggingsbehov.getBehov().isEmpty()
-        ).collect(Collectors.toList());
+        AtomicInteger totalCounter = new AtomicInteger();
+        aktørider.stream().forEach(aktørId -> {
+                    var behov = sammenstillBehov.lagbehov(
+                            aktørId,
+                            Optional.empty(),
+                            Optional.empty(),
+                            Optional.empty(),
+                            Optional.empty()
+                    );
 
-        log.info("Antall filtrerte tilretteleggingsbehov " + filtrerteTilretteleggingsbehov.size());
+                    aivenHarTilretteleggingsbehovProducer.sendKafkamelding(behov);
+                    totalCounter.getAndIncrement();
+                });
 
-        //filtrerteTilretteleggingsbehov.forEach(harTilretteleggingsbehovProducer::sendKafkamelding);
+        log.info("Antall behov som er publisert: " + totalCounter.get());
 
         return ResponseEntity.ok().build();
     }
@@ -112,7 +118,7 @@ public class KafkaRepublisher {
         }
 
         log.warn("Bruker med ident {} republiserer kandidat med aktørId {}.", ident, aktørId);
-        harTilretteleggingsbehovProducer.sendKafkamelding(harTilretteleggingsbehov);
+        aivenHarTilretteleggingsbehovProducer.sendKafkamelding(harTilretteleggingsbehov);
         return ResponseEntity.ok().build();
     }
 

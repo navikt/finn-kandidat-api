@@ -1,6 +1,7 @@
 package no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.handler;
 
 import no.nav.finnkandidatapi.TestData;
+import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.AivenHarTilretteleggingsbehovProducer;
 import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.HarTilretteleggingsbehov;
 import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.HarTilretteleggingsbehovProducer;
 import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.SammenstillBehov;
@@ -43,6 +44,9 @@ public class VedtakHandlerTest {
     @Mock
     HarTilretteleggingsbehovProducer harTilretteleggingsbehovProducer;
 
+    @Mock
+    AivenHarTilretteleggingsbehovProducer aivenHarTilretteleggingsbehovProducer;
+
 
     @Before
     public void before() {
@@ -52,7 +56,7 @@ public class VedtakHandlerTest {
                         permittertArbeidssokerService,
                         vedtakService,
                         midlertidigUtilgjengeligService
-                ), harTilretteleggingsbehovProducer
+                ), harTilretteleggingsbehovProducer, aivenHarTilretteleggingsbehovProducer
 
         );
 

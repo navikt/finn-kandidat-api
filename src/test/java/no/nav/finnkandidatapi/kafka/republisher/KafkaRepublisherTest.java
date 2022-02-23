@@ -1,5 +1,6 @@
 package no.nav.finnkandidatapi.kafka.republisher;
 
+import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.AivenHarTilretteleggingsbehovProducer;
 import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.HarTilretteleggingsbehov;
 import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.HarTilretteleggingsbehovProducer;
 import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.SammenstillBehov;
@@ -37,7 +38,7 @@ KafkaRepublisherTest {
     private KafkaRepublisher kafkaRepublisher;
 
     @Mock
-    private HarTilretteleggingsbehovProducer producer;
+    private AivenHarTilretteleggingsbehovProducer producer;
 
     @Mock
     private KandidatRepository kandidatRepository;

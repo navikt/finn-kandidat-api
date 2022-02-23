@@ -2,6 +2,7 @@ package no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.handler;
 
 import com.nimbusds.oauth2.sdk.util.CollectionUtils;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.AivenHarTilretteleggingsbehovProducer;
 import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.HarTilretteleggingsbehov;
 import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.HarTilretteleggingsbehovProducer;
 import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.SammenstillBehov;
@@ -19,11 +20,14 @@ import java.util.Collections;
 public class KandidatHandler {
     private SammenstillBehov sammenstillBehov;
     private HarTilretteleggingsbehovProducer harTilretteleggingsbehovProducer;
+    private AivenHarTilretteleggingsbehovProducer aivenHarTilretteleggingsbehovProducer;
+
 
     public KandidatHandler(
-            SammenstillBehov sammenstillBehov, HarTilretteleggingsbehovProducer harTilretteleggingsbehovProducer) {
+            SammenstillBehov sammenstillBehov, HarTilretteleggingsbehovProducer harTilretteleggingsbehovProducer, AivenHarTilretteleggingsbehovProducer aivenHarTilretteleggingsbehovProducer) {
         this.sammenstillBehov = sammenstillBehov;
         this.harTilretteleggingsbehovProducer = harTilretteleggingsbehovProducer;
+        this.aivenHarTilretteleggingsbehovProducer = aivenHarTilretteleggingsbehovProducer;
     }
 
     @EventListener
@@ -40,10 +44,10 @@ public class KandidatHandler {
 
     @EventListener
     public void kandidatSlettet(KandidatSlettet event) {
-        harTilretteleggingsbehovProducer.sendKafkamelding(
-                sammenstillBehov.lagbehovKandidat(
-                        new HarTilretteleggingsbehov(event.getAktørId(), false, Collections.emptyList()))
-        );
+        HarTilretteleggingsbehov behov = sammenstillBehov.lagbehovKandidat(
+                new HarTilretteleggingsbehov(event.getAktørId(), false, Collections.emptyList()));
+        harTilretteleggingsbehovProducer.sendKafkamelding(behov);
+        aivenHarTilretteleggingsbehovProducer.sendKafkamelding(behov);
     }
 
     private void kandidatOpprettetEllerEndret(Kandidat kandidat) {
@@ -53,5 +57,6 @@ public class KandidatHandler {
                         CollectionUtils.isNotEmpty(kandidat.kategorier()),
                         kandidat.kategorier()));
         harTilretteleggingsbehovProducer.sendKafkamelding(behov);
+        aivenHarTilretteleggingsbehovProducer.sendKafkamelding(behov);
     }
 }

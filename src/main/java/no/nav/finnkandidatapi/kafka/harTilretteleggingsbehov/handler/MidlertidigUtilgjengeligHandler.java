@@ -1,6 +1,8 @@
 package no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.handler;
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.AivenHarTilretteleggingsbehovProducer;
+import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.HarTilretteleggingsbehov;
 import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.HarTilretteleggingsbehovProducer;
 import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.SammenstillBehov;
 import no.nav.finnkandidatapi.midlertidigutilgjengelig.MidlertidigUtilgjengelig;
@@ -16,11 +18,14 @@ public class MidlertidigUtilgjengeligHandler {
 
     private SammenstillBehov sammenstillBehov;
     private HarTilretteleggingsbehovProducer harTilretteleggingsbehovProducer;
+    private AivenHarTilretteleggingsbehovProducer aivenHarTilretteleggingsbehovProducer;
+
 
     public MidlertidigUtilgjengeligHandler(
-            SammenstillBehov sammenstillBehov, HarTilretteleggingsbehovProducer harTilretteleggingsbehovProducer) {
+            SammenstillBehov sammenstillBehov, HarTilretteleggingsbehovProducer harTilretteleggingsbehovProducer, AivenHarTilretteleggingsbehovProducer aivenHarTilretteleggingsbehovProducer) {
         this.sammenstillBehov = sammenstillBehov;
         this.harTilretteleggingsbehovProducer = harTilretteleggingsbehovProducer;
+        this.aivenHarTilretteleggingsbehovProducer = aivenHarTilretteleggingsbehovProducer;
     }
 
     @EventListener
@@ -56,8 +61,8 @@ public class MidlertidigUtilgjengeligHandler {
     }
 
     private void mottattMidlertidigUtilgjengeligEvent(MidlertidigUtilgjengelig midlertidigUtilgjengelig) {
-        harTilretteleggingsbehovProducer.sendKafkamelding(
-                sammenstillBehov.lagbehov(midlertidigUtilgjengelig)
-        );
+        HarTilretteleggingsbehov behov = sammenstillBehov.lagbehov(midlertidigUtilgjengelig);
+        harTilretteleggingsbehovProducer.sendKafkamelding(behov);
+        aivenHarTilretteleggingsbehovProducer.sendKafkamelding(behov);
     }
 }

@@ -113,10 +113,6 @@ public class KafkaRepublisher {
 
         HarTilretteleggingsbehov harTilretteleggingsbehov = sammenstillBehov.lagbehov(aktørId);
 
-        if (harTilretteleggingsbehov == null) {
-            return ResponseEntity.notFound().build();
-        }
-
         log.warn("Bruker med ident {} republiserer kandidat med aktørId {} og behov {}.", ident, aktørId, harTilretteleggingsbehov.getBehov());
         aivenHarTilretteleggingsbehovProducer.sendKafkamelding(harTilretteleggingsbehov);
         return ResponseEntity.ok().build();

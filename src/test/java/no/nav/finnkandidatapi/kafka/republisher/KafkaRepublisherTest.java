@@ -117,21 +117,6 @@ KafkaRepublisherTest {
     }
 
     @Test
-    public void republiserKandidat__skal_returnere_404_hvis_kandidat_med_aktørId_ikke_eksisterer() {
-        Veileder veileder = enVeileder();
-        String aktørId = enAktørId();
-
-        when(tilgangskontrollService.hentInnloggetVeileder()).thenReturn(veileder);
-        when(config.getNavIdenterSomKanRepublisere()).thenReturn(Arrays.asList(veileder.getNavIdent()));
-        when(kandidatRepository.hentHarTilretteleggingsbehov(aktørId)).thenReturn(
-                Optional.empty()
-        );
-
-        ResponseEntity response = kafkaRepublisher.republiserKandidat(aktørId);
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-    }
-
-    @Test
     public void republiserKandidat__skal_returnere_200_hvis_suksess() {
         Veileder veileder = enVeileder();
         String aktørId = enAktørId();

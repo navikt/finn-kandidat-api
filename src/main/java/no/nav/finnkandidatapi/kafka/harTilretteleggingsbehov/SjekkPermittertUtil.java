@@ -13,22 +13,25 @@ public class SjekkPermittertUtil {
     public static boolean sjekkOmErPermittert(Optional<PermittertArbeidssoker> permittertArbeidssoker, Optional<Vedtak> vedtak) {
         Optional<LocalDateTime> datoForVedtak = hentDatoForVedtak(vedtak);
         Optional<LocalDateTime> datoForVeilarbRegistrering = hentDatoForRegistrering(permittertArbeidssoker);
+        String aktørid = vedtak.map(it -> it.getAktørId()).orElse("");
 
         if (harHverkenVedtakEllerRegistrering(datoForVedtak, datoForVeilarbRegistrering)) {
-            //log.info("Har hverken vedtak eller registrering");
+            log.info(aktørid + " har hverken vedtak eller registrering");
             return false;
         } else if (harVedtakMenIkkeRegistrering(datoForVedtak, datoForVeilarbRegistrering)) {
-            //log.info("Har vedtak");
+            log.info(aktørid + " har vedtak");
             return erVedtakGyldigOgForPermittering(vedtak.get());
         } else if (harRegistreringMenIkkeVedtak(datoForVedtak, datoForVeilarbRegistrering)) {
-            //log.info("Har registrering");
+            log.info(aktørid + " har registrering");
             return harArbeidssokerRegistrertSegSomPermittert(permittertArbeidssoker);
         } else {
-            //log.info("Har både vedtak og registrering");
+            log.info(aktørid + " har både vedtak og registrering");
             //har både vedtak og registrering
             if (datoForVeilarbRegistrering.get().isBefore(datoForVedtak.get())) {
+                log.info(aktørid + " har permitteringsdato før vedtaksdato");
                 return erVedtakGyldigOgForPermittering(vedtak.get());
             } else {
+                log.info(aktørid + " har ikke permitteringsdato før vedtaksdato");
                 return harArbeidssokerRegistrertSegSomPermittert(permittertArbeidssoker);
             }
         }
@@ -55,12 +58,12 @@ public class SjekkPermittertUtil {
     }
 
     static boolean harArbeidssokerRegistrertSegSomPermittert(Optional<PermittertArbeidssoker> permittertArbeidssoker) {
-        //log.info("Sjekker arbeidssøkers registrering");
+        log.info(permittertArbeidssoker.get().getAktørId() + " sjekker arbeidssøkers registrering " + permittertArbeidssoker.get().erPermittert());
         return permittertArbeidssoker.get().erPermittert();
     }
 
     static boolean erVedtakGyldigOgForPermittering(Vedtak vedtak) {
-        //log.info("Sjekker gyldighet av vedtak");
+        log.info(vedtak.getAktørId() + " sjekker gyldighet av vedtak " + vedtak.erGyldig() + " " + vedtak.erPermittert());
         return vedtak.erGyldig() && vedtak.erPermittert();
     }
 }

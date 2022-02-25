@@ -1,5 +1,6 @@
 package no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov;
 
+import lombok.extern.slf4j.Slf4j;
 import no.nav.finnkandidatapi.kandidat.KandidatRepository;
 import no.nav.finnkandidatapi.midlertidigutilgjengelig.MidlertidigUtilgjengelig;
 import no.nav.finnkandidatapi.midlertidigutilgjengelig.MidlertidigUtilgjengeligService;
@@ -18,6 +19,7 @@ import java.util.stream.Stream;
 import static java.util.Collections.emptyList;
 
 @Component
+@Slf4j
 public class SammenstillBehov {
 
     private final KandidatRepository kandidatRepository;
@@ -66,7 +68,7 @@ public class SammenstillBehov {
                 permitteringFilter.stream(),
                 midlertidigUtilgjengeligFilter.stream()
         );
-
+        log.info("Lager behov:" + behov);
         return new HarTilretteleggingsbehov(aktørId, erTilretteleggingsbehov, behov);
     }
 

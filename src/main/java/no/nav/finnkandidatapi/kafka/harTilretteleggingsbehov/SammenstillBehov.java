@@ -68,7 +68,7 @@ public class SammenstillBehov {
                 permitteringFilter.stream(),
                 midlertidigUtilgjengeligFilter.stream()
         );
-        log.info("Lager behov:" + behov);
+        log.info("Lager behov for aktør:" + aktørId + " " + behov);
         return new HarTilretteleggingsbehov(aktørId, erTilretteleggingsbehov, behov);
     }
 

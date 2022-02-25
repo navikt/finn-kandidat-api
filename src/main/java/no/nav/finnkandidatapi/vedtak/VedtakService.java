@@ -38,7 +38,7 @@ public class VedtakService {
         if (aktørId == null) {
             return;
         }
-        log.info("Mottokk vedtak med aktørId");
+        log.info("Mottok vedtak med aktørId " + aktørId);
 
         if (vedtakReplikert.getOp_type().equalsIgnoreCase("I") && erVedtakGodkjent(vedtakReplikert.getAfter())) {
             behandleInsert(vedtakReplikert, aktørId);

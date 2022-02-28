@@ -87,13 +87,7 @@ public class KafkaRepublisher {
         log.warn("Bruker med ident {} republiserer alle {} kandidatdata", ident, aktørider.size());
         AtomicInteger totalCounter = new AtomicInteger();
         aktørider.stream().forEach(aktørId -> {
-                    var behov = sammenstillBehov.lagbehov(
-                            aktørId,
-                            Optional.empty(),
-                            Optional.empty(),
-                            Optional.empty(),
-                            Optional.empty()
-                    );
+                    var behov = sammenstillBehov.lagbehov(aktørId);
 
                     aivenHarTilretteleggingsbehovProducer.sendKafkamelding(behov);
                     totalCounter.getAndIncrement();

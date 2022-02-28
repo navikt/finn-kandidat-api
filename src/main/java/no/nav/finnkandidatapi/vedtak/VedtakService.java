@@ -30,6 +30,10 @@ public class VedtakService {
     }
 
     public Optional<Vedtak> hentNyesteVedtakForAktør(String aktørId) {
+        Optional<Vedtak> nyesterad = vedtakRepository.hentNyesteVedtakForAktør(aktørId);
+        if(nyesterad.stream().anyMatch(it -> "AVSLU".equals(it.getStatusKode()))) {
+            return nyesterad;
+        }
         return vedtakRepository.hentNyesteVersjonAvNyesteVedtakForAktør(aktørId);
     }
 

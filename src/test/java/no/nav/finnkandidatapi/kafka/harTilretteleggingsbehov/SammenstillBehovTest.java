@@ -7,6 +7,7 @@ import no.nav.finnkandidatapi.midlertidigutilgjengelig.MidlertidigUtilgjengeligS
 import no.nav.finnkandidatapi.permittert.PermittertArbeidssoker;
 import no.nav.finnkandidatapi.permittert.PermittertArbeidssokerService;
 import no.nav.finnkandidatapi.vedtak.Vedtak;
+import no.nav.finnkandidatapi.vedtak.VedtakRepository;
 import no.nav.finnkandidatapi.vedtak.VedtakService;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,7 +33,7 @@ public class SammenstillBehovTest {
     public KandidatRepository kandidatRepository;
 
     @Mock
-    public VedtakService vedtakService;
+    public VedtakRepository vedtakRepository;
 
     @Mock
     public PermittertArbeidssokerService permittertArbeidssokerService;
@@ -45,7 +46,7 @@ public class SammenstillBehovTest {
         sammenstillBehov = new SammenstillBehov(
                 kandidatRepository,
                 permittertArbeidssokerService,
-                vedtakService,
+                new VedtakService(vedtakRepository, null, null),
                 midlertidigUtilgjengeligService
         );
 
@@ -59,7 +60,8 @@ public class SammenstillBehovTest {
 
         when(kandidatRepository.hentHarTilretteleggingsbehov(aktørid)).thenReturn(Optional.of(harTilretteleggingsbehov));
         when(permittertArbeidssokerService.hentNyestePermitterteArbeidssoker(aktørid)).thenReturn(Optional.of(permittertArbeidssoker));
-        when(vedtakService.hentNyesteVedtakForAktør(aktørid)).thenReturn(Optional.of(vedtak));
+        when(vedtakRepository.hentNyesteVersjonAvNyesteVedtakForAktør(aktørid)).thenReturn(Optional.of(vedtak));
+        when(vedtakRepository.hentNyesteVedtakForAktør(aktørid)).thenReturn(Optional.of(vedtak));
         when(midlertidigUtilgjengeligService.hentMidlertidigUtilgjengelig(aktørid)).thenReturn(Optional.of(midlertidigUtilgjengelig));
     }
 
@@ -106,6 +108,67 @@ public class SammenstillBehovTest {
                 sammenstillBehov.lagbehov(
                         vedtak
                 );
+
+        assertThat(lagbehov.getBehov())
+                .containsExactlyInAnyOrder(
+                        "arbeidstid",
+                        "fysisk",
+                        "arbeidshverdagen",
+                        "utfordringerMedNorsk",
+                        PermittertArbeidssoker.ER_PERMITTERT_KATEGORI,
+                        MidlertidigUtilgjengelig.MIDLERTIDIG_UTILGJENGELIG
+                );
+    }
+
+    @Test
+    public void lag_sammenstilling_med_ingen_event() {
+
+        HarTilretteleggingsbehov lagbehov =
+                sammenstillBehov.lagbehov(aktørid);
+
+        assertThat(lagbehov.getBehov())
+                .containsExactlyInAnyOrder(
+                        "arbeidstid",
+                        "fysisk",
+                        "arbeidshverdagen",
+                        "utfordringerMedNorsk",
+                        PermittertArbeidssoker.ER_PERMITTERT_KATEGORI,
+                        MidlertidigUtilgjengelig.MIDLERTIDIG_UTILGJENGELIG
+                );
+    }
+
+    @Test
+    public void lag_sammenstilling_med_avsluttet_vedtak_i_db() {
+        Vedtak vedtak = TestData.etVedtak();
+        vedtak.setAktørId(aktørid);
+        Vedtak avsluttetVedtak = TestData.etAvsluttetVedtak();
+        avsluttetVedtak.setAktørId(aktørid);
+        when(vedtakRepository.hentNyesteVedtakForAktør(aktørid)).thenReturn(Optional.of(avsluttetVedtak));
+        when(permittertArbeidssokerService.hentNyestePermitterteArbeidssoker(aktørid)).thenReturn(Optional.empty());
+
+        HarTilretteleggingsbehov lagbehov =
+                sammenstillBehov.lagbehov(aktørid);
+
+        assertThat(lagbehov.getBehov())
+                .containsExactlyInAnyOrder(
+                        "arbeidstid",
+                        "fysisk",
+                        "arbeidshverdagen",
+                        "utfordringerMedNorsk",
+                        MidlertidigUtilgjengelig.MIDLERTIDIG_UTILGJENGELIG
+                );
+    }
+
+    @Test
+    public void lag_sammenstilling_med_aktivt_vedtak_i_db() {
+        Vedtak vedtak = TestData.etVedtak();
+        vedtak.setAktørId(aktørid);
+        when(vedtakRepository.hentNyesteVersjonAvNyesteVedtakForAktør(aktørid)).thenReturn(Optional.of(vedtak));
+        when(vedtakRepository.hentNyesteVedtakForAktør(aktørid)).thenReturn(Optional.of(vedtak));
+        when(permittertArbeidssokerService.hentNyestePermitterteArbeidssoker(aktørid)).thenReturn(Optional.empty());
+
+        HarTilretteleggingsbehov lagbehov =
+                sammenstillBehov.lagbehov(aktørid);
 
         assertThat(lagbehov.getBehov())
                 .containsExactlyInAnyOrder(

@@ -95,6 +95,25 @@ public class TestData {
                 .build();
     }
 
+    public static Vedtak etAvsluttetVedtak() {
+        return Vedtak.builder()
+                .aktørId("1000000000001")
+                .arenaDbOperasjon("U")
+                .arenaDbTidsstempel(now())
+                .arenaDbTransactionlogPosisjon("1")
+                .fnr("01010112345")
+                .fraDato(now().minusMonths(5))
+                .tilDato(now().minusMonths(1))
+                .personId(1000L)
+                .rettighetKode("PERM")
+                .slettet(false)
+                .statusKode("AVSLU")
+                .typeKode("E")
+                .utfallKode("JA")
+                .vedtakId(101L)
+                .build();
+    }
+
     public static Vedtak etTomtVedtak() {
         return Vedtak.builder().build();
     }

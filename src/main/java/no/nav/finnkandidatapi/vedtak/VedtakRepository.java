@@ -61,6 +61,20 @@ public class VedtakRepository {
         }
     }
 
+    public Optional<Vedtak> hentNyesteVedtakForAktør(String aktørId) {
+        try {
+            Vedtak vedtak = jdbcTemplate.queryForObject(
+                    "SELECT * FROM vedtak WHERE aktor_id = ? AND slettet = false ORDER BY id DESC LIMIT 1", new Object[]{aktørId},
+                    vedtakMapper
+            );
+            return Optional.ofNullable(vedtak);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+
+
     public Optional<Vedtak> hentNyesteVedtak(String vedtakId) {
         try {
             Vedtak vedtak = jdbcTemplate.queryForObject(

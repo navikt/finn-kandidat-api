@@ -34,10 +34,19 @@ spec:
   prometheus:
     enabled: true
     path: /finn-kandidat-api/internal/actuator/prometheus
+  azure:
+    application:
+      enabled: true
+      claims:
+        extra:
+          - NAVident
   accessPolicy:
     inbound:
       rules:
         - application: tilretteleggingsbehov-innsyn
+          cluster: prod-gcp
+        - application: rekrutteringsbistand-container
+          namespace: toi
           cluster: prod-gcp
   env:
     - name: SPRING_PROFILES_ACTIVE

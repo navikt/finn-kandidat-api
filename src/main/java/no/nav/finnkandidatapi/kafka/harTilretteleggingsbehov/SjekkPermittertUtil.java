@@ -13,25 +13,25 @@ public class SjekkPermittertUtil {
     public static boolean sjekkOmErPermittert(Optional<PermittertArbeidssoker> permittertArbeidssoker, Optional<Vedtak> vedtak) {
         Optional<LocalDateTime> datoForVedtak = hentDatoForVedtak(vedtak);
         Optional<LocalDateTime> datoForVeilarbRegistrering = hentDatoForRegistrering(permittertArbeidssoker);
-        //String aktørid = vedtak.map(it -> it.getAktørId()).orElse("");
+        String aktørid = vedtak.map(it -> it.getAktørId()).orElse("");
 
         if (harHverkenVedtakEllerRegistrering(datoForVedtak, datoForVeilarbRegistrering)) {
-            //log.info(aktørid + " har hverken vedtak eller registrering");
+            log.info(aktørid + " har hverken vedtak eller registrering");
             return false;
         } else if (harVedtakMenIkkeRegistrering(datoForVedtak, datoForVeilarbRegistrering)) {
-            //log.info(aktørid + " har vedtak");
+            log.info(aktørid + " har vedtak");
             return erVedtakGyldigOgForPermittering(vedtak.get());
         } else if (harRegistreringMenIkkeVedtak(datoForVedtak, datoForVeilarbRegistrering)) {
-            //log.info(aktørid + " har registrering");
+            log.info(aktørid + " har registrering");
             return harArbeidssokerRegistrertSegSomPermittert(permittertArbeidssoker);
         } else {
-            //log.info(aktørid + " har både vedtak og registrering");
+            log.info(aktørid + " har både vedtak og registrering");
             //har både vedtak og registrering
             if (datoForVeilarbRegistrering.get().isBefore(datoForVedtak.get())) {
-                //log.info(aktørid + " har permitteringsdato før vedtaksdato");
+                log.info(aktørid + " har permitteringsdato før vedtaksdato");
                 return erVedtakGyldigOgForPermittering(vedtak.get());
             } else {
-                //log.info(aktørid + " har ikke permitteringsdato før vedtaksdato");
+                log.info(aktørid + " har ikke permitteringsdato før vedtaksdato");
                 return harArbeidssokerRegistrertSegSomPermittert(permittertArbeidssoker);
             }
         }

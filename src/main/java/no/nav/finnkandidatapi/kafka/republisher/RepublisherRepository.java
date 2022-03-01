@@ -29,12 +29,7 @@ public class RepublisherRepository {
 
     public List<String> hentAktørider() {
         String query = lagHentAktøridQuery();
-        var liste =  jdbcTemplate.query(query, new RowMapper<String>() {
-            @Override
-            public String mapRow(ResultSet rs, int rowNum) throws SQLException {
-                return rs.getString("aktor_id");
-            }
-        });
+        var liste =  jdbcTemplate.query(query, (rs, rowNum) -> rs.getString("aktor_id"));
         return liste;
     }
 
@@ -52,5 +47,15 @@ public class RepublisherRepository {
                 "SELECT DISTINCT aktor_id " +
                 "FROM vedtak "
         );
+    }
+
+    // Engangskjøringer for uttrekk. Endres etter behov.
+    public List<String> hentCustomUtvalg() {
+        String query = "SELECT DISTINCT aktor_id " +
+                "FROM permittert " +
+                "WHERE opprettet >'2022-02-28 00:00:00.000000' AND slettet=true order by opprettet desc";
+
+        var liste =  jdbcTemplate.query(query, (rs, rowNum) -> rs.getString("aktor_id"));
+        return liste;
     }
 }

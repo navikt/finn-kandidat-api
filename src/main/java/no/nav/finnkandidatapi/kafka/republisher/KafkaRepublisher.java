@@ -98,6 +98,31 @@ public class KafkaRepublisher {
         return ResponseEntity.ok().build();
     }
 
+    /**
+     * Republiser alle kandidater til Kafka. Brukes bare i spesielle tilfeller.
+     *
+     * @return 200 OK hvis kandidater ble republisert.
+     */
+    @PostMapping("/internal/kafka/republish/custom")
+    public ResponseEntity republiserCustom() {
+        String ident = sjekkTilgangTilRepublisher();
+
+        var aktørider = republisherRepository.hentCustomUtvalg();
+
+        log.warn("Bruker med ident {} republiserer alle {} custom kandidatdata", ident, aktørider.size());
+        AtomicInteger totalCounter = new AtomicInteger();
+        aktørider.stream().forEach(aktørId -> {
+            var behov = sammenstillBehov.lagbehov(aktørId);
+
+            aivenHarTilretteleggingsbehovProducer.sendKafkamelding(behov);
+            totalCounter.getAndIncrement();
+        });
+
+        log.info("Antall custom behov som er publisert: " + totalCounter.get());
+
+        return ResponseEntity.ok().build();
+    }
+
     /*
      * Republiser en enkelt kandidat til Kafka. Brukes bare i spesielle tilfeller.
      */

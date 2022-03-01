@@ -42,8 +42,8 @@ public class OppfølgingAvsluttetConsumer {
 
         try {
             OppfølgingAvsluttetMelding oppfølgingAvsluttetMelding = OppfølgingAvsluttetUtils.deserialiserMelding(melding.value());
-            kandidatService.behandleOppfølgingAvsluttet(oppfølgingAvsluttetMelding);
             permittertArbeidssokerService.behandleOppfølgingAvsluttet(oppfølgingAvsluttetMelding);
+            kandidatService.behandleOppfølgingAvsluttet(oppfølgingAvsluttetMelding); // Rekkefølgen er viktig, permittering må være lagret før eventen her sendes ut
 
         } catch (RuntimeException e) {
             log.error("Feil ved konsumering av avsluttet oppfølging melding. id {}, offset: {}, partition: {}",

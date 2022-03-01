@@ -6,6 +6,7 @@ import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.HarTilretteleggings
 import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.HarTilretteleggingsbehovProducer;
 import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.SammenstillBehov;
 import no.nav.finnkandidatapi.metrikker.PermittertArbeidssokerEndretEllerOpprettet;
+import no.nav.finnkandidatapi.metrikker.PermittertArbeidssokerSlettet;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
@@ -27,6 +28,13 @@ public class PermitteringHandler {
     public void permitteringEndretEllerOpprettet(PermittertArbeidssokerEndretEllerOpprettet event) {
         HarTilretteleggingsbehov behov = sammenstillBehov.lagbehov(event.getPermittertArbeidssoker());
         harTilretteleggingsbehovProducer.sendKafkamelding(behov);
+        aivenHarTilretteleggingsbehovProducer.sendKafkamelding(behov);
+    }
+
+    @EventListener
+    public void permitteringSlettet(PermittertArbeidssokerSlettet event) {
+        HarTilretteleggingsbehov behov = sammenstillBehov.lagbehov(event.getAktørId());
+        //harTilretteleggingsbehovProducer.sendKafkamelding(behov); // Arbeidsplassen har aldri fått denne
         aivenHarTilretteleggingsbehovProducer.sendKafkamelding(behov);
     }
 }

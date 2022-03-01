@@ -53,7 +53,7 @@ public class RepublisherRepository {
     public List<String> hentCustomUtvalg() {
         String query = "SELECT DISTINCT aktor_id " +
                 "FROM permittert " +
-                "WHERE opprettet >'2022-02-28 00:00:00.000000' AND slettet=true order by opprettet desc";
+                "WHERE opprettet >'2022-02-28 00:00:00.000000' AND slettet=true";
 
         var liste =  jdbcTemplate.query(query, (rs, rowNum) -> rs.getString("aktor_id"));
         return liste;

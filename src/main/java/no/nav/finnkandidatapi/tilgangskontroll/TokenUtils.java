@@ -14,6 +14,7 @@ import java.util.Optional;
 public class TokenUtils {
 
     public final static String ISSUER_ISSO = "isso";
+    public final static String ISSUER_AZUREAD = "azuread";
     public final static String ISSUER_OPENAM = "openam";
     public final static String ISSUER_TOKENX = "tokenx";
 

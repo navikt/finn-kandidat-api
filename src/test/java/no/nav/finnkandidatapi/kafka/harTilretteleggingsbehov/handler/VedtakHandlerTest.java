@@ -3,10 +3,8 @@ package no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.handler;
 import no.nav.finnkandidatapi.TestData;
 import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.AivenHarTilretteleggingsbehovProducer;
 import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.HarTilretteleggingsbehov;
-import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.HarTilretteleggingsbehovProducer;
 import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.SammenstillBehov;
 import no.nav.finnkandidatapi.kandidat.KandidatRepository;
-import no.nav.finnkandidatapi.metrikker.PermittertArbeidssokerEndretEllerOpprettet;
 import no.nav.finnkandidatapi.midlertidigutilgjengelig.MidlertidigUtilgjengelig;
 import no.nav.finnkandidatapi.midlertidigutilgjengelig.MidlertidigUtilgjengeligService;
 import no.nav.finnkandidatapi.permittert.PermittertArbeidssoker;
@@ -42,9 +40,6 @@ public class VedtakHandlerTest {
     MidlertidigUtilgjengeligService midlertidigUtilgjengeligService;
 
     @Mock
-    HarTilretteleggingsbehovProducer harTilretteleggingsbehovProducer;
-
-    @Mock
     AivenHarTilretteleggingsbehovProducer aivenHarTilretteleggingsbehovProducer;
 
 
@@ -56,7 +51,7 @@ public class VedtakHandlerTest {
                         permittertArbeidssokerService,
                         vedtakService,
                         midlertidigUtilgjengeligService
-                ), harTilretteleggingsbehovProducer, aivenHarTilretteleggingsbehovProducer
+                ), aivenHarTilretteleggingsbehovProducer
 
         );
 
@@ -80,7 +75,7 @@ public class VedtakHandlerTest {
         vedtakHandler.vedtakEndret(new VedtakEndret(vedtak));
         vedtakHandler.vedtakSlettet(new VedtakSlettet(vedtak));
 
-        verify(harTilretteleggingsbehovProducer, times(3)).sendKafkamelding(
+        verify(aivenHarTilretteleggingsbehovProducer, times(3)).sendKafkamelding(
                 new HarTilretteleggingsbehov(
                         aktørid,
                         true,

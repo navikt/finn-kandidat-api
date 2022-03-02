@@ -36,11 +36,6 @@ public class KafkaProducerConfig {
     private String credstorePassword;
 
     @Bean
-    public ProducerFactory<String, String> onPremProducerFactory(KafkaProperties properties) {
-        return new DefaultKafkaProducerFactory<>(properties.buildProducerProperties());
-    }
-
-    @Bean
     @Profile("!local")
     public ProducerFactory<String, String> aivenProducerFactory() {
         Map<String, Object> props = new HashMap<>();
@@ -64,11 +59,7 @@ public class KafkaProducerConfig {
     }
 
     @Bean
-    public KafkaTemplate<String, String> onPremKafkaTemplate(@Qualifier("onPremProducerFactory") ProducerFactory<String, String> producerFactory) {
-        return new KafkaTemplate<>(producerFactory);
-    }
-    @Bean
-    public KafkaTemplate<String, String> aivenKafkaTemplate(@Qualifier("aivenProducerFactory") ProducerFactory<String, String> producerFactory) {
+    public KafkaTemplate<String, String> aivenKafkaTemplate(ProducerFactory<String, String> producerFactory) {
         return new KafkaTemplate<>(producerFactory);
     }
 }

@@ -3,7 +3,6 @@ package no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.handler;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.AivenHarTilretteleggingsbehovProducer;
 import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.HarTilretteleggingsbehov;
-import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.HarTilretteleggingsbehovProducer;
 import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.SammenstillBehov;
 import no.nav.finnkandidatapi.midlertidigutilgjengelig.MidlertidigUtilgjengelig;
 import no.nav.finnkandidatapi.midlertidigutilgjengelig.event.MidlertidigUtilgjengeligEndret;
@@ -17,21 +16,19 @@ import org.springframework.stereotype.Component;
 public class MidlertidigUtilgjengeligHandler {
 
     private SammenstillBehov sammenstillBehov;
-    private HarTilretteleggingsbehovProducer harTilretteleggingsbehovProducer;
     private AivenHarTilretteleggingsbehovProducer aivenHarTilretteleggingsbehovProducer;
 
 
     public MidlertidigUtilgjengeligHandler(
-            SammenstillBehov sammenstillBehov, HarTilretteleggingsbehovProducer harTilretteleggingsbehovProducer, AivenHarTilretteleggingsbehovProducer aivenHarTilretteleggingsbehovProducer) {
+            SammenstillBehov sammenstillBehov, AivenHarTilretteleggingsbehovProducer aivenHarTilretteleggingsbehovProducer) {
         this.sammenstillBehov = sammenstillBehov;
-        this.harTilretteleggingsbehovProducer = harTilretteleggingsbehovProducer;
         this.aivenHarTilretteleggingsbehovProducer = aivenHarTilretteleggingsbehovProducer;
     }
 
     @EventListener
     public void midlertidigUtilgjengeligOpprettet(MidlertidigUtilgjengeligOpprettet midlertidigUtilgjengeligOpprettet) {
         MidlertidigUtilgjengelig midlertidigUtilgjengelig = midlertidigUtilgjengeligOpprettet.getMidlertidigUtilgjengelig();
-        
+
         log.info("MidlertidigUtilgjengeligOpprettet event mottatt for aktørid {}, endret av: {}",
                 midlertidigUtilgjengelig.getAktørId(), midlertidigUtilgjengelig.getSistEndretAvIdent());
 
@@ -62,7 +59,6 @@ public class MidlertidigUtilgjengeligHandler {
 
     private void mottattMidlertidigUtilgjengeligEvent(MidlertidigUtilgjengelig midlertidigUtilgjengelig) {
         HarTilretteleggingsbehov behov = sammenstillBehov.lagbehov(midlertidigUtilgjengelig);
-        harTilretteleggingsbehovProducer.sendKafkamelding(behov);
         aivenHarTilretteleggingsbehovProducer.sendKafkamelding(behov);
     }
 }

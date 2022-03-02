@@ -14,12 +14,14 @@ import java.util.Optional;
 public class TokenUtils {
 
     public final static String ISSUER_ISSO = "isso";
+    public final static String ISSUER_AZUREAD = "azuread";
     public final static String ISSUER_OPENAM = "openam";
     public final static String ISSUER_TOKENX = "tokenx";
 
     final static String NAVIDENT_CLAIM = "NAVident";
     final static String GIVEN_NAME_CLAIM = "given_name";
     final static String FAMILY_NAME_CLAIM = "family_name";
+    final static String FULL_NAME_CLAIM = "name";
 
     private final TokenValidationContextHolder contextHolder;
 
@@ -28,12 +30,7 @@ public class TokenUtils {
         this.contextHolder = contextHolder;
     }
 
-    public String hentOidcToken() {
-        String issuer = erInnloggetMedAzureAD() ? ISSUER_ISSO : ISSUER_OPENAM;
-        return contextHolder.getTokenValidationContext().getJwtToken(issuer).getTokenAsString();
-    }
-
-    private Veileder hentInnloggetVeilederMedAzureAdClaims(JwtTokenClaims claims) {
+    private Veileder hentInnloggetVeilederMedIssoIdClaims(JwtTokenClaims claims) {
         String navIdent = claims.getStringClaim(NAVIDENT_CLAIM);
         String fullName;
 
@@ -49,14 +46,25 @@ public class TokenUtils {
         return new Veileder(navIdent, fullName);
     }
 
+    private Veileder hentInnloggetVeilederMedAzureAdClaims(JwtTokenClaims claims) {
+        String navIdent = claims.getStringClaim(NAVIDENT_CLAIM);
+        String fullName = claims.getStringClaim(FULL_NAME_CLAIM);
+
+        return new Veileder(navIdent, fullName);
+    }
+
     public Veileder hentInnloggetVeileder() {
-        if (erInnloggetMedAzureAD()) {
+        if (erInnloggetMedLoginserviceCookie()) {
             JwtTokenClaims claims = contextHolder.getTokenValidationContext().getClaims(ISSUER_ISSO);
-            return hentInnloggetVeilederMedAzureAdClaims(claims);
+            return hentInnloggetVeilederMedIssoIdClaims(claims);
 
         } else if (erInnloggetMedOpenAM()) {
             String navIdent = contextHolder.getTokenValidationContext().getClaims(ISSUER_OPENAM).getSubject();
             return new Veileder(navIdent, null);
+
+        } else if (erInnloggetMedAzureAD()) {
+            JwtTokenClaims claims = contextHolder.getTokenValidationContext().getClaims(ISSUER_AZUREAD);
+            return hentInnloggetVeilederMedAzureAdClaims(claims);
 
         } else {
             throw new TilgangskontrollException("Veileder er ikke innlogget.");
@@ -69,11 +77,7 @@ public class TokenUtils {
                 .orElseThrow(() -> new TilgangskontrollException("Bruker er ikke innlogget"));
     }
 
-    public String hentOidcTokenTokenX() {
-        return contextHolder.getTokenValidationContext().getJwtToken(ISSUER_TOKENX).getTokenAsString();
-    }
-
-    private boolean erInnloggetMedAzureAD() {
+    private boolean erInnloggetMedLoginserviceCookie() {
         Optional<String> navIdent = Optional.ofNullable(contextHolder.getTokenValidationContext().getClaims(ISSUER_ISSO))
                 .map(claims -> claims.get(NAVIDENT_CLAIM).toString())
                 .filter(this::erNAVIdent);
@@ -83,6 +87,13 @@ public class TokenUtils {
     private boolean erInnloggetMedOpenAM() {
         Optional<String> navIdent = Optional.ofNullable(contextHolder.getTokenValidationContext().getClaims(ISSUER_OPENAM))
                 .map(JwtTokenClaims::getSubject)
+                .filter(this::erNAVIdent);
+        return navIdent.isPresent();
+    }
+
+    private boolean erInnloggetMedAzureAD() {
+        Optional<String> navIdent = Optional.ofNullable(contextHolder.getTokenValidationContext().getClaims(ISSUER_AZUREAD))
+                .map(claims -> claims.get(NAVIDENT_CLAIM).toString())
                 .filter(this::erNAVIdent);
         return navIdent.isPresent();
     }

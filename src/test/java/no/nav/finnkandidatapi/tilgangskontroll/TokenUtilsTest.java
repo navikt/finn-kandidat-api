@@ -16,8 +16,7 @@ import java.util.Collections;
 import java.util.Map;
 
 import static no.nav.finnkandidatapi.TestData.*;
-import static no.nav.finnkandidatapi.tilgangskontroll.TokenUtils.ISSUER_ISSO;
-import static no.nav.finnkandidatapi.tilgangskontroll.TokenUtils.ISSUER_TOKENX;
+import static no.nav.finnkandidatapi.tilgangskontroll.TokenUtils.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
@@ -32,6 +31,14 @@ public class TokenUtilsTest {
     private TokenValidationContextHolder contextHolder;
 
     private final MockOAuth2Server oAuth2Server = new MockOAuth2Server();
+
+    @Test
+    public void hentInnloggetVeileder__skal_returnere_riktig_veileder_med_isso_id_token() {
+        Veileder veileder = enVeileder();
+
+        værInnloggetMedLoginserviceCookie(veileder);
+        assertThat(tokenUtils.hentInnloggetVeileder()).isEqualTo(veileder);
+    }
 
     @Test
     public void hentInnloggetVeileder__skal_returnere_riktig_veileder_med_azureAD_token() {
@@ -78,7 +85,7 @@ public class TokenUtilsTest {
         when(contextHolder.getTokenValidationContext()).thenReturn(context);
     }
 
-    private void værInnloggetMedAzureAD(Veileder veileder) {
+    private void værInnloggetMedLoginserviceCookie(Veileder veileder) {
         String subject = "00000000000";
         String audience = "aud-isso";
         Map<String, String> claims = Map.of(
@@ -101,6 +108,33 @@ public class TokenUtilsTest {
 
         JwtToken jwtToken = new JwtToken(encodedToken);
         TokenValidationContext context = new TokenValidationContext(Map.of(ISSUER_ISSO, jwtToken));
+        contextHolder.setTokenValidationContext(context);
+
+        when(contextHolder.getTokenValidationContext()).thenReturn(context);
+    }
+
+    private void værInnloggetMedAzureAD(Veileder veileder) {
+        String subject = "tilfeldigebokstaver";
+        String audience = "aud-isso";
+        Map<String, String> claims = Map.of(
+                "NAVident", veileder.getNavIdent(),
+                "name", etFornavn() + " " + etEtternavn()
+        );
+
+        String encodedToken = oAuth2Server.issueToken(
+                ISSUER_AZUREAD,
+                "theclientid",
+                new DefaultOAuth2TokenCallback(
+                        ISSUER_AZUREAD,
+                        subject,
+                        Collections.singletonList(audience),
+                        claims,
+                        3600
+                )
+        ).serialize();
+
+        JwtToken jwtToken = new JwtToken(encodedToken);
+        TokenValidationContext context = new TokenValidationContext(Map.of(ISSUER_AZUREAD, jwtToken));
         contextHolder.setTokenValidationContext(context);
 
         when(contextHolder.getTokenValidationContext()).thenReturn(context);

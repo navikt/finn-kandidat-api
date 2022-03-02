@@ -102,6 +102,10 @@ no.nav.security.jwt:
         discoveryurl: https://isso-q.adeo.no/isso/oauth2/.well-known/openid-configuration
         accepted_audience: veilarblogin-q0, veilarblogin-q1
         cookiename: ID_token
+    issuer.azuread:
+        discoveryurl: ${AZURE_APP_WELL_KNOWN_URL}
+        accepted_audience: ${AZURE_APP_CLIENT_ID}
+        proxyurl: http://webproxy.nais:8088
     issuer.tokenx:
         discoveryurl: ${TOKEN_X_WELL_KNOWN_URL}
         accepted_audience: ${TOKEN_X_CLIENT_ID}
@@ -150,6 +154,10 @@ no.nav.security.jwt:
         discoveryurl: https://isso.adeo.no/isso/oauth2/.well-known/openid-configuration
         accepted_audience: veilarblogin-p, modiabrukerdialog-p, fpsak-frontend-p
         cookiename: ID_token
+    issuer.azuread:
+        discoveryurl: ${AZURE_APP_WELL_KNOWN_URL}
+        accepted_audience: ${AZURE_APP_CLIENT_ID}
+        proxyurl: http://webproxy.nais:8088
     issuer.tokenx:
         discoveryurl: ${TOKEN_X_WELL_KNOWN_URL}
         accepted_audience: ${TOKEN_X_CLIENT_ID}

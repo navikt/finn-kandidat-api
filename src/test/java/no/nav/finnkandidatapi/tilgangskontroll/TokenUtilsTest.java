@@ -33,14 +33,6 @@ public class TokenUtilsTest {
     private final MockOAuth2Server oAuth2Server = new MockOAuth2Server();
 
     @Test
-    public void hentInnloggetVeileder__skal_returnere_riktig_veileder_med_isso_id_token() {
-        Veileder veileder = enVeileder();
-
-        værInnloggetMedLoginserviceCookie(veileder);
-        assertThat(tokenUtils.hentInnloggetVeileder()).isEqualTo(veileder);
-    }
-
-    @Test
     public void hentInnloggetVeileder__skal_returnere_riktig_veileder_med_azureAD_token() {
         Veileder veileder = enVeileder();
 
@@ -85,37 +77,9 @@ public class TokenUtilsTest {
         when(contextHolder.getTokenValidationContext()).thenReturn(context);
     }
 
-    private void værInnloggetMedLoginserviceCookie(Veileder veileder) {
-        String subject = "00000000000";
-        String audience = "aud-isso";
-        Map<String, String> claims = Map.of(
-                "NAVident", veileder.getNavIdent(),
-                "given_name", etFornavn(),
-                "family_name", etEtternavn()
-        );
-
-        String encodedToken = oAuth2Server.issueToken(
-                ISSUER_ISSO,
-                "theclientid",
-                new DefaultOAuth2TokenCallback(
-                        ISSUER_ISSO,
-                        subject,
-                        Collections.singletonList(audience),
-                        claims,
-                        3600
-                )
-        ).serialize();
-
-        JwtToken jwtToken = new JwtToken(encodedToken);
-        TokenValidationContext context = new TokenValidationContext(Map.of(ISSUER_ISSO, jwtToken));
-        contextHolder.setTokenValidationContext(context);
-
-        when(contextHolder.getTokenValidationContext()).thenReturn(context);
-    }
-
     private void værInnloggetMedAzureAD(Veileder veileder) {
         String subject = "tilfeldigebokstaver";
-        String audience = "aud-isso";
+        String audience = "finn-kandidat-api";
         Map<String, String> claims = Map.of(
                 "NAVident", veileder.getNavIdent(),
                 "name", etFornavn() + " " + etEtternavn()

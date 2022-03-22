@@ -7,11 +7,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static no.nav.finnkandidatapi.tilgangskontroll.TokenUtils.ISSUER_ISSO;
+import static no.nav.finnkandidatapi.tilgangskontroll.TokenUtils.ISSUER_AZUREAD;
 
 @RestController
 @RequestMapping
-@ProtectedWithClaims(issuer = ISSUER_ISSO)
+@ProtectedWithClaims(issuer = ISSUER_AZUREAD)
 public class HentTilbakemeldingerController {
 
     private final TilbakemeldingRepository repository;

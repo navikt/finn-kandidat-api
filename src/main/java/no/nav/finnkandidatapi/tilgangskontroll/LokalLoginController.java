@@ -25,20 +25,20 @@ public class LokalLoginController {
     }
 
     @GetMapping("/local/veileder-cookie")
-    public void hentCookieMedVeilederJwtTokenClaims(HttpServletResponse response) {
-        Cookie cookie = new Cookie("isso-idtoken", veilederToken());
+    public void hentCookieMedVeilederAzureAdTokenClaims(HttpServletResponse response) {
+        Cookie cookie = new Cookie("azuread", veilederToken());
         cookie.setPath("/");
         response.addCookie(cookie);
     }
 
     private String veilederToken(){
-        String issuerId = "isso";
+        String issuerId = "azuread";
         String subject = "ikke-i-bruk";
-        String audience = "default";
+        String audience = "finn-kandidat-api";
         Map<String, String> claims = Map.of(
                 "NAVident", "X123456",
-                "given_name", "Ola",
-                "family_name", "Nordmann"
+                "name", "Ola Nordmann",
+                "unique_name", "ola.nordmann@nav.no"
         );
 
         return server.issueToken(issuerId, subject, audience, claims).serialize();

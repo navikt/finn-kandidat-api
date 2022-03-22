@@ -14,17 +14,13 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 import static no.nav.finnkandidatapi.tilgangskontroll.TokenUtils.ISSUER_AZUREAD;
-import static no.nav.finnkandidatapi.tilgangskontroll.TokenUtils.ISSUER_ISSO;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.ResponseEntity.*;
 
 @RestController
 @RequestMapping("/midlertidig-utilgjengelig")
-@RequiredIssuers({
-        @ProtectedWithClaims(issuer = ISSUER_ISSO),
-        @ProtectedWithClaims(issuer = ISSUER_AZUREAD)
-})
+@ProtectedWithClaims(issuer = ISSUER_AZUREAD)
 @Slf4j
 public class MidlertidigUtilgjengeligController {
     private final MidlertidigUtilgjengeligService service;

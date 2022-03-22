@@ -35,10 +35,9 @@ spring:
         driverClassName: org.h2.Driver
 
 no.nav.security.jwt:
-    issuer.isso:
-        discoveryurl: http://localhost:${mock-oauth2-server.port}/isso/.well-known/openid-configuration
+    issuer.azuread:
+        discoveryurl: http://localhost:${mock-oauth2-server.port}/azuread/.well-known/openid-configuration
         accepted_audience: default
-        cookiename: isso-idtoken
     issuer.openam:
         discoveryurl: http://localhost:${mock-oauth2-server.port}/openam/.well-known/openid-configuration
         accepted_audience: default
@@ -93,11 +92,6 @@ database:
 vault.mount-path: postgresql/preprod-fss
 
 no.nav.security.jwt:
-    issuer.isso:
-        discoveryurl: https://login.microsoftonline.com/NAVQ.onmicrosoft.com/.well-known/openid-configuration
-        accepted_audience: 38e07d31-659d-4595-939a-f18dce3446c5
-        cookiename: isso-idtoken
-        proxyurl: http://webproxy.nais:8088
     issuer.openam:
         discoveryurl: https://isso-q.adeo.no/isso/oauth2/.well-known/openid-configuration
         accepted_audience: veilarblogin-q0, veilarblogin-q1
@@ -145,11 +139,6 @@ database:
 vault.mount-path: postgresql/prod-fss
 
 no.nav.security.jwt:
-    issuer.isso:
-        discoveryurl: https://login.microsoftonline.com/navno.onmicrosoft.com/.well-known/openid-configuration
-        accepted_audience: 9b4e07a3-4f4c-4bab-b866-87f62dff480d
-        cookiename: isso-idtoken
-        proxyurl: http://webproxy.nais:8088
     issuer.openam:
         discoveryurl: https://isso.adeo.no/isso/oauth2/.well-known/openid-configuration
         accepted_audience: veilarblogin-p, modiabrukerdialog-p, fpsak-frontend-p

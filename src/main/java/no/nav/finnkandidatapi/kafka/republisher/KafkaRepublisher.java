@@ -16,15 +16,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
-import static no.nav.finnkandidatapi.tilgangskontroll.TokenUtils.ISSUER_ISSO;
+import static no.nav.finnkandidatapi.tilgangskontroll.TokenUtils.ISSUER_AZUREAD;
+
 
 @RestController
 @Component
-@ProtectedWithClaims(issuer = ISSUER_ISSO)
+@ProtectedWithClaims(issuer = ISSUER_AZUREAD)
 @Slf4j
 public class KafkaRepublisher {
     private final AivenHarTilretteleggingsbehovProducer aivenHarTilretteleggingsbehovProducer;

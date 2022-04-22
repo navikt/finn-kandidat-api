@@ -6,7 +6,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 @EnableJwtTokenValidation(ignore = {
-        "springfox.documentation.swagger.web.ApiResourceController",
         "org.springframework"
 })
 public class FinnKandidatApiApplication {

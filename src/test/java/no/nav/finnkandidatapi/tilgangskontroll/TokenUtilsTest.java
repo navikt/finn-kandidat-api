@@ -91,6 +91,7 @@ public class TokenUtilsTest {
                 new DefaultOAuth2TokenCallback(
                         ISSUER_AZUREAD,
                         subject,
+                        "dummy",
                         Collections.singletonList(audience),
                         claims,
                         3600

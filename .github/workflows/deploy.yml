@@ -11,9 +11,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
-      - uses: actions/setup-java@v1
+      - uses: actions/setup-java@v2
         with:
-          java-version: '13.x'
+          distribution: 'temurin'
+          java-version: '17'
       - uses: actions/cache@v1
         with:
           path: ~/.m2
@@ -26,13 +27,14 @@ jobs:
   deploy-to-dev:
     name: Deploy to dev
     needs: test
-    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/fjern-loginservice'
+    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/oppgraderinger'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
-      - uses: actions/setup-java@v1
+      - uses: actions/setup-java@v2
         with:
-          java-version: '13.x'
+          distribution: 'temurin'
+          java-version: '17'
       - uses: actions/cache@v1
         with:
           path: ~/.m2

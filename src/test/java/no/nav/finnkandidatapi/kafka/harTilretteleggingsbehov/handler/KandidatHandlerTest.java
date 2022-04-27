@@ -11,11 +11,6 @@ import no.nav.finnkandidatapi.kandidat.KandidatRepository;
 import no.nav.finnkandidatapi.metrikker.KandidatEndret;
 import no.nav.finnkandidatapi.metrikker.KandidatOpprettet;
 import no.nav.finnkandidatapi.metrikker.KandidatSlettet;
-import no.nav.finnkandidatapi.midlertidigutilgjengelig.MidlertidigUtilgjengelig;
-import no.nav.finnkandidatapi.midlertidigutilgjengelig.MidlertidigUtilgjengeligService;
-import no.nav.finnkandidatapi.midlertidigutilgjengelig.event.MidlertidigUtilgjengeligEndret;
-import no.nav.finnkandidatapi.midlertidigutilgjengelig.event.MidlertidigUtilgjengeligOpprettet;
-import no.nav.finnkandidatapi.midlertidigutilgjengelig.event.MidlertidigUtilgjengeligSlettet;
 import no.nav.finnkandidatapi.permittert.PermittertArbeidssoker;
 import no.nav.finnkandidatapi.permittert.PermittertArbeidssokerService;
 import no.nav.finnkandidatapi.vedtak.Vedtak;
@@ -25,11 +20,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Optional;
 
 import static org.mockito.Mockito.*;
@@ -51,9 +44,6 @@ public class KandidatHandlerTest {
     public PermittertArbeidssokerService permittertArbeidssokerService;
 
     @Mock
-    MidlertidigUtilgjengeligService midlertidigUtilgjengeligService;
-
-    @Mock
     HarTilretteleggingsbehovProducer harTilretteleggingsbehovProducer;
 
     @Mock
@@ -66,8 +56,7 @@ public class KandidatHandlerTest {
                 new SammenstillBehov(
                         kandidatRepository,
                         permittertArbeidssokerService,
-                        vedtakService,
-                        midlertidigUtilgjengeligService
+                        vedtakService
                 ), harTilretteleggingsbehovProducer, aivenHarTilretteleggingsbehovProducer
 
         );
@@ -76,14 +65,10 @@ public class KandidatHandlerTest {
         permittertArbeidssoker.setAktørId(aktørid);
         Vedtak vedtak = TestData.etVedtak();
         vedtak.setAktørId(aktørid);
-        MidlertidigUtilgjengelig midlertidigUtilgjengelig = TestData.enMidlertidigUtilgjengelig(aktørid);
 
         when(permittertArbeidssokerService.hentNyestePermitterteArbeidssoker(aktørid)).thenReturn(Optional.of(permittertArbeidssoker));
         when(vedtakService.hentNyesteVedtakForAktør(aktørid)).thenReturn(Optional.of(vedtak));
-        when(midlertidigUtilgjengeligService.hentMidlertidigUtilgjengelig(aktørid)).thenReturn(Optional.of(midlertidigUtilgjengelig));
-
     }
-
 
 
     @Test
@@ -103,8 +88,7 @@ public class KandidatHandlerTest {
                                 "arbeidstid",
                                 "arbeidshverdagen",
                                 "utfordringerMedNorsk",
-                                PermittertArbeidssoker.ER_PERMITTERT_KATEGORI,
-                                MidlertidigUtilgjengelig.MIDLERTIDIG_UTILGJENGELIG
+                                PermittertArbeidssoker.ER_PERMITTERT_KATEGORI
                         ))
         );
     }
@@ -122,10 +106,7 @@ public class KandidatHandlerTest {
                 new HarTilretteleggingsbehov(
                         aktørid,
                         false,
-                        Arrays.asList(
-                                PermittertArbeidssoker.ER_PERMITTERT_KATEGORI,
-                                MidlertidigUtilgjengelig.MIDLERTIDIG_UTILGJENGELIG
-                        ))
+                        Arrays.asList(PermittertArbeidssoker.ER_PERMITTERT_KATEGORI))
         );
     }
 }

@@ -3,7 +3,6 @@ package no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.handler;
 import no.nav.finnkandidatapi.TestData;
 import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.AivenHarTilretteleggingsbehovProducer;
 import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.HarTilretteleggingsbehov;
-import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.HarTilretteleggingsbehovProducer;
 import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.SammenstillBehov;
 import no.nav.finnkandidatapi.kandidat.KandidatRepository;
 import no.nav.finnkandidatapi.midlertidigutilgjengelig.MidlertidigUtilgjengelig;
@@ -47,9 +46,6 @@ public class MidlertidigUtilgjengeligHandlerTest {
     MidlertidigUtilgjengeligService midlertidigUtilgjengeligService;
 
     @Mock
-    HarTilretteleggingsbehovProducer harTilretteleggingsbehovProducer;
-
-    @Mock
     AivenHarTilretteleggingsbehovProducer aivenHarTilretteleggingsbehovProducer;
 
 
@@ -61,7 +57,7 @@ public class MidlertidigUtilgjengeligHandlerTest {
                         permittertArbeidssokerService,
                         vedtakService,
                         midlertidigUtilgjengeligService
-                ), harTilretteleggingsbehovProducer, aivenHarTilretteleggingsbehovProducer
+                ), aivenHarTilretteleggingsbehovProducer
 
         );
 
@@ -88,7 +84,7 @@ public class MidlertidigUtilgjengeligHandlerTest {
         midlertidigUtilgjengeligHandler.midlertidigUtilgjengeligEndret(
                 new MidlertidigUtilgjengeligEndret(midlertidigUtilgjengelig)
         );
-        verify(harTilretteleggingsbehovProducer, times(2)).sendKafkamelding(
+        verify(aivenHarTilretteleggingsbehovProducer, times(2)).sendKafkamelding(
                 new HarTilretteleggingsbehov(
                         aktørid,
                         true,
@@ -112,7 +108,7 @@ public class MidlertidigUtilgjengeligHandlerTest {
         midlertidigUtilgjengeligHandler.midlertidigUtilgjengeligSlettet(
                 new MidlertidigUtilgjengeligSlettet(midlertidigUtilgjengelig)
         );
-        verify(harTilretteleggingsbehovProducer, times(1)).sendKafkamelding(
+        verify(aivenHarTilretteleggingsbehovProducer, times(1)).sendKafkamelding(
                 new HarTilretteleggingsbehov(
                         aktørid,
                         true,

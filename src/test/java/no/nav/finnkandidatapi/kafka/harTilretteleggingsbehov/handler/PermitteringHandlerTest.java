@@ -7,8 +7,6 @@ import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.HarTilretteleggings
 import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.SammenstillBehov;
 import no.nav.finnkandidatapi.kandidat.KandidatRepository;
 import no.nav.finnkandidatapi.metrikker.PermittertArbeidssokerEndretEllerOpprettet;
-import no.nav.finnkandidatapi.midlertidigutilgjengelig.MidlertidigUtilgjengelig;
-import no.nav.finnkandidatapi.midlertidigutilgjengelig.MidlertidigUtilgjengeligService;
 import no.nav.finnkandidatapi.permittert.PermittertArbeidssoker;
 import no.nav.finnkandidatapi.permittert.PermittertArbeidssokerService;
 import no.nav.finnkandidatapi.vedtak.Vedtak;
@@ -40,9 +38,6 @@ public class PermitteringHandlerTest {
     public PermittertArbeidssokerService permittertArbeidssokerService;
 
     @Mock
-    MidlertidigUtilgjengeligService midlertidigUtilgjengeligService;
-
-    @Mock
     HarTilretteleggingsbehovProducer harTilretteleggingsbehovProducer;
 
     @Mock
@@ -55,8 +50,7 @@ public class PermitteringHandlerTest {
                 new SammenstillBehov(
                         kandidatRepository,
                         permittertArbeidssokerService,
-                        vedtakService,
-                        midlertidigUtilgjengeligService
+                        vedtakService
                 ), harTilretteleggingsbehovProducer, aivenharTilretteleggingsbehovProducer
 
         );
@@ -65,11 +59,9 @@ public class PermitteringHandlerTest {
                 new HarTilretteleggingsbehov(aktørid, true, TestData.enKandidat().kategorier());
         Vedtak vedtak = TestData.etVedtak();
         vedtak.setAktørId(aktørid);
-        MidlertidigUtilgjengelig midlertidigUtilgjengelig = TestData.enMidlertidigUtilgjengelig(aktørid);
 
         when(kandidatRepository.hentHarTilretteleggingsbehov(aktørid)).thenReturn(Optional.of(harTilretteleggingsbehov));
         when(vedtakService.hentNyesteVedtakForAktør(aktørid)).thenReturn(Optional.of(vedtak));
-        when(midlertidigUtilgjengeligService.hentMidlertidigUtilgjengelig(aktørid)).thenReturn(Optional.of(midlertidigUtilgjengelig));
     }
 
     @Test
@@ -88,8 +80,7 @@ public class PermitteringHandlerTest {
                                 "fysisk",
                                 "arbeidshverdagen",
                                 "utfordringerMedNorsk",
-                                PermittertArbeidssoker.ER_PERMITTERT_KATEGORI,
-                                MidlertidigUtilgjengelig.MIDLERTIDIG_UTILGJENGELIG
+                                PermittertArbeidssoker.ER_PERMITTERT_KATEGORI
                         ))
         );
     }

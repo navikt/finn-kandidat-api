@@ -2,13 +2,10 @@ package no.nav.finnkandidatapi.kafka.republisher;
 
 import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.AivenHarTilretteleggingsbehovProducer;
 import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.HarTilretteleggingsbehov;
-import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.HarTilretteleggingsbehovProducer;
 import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.SammenstillBehov;
 import no.nav.finnkandidatapi.kandidat.Fysisk;
 import no.nav.finnkandidatapi.kandidat.KandidatRepository;
 import no.nav.finnkandidatapi.kandidat.Veileder;
-import no.nav.finnkandidatapi.midlertidigutilgjengelig.MidlertidigUtilgjengelig;
-import no.nav.finnkandidatapi.midlertidigutilgjengelig.MidlertidigUtilgjengeligService;
 import no.nav.finnkandidatapi.permittert.PermittertArbeidssoker;
 import no.nav.finnkandidatapi.permittert.PermittertArbeidssokerService;
 import no.nav.finnkandidatapi.tilgangskontroll.TilgangskontrollException;
@@ -58,14 +55,11 @@ KafkaRepublisherTest {
     @Mock
     private VedtakService vedtakService;
 
-    @Mock
-    private MidlertidigUtilgjengeligService midlertidigUtilgjengeligService;
-
     private SammenstillBehov sammenstillBehov;
 
     @Before
     public void setUp() {
-        this.sammenstillBehov = new SammenstillBehov(kandidatRepository, permittertArbeidssokerService, vedtakService, midlertidigUtilgjengeligService);
+        this.sammenstillBehov = new SammenstillBehov(kandidatRepository, permittertArbeidssokerService, vedtakService);
         this.kafkaRepublisher = new KafkaRepublisher(producer, kandidatRepository,  republisherRepository, tilgangskontrollService, sammenstillBehov, config);
     }
 
@@ -169,30 +163,6 @@ KafkaRepublisherTest {
                 aktørId,
                 true,
                 List.of(Fysisk.behovskategori, PermittertArbeidssoker.ER_PERMITTERT_KATEGORI)
-        );
-        verify(producer).sendKafkamelding(forventetBehov);
-    }
-
-    @Test
-    public void republiserKandidat__skal_sende_med_midlertidig_utilgjengelig() {
-        Veileder veileder = enVeileder();
-        String aktørId = enAktørId();
-
-        when(tilgangskontrollService.hentInnloggetVeileder()).thenReturn(veileder);
-        when(config.getNavIdenterSomKanRepublisere()).thenReturn(Arrays.asList(veileder.getNavIdent()));
-        HarTilretteleggingsbehov harTilretteleggingsbehov = new HarTilretteleggingsbehov(aktørId, true, List.of(Fysisk.behovskategori));
-        when(kandidatRepository.hentHarTilretteleggingsbehov(aktørId)).thenReturn(
-                Optional.of(harTilretteleggingsbehov)
-        );
-        when(midlertidigUtilgjengeligService.hentMidlertidigUtilgjengelig(aktørId))
-                .thenReturn(Optional.of(enMidlertidigUtilgjengelig("17171717")));
-
-        kafkaRepublisher.republiserKandidat(aktørId);
-
-        HarTilretteleggingsbehov forventetBehov = new HarTilretteleggingsbehov(
-                aktørId,
-                true,
-                List.of(Fysisk.behovskategori, MidlertidigUtilgjengelig.MIDLERTIDIG_UTILGJENGELIG)
         );
         verify(producer).sendKafkamelding(forventetBehov);
     }

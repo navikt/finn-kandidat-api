@@ -5,7 +5,6 @@ import no.nav.finnkandidatapi.kafka.vedtakReplikert.VedtakReplikert;
 import no.nav.finnkandidatapi.kandidat.Kandidat;
 import no.nav.finnkandidatapi.kandidat.KandidatDto;
 import no.nav.finnkandidatapi.kandidat.Veileder;
-import no.nav.finnkandidatapi.midlertidigutilgjengelig.MidlertidigUtilgjengelig;
 import no.nav.finnkandidatapi.permittert.ArbeidssokerRegistrertDTO;
 import no.nav.finnkandidatapi.permittert.DinSituasjonSvarFraVeilarbReg;
 import no.nav.finnkandidatapi.permittert.PermittertArbeidssoker;
@@ -167,24 +166,6 @@ public class TestData {
                 .fysisk(Set.of(ARBEIDSSTILLING, ERGONOMI))
                 .arbeidshverdagen(Set.of(MENTOR, TILRETTELAGTE_ARBEIDSOPPGAVER))
                 .utfordringerMedNorsk(Set.of(SNAKKE_NORSK, SKRIVE_NORSK, LESE_NORSK))
-                .build();
-    }
-
-    public static MidlertidigUtilgjengelig enMidlertidigUtilgjengelig(String aktørid) {
-        return MidlertidigUtilgjengelig.builder()
-                .aktørId(aktørid)
-                .fraDato(now())
-                .tilDato(now().plusDays(7))
-                .registrertAvIdent("A100000")
-                .registrertAvNavn("Ola Nordmann")
-                .sistEndretAvIdent("B200000")
-                .sistEndretAvNavn("Kari Nordmann")
-                .build();
-    }
-
-    public static MidlertidigUtilgjengelig enMidlertidigUtilgjengeligMedBareNull() {
-        return MidlertidigUtilgjengelig.builder()
-                .aktørId("1000000011")
                 .build();
     }
 

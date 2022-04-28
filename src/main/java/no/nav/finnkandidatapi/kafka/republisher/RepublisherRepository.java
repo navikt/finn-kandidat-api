@@ -42,9 +42,6 @@ public class RepublisherRepository {
                 "FROM permittert " +
                 "UNION " +
                 "SELECT DISTINCT aktor_id " +
-                "FROM midlertidig_utilgjengelig " +
-                "UNION " +
-                "SELECT DISTINCT aktor_id " +
                 "FROM vedtak "
         );
     }

@@ -46,6 +46,9 @@ spec:
         - application: rekrutteringsbistand-container
           namespace: toi
           cluster: dev-gcp
+        - application: veilarbpersonflate
+          namespace: poao
+          cluster: dev-gcp
   env:
     - name: SPRING_PROFILES_ACTIVE
       value: dev

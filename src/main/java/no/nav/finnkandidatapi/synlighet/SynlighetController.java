@@ -10,6 +10,7 @@ import no.nav.common.types.identer.AktorId;
 import no.nav.common.types.identer.Fnr;
 import no.nav.finnkandidatapi.tilgangskontroll.TilgangskontrollService;
 import no.nav.security.token.support.core.api.ProtectedWithClaims;
+import no.nav.security.token.support.core.api.RequiredIssuers;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -22,11 +23,15 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import static no.nav.finnkandidatapi.tilgangskontroll.TokenUtils.ISSUER_AZUREAD;
 import static no.nav.finnkandidatapi.tilgangskontroll.TokenUtils.ISSUER_OPENAM;
 import static org.springframework.http.HttpStatus.*;
 
 @Slf4j
-@ProtectedWithClaims(issuer = ISSUER_OPENAM)
+@RequiredIssuers(value = {
+        @ProtectedWithClaims(issuer = ISSUER_OPENAM),
+        @ProtectedWithClaims(issuer = ISSUER_AZUREAD)
+})
 @RestController
 @RequestMapping("/synlighet")
 public class SynlighetController {

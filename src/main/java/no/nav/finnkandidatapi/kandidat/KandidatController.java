@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.finnkandidatapi.tilgangskontroll.TilgangskontrollService;
 import no.nav.security.token.support.core.api.ProtectedWithClaims;
+import no.nav.security.token.support.core.api.RequiredIssuers;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,10 +13,14 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Optional;
 
 import static no.bekk.bekkopen.person.FodselsnummerValidator.isValid;
+import static no.nav.finnkandidatapi.tilgangskontroll.TokenUtils.ISSUER_AZUREAD;
 import static no.nav.finnkandidatapi.tilgangskontroll.TokenUtils.ISSUER_OPENAM;
 
 @Slf4j
-@ProtectedWithClaims(issuer = ISSUER_OPENAM)
+@RequiredIssuers(value = {
+        @ProtectedWithClaims(issuer = ISSUER_OPENAM),
+        @ProtectedWithClaims(issuer = ISSUER_AZUREAD)
+})
 @RestController
 @RequestMapping("/kandidater")
 @RequiredArgsConstructor

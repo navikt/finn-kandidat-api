@@ -4,16 +4,21 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.finnkandidatapi.tilgangskontroll.TilgangskontrollService;
 import no.nav.security.token.support.core.api.ProtectedWithClaims;
+import no.nav.security.token.support.core.api.RequiredIssuers;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import static no.nav.finnkandidatapi.tilgangskontroll.TokenUtils.ISSUER_AZUREAD;
 import static no.nav.finnkandidatapi.tilgangskontroll.TokenUtils.ISSUER_OPENAM;
 
 @Slf4j
-@ProtectedWithClaims(issuer = ISSUER_OPENAM)
+@RequiredIssuers(value = {
+        @ProtectedWithClaims(issuer = ISSUER_OPENAM),
+        @ProtectedWithClaims(issuer = ISSUER_AZUREAD)
+})
 @RestController
 @RequestMapping("/samtykke")
 @RequiredArgsConstructor

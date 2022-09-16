@@ -24,16 +24,12 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import static no.nav.finnkandidatapi.tilgangskontroll.TokenUtils.ISSUER_AZUREAD;
-import static no.nav.finnkandidatapi.tilgangskontroll.TokenUtils.ISSUER_OPENAM;
 import static org.springframework.http.HttpStatus.*;
 
 @Slf4j
-@RequiredIssuers(value = {
-        @ProtectedWithClaims(issuer = ISSUER_OPENAM),
-        @ProtectedWithClaims(issuer = ISSUER_AZUREAD)
-})
 @RestController
 @RequestMapping("/synlighet")
+@ProtectedWithClaims(issuer = ISSUER_AZUREAD)
 public class SynlighetController {
 
     private final TilgangskontrollService tilgangskontroll;

@@ -14,16 +14,12 @@ import java.util.Optional;
 
 import static no.bekk.bekkopen.person.FodselsnummerValidator.isValid;
 import static no.nav.finnkandidatapi.tilgangskontroll.TokenUtils.ISSUER_AZUREAD;
-import static no.nav.finnkandidatapi.tilgangskontroll.TokenUtils.ISSUER_OPENAM;
 
 @Slf4j
-@RequiredIssuers(value = {
-        @ProtectedWithClaims(issuer = ISSUER_OPENAM),
-        @ProtectedWithClaims(issuer = ISSUER_AZUREAD)
-})
 @RestController
 @RequestMapping("/kandidater")
 @RequiredArgsConstructor
+@ProtectedWithClaims(issuer = ISSUER_AZUREAD)
 public class KandidatController {
 
     private final KandidatService kandidatService;

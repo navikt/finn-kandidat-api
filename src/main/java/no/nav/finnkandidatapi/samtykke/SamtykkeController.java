@@ -12,15 +12,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import static no.nav.finnkandidatapi.tilgangskontroll.TokenUtils.ISSUER_AZUREAD;
-import static no.nav.finnkandidatapi.tilgangskontroll.TokenUtils.ISSUER_OPENAM;
 
 @Slf4j
-@RequiredIssuers(value = {
-        @ProtectedWithClaims(issuer = ISSUER_OPENAM),
-        @ProtectedWithClaims(issuer = ISSUER_AZUREAD)
-})
 @RestController
 @RequestMapping("/samtykke")
+@ProtectedWithClaims(issuer = ISSUER_AZUREAD)
 @RequiredArgsConstructor
 public class SamtykkeController {
 

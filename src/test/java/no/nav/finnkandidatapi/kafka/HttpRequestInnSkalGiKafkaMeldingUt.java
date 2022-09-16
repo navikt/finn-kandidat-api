@@ -53,7 +53,7 @@ public class HttpRequestInnSkalGiKafkaMeldingUt {
 
     @Before
     public void setUp() {
-        String loginUrl = localBaseUrl() + "/local/azuread-cookie";
+        String loginUrl = localBaseUrl() + "/local/veileder-cookie";
         restTemplate.getForObject(loginUrl, String.class);
 
         kafkaConsumer = setupKafkaConsumer();

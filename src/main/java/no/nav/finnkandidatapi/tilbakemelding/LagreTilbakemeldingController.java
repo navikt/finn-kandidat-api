@@ -10,14 +10,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import static no.nav.finnkandidatapi.tilgangskontroll.TokenUtils.ISSUER_AZUREAD;
-import static no.nav.finnkandidatapi.tilgangskontroll.TokenUtils.ISSUER_OPENAM;
 
 @RestController
 @RequestMapping
-@RequiredIssuers(value = {
-        @ProtectedWithClaims(issuer = ISSUER_OPENAM),
-        @ProtectedWithClaims(issuer = ISSUER_AZUREAD)
-})
+@ProtectedWithClaims(issuer = ISSUER_AZUREAD)
 public class LagreTilbakemeldingController {
 
     private final TilbakemeldingRepository repository;

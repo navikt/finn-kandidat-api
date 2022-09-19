@@ -43,17 +43,4 @@ public class LokalLoginController {
 
         return server.issueToken(issuerId, subject, audience, claims).serialize();
     }
-
-    @GetMapping("/local/veileder-openam-cookie")
-    public void hentCookieMedVeilederOpenAMJwtTokenClaims(HttpServletResponse response) {
-        Cookie cookie = new Cookie("ID_token", openAMToken());
-        cookie.setPath("/");
-        response.addCookie(cookie);
-    }
-
-    private String openAMToken(){
-        String issuerId = "openam";
-        String subject = "X123456";
-        return server.issueToken(issuerId, subject).serialize();
-    }
 }

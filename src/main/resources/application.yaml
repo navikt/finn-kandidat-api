@@ -38,10 +38,6 @@ no.nav.security.jwt:
     issuer.azuread:
         discoveryurl: http://localhost:${mock-oauth2-server.port}/azuread/.well-known/openid-configuration
         accepted_audience: default
-    issuer.openam:
-        discoveryurl: http://localhost:${mock-oauth2-server.port}/openam/.well-known/openid-configuration
-        accepted_audience: default
-        cookiename: ID_token
     issuer.tokenx:
         discoveryurl: http://localhost:${mock-oauth2-server.port}/tokenx/.well-known/openid-configuration
         accepted_audience: default
@@ -92,10 +88,6 @@ database:
 vault.mount-path: postgresql/preprod-fss
 
 no.nav.security.jwt:
-    issuer.openam:
-        discoveryurl: https://isso-q.adeo.no/isso/oauth2/.well-known/openid-configuration
-        accepted_audience: veilarblogin-q0, veilarblogin-q1
-        cookiename: ID_token
     issuer.azuread:
         discoveryurl: ${AZURE_APP_WELL_KNOWN_URL}
         accepted_audience: ${AZURE_APP_CLIENT_ID}
@@ -139,10 +131,6 @@ database:
 vault.mount-path: postgresql/prod-fss
 
 no.nav.security.jwt:
-    issuer.openam:
-        discoveryurl: https://isso.adeo.no/isso/oauth2/.well-known/openid-configuration
-        accepted_audience: veilarblogin-p, modiabrukerdialog-p, fpsak-frontend-p
-        cookiename: ID_token
     issuer.azuread:
         discoveryurl: ${AZURE_APP_WELL_KNOWN_URL}
         accepted_audience: ${AZURE_APP_CLIENT_ID}

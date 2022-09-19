@@ -14,7 +14,6 @@ import java.util.Optional;
 public class TokenUtils {
 
     public final static String ISSUER_AZUREAD = "azuread";
-    public final static String ISSUER_OPENAM = "openam";
     public final static String ISSUER_TOKENX = "tokenx";
 
     final static String NAVIDENT_CLAIM = "NAVident";
@@ -35,14 +34,9 @@ public class TokenUtils {
     }
 
     public Veileder hentInnloggetVeileder() {
-        if (erInnloggetMedOpenAM()) {
-            String navIdent = contextHolder.getTokenValidationContext().getClaims(ISSUER_OPENAM).getSubject();
-            return new Veileder(navIdent, null);
-
-        } else if (erInnloggetMedAzureAD()) {
+        if (erInnloggetMedAzureAD()) {
             JwtTokenClaims claims = contextHolder.getTokenValidationContext().getClaims(ISSUER_AZUREAD);
             return hentInnloggetVeilederMedAzureAdClaims(claims);
-
         } else {
             throw new TilgangskontrollException("Veileder er ikke innlogget.");
         }
@@ -52,13 +46,6 @@ public class TokenUtils {
         return contextHolder.getTokenValidationContext().getJwtTokenAsOptional(ISSUER_TOKENX)
                 .map(jwtToken -> jwtToken.getJwtTokenClaims().getStringClaim("pid"))
                 .orElseThrow(() -> new TilgangskontrollException("Bruker er ikke innlogget"));
-    }
-
-    private boolean erInnloggetMedOpenAM() {
-        Optional<String> navIdent = Optional.ofNullable(contextHolder.getTokenValidationContext().getClaims(ISSUER_OPENAM))
-                .map(JwtTokenClaims::getSubject)
-                .filter(this::erNAVIdent);
-        return navIdent.isPresent();
     }
 
     private boolean erInnloggetMedAzureAD() {

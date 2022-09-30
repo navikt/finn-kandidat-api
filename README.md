@@ -23,11 +23,8 @@ Her kan du legge til eller slette tilretteleggingsbehov. Man kan verifisere endr
 
 Du kan verifisere at en kandidat sine tilretteleggingsbehov vises i en arbeidssøkers "Din side" på nav.no slik:
 - Gå til https://www.dev.nav.no/person/personopplysninger/nb/
-- Logg inn "Uten IDPorten" og skriv inn fødselsnummeret til en arbeidssøker fra Rekrutteringsbistand
+- Logg inn ved å velge "TestID" og skriv inn fødselsnummeret til en arbeidssøker fra Rekrutteringsbistand
 - Scroll ned til og ekspander/klikk på "Behov for tilrettelegging".
-
-Per i dag har vi dessverre ingen testbrukere i Rekrutteringsbistand som kan logges inn som privatpersoner i dev.nav.no. Dette skyldes at 
-kun personnumre som er registrert i Skatteetatens testmiljø kan benyttes til innlogging med BankID. 
 
 ## Database for utvikling
 

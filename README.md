@@ -18,7 +18,7 @@ Deretter kall det endepunktet du ønsker å teste.
  
 
 ## Manuell test i dev
-Du kan gå inn i "Arbeidsrettet oppfølging" på https://app-q1.adeo.no/veilarbpersonflatefs og søke opp en arbeidssøker fra Rekrutteringsbistand med personnummer. 
+Du kan gå inn i "Arbeidsrettet oppfølging" på https://veilarbpersonflate.dev.intern.nav.no/ og søke opp en arbeidssøker fra Rekrutteringsbistand med personnummer. 
 Her kan du legge til eller slette tilretteleggingsbehov. Man kan verifisere endringene ved å bruke filtrene for tilretteleggingsbehov i Rekrutteringsbistands kandidatsøk.
 
 Du kan verifisere at en kandidat sine tilretteleggingsbehov vises i en arbeidssøkers "Din side" på nav.no slik:

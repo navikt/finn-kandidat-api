@@ -3,7 +3,6 @@ package no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.handler;
 import no.nav.finnkandidatapi.TestData;
 import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.AivenHarTilretteleggingsbehovProducer;
 import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.HarTilretteleggingsbehov;
-import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.HarTilretteleggingsbehovProducer;
 import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.SammenstillBehov;
 import no.nav.finnkandidatapi.kandidat.Brukertype;
 import no.nav.finnkandidatapi.kandidat.Kandidat;
@@ -44,9 +43,6 @@ public class KandidatHandlerTest {
     public PermittertArbeidssokerService permittertArbeidssokerService;
 
     @Mock
-    HarTilretteleggingsbehovProducer harTilretteleggingsbehovProducer;
-
-    @Mock
     AivenHarTilretteleggingsbehovProducer aivenHarTilretteleggingsbehovProducer;
 
 
@@ -57,7 +53,7 @@ public class KandidatHandlerTest {
                         kandidatRepository,
                         permittertArbeidssokerService,
                         vedtakService
-                ), harTilretteleggingsbehovProducer, aivenHarTilretteleggingsbehovProducer
+                ), aivenHarTilretteleggingsbehovProducer
 
         );
 
@@ -80,7 +76,7 @@ public class KandidatHandlerTest {
         kandidatHandler.kandidatOpprettet(new KandidatOpprettet(kandidat));
         kandidatHandler.kandidatEndret(new KandidatEndret(kandidat));
 
-        verify(harTilretteleggingsbehovProducer, times(2)).sendKafkamelding(
+        verify(aivenHarTilretteleggingsbehovProducer, times(2)).sendKafkamelding(
                 new HarTilretteleggingsbehov(
                         aktørid,
                         true,
@@ -102,7 +98,7 @@ public class KandidatHandlerTest {
         kandidatHandler.kandidatSlettet(new KandidatSlettet(
                 1, aktørid, Brukertype.VEILEDER, LocalDateTime.now().minusDays(1)));
 
-        verify(harTilretteleggingsbehovProducer, times(1)).sendKafkamelding(
+        verify(aivenHarTilretteleggingsbehovProducer, times(1)).sendKafkamelding(
                 new HarTilretteleggingsbehov(
                         aktørid,
                         false,

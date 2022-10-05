@@ -2,8 +2,8 @@ package no.nav.finnkandidatapi.kafka;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.AivenHarTilretteleggingsbehovProducer;
 import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.HarTilretteleggingsbehov;
-import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.HarTilretteleggingsbehovProducer;
 import no.nav.finnkandidatapi.kandidat.Fysisk;
 import no.nav.finnkandidatapi.kandidat.UtfordringerMedNorsk;
 import no.nav.finnkandidatapi.tilgangskontroll.TokenUtils;
@@ -38,13 +38,13 @@ import static org.mockito.Mockito.when;
 @SpringBootTest
 @ActiveProfiles({"local", "mock"})
 @DirtiesContext
-public class HarTilretteleggingsbehovProducerTest {
+public class AivenHarTilretteleggingsbehovProducerTest {
 
     @Autowired
     private EnKafkaMockServer embeddedKafka;
 
     @Autowired
-    private HarTilretteleggingsbehovProducer harTilretteleggingsbehovProducer;
+    private AivenHarTilretteleggingsbehovProducer aivenHarTilretteleggingsbehovProducer;
 
     @MockBean
     private TokenUtils tokenUtils;
@@ -59,7 +59,7 @@ public class HarTilretteleggingsbehovProducerTest {
 
         ConsumerFactory<String, String> cf = new DefaultKafkaConsumerFactory<>(consumerProps);
         consumer = cf.createConsumer();
-        embeddedKafka.getEmbeddedKafka().consumeFromAnEmbeddedTopic(consumer, "aapen-tag-kandidatEndret-v1-default");
+        embeddedKafka.getEmbeddedKafka().consumeFromAnEmbeddedTopic(consumer, "toi.tillretteleggingsbehov-1");
 
         when(tokenUtils.hentInnloggetVeileder()).thenReturn(enVeileder());
     }
@@ -68,9 +68,9 @@ public class HarTilretteleggingsbehovProducerTest {
     public void kandidatOppdatert__skal_sende_melding_på_kafka_topic() throws JSONException, JsonProcessingException {
         List<String> kategorier = List.of(Fysisk.behovskategori, UtfordringerMedNorsk.behovskategori);
         HarTilretteleggingsbehov harTilretteleggingsbehov = new HarTilretteleggingsbehov(enAktørId(), true, kategorier);
-        harTilretteleggingsbehovProducer.sendKafkamelding(harTilretteleggingsbehov);
+        aivenHarTilretteleggingsbehovProducer.sendKafkamelding(harTilretteleggingsbehov);
 
-        ConsumerRecord<String, String> melding = KafkaTestUtils.getSingleRecord(consumer, "aapen-tag-kandidatEndret-v1-default");
+        ConsumerRecord<String, String> melding = KafkaTestUtils.getSingleRecord(consumer, "toi.tillretteleggingsbehov-1");
 
         JSONObject json = new JSONObject(melding.value());
         assertThat(melding.key()).isEqualTo(harTilretteleggingsbehov.getAktoerId());

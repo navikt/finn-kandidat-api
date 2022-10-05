@@ -21,7 +21,7 @@ spring:
             value-serializer: org.apache.kafka.common.serialization.StringSerializer
             retries: 25
 
-tilretteleggingsbehov.topic: toi.tillretteleggingsbehov-1
+tillretteleggingsbehov.topic: toi.tillretteleggingsbehov-1
 
 ---
 spring:

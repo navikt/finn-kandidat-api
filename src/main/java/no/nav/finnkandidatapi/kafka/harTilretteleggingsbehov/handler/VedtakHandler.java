@@ -3,7 +3,6 @@ package no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.handler;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.AivenHarTilretteleggingsbehovProducer;
 import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.HarTilretteleggingsbehov;
-import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.HarTilretteleggingsbehovProducer;
 import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.SammenstillBehov;
 import no.nav.finnkandidatapi.vedtak.Vedtak;
 import no.nav.finnkandidatapi.vedtak.VedtakEndret;
@@ -17,13 +16,11 @@ import org.springframework.stereotype.Component;
 public class VedtakHandler {
 
     private SammenstillBehov sammenstillBehov;
-    private HarTilretteleggingsbehovProducer harTilretteleggingsbehovProducer;
     private AivenHarTilretteleggingsbehovProducer aivenHarTilretteleggingsbehovProducer;
 
     public VedtakHandler(
-            SammenstillBehov sammenstillBehov, HarTilretteleggingsbehovProducer harTilretteleggingsbehovProducer, AivenHarTilretteleggingsbehovProducer aivenHarTilretteleggingsbehovProducer) {
+            SammenstillBehov sammenstillBehov, AivenHarTilretteleggingsbehovProducer aivenHarTilretteleggingsbehovProducer) {
         this.sammenstillBehov = sammenstillBehov;
-        this.harTilretteleggingsbehovProducer = harTilretteleggingsbehovProducer;
         this.aivenHarTilretteleggingsbehovProducer = aivenHarTilretteleggingsbehovProducer;
     }
 
@@ -44,7 +41,6 @@ public class VedtakHandler {
 
     private void mottattVedtakEvent(Vedtak vedtak) {
         HarTilretteleggingsbehov behov = sammenstillBehov.lagbehov(vedtak);
-        harTilretteleggingsbehovProducer.sendKafkamelding(behov);
         aivenHarTilretteleggingsbehovProducer.sendKafkamelding(behov);
     }
 }

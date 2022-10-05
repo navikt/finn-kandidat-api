@@ -19,7 +19,7 @@ public class AivenHarTilretteleggingsbehovProducer {
     private final String topic;
 
     public AivenHarTilretteleggingsbehovProducer(
-            @Qualifier("aivenKafkaTemplate") KafkaTemplate<String, String> kafkaTemplate,
+            KafkaTemplate<String, String> kafkaTemplate,
             @Value("${tillretteleggingsbehov.topic}") String topic
     ) {
         this.kafkaTemplate = kafkaTemplate;

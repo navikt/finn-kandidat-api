@@ -21,8 +21,7 @@ spring:
             value-serializer: org.apache.kafka.common.serialization.StringSerializer
             retries: 25
 
-kandidat-endret.topic: aapen-tag-kandidatEndret-v1-default
-tillretteleggingsbehov.topic: toi.tillretteleggingsbehov-1
+tilretteleggingsbehov.topic: toi.tillretteleggingsbehov-1
 
 ---
 spring:

@@ -27,13 +27,11 @@ public class KandidatController {
     private final KandidatService kandidatService;
     private final TilgangskontrollService tilgangskontroll;
 
-    private String clusternavn = System.getenv("NAIS_CLUSTER_NAME");
+    private String cluster = System.getenv("NAIS_CLUSTER_NAME");
 
     @PostConstruct
     protected void konfigurerFødselsnummerValidator() {
-        var kjenteDevClusterNavn = Arrays.asList("dev-gcp", "dev-fss");
-        var erDev = kjenteDevClusterNavn.contains(clusternavn);
-
+        var erDev = Arrays.asList("dev-gcp", "dev-fss").contains(cluster);
         FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = erDev;
     }
 

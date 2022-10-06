@@ -169,6 +169,19 @@ public class TestData {
                 .build();
     }
 
+    public static Kandidat enKandidatMedTestNorgeFødselsnummer() {
+        return Kandidat.builder()
+                .sistEndretAvVeileder(now())
+                .sistEndretAv(enNavIdent())
+                .fnr(etTestNorgeFødselsnummer())
+                .aktørId("1000000000002")
+                .arbeidstid(Set.of(KAN_IKKE_JOBBE))
+                .fysisk(Set.of(ARBEIDSSTILLING, ERGONOMI))
+                .arbeidshverdagen(Set.of(MENTOR, TILRETTELAGTE_ARBEIDSOPPGAVER))
+                .utfordringerMedNorsk(Set.of(SNAKKE_NORSK, SKRIVE_NORSK, LESE_NORSK))
+                .build();
+    }
+
     public static KandidatDto enKandidatDto(Kandidat kandidat) {
         return KandidatDto.builder()
                 .fnr(kandidat.getFnr())
@@ -229,6 +242,10 @@ public class TestData {
 
     public static String etFnr() {
         return "28037639429";
+    }
+
+    public static String etTestNorgeFødselsnummer() {
+        return "25879099636";
     }
 
     public static Kandidat enKandidatMedNullOgTommeSet() {

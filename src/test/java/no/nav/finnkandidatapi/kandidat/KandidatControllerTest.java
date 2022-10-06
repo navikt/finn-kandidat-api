@@ -337,11 +337,11 @@ public class KandidatControllerTest {
     }
 
     private void settClusternavnIKandidatController(String clusternavn) {
-        ReflectionTestUtils.setField(controller, "clusternavn", clusternavn);
+        ReflectionTestUtils.setField(controller, "cluster", clusternavn);
         controller.konfigurerFødselsnummerValidator();
     }
 
     private void resetClusternavnIKandidatController() {
-        ReflectionTestUtils.setField(controller, "clusternavn", System.getenv("NAIS_CLUSTER_NAME"));
+        ReflectionTestUtils.setField(controller, "cluster", System.getenv("NAIS_CLUSTER_NAME"));
     }
 }

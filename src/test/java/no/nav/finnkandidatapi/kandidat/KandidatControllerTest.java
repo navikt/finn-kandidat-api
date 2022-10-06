@@ -233,15 +233,24 @@ public class KandidatControllerTest {
     }
 
     @Test
-    public void hentKandidat__med_testNorge_fnr_skal_returnere_ok_med_kandidat_i_dev() {
+    public void hentKandidat__med_syntetisk_fnr_skal_returnere_ok_med_kandidat_i_dev() {
         værInnloggetSom(enVeileder());
-        Kandidat kandidat = enKandidatMedTestNorgeFødselsnummer();
+        Kandidat kandidat = enKandidatMedSyntetiskFødselsnummer();
         when(service.hentNyesteKandidat(kandidat.getAktørId())).thenReturn(Optional.of(kandidat));
 
         ResponseEntity<Kandidat> respons = controller.hentKandidat(kandidat.getFnr());
 
         assertThat(respons.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(respons.getBody()).isEqualTo(kandidat);
+    }
+
+    @Test(expected = NotFoundException.class)
+    public void hentKandidat__med_syntetisk_fnr_skal_kaste_exception_i_prod() {
+        værInnloggetSom(enVeileder());
+        Kandidat kandidat = enKandidatMedSyntetiskFødselsnummer();
+        when(service.hentNyesteKandidat(kandidat.getAktørId())).thenReturn(Optional.of(kandidat));
+
+        controller.hentKandidat(kandidat.getFnr());
     }
 
     @Test

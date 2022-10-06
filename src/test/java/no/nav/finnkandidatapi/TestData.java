@@ -169,11 +169,11 @@ public class TestData {
                 .build();
     }
 
-    public static Kandidat enKandidatMedTestNorgeFødselsnummer() {
+    public static Kandidat enKandidatMedSyntetiskFødselsnummer() {
         return Kandidat.builder()
                 .sistEndretAvVeileder(now())
                 .sistEndretAv(enNavIdent())
-                .fnr(etTestNorgeFødselsnummer())
+                .fnr(etSyntetiskFødselsnummer())
                 .aktørId("1000000000002")
                 .arbeidstid(Set.of(KAN_IKKE_JOBBE))
                 .fysisk(Set.of(ARBEIDSSTILLING, ERGONOMI))
@@ -244,7 +244,7 @@ public class TestData {
         return "28037639429";
     }
 
-    public static String etTestNorgeFødselsnummer() {
+    public static String etSyntetiskFødselsnummer() {
         return "25879099636";
     }
 

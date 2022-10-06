@@ -34,11 +34,7 @@ public class KandidatController {
         var kjenteDevClusterNavn = Arrays.asList("dev-gcp", "dev-fss");
         var erDev = kjenteDevClusterNavn.contains(clusternavn);
 
-        if (erDev) {
-            FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = true;
-        } else {
-            FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = false;
-        }
+        FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = erDev
     }
 
     @GetMapping("/{fnrEllerAktørId}")

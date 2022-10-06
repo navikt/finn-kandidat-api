@@ -3,13 +3,15 @@ package no.nav.finnkandidatapi.kandidat;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import no.bekk.bekkopen.person.FodselsnummerValidator;
 import no.nav.finnkandidatapi.tilgangskontroll.TilgangskontrollService;
 import no.nav.security.token.support.core.api.ProtectedWithClaims;
-import no.nav.security.token.support.core.api.RequiredIssuers;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.PostConstruct;
+import java.util.Arrays;
 import java.util.Optional;
 
 import static no.bekk.bekkopen.person.FodselsnummerValidator.isValid;
@@ -24,6 +26,20 @@ public class KandidatController {
 
     private final KandidatService kandidatService;
     private final TilgangskontrollService tilgangskontroll;
+
+    private String clusternavn = System.getenv("NAIS_CLUSTER_NAME");
+
+    @PostConstruct
+    protected void konfigurerFødselsnummerValidator() {
+        var kjenteDevClusterNavn = Arrays.asList("dev-gcp", "dev-fss");
+        var erDev = kjenteDevClusterNavn.contains(clusternavn);
+
+        if (erDev) {
+            FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = true;
+        } else {
+            FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = false;
+        }
+    }
 
     @GetMapping("/{fnrEllerAktørId}")
     public ResponseEntity<Kandidat> hentKandidat(@PathVariable("fnrEllerAktørId") String fnrEllerAktørId) {

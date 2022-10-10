@@ -3,11 +3,13 @@ package no.nav.finnkandidatapi.kandidat;
 import no.nav.finnkandidatapi.tilgangskontroll.TilgangskontrollService;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Optional;
 
@@ -29,6 +31,12 @@ public class KandidatControllerTest {
     @Before
     public void setUp() {
         controller = new KandidatController(service, tilgangskontroll);
+    }
+
+    @AfterEach
+    public void afterEach() {
+        resetClusternavnIKandidatController();
+        controller.konfigurerFødselsnummerValidator();
     }
 
     @Test
@@ -233,6 +241,28 @@ public class KandidatControllerTest {
     }
 
     @Test
+    public void hentKandidat__med_syntetisk_fnr_skal_returnere_ok_med_kandidat_i_dev() {
+        værInnloggetSom(enVeileder());
+        Kandidat kandidat = enKandidatMedSyntetiskFødselsnummer();
+        when(service.hentNyesteKandidat(kandidat.getAktørId())).thenReturn(Optional.of(kandidat));
+        when(service.hentAktørId(kandidat.getFnr())).thenReturn(kandidat.getAktørId());
+        settClusternavnIKandidatController("dev-fss");
+
+        controller.hentKandidat(kandidat.getFnr());
+    }
+
+    @Test(expected = NotFoundException.class)
+    public void hentKandidat__med_syntetisk_fnr_skal_kaste_exception_i_prod() {
+        værInnloggetSom(enVeileder());
+        Kandidat kandidat = enKandidatMedSyntetiskFødselsnummer();
+        settClusternavnIKandidatController("prod-fss");
+
+        var respons = controller.hentKandidat(kandidat.getFnr());
+
+        assertThat(respons.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    }
+
+    @Test
     public void hentKandidat__skal_returnere_ok_med_kandidat() {
         værInnloggetSom(enVeileder());
         Kandidat kandidat = enKandidat();
@@ -304,5 +334,14 @@ public class KandidatControllerTest {
 
     private void værInnloggetSom(Veileder veileder) {
         when(tilgangskontroll.hentInnloggetVeileder()).thenReturn(veileder);
+    }
+
+    private void settClusternavnIKandidatController(String clusternavn) {
+        ReflectionTestUtils.setField(controller, "cluster", clusternavn);
+        controller.konfigurerFødselsnummerValidator();
+    }
+
+    private void resetClusternavnIKandidatController() {
+        ReflectionTestUtils.setField(controller, "cluster", System.getenv("NAIS_CLUSTER_NAME"));
     }
 }

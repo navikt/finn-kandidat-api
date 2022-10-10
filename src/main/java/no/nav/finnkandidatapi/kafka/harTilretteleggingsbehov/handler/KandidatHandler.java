@@ -4,7 +4,6 @@ import com.nimbusds.oauth2.sdk.util.CollectionUtils;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.AivenHarTilretteleggingsbehovProducer;
 import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.HarTilretteleggingsbehov;
-import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.HarTilretteleggingsbehovProducer;
 import no.nav.finnkandidatapi.kafka.harTilretteleggingsbehov.SammenstillBehov;
 import no.nav.finnkandidatapi.kandidat.Kandidat;
 import no.nav.finnkandidatapi.metrikker.KandidatEndret;
@@ -19,14 +18,12 @@ import java.util.Collections;
 @Slf4j
 public class KandidatHandler {
     private SammenstillBehov sammenstillBehov;
-    private HarTilretteleggingsbehovProducer harTilretteleggingsbehovProducer;
     private AivenHarTilretteleggingsbehovProducer aivenHarTilretteleggingsbehovProducer;
 
 
     public KandidatHandler(
-            SammenstillBehov sammenstillBehov, HarTilretteleggingsbehovProducer harTilretteleggingsbehovProducer, AivenHarTilretteleggingsbehovProducer aivenHarTilretteleggingsbehovProducer) {
+            SammenstillBehov sammenstillBehov, AivenHarTilretteleggingsbehovProducer aivenHarTilretteleggingsbehovProducer) {
         this.sammenstillBehov = sammenstillBehov;
-        this.harTilretteleggingsbehovProducer = harTilretteleggingsbehovProducer;
         this.aivenHarTilretteleggingsbehovProducer = aivenHarTilretteleggingsbehovProducer;
     }
 
@@ -46,7 +43,6 @@ public class KandidatHandler {
     public void kandidatSlettet(KandidatSlettet event) {
         HarTilretteleggingsbehov behov = sammenstillBehov.lagbehovKandidat(
                 new HarTilretteleggingsbehov(event.getAktørId(), false, Collections.emptyList()));
-        harTilretteleggingsbehovProducer.sendKafkamelding(behov);
         aivenHarTilretteleggingsbehovProducer.sendKafkamelding(behov);
     }
 
@@ -56,7 +52,6 @@ public class KandidatHandler {
                         kandidat.getAktørId(),
                         CollectionUtils.isNotEmpty(kandidat.kategorier()),
                         kandidat.kategorier()));
-        harTilretteleggingsbehovProducer.sendKafkamelding(behov);
         aivenHarTilretteleggingsbehovProducer.sendKafkamelding(behov);
     }
 }

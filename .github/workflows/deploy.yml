@@ -27,7 +27,7 @@ jobs:
   deploy-to-dev:
     name: Deploy to dev
     needs: test
-    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/fjern-tilrettelegging-arbeidsplassen'
+    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/fjern-samtykke-tabell'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1

@@ -102,6 +102,7 @@ jobs:
         run: >
           snyk monitor
           --org=toi
+          --file=pom.xml
           --project-name=${{ github.repository }}
           --remote-repo-url=https://github.com/${{ github.repository }}.git
         env:

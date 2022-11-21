@@ -23,6 +23,15 @@ jobs:
             ${{ runner.os }}-maven-cache-
       - name: Run tests
         run: mvn verify -P external
+      - name: Install Snyk CLI
+        uses: snyk/actions/setup@master
+      - name: Test dependencies with Snyk
+        run: snyk test --org=toi --fail-on=all --severity-threshold=medium
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        ## Ved fix av prodfeil, sett continue-on-error=true, slik at workflow fortsetter selvom snyk finner sårbarheter
+        continue-on-error: false
 
   deploy-to-dev:
     name: Deploy to dev

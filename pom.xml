@@ -220,10 +220,7 @@
             <artifactId>sts</artifactId>
             <version>2.2022.10.20_07.46-64a2e6bdf2d0</version>
         </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.datatype</groupId>
-            <artifactId>jackson-datatype-jsr310</artifactId>
-        </dependency>
+
     </dependencies>
 
     <build>

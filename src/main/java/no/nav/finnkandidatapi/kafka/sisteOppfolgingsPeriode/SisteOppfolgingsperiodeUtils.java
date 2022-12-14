@@ -6,7 +6,7 @@ import no.nav.pto_schema.kafka.json.topic.SisteOppfolgingsperiodeV1;
 
 import java.io.IOException;
 
-public class SisteOppfolgingsPeriodeUtils {
+public class SisteOppfolgingsperiodeUtils {
     public static SisteOppfolgingsperiodeV1 deserialiserMelding(String melding) {
         try {
             ObjectMapper mapper = new ObjectMapper();

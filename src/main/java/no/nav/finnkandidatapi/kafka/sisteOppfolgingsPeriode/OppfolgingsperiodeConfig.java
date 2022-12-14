@@ -7,6 +7,6 @@ import org.springframework.stereotype.Component;
 @Data
 @Component
 @ConfigurationProperties(prefix = "siste-oppfolgingsperiode")
-public class OppfolgingPeriodeConfig {
+public class OppfolgingsperiodeConfig {
     private String topic;
 }

@@ -1,31 +1,30 @@
 package no.nav.finnkandidatapi.kafka.sisteOppfolgingsPeriode;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.finnkandidatapi.kafka.oppfølgingAvsluttet.OppfolgingAvsluttetConfig;
 import no.nav.finnkandidatapi.kandidat.KandidatService;
 import no.nav.finnkandidatapi.permittert.PermittertArbeidssokerService;
 import no.nav.pto_schema.kafka.json.topic.SisteOppfolgingsperiodeV1;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 @Slf4j
-@Component
-public class SisteOppfolgingsperiodeConsumerAiven {
+@Service
+public class SisteOppfolgingsperiodeConsumer {
 
     private KandidatService kandidatService;
     private PermittertArbeidssokerService permittertArbeidssokerService;
     @SuppressWarnings({"unused", "FieldCanBeLocal"})
-    private OppfolgingAvsluttetConfig oppfolgingAvsluttetConfig;
+    private OppfolgingsperiodeConfig oppfolgingsperiodeConfig;
 
-    public SisteOppfolgingsperiodeConsumerAiven(
+    public SisteOppfolgingsperiodeConsumer(
             KandidatService kandidatService,
             PermittertArbeidssokerService permittertArbeidssokerService,
-            OppfolgingAvsluttetConfig oppfolgingAvsluttetConfig
+            OppfolgingsperiodeConfig oppfolgingsperiodeConfig
     ) {
         this.kandidatService = kandidatService;
         this.permittertArbeidssokerService = permittertArbeidssokerService;
-        this.oppfolgingAvsluttetConfig = oppfolgingAvsluttetConfig;
+        this.oppfolgingsperiodeConfig = oppfolgingsperiodeConfig;
     }
 
     @KafkaListener(

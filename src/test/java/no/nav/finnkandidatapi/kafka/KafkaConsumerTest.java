@@ -8,6 +8,8 @@ import no.nav.finnkandidatapi.kafka.oppfølgingAvsluttet.OppfolgingAvsluttetConf
 import no.nav.finnkandidatapi.kafka.oppfølgingAvsluttet.OppfølgingAvsluttetMelding;
 import no.nav.finnkandidatapi.kandidat.Kandidat;
 import no.nav.finnkandidatapi.kandidat.KandidatRepository;
+import no.nav.pto_schema.kafka.json.topic.SisteOppfolgingsperiodeV1;
+import no.nav.pto_schema.kafka.json.topic.onprem.OppfolgingAvsluttetV1;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -35,6 +37,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.backoff.ExponentialBackOff;
 
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.Map;
 
@@ -96,29 +99,59 @@ public class KafkaConsumerTest {
 
     @Test(timeout = 2000)
     @SneakyThrows
-    public void skal_slette_kandidat_ved_mottatt_oppfølging_avsluttet_kafka_melding() {
+    public void skal_slette_kandidat_ved_mottatt_oppfølging_avsluttet_kafka_melding_onprem() {
         Kandidat kandidatSomSkalSlettes = enKandidat();
         kandidatSomSkalSlettes.setAktørId(AKTØR_ID);
         repository.lagreKandidatSomVeileder(kandidatSomSkalSlettes);
-        sendOppFølgingAvsluttetMelding();
+        sendOppFølgingAvsluttetMelding_onprem();
 
         boolean kandidatErslettet = false;
-        while(!kandidatErslettet) {
+        while (!kandidatErslettet) {
             Thread.sleep(10);
             kandidatErslettet = repository.hentNyesteKandidat(kandidatSomSkalSlettes.getAktørId()).isEmpty();
         }
         assertThat(kandidatErslettet).isTrue();
     }
 
-    private void sendOppFølgingAvsluttetMelding() throws JsonProcessingException {
-        String melding = lagOppfølgingAvsluttetMelding(AKTØR_ID);
+    @Test(timeout = 2000)
+    @SneakyThrows
+    public void skal_slette_kandidat_ved_mottatt_oppfølging_avsluttet_kafka_melding_offprem() {
+        Kandidat kandidatSomSkalSlettes = enKandidat();
+        kandidatSomSkalSlettes.setAktørId(AKTØR_ID);
+        repository.lagreKandidatSomVeileder(kandidatSomSkalSlettes);
+        sendOppFølgingAvsluttetMelding_offprem();
+
+        boolean kandidatErslettet = false;
+        while (!kandidatErslettet) {
+            Thread.sleep(10);
+            kandidatErslettet = repository.hentNyesteKandidat(kandidatSomSkalSlettes.getAktørId()).isEmpty();
+        }
+        assertThat(kandidatErslettet).isTrue();
+    }
+
+    private void sendOppFølgingAvsluttetMelding_onprem() throws JsonProcessingException {
+        String melding = lagOppfølgingAvsluttetMelding_onprem(AKTØR_ID);
         producer.send(new ProducerRecord<>(consumerTopicProps.getTopic(), "123", melding));
     }
 
-    private String lagOppfølgingAvsluttetMelding(String aktørId) throws JsonProcessingException {
+    private void sendOppFølgingAvsluttetMelding_offprem() throws JsonProcessingException {
+        String melding = lagOppfølgingAvsluttetMelding_offprem(AKTØR_ID);
+        producer.send(new ProducerRecord<>(consumerTopicProps.getTopic(), "123", melding));
+    }
+
+    private String lagOppfølgingAvsluttetMelding_onprem(String aktørId) throws JsonProcessingException {
         OppfølgingAvsluttetMelding oppfølgingAvsluttetMelding = OppfølgingAvsluttetMelding.builder()
                 .aktørId(aktørId)
                 .sluttdato(new Date()).build();
+        ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper.writeValueAsString(oppfølgingAvsluttetMelding);
+    }
+
+    private String lagOppfølgingAvsluttetMelding_offprem(String aktørId) throws JsonProcessingException {
+        SisteOppfolgingsperiodeV1 oppfølgingAvsluttetMelding = SisteOppfolgingsperiodeV1.builder()
+                .aktorId(aktørId)
+                .sluttDato(ZonedDateTime.now())
+                .build();
         ObjectMapper objectMapper = new ObjectMapper();
         return objectMapper.writeValueAsString(oppfølgingAvsluttetMelding);
     }

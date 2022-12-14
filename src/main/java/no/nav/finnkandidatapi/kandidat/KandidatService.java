@@ -9,6 +9,7 @@ import no.nav.finnkandidatapi.kafka.oppfølgingAvsluttet.OppfølgingAvsluttetMel
 import no.nav.finnkandidatapi.metrikker.KandidatEndret;
 import no.nav.finnkandidatapi.metrikker.KandidatOpprettet;
 import no.nav.finnkandidatapi.metrikker.KandidatSlettet;
+import no.nav.pto_schema.kafka.json.topic.SisteOppfolgingsperiodeV1;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
@@ -76,6 +77,14 @@ public class KandidatService {
         Optional<Integer> slettetKey = kandidatRepository.slettKandidatSomMaskinbruker(oppfølgingAvsluttetMelding.getAktørId(), dateProvider.now());
         if (slettetKey.isPresent()) {
             eventPublisher.publishEvent(new KandidatSlettet(slettetKey.get(), oppfølgingAvsluttetMelding.getAktørId(), Brukertype.SYSTEM, dateProvider.now()));
+            log.info("Slettet kandidat med id {} pga. avsluttet oppfølging", slettetKey.get());
+        }
+    }
+
+    public void behandleOppfølgingAvsluttet(SisteOppfolgingsperiodeV1 sisteOppfolgingsperiode) {
+        Optional<Integer> slettetKey = kandidatRepository.slettKandidatSomMaskinbruker(sisteOppfolgingsperiode.getAktorId(), dateProvider.now());
+        if (slettetKey.isPresent()) {
+            eventPublisher.publishEvent(new KandidatSlettet(slettetKey.get(), sisteOppfolgingsperiode.getAktorId(), Brukertype.SYSTEM, dateProvider.now()));
             log.info("Slettet kandidat med id {} pga. avsluttet oppfølging", slettetKey.get());
         }
     }

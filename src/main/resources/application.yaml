@@ -60,6 +60,7 @@ SERVICEUSER_PASSWORD: na
 
 oppfolging-avsluttet.topic: en-kafka-topic
 vedtak-replikert.topic: en-fjerde-kafka-topic
+siste-oppfolgingsperiode.topic: siste-oppfolging-periode-topic
 
 ---
 spring:
@@ -78,6 +79,7 @@ spring:
 
 oppfolging-avsluttet.topic: aapen-fo-endringPaaAvsluttOppfolging-v1-q0
 vedtak-replikert.topic: teamarenanais.gg-arena-vedtak-dagpenger-v2-q1
+siste-oppfolgingsperiode.topic: pto.siste-oppfolgingsperiode-v1
 
 database:
     navn: finn-kandidat-dev
@@ -120,6 +122,7 @@ spring:
 
 oppfolging-avsluttet.topic: aapen-fo-endringPaaAvsluttOppfolging-v1-p
 vedtak-replikert.topic: teamarenanais.gg-arena-vedtak-dagpenger-v2-p
+siste-oppfolgingsperiode.topic: pto.siste-oppfolgingsperiode-v1
 
 database:
     navn: finn-kandidat-prod

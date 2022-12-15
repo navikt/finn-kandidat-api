@@ -16,10 +16,10 @@ public class SisteOppfolgingsperiodeUtils {
             SisteOppfolgingsperiodeV1 sisteOppfolgingsperiode = mapper.readValue(melding, SisteOppfolgingsperiodeV1.class);
 
             if (sisteOppfolgingsperiode.getAktorId().isEmpty() || sisteOppfolgingsperiode.getStartDato() == null) {
-                throw new RuntimeException("Ugyldig data for siste oppfolging periode på bruker: " + sisteOppfolgingsperiode.getAktorId());
+                throw new RuntimeException("Ugyldig data for siste oppfolgingsperiode på bruker: " + sisteOppfolgingsperiode.getAktorId());
             }
             if (sisteOppfolgingsperiode.getSluttDato() != null && sisteOppfolgingsperiode.getStartDato().isAfter(sisteOppfolgingsperiode.getSluttDato())) {
-                throw new RuntimeException("Ugyldig start/slutt dato for siste oppfolging periode på bruker: " + sisteOppfolgingsperiode.getAktorId());
+                throw new RuntimeException("Ugyldig start/slutt dato for siste oppfolgingsperiode på bruker: " + sisteOppfolgingsperiode.getAktorId());
             }
             return sisteOppfolgingsperiode;
 

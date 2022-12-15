@@ -38,7 +38,6 @@ import org.springframework.util.backoff.ExponentialBackOff;
 
 import java.time.ZonedDateTime;
 import java.util.Map;
-import java.util.UUID;
 
 import static no.nav.finnkandidatapi.TestData.enKandidat;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -120,7 +119,6 @@ public class SisteOppfolgingsperiodeConsumerTest {
 
     private String lagOppfølgingAvsluttetMelding_offprem(String aktørId) throws JsonProcessingException {
         SisteOppfolgingsperiodeV1 oppfølgingAvsluttetMelding = SisteOppfolgingsperiodeV1.builder()
-                .uuid(UUID.randomUUID())
                 .aktorId(aktørId)
                 .startDato(ZonedDateTime.now().minusYears(2))
                 .sluttDato(ZonedDateTime.now())

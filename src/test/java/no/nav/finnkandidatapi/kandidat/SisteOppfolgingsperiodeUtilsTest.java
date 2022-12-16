@@ -15,7 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class SisteOppfolgingsperiodeUtilsTest {
     private ObjectMapper objectMapper = new ObjectMapper()
-            .registerModule(new JavaTimeModule())
+            .registerModule(new JavaTimeModule());
 
     @SneakyThrows
     @Test(expected = RuntimeException.class)

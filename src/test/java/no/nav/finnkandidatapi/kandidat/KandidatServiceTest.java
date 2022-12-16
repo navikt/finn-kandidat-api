@@ -2,7 +2,6 @@ package no.nav.finnkandidatapi.kandidat;
 
 import no.nav.common.client.aktoroppslag.AktorOppslagClient;
 import no.nav.finnkandidatapi.DateProvider;
-import no.nav.finnkandidatapi.kafka.oppfølgingAvsluttet.OppfølgingAvsluttetMelding;
 import no.nav.finnkandidatapi.metrikker.KandidatEndret;
 import no.nav.finnkandidatapi.metrikker.KandidatOpprettet;
 import no.nav.finnkandidatapi.metrikker.KandidatSlettet;
@@ -204,15 +203,6 @@ public class KandidatServiceTest {
     public void behandleOppfølgingAvsluttet__skal_slette_kandidat() {
         String aktørId = "1000000000001";
 
-        kandidatService.behandleOppfølgingAvsluttet(new OppfølgingAvsluttetMelding(aktørId, new Date()));
-
-        verify(repository).slettKandidatSomMaskinbruker(aktørId, dateProvider.now());
-    }
-
-    @Test
-    public void behandleOppfølgingAvsluttet_nyttTopic__skal_slette_kandidat() {
-        String aktørId = "1000000000001";
-
         kandidatService.behandleOppfølgingAvsluttet(new SisteOppfolgingsperiodeV1(
                 UUID.randomUUID(),
                 aktørId,
@@ -225,19 +215,6 @@ public class KandidatServiceTest {
 
     @Test
     public void behandleOppfølgingAvsluttet__skal_publisere_KandidatSlettet_event() {
-        String aktørId = "1856024171652";
-        LocalDateTime datetime = now();
-        when(dateProvider.now()).thenReturn(datetime);
-        Optional<Integer> slettetKey = Optional.of(4);
-        when(repository.slettKandidatSomMaskinbruker(aktørId, datetime)).thenReturn(slettetKey);
-
-        kandidatService.behandleOppfølgingAvsluttet(new OppfølgingAvsluttetMelding(aktørId, new Date()));
-
-        verify(eventPublisher).publishEvent(new KandidatSlettet(slettetKey.get(), aktørId, Brukertype.SYSTEM, datetime));
-    }
-
-    @Test
-    public void behandleOppfølgingAvsluttet_nyttTopic__skal_publisere_KandidatSlettet_event() {
         String aktørId = "1856024171652";
         LocalDateTime datetime = now();
         when(dateProvider.now()).thenReturn(datetime);

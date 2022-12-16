@@ -8,6 +8,7 @@ import no.nav.pto_schema.kafka.json.topic.SisteOppfolgingsperiodeV1;
 import org.junit.Test;
 
 import java.time.ZonedDateTime;
+import java.util.TimeZone;
 import java.util.UUID;
 
 import static no.nav.finnkandidatapi.TestData.enAktørId;
@@ -15,7 +16,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class SisteOppfolgingsperiodeUtilsTest {
     private ObjectMapper objectMapper = new ObjectMapper()
-            .registerModule(new JavaTimeModule());
+            .registerModule(new JavaTimeModule())
+            .setTimeZone(TimeZone.getTimeZone("Europe/Oslo"));
 
     @SneakyThrows
     @Test(expected = RuntimeException.class)

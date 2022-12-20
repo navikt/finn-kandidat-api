@@ -1,8 +1,7 @@
-package no.nav.finnkandidatapi.kandidat;
+package no.nav.finnkandidatapi.kafka.sisteOppfolgingsPeriode;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
-import no.nav.finnkandidatapi.kafka.sisteOppfolgingsPeriode.SisteOppfolgingsperiodeUtils;
 import no.nav.pto_schema.kafka.json.topic.SisteOppfolgingsperiodeV1;
 import org.junit.Test;
 

@@ -9,7 +9,7 @@ import java.io.IOException;
 
 public class SisteOppfolgingsperiodeUtils {
 
-    public static final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule()).configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
+    static final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule()).configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
 
     public static SisteOppfolgingsperiodeV1 deserialiserMelding(String melding) {
         try {

@@ -5,7 +5,6 @@ import no.nav.common.client.aktoroppslag.AktorOppslagClient;
 import no.nav.common.types.identer.AktorId;
 import no.nav.common.types.identer.Fnr;
 import no.nav.finnkandidatapi.DateProvider;
-import no.nav.finnkandidatapi.kafka.oppfølgingAvsluttet.OppfølgingAvsluttetMelding;
 import no.nav.finnkandidatapi.metrikker.KandidatEndret;
 import no.nav.finnkandidatapi.metrikker.KandidatOpprettet;
 import no.nav.finnkandidatapi.metrikker.KandidatSlettet;
@@ -71,14 +70,6 @@ public class KandidatService {
         lagretKandidat.ifPresent(value -> eventPublisher.publishEvent(new KandidatEndret(value)));
 
         return lagretKandidat;
-    }
-
-    public void behandleOppfølgingAvsluttet(OppfølgingAvsluttetMelding oppfølgingAvsluttetMelding) {
-        Optional<Integer> slettetKey = kandidatRepository.slettKandidatSomMaskinbruker(oppfølgingAvsluttetMelding.getAktørId(), dateProvider.now());
-        if (slettetKey.isPresent()) {
-            eventPublisher.publishEvent(new KandidatSlettet(slettetKey.get(), oppfølgingAvsluttetMelding.getAktørId(), Brukertype.SYSTEM, dateProvider.now()));
-            log.info("Slettet kandidat med id {} pga. avsluttet oppfølging", slettetKey.get());
-        }
     }
 
     public void behandleOppfølgingAvsluttet(SisteOppfolgingsperiodeV1 sisteOppfolgingsperiode) {

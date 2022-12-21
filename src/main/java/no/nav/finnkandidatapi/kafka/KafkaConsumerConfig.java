@@ -1,4 +1,4 @@
-package no.nav.finnkandidatapi.kafka.oppfølgingAvsluttet;
+package no.nav.finnkandidatapi.kafka;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;

@@ -31,12 +31,12 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         ## Ved fix av prodfeil, sett continue-on-error=true, slik at workflow fortsetter selvom snyk finner sårbarheter
-        continue-on-error: false
+        continue-on-error: true
 
   deploy-to-dev:
     name: Deploy to dev
     needs: test
-    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/oppdatere-dependencies'
+    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/bytt-kafka-topic'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3

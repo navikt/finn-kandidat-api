@@ -1,9 +1,9 @@
 package no.nav.finnkandidatapi.permittert;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.finnkandidatapi.kafka.oppfølgingAvsluttet.OppfølgingAvsluttetMelding;
 import no.nav.finnkandidatapi.metrikker.PermittertArbeidssokerEndretEllerOpprettet;
 import no.nav.finnkandidatapi.metrikker.PermittertArbeidssokerSlettet;
+import no.nav.pto_schema.kafka.json.topic.SisteOppfolgingsperiodeV1;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
@@ -28,11 +28,11 @@ public class PermittertArbeidssokerService {
         return repository.hentNyestePermittertArbeidssoker(aktørId);
     }
 
-    public void behandleOppfølgingAvsluttet(OppfølgingAvsluttetMelding oppfølgingAvsluttetMelding) {
-        Optional<Integer> slettetKey = repository.slettPermittertArbeidssoker(oppfølgingAvsluttetMelding.getAktørId());
+    public void behandleOppfølgingAvsluttet(SisteOppfolgingsperiodeV1 sisteOppfolgingsperiode) {
+        Optional<Integer> slettetKey = repository.slettPermittertArbeidssoker(sisteOppfolgingsperiode.getAktorId());
         if (slettetKey.isPresent()) {
-            eventPublisher.publishEvent(new PermittertArbeidssokerSlettet(oppfølgingAvsluttetMelding.getAktørId()));
-            log.info("Slettet Permittert Arbeidssoker med aktørid aktørid {} pga. avsluttet oppfølging", oppfølgingAvsluttetMelding.getAktørId());
+            eventPublisher.publishEvent(new PermittertArbeidssokerSlettet(sisteOppfolgingsperiode.getAktorId()));
+            log.info("Slettet Permittert Arbeidssoker med aktørid aktørid {} pga. avsluttet oppfølging", sisteOppfolgingsperiode.getAktorId());
         }
     }
 

@@ -2,10 +2,10 @@ package no.nav.finnkandidatapi.kandidat;
 
 import no.nav.common.client.aktoroppslag.AktorOppslagClient;
 import no.nav.finnkandidatapi.DateProvider;
-import no.nav.finnkandidatapi.kafka.oppfølgingAvsluttet.OppfølgingAvsluttetMelding;
 import no.nav.finnkandidatapi.metrikker.KandidatEndret;
 import no.nav.finnkandidatapi.metrikker.KandidatOpprettet;
 import no.nav.finnkandidatapi.metrikker.KandidatSlettet;
+import no.nav.pto_schema.kafka.json.topic.SisteOppfolgingsperiodeV1;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,8 +15,10 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.context.ApplicationEventPublisher;
 
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.Optional;
+import java.util.UUID;
 
 import static no.nav.finnkandidatapi.TestData.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -201,7 +203,12 @@ public class KandidatServiceTest {
     public void behandleOppfølgingAvsluttet__skal_slette_kandidat() {
         String aktørId = "1000000000001";
 
-        kandidatService.behandleOppfølgingAvsluttet(new OppfølgingAvsluttetMelding(aktørId, new Date()));
+        kandidatService.behandleOppfølgingAvsluttet(new SisteOppfolgingsperiodeV1(
+                UUID.randomUUID(),
+                aktørId,
+                ZonedDateTime.now().minusYears(2),
+                ZonedDateTime.now()
+        ));
 
         verify(repository).slettKandidatSomMaskinbruker(aktørId, dateProvider.now());
     }
@@ -214,7 +221,12 @@ public class KandidatServiceTest {
         Optional<Integer> slettetKey = Optional.of(4);
         when(repository.slettKandidatSomMaskinbruker(aktørId, datetime)).thenReturn(slettetKey);
 
-        kandidatService.behandleOppfølgingAvsluttet(new OppfølgingAvsluttetMelding(aktørId, new Date()));
+        kandidatService.behandleOppfølgingAvsluttet(new SisteOppfolgingsperiodeV1(
+                UUID.randomUUID(),
+                aktørId,
+                ZonedDateTime.now().minusYears(2),
+                ZonedDateTime.now()
+        ));
 
         verify(eventPublisher).publishEvent(new KandidatSlettet(slettetKey.get(), aktørId, Brukertype.SYSTEM, datetime));
     }

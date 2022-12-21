@@ -2,12 +2,13 @@ package no.nav.finnkandidatapi.kafka;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.finnkandidatapi.kafka.oppfølgingAvsluttet.OppfolgingAvsluttetConfig;
-import no.nav.finnkandidatapi.kafka.oppfølgingAvsluttet.OppfølgingAvsluttetMelding;
+import no.nav.finnkandidatapi.kafka.sisteOppfolgingsPeriode.OppfolgingsperiodeConfig;
 import no.nav.finnkandidatapi.kandidat.Kandidat;
 import no.nav.finnkandidatapi.kandidat.KandidatRepository;
+import no.nav.pto_schema.kafka.json.topic.SisteOppfolgingsperiodeV1;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -35,7 +36,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.backoff.ExponentialBackOff;
 
-import java.util.Date;
+import java.time.ZonedDateTime;
 import java.util.Map;
 
 import static no.nav.finnkandidatapi.TestData.enKandidat;
@@ -46,12 +47,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ActiveProfiles({"local", "mock"})
 @DirtiesContext
 @Slf4j
-public class KafkaConsumerTest {
+public class SisteOppfolgingsperiodeConsumerTest {
 
     private static final String AKTØR_ID = "1856024171652";
 
     @Autowired
-    private OppfolgingAvsluttetConfig consumerTopicProps;
+    private OppfolgingsperiodeConfig consumerTopicProps;
 
     @Autowired
     private EnKafkaMockServer embeddedKafka;
@@ -94,32 +95,36 @@ public class KafkaConsumerTest {
         ContainerTestUtils.waitForAssignment(container, embeddedKafka.getEmbeddedKafka().getPartitionsPerTopic());
     }
 
-    @Test(timeout = 2000)
+   @Test(timeout = 2000)
     @SneakyThrows
-    public void skal_slette_kandidat_ved_mottatt_oppfølging_avsluttet_kafka_melding() {
+    public void skal_slette_kandidat_ved_mottatt_oppfølging_avsluttet_kafka_melding_offprem() {
         Kandidat kandidatSomSkalSlettes = enKandidat();
         kandidatSomSkalSlettes.setAktørId(AKTØR_ID);
         repository.lagreKandidatSomVeileder(kandidatSomSkalSlettes);
-        sendOppFølgingAvsluttetMelding();
+        sendOppFølgingAvsluttetMelding_offprem();
 
         boolean kandidatErslettet = false;
-        while(!kandidatErslettet) {
+        while (!kandidatErslettet) {
             Thread.sleep(10);
             kandidatErslettet = repository.hentNyesteKandidat(kandidatSomSkalSlettes.getAktørId()).isEmpty();
         }
         assertThat(kandidatErslettet).isTrue();
     }
 
-    private void sendOppFølgingAvsluttetMelding() throws JsonProcessingException {
-        String melding = lagOppfølgingAvsluttetMelding(AKTØR_ID);
+    private void sendOppFølgingAvsluttetMelding_offprem() throws JsonProcessingException {
+        String melding = lagOppfølgingAvsluttetMelding_offprem(AKTØR_ID);
+        log.info(melding);
         producer.send(new ProducerRecord<>(consumerTopicProps.getTopic(), "123", melding));
     }
 
-    private String lagOppfølgingAvsluttetMelding(String aktørId) throws JsonProcessingException {
-        OppfølgingAvsluttetMelding oppfølgingAvsluttetMelding = OppfølgingAvsluttetMelding.builder()
-                .aktørId(aktørId)
-                .sluttdato(new Date()).build();
+    private String lagOppfølgingAvsluttetMelding_offprem(String aktørId) throws JsonProcessingException {
+        SisteOppfolgingsperiodeV1 oppfølgingAvsluttetMelding = SisteOppfolgingsperiodeV1.builder()
+                .aktorId(aktørId)
+                .startDato(ZonedDateTime.now().minusYears(2))
+                .sluttDato(ZonedDateTime.now())
+                .build();
         ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
         return objectMapper.writeValueAsString(oppfølgingAvsluttetMelding);
     }
 

@@ -1,4 +1,4 @@
-package no.nav.finnkandidatapi.kafka.oppfølgingAvsluttet;
+package no.nav.finnkandidatapi.kafka.sisteOppfolgingsPeriode;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 
 @Data
 @Component
-@ConfigurationProperties(prefix = "oppfolging-avsluttet")
-public class OppfolgingAvsluttetConfig {
+@ConfigurationProperties(prefix = "siste-oppfolgingsperiode")
+public class OppfolgingsperiodeConfig {
     private String topic;
 }

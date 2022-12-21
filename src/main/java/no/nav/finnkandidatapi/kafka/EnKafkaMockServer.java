@@ -2,7 +2,7 @@ package no.nav.finnkandidatapi.kafka;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.finnkandidatapi.kafka.oppfølgingAvsluttet.OppfolgingAvsluttetConfig;
+import no.nav.finnkandidatapi.kafka.sisteOppfolgingsPeriode.OppfolgingsperiodeConfig;
 import no.nav.finnkandidatapi.kafka.vedtakReplikert.VedtakReplikertConfig;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.context.annotation.Profile;
@@ -25,15 +25,15 @@ public class EnKafkaMockServer implements DisposableBean {
         de ikke har noen synlige avhengigheter.
      */
     public EnKafkaMockServer(
-            OppfolgingAvsluttetConfig oppfolgingAvsluttetConfig,
-            VedtakReplikertConfig vedtakReplikertConfig) {
+            VedtakReplikertConfig vedtakReplikertConfig,
+            OppfolgingsperiodeConfig oppfolgingsperiodeConfig) {
         log.info("Starter embedded Kafka");
         embeddedKafka = new EmbeddedKafkaBroker(
                 1,
                 true,
                 1,
-                oppfolgingAvsluttetConfig.getTopic(),
                 vedtakReplikertConfig.getTopic(),
+                oppfolgingsperiodeConfig.getTopic(),
                 topicName
         );
         embeddedKafka.afterPropertiesSet();

@@ -2,7 +2,7 @@ server.servlet.context-path: /finn-kandidat-api
 
 management:
     endpoints.web:
-        exposure.include: info, health, metrics, prometheus
+        exposure.include: health, prometheus
         base-path: /internal/actuator
     endpoint.health.show-details: always
 

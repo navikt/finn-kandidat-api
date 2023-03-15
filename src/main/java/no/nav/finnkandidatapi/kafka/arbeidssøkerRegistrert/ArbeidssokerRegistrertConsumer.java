@@ -17,6 +17,7 @@ import org.springframework.kafka.event.ConsumerStoppedEvent;
 import org.springframework.kafka.support.serializer.FailedDeserializationInfo;
 import org.springframework.stereotype.Component;
 
+import static no.nav.finnkandidatapi.SecureLog.secureLog;
 import static no.nav.finnkandidatapi.kafka.arbeidssøkerRegistrert.VeilArbRegistreringOpprettetParser.parseTidspunkt;
 import static no.nav.finnkandidatapi.permittert.DinSituasjonSvarFraVeilarbReg.ER_PERMITTERT;
 
@@ -41,7 +42,8 @@ public class ArbeidssokerRegistrertConsumer implements ApplicationContextAware {
             containerFactory = "avroAivenKafkaListenerContainerFactory"
     )
     public void konsumerMelding(ConsumerRecord<String, ArbeidssokerRegistrertEvent> melding) {
-        log.info(
+        log.info("Konsumerer registrert Arbeidssøker-melding for topic {}, se securelog for detaljer", topicName);
+        secureLog.info(
                 "Konsumerer registrert Arbeidssøker-melding fra topic {}, for id {}, offset: {}, partition: {}",
                 topicName,
                 melding.key(),
@@ -53,7 +55,8 @@ public class ArbeidssokerRegistrertConsumer implements ApplicationContextAware {
 
         if (arbeidssokerRegistrert instanceof FaultyArbeidssokerRegistrert) {
             FailedDeserializationInfo failedDeserializationInfo = ((FaultyArbeidssokerRegistrert) arbeidssokerRegistrert).getFailedDeserializationInfo();
-            log.error("Feil ved konsumering av registrert arbeidssøker-melding. Topic {}, id {}, offset: {}, partition: {}, årsak: {}",
+            log.error("Feil ved konsumering av registrert arbeidssøker-melding for topic {}, se securelog for detaljer", topicName);
+            secureLog.error("Feil ved konsumering av registrert arbeidssøker-melding. Topic {}, id {}, offset: {}, partition: {}, årsak: {}",
                     topicName,
                     melding.key(),
                     melding.offset(),

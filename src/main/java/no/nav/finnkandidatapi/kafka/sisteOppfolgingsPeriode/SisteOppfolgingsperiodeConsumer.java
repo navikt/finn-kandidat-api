@@ -8,6 +8,8 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
+import static no.nav.finnkandidatapi.SecureLog.secureLog;
+
 @Slf4j
 @Service
 public class SisteOppfolgingsperiodeConsumer {
@@ -34,7 +36,8 @@ public class SisteOppfolgingsperiodeConsumer {
             containerFactory = "aivenKafkaListenerContainerFactory"
     )
     public void konsumerMelding(ConsumerRecord<String, String> melding) {
-        log.info(
+        log.info("Konsumerer en siste-oppfolgingsperiode melding. Se securelog for detaljer.");
+        secureLog.info(
                 "Konsumerer en siste-oppfolgingsperiode melding for id {}, offset: {}, partition: {}",
                 melding.key(),
                 melding.offset(),
@@ -49,7 +52,8 @@ public class SisteOppfolgingsperiodeConsumer {
             }
 
         } catch (RuntimeException e) {
-            log.error("Feil ved konsumering av en siste-oppfolgingsperiode melding. id {}, offset: {}, partition: {}",
+            log.error("Feil ved konsumering av en siste-oppfolgingsperiode melding. Se securelog for detaljer.");
+            secureLog.error("Feil ved konsumering av en siste-oppfolgingsperiode melding. id {}, offset: {}, partition: {}",
                     melding.key(),
                     melding.offset(),
                     melding.partition()

@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Collections.emptyList;
+import static no.nav.finnkandidatapi.SecureLog.secureLog;
 
 @Component
 @Slf4j
@@ -58,7 +59,8 @@ public class SammenstillBehov {
                 tilretteleggingsbehovFilter.stream(),
                 permitteringFilter.stream()
         );
-        log.info("Lager behov for aktør:" + aktørId + " " + behov);
+        log.info("Lager behov for aktør: se securelog for detaljer");
+        secureLog.info("Lager behov for aktør:" + aktørId + " " + behov);
         return new HarTilretteleggingsbehov(aktørId, erTilretteleggingsbehov, behov);
     }
 

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static no.nav.finnkandidatapi.SecureLog.secureLog;
 import static no.nav.finnkandidatapi.tilgangskontroll.TokenUtils.ISSUER_AZUREAD;
 
 
@@ -130,8 +131,8 @@ public class KafkaRepublisher {
         String ident = sjekkTilgangTilRepublisher();
 
         HarTilretteleggingsbehov harTilretteleggingsbehov = sammenstillBehov.lagbehov(aktørId);
-
-        log.warn("Bruker med ident {} republiserer kandidat med aktørId {} og behov {}.", ident, aktørId, harTilretteleggingsbehov.getBehov());
+        log.warn("Bruker med ident {} republiserer kandidat. Se securelog for aktørid og behov", ident);
+        secureLog.warn("Bruker med ident {} republiserer kandidat med aktørId {} og behov {}.", ident, aktørId, harTilretteleggingsbehov.getBehov());
         aivenHarTilretteleggingsbehovProducer.sendKafkamelding(harTilretteleggingsbehov);
         return ResponseEntity.ok().build();
     }

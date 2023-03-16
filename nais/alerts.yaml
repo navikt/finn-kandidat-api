@@ -1,44 +1,60 @@
-apiVersion: "nais.io/v1"
-kind: "Alert"
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
 metadata:
-  name: finn-kandidat-api-alert
+  name: finn-kandidat-api
   namespace: arbeidsgiver
   labels:
     team: arbeidsgiver
 spec:
-  receivers:
-    slack:
-      channel: 'inkludering-alerts-prod'
-  alerts:
-    - alert: finn-kandidat-api
-      expr: sum(up{app="finn-kandidat-api", job="kubernetes-pods"}) == 0
-      for: 2m
-      description: "Appen er nede"
-      action: "https://logs.adeo.no/app/r/s/ppcyL"
+  groups:
+    - name: finn-kandidat-api
+      rules:
+        - alert: finn-kandidat-api
+          expr: kube_deployment_status_replicas_available{deployment="finn-kandidat-api"} == 0
+          for: 1s
+          annotations:
+            summary: Appen er nede
+            action: "https://logs.adeo.no/app/r/s/ppcyL"
+          labels:
+            namespace: toi
+            severity: critical
 
-    - alert: finn-kandidat-api
-      expr: sum(increase(logd_messages_total{log_app="finn-kandidat-api",log_level="Error"}[10m])) > 0
-      for: 10s
-      description: "Appen har logget en feil"
-      action: "https://logs.adeo.no/app/r/s/ppcyL"
+        - alert: finn-kandidat-api
+          expr: sum(increase(logd_messages_total{log_app="finn-kandidat-api",log_level="Error"}[10m])) > 0
+          for: 1s
+          annotations:
+            summary: Appen har logget en error
+            action: "https://logs.adeo.no/app/r/s/ppcyL"
+          labels:
+            namespace: toi
+            severity: critical
 
-    - alert: finn-kandidat-api
-      severity: warning
-      expr: (100 * sum by (log_app, log_namespace) (rate(logd_messages_total{log_app="finn-kandidat-api",log_level=~"Warning"}[3m])) / sum by (log_app, log_namespace) (rate(logd_messages_total{log_app="finn-kandidat-api"}[3m]))) > 20
-      for: 3m
-      description: "Økning log level warning"
-      action: "https://logs.adeo.no/app/r/s/ppcyL"
+        - alert: finn-kandidat-api
+          expr: (100 * sum by (log_app, log_namespace) (rate(logd_messages_total{log_app="finn-kandidat-api",log_level=~"Warning"}[3m])) / sum by (log_app, log_namespace) (rate(logd_messages_total{log_app="finn-kandidat-api"}[3m]))) > 5
+          for: 3m
+          annotations:
+            summary: Økning i warnings
+            action: "https://logs.adeo.no/app/r/s/ppcyL"
+          labels:
+            namespace: toi
+            severity: warning
 
-    - alert: finn-kandidat-api
-      severity: danger
-      expr: (100 * (sum by (backend) (rate(traefik_backend_requests_total{code=~"^5\\d\\d", backend=~"arbeidsgiver.nais.*/finn-kandidat-api/*"}[3m])) / sum by (backend) (rate(traefik_backend_requests_total{backend=~"arbeidsgiver.nais.*/finn-kandidat-api/*"}[3m])))) > 1
-      for: 3m
-      description: "Økning HTTP serverfeil (5xx responser)"
-      action: "https://logs.adeo.no/app/r/s/ppcyL"
+        - alert: finn-kandidat-api
+          expr: (100 * (sum by (backend) (rate(traefik_backend_requests_total{code=~"^5\\d\\d", backend=~"arbeidsgiver.nais.*/finn-kandidat-api/*"}[3m])) / sum by (backend) (rate(traefik_backend_requests_total{backend=~"arbeidsgiver.nais.*/finn-kandidat-api/*"}[3m])))) > 1
+          for: 3m
+          annotations:
+            summary: Økning i HTTP-serverfeil (5xx-responser)
+            action: "https://logs.adeo.no/app/r/s/ppcyL"
+          labels:
+            namespace: toi
+            severity: warning
 
-    - alert: finn-kandidat-api
-      severity: warning
-      expr: (100 * (sum by (backend) (rate(traefik_backend_requests_total{code=~"4(00|02|03|04|05|06|07|08|09|[1-9]\\d)", backend=~"arbeidsgiver.nais.*/finn-kandidat-api/*"}[3m])) / sum by (backend) (rate(traefik_backend_requests_total{backend=~"arbeidsgiver.nais.*/finn-kandidat-api/*"}[3m])))) > 60
-      for: 3m
-      description: "Økning HTTP klientfeil (4xx responser andre enn 401)"
-      action: "https://logs.adeo.no/app/r/s/ppcyL"
+        - alert: finn-kandidat-api
+          expr: (100 * (sum by (backend) (rate(traefik_backend_requests_total{code=~"^4\\d\\d", backend=~"arbeidsgiver.nais.*/finn-kandidat-api/*"}[3m])) / sum by (backend) (rate(traefik_backend_requests_total{backend=~"arbeidsgiver.nais.*/finn-kandidat-api/*"}[3m])))) > 1
+          for: 3m
+          annotations:
+            summary: Økning HTTP-klientfeil (4xx-responser)
+            action: "https://logs.adeo.no/app/r/s/ppcyL"
+          labels:
+            namespace: toi
+            severity: warning

@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+import static no.nav.finnkandidatapi.SecureLog.secureLog;
+
 @Slf4j
 @Service
 public class VedtakService {
@@ -42,7 +44,8 @@ public class VedtakService {
         if (aktørId == null) {
             return;
         }
-        log.info("Mottok vedtak med aktørId " + aktørId);
+        log.info("Mottok vedtak med aktørId se securelog for aktørId");
+        secureLog.info("Mottok vedtak med aktørId " + aktørId);
 
         if (vedtakReplikert.getOp_type().equalsIgnoreCase("I") && erVedtakGodkjent(vedtakReplikert.getAfter())) {
             behandleInsert(vedtakReplikert, aktørId);

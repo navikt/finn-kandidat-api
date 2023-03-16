@@ -26,6 +26,8 @@ spec:
         mountPath: /secret/serviceuser
   kafka:
     pool: nav-dev
+  secureLogs:
+    enabled: true
   tokenx:
     enabled: true
   webproxy: false

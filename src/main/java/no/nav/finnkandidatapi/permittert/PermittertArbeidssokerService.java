@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+import static no.nav.finnkandidatapi.SecureLog.secureLog;
 import static no.nav.finnkandidatapi.permittert.PermittertArbeidssoker.endrePermittertArbeidssoker;
 import static no.nav.finnkandidatapi.permittert.PermittertArbeidssoker.opprettPermittertArbeidssoker;
 
@@ -32,7 +33,8 @@ public class PermittertArbeidssokerService {
         Optional<Integer> slettetKey = repository.slettPermittertArbeidssoker(sisteOppfolgingsperiode.getAktorId());
         if (slettetKey.isPresent()) {
             eventPublisher.publishEvent(new PermittertArbeidssokerSlettet(sisteOppfolgingsperiode.getAktorId()));
-            log.info("Slettet Permittert Arbeidssoker med aktørid aktørid {} pga. avsluttet oppfølging", sisteOppfolgingsperiode.getAktorId());
+            log.info("Slettet Permittert Arbeidssoker pga. avsluttet oppfølging, se securelog for aktørId");
+            secureLog.info("Slettet Permittert Arbeidssoker med aktørid {} pga. avsluttet oppfølging", sisteOppfolgingsperiode.getAktorId());
         }
     }
 

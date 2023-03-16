@@ -10,6 +10,8 @@ import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Component;
 import org.springframework.util.concurrent.ListenableFuture;
 
+import static no.nav.finnkandidatapi.SecureLog.secureLog;
+
 
 @Component
 @Slf4j
@@ -31,7 +33,8 @@ public class AivenHarTilretteleggingsbehovProducer {
         try {
             payload = new ObjectMapper().writeValueAsString(melding);
         } catch (JsonProcessingException e) {
-            log.error("Kunne ikke serialisere HarTilretteleggingsbehov", e);
+            log.error("Kunne ikke serialisere HarTilretteleggingsbehov, se securelog for detaljer");
+            secureLog.error("Kunne ikke serialisere HarTilretteleggingsbehov", e);
             return;
         }
         send(melding.getAktoerId(), payload);
@@ -41,7 +44,8 @@ public class AivenHarTilretteleggingsbehovProducer {
         ListenableFuture<SendResult<String, String>> future = kafkaTemplate.send(topic, key, payload);
         future.addCallback(result -> {},
                 exception -> {
-                    log.error("Kunne ikke sende kandidat på Kafka-topic, aktørId: {}", key, exception);
+                    log.error("Kunne ikke sende kandidat på Kafka-topic, aktør, se securelog for detaljer");
+                    secureLog.error("Kunne ikke sende kandidat på Kafka-topic, aktørId: {}", key, exception);
                 });
     }
 }

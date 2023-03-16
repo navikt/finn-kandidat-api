@@ -6,6 +6,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
+import static no.nav.finnkandidatapi.SecureLog.secureLog;
 import static no.nav.finnkandidatapi.kafka.vedtakReplikert.VedtakReplikertUtils.deserialiserMelding;
 
 @Slf4j
@@ -31,7 +32,8 @@ public class VedtakReplikertConsumer {
             containerFactory = "aivenKafkaListenerContainerFactory"
     )
     public void konsumerMelding(ConsumerRecord<String, String> melding) {
-        log.info(
+        log.info("Konsumerer vedtak replikert melding, se securelog for detaljer");
+        secureLog.info(
                 "Konsumerer vedtak replikert melding for id {}, offset: {}, partition: {}",
                 melding.key(),
                 melding.offset(),
@@ -51,7 +53,8 @@ public class VedtakReplikertConsumer {
             sb.append(", partition=" + melding.partition());
             sb.append(", payload=" + json);
             String msg = sb.toString();
-            log.error(msg, e);
+            log.error("Forsøkte å konsumere Kafka-melding vedtak replikert for topic" + vedtakReplikertConfig.getTopic() + ", se securelog for detaljer");
+            secureLog.error(msg, e);
             throw e;
         }
     }

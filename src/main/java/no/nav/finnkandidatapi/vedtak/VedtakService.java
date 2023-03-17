@@ -44,8 +44,8 @@ public class VedtakService {
         if (aktørId == null) {
             return;
         }
-        log.info("Mottok vedtak med aktørId se securelog for aktørId");
-        secureLog.info("Mottok vedtak med aktørId " + aktørId);
+        log.info("Mottok vedtak med aktørId: (se securelog)");
+        secureLog.info("Mottok vedtak med aktørId: " + aktørId);
 
         if (vedtakReplikert.getOp_type().equalsIgnoreCase("I") && erVedtakGodkjent(vedtakReplikert.getAfter())) {
             behandleInsert(vedtakReplikert, aktørId);

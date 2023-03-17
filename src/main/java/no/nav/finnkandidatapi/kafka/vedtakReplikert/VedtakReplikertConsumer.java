@@ -32,9 +32,8 @@ public class VedtakReplikertConsumer {
             containerFactory = "aivenKafkaListenerContainerFactory"
     )
     public void konsumerMelding(ConsumerRecord<String, String> melding) {
-        log.info("Konsumerer vedtak replikert melding, se securelog for detaljer");
-        secureLog.info(
-                "Konsumerer vedtak replikert melding for id {}, offset: {}, partition: {}",
+        log.info(
+                "Konsumerer vedtak replikert melding for id: {}, offset: {}, partition: {}",
                 melding.key(),
                 melding.offset(),
                 melding.partition()

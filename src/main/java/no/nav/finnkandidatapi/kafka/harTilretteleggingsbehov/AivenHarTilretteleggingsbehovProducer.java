@@ -44,7 +44,7 @@ public class AivenHarTilretteleggingsbehovProducer {
         ListenableFuture<SendResult<String, String>> future = kafkaTemplate.send(topic, key, payload);
         future.addCallback(result -> {},
                 exception -> {
-                    log.error("Kunne ikke sende kandidat på Kafka-topic, aktør, se securelog for detaljer");
+                    log.error("Kunne ikke sende kandidat på Kafka-topic, aktørId: (se securelog for detaljer)");
                     secureLog.error("Kunne ikke sende kandidat på Kafka-topic, aktørId: {}", key, exception);
                 });
     }

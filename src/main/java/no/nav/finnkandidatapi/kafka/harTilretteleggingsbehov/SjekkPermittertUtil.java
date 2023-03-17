@@ -67,13 +67,13 @@ public class SjekkPermittertUtil {
     }
 
     static boolean harArbeidssokerRegistrertSegSomPermittert(Optional<PermittertArbeidssoker> permittertArbeidssoker) {
-        log.info("Sjekker arbeidssøkers registrering for registrering som permitert, se securelog for aktørId");
+        log.info("Sjekker arbeidssøkers registrering for registrering som permitert for aktørId : (se securelog), er permitert: " + permittertArbeidssoker.get().erPermittert());
         secureLog.info("Sjekker arbeidssøkers registrering for registrering som permitert for aktørId: " + permittertArbeidssoker.get().getAktørId() + ", er permitert: " + permittertArbeidssoker.get().erPermittert());
         return permittertArbeidssoker.get().erPermittert();
     }
 
     static boolean erVedtakGyldigOgForPermittering(Vedtak vedtak) {
-        log.info("Sjekker gyldighet av vedtak og om permittert for aktør, se securelog for aktørId");
+        log.info("Sjekker gyldighet av vedtak " + vedtak.erGyldig() + " " + vedtak.erPermittert() + " for aktørId : (se securelog)");
         secureLog.info("Sjekker gyldighet av vedtak " + vedtak.erGyldig() + " " + vedtak.erPermittert() + " for aktørId :" + vedtak.getAktørId());
         return vedtak.erGyldig() && vedtak.erPermittert();
     }

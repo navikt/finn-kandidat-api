@@ -42,9 +42,14 @@ public class ArbeidssokerRegistrertConsumer implements ApplicationContextAware {
             containerFactory = "avroAivenKafkaListenerContainerFactory"
     )
     public void konsumerMelding(ConsumerRecord<String, ArbeidssokerRegistrertEvent> melding) {
-        log.info("Konsumerer registrert Arbeidssøker-melding for topic {}, se securelog for detaljer", topicName);
+        log.info(
+                "Konsumerer registrert Arbeidssøker-melding fra topic {}, for id: (se securelog), offset: {}, partition: {}",
+                topicName,
+                melding.offset(),
+                melding.partition()
+        );
         secureLog.info(
-                "Konsumerer registrert Arbeidssøker-melding fra topic {}, for id {}, offset: {}, partition: {}",
+                "Konsumerer registrert Arbeidssøker-melding fra topic {}, for id: {}, offset: {}, partition: {}",
                 topicName,
                 melding.key(),
                 melding.offset(),
@@ -55,7 +60,11 @@ public class ArbeidssokerRegistrertConsumer implements ApplicationContextAware {
 
         if (arbeidssokerRegistrert instanceof FaultyArbeidssokerRegistrert) {
             FailedDeserializationInfo failedDeserializationInfo = ((FaultyArbeidssokerRegistrert) arbeidssokerRegistrert).getFailedDeserializationInfo();
-            log.error("Feil ved konsumering av registrert arbeidssøker-melding for topic {}, se securelog for detaljer", topicName);
+            log.error("Feil ved konsumering av registrert arbeidssøker-melding. Topic {}, id (se securelog), offset: {}, partition: {}, årsak: (se securelog)",
+                    topicName,
+                    melding.offset(),
+                    melding.partition()
+            );
             secureLog.error("Feil ved konsumering av registrert arbeidssøker-melding. Topic {}, id {}, offset: {}, partition: {}, årsak: {}",
                     topicName,
                     melding.key(),

@@ -59,7 +59,7 @@ public class SammenstillBehov {
                 tilretteleggingsbehovFilter.stream(),
                 permitteringFilter.stream()
         );
-        log.info("Lager behov for aktør: se securelog for detaljer");
+        log.info("Lager behov for aktør: (se securelog) " + behov);
         secureLog.info("Lager behov for aktør:" + aktørId + " " + behov);
         return new HarTilretteleggingsbehov(aktørId, erTilretteleggingsbehov, behov);
     }

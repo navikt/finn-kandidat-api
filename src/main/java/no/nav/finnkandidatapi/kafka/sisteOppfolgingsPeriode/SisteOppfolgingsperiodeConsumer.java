@@ -36,9 +36,13 @@ public class SisteOppfolgingsperiodeConsumer {
             containerFactory = "aivenKafkaListenerContainerFactory"
     )
     public void konsumerMelding(ConsumerRecord<String, String> melding) {
-        log.info("Konsumerer en siste-oppfolgingsperiode melding. Se securelog for detaljer.");
+        log.info(
+                "Konsumerer en siste-oppfolgingsperiode melding for id: (se securelog), offset: {}, partition: {}",
+                melding.offset(),
+                melding.partition()
+        );
         secureLog.info(
-                "Konsumerer en siste-oppfolgingsperiode melding for id {}, offset: {}, partition: {}",
+                "Konsumerer en siste-oppfolgingsperiode melding for id: {}, offset: {}, partition: {}",
                 melding.key(),
                 melding.offset(),
                 melding.partition()
@@ -52,8 +56,11 @@ public class SisteOppfolgingsperiodeConsumer {
             }
 
         } catch (RuntimeException e) {
-            log.error("Feil ved konsumering av en siste-oppfolgingsperiode melding. Se securelog for detaljer.");
-            secureLog.error("Feil ved konsumering av en siste-oppfolgingsperiode melding. id {}, offset: {}, partition: {}",
+            log.error("Feil ved konsumering av en siste-oppfolgingsperiode melding. id: (se securelog), offset: {}, partition: {}",
+                    melding.offset(),
+                    melding.partition()
+            );
+            secureLog.error("Feil ved konsumering av en siste-oppfolgingsperiode melding. id: {}, offset: {}, partition: {}",
                     melding.key(),
                     melding.offset(),
                     melding.partition()

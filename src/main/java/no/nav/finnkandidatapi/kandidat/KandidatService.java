@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+import static no.nav.finnkandidatapi.SecureLog.secureLog;
+
 @Slf4j
 @Service
 public class KandidatService {
@@ -76,7 +78,8 @@ public class KandidatService {
         Optional<Integer> slettetKey = kandidatRepository.slettKandidatSomMaskinbruker(sisteOppfolgingsperiode.getAktorId(), dateProvider.now());
         if (slettetKey.isPresent()) {
             eventPublisher.publishEvent(new KandidatSlettet(slettetKey.get(), sisteOppfolgingsperiode.getAktorId(), Brukertype.SYSTEM, dateProvider.now()));
-            log.info("Slettet kandidat med id {} pga. avsluttet oppfølging", slettetKey.get());
+            log.info("Slettet kandidat med id: (se securelog) pga. avsluttet oppfølging");
+            secureLog.info("Slettet kandidat med id: {} pga. avsluttet oppfølging", slettetKey.get());
         }
     }
 
